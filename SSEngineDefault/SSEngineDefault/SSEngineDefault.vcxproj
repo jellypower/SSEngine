@@ -144,12 +144,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleExportKeyword.h" />
-    <ClInclude Include="framework.h" />
     <ClInclude Include="Public\ModuleEntry\SSEngineDefaultModuleEntry.h" />
     <ClInclude Include="Public\DeviceQuery.h" />
     <ClInclude Include="Public\GeometryType.h" />
     <ClInclude Include="Public\GlobalVariableSet\GlobalVariableSet.h" />
     <ClInclude Include="Public\INoncopyable.h" />
+    <ClInclude Include="Public\ProfilerUtils.h" />
     <ClInclude Include="Public\SSCommonUtil\AllocatedChunkHeader.h" />
     <ClInclude Include="Public\SSCommonUtil\SSCustomMemAllocator.h" />
     <ClInclude Include="Public\SSContainer\Allocators\HeapAllocator.h" />
@@ -187,6 +187,7 @@
     <ClCompile Include="Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp" />
     <ClCompile Include="Private\PCommon\SHasherW.cpp" />
     <ClCompile Include="Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp" />
+    <ClCompile Include="Private\PWin32\ProfilerUtils.cpp" />
     <ClCompile Include="Public\SSContainer\CityHash.cpp" />
     <ClCompile Include="Private\PCommon\SSFrameInfo.cpp" />
     <ClCompile Include="Private\PCommon\SSVector.cpp" />

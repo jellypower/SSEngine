@@ -2,6 +2,8 @@
 #include <cassert>
 #include <new>
 #include <cstring>
+#include <typeinfo>
+
 
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 #include "SSUtilityContainer.h"

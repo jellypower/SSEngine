@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Public\GlobalVariableSet\GlobalVariableSet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -129,6 +126,9 @@
     <ClInclude Include="ModuleExportKeyword.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Public\ProfilerUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -168,6 +168,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PWin32\StringUtilityFunctions.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\ProfilerUtils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

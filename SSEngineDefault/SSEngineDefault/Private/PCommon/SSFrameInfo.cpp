@@ -1,25 +1,16 @@
 #define DLL_EXPORT
 #include "SSEngineDefault/Public/SSFrameInfo.h"
 
-#include <windows.h>
+#include "SSEngineDefault/Public/ProfilerUtils.h"
 
 constexpr double FRAME_LOW_LIMIT = 1 / 1000.0;
 
-uint64 SSFrameInfo::GetTickCountSS()
-{
-	LARGE_INTEGER newTickLI;
-	QueryPerformanceCounter(&newTickLI);
-	return newTickLI.QuadPart;
-}
 
 
 void SSFrameInfo::BeginFrameXXX()
 {
-	LARGE_INTEGER freqLI;
-	QueryPerformanceFrequency(&freqLI);
-	_perfFrequency = freqLI.QuadPart;
-
-	_currentTick = GetTickCountSS();
+	_perfFrequency = GetPerformanceFrequency();
+	_currentTick = GetPerofrmanceCounter();
 	_lastFPSCheckTick = _currentTick;
 }
 
@@ -29,7 +20,7 @@ void SSFrameInfo::PerFrameXXX()
 	_frameCntDuringInFPSCheckterval++;
 
 	_previousTick = _currentTick;
-	_currentTick = GetTickCountSS();
+	_currentTick = GetPerofrmanceCounter();
 
 	uint64 tickDiff = _currentTick - _previousTick;
 

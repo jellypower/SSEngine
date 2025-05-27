@@ -50,7 +50,5 @@ public:
 	void PerFrameXXX();
 	void ProcessWindowResizeXXX(uint32 width, uint32 height);
 
-private:
-	static uint64 GetTickCountSS();
 };
 

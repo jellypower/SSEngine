@@ -1,5 +1,4 @@
 #pragma once
-#include <string.h>
 
 #include "StringUtilityFunctions.h"
 #include "SSEngineDefault/Public/SSDebugLogger.h"

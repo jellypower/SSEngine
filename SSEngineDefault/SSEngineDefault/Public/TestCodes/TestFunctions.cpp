@@ -2,8 +2,10 @@
 
 #include <unordered_map>
 
+
 #include "TestClasses/TestCustomHeapAllocator.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
+#include "SSEngineDefault/Public/ProfilerUtils.h"
 
 void ContainerTest_PooledLinkedList()
 {
@@ -168,8 +170,8 @@ void ContainerTest_HashMap()
 
 	for (int32 i = 0; i < ITER_CNT; i++)
 	{
-		wchar_t TempStr[2000];
-		wsprintf(TempStr, L"MyString: %d", i);
+		utf16 TempStr[2000];
+		swprintf_s(TempStr, sizeof(TempStr)/sizeof(utf16), L"MyString: %d", i);
 
 		StrList.PushBack(TempStr);
 	}
@@ -185,26 +187,27 @@ void ContainerTest_HashMap()
 
 	// Test01
 	{
-		LARGE_INTEGER freqStart, freqEnd;
-		QueryPerformanceCounter(&freqStart);
+		uint64 freqStart, freqEnd;
+
+		freqStart = GetPerofrmanceCounter();
 		for (int32 i = 0; i < ITER_CNT; i++)
 		{
 			UMap.insert(std::make_pair(StrList[i], i));
 		}
-		QueryPerformanceCounter(&freqEnd);
+		freqEnd = GetPerofrmanceCounter();
 
-		int64 eTime1 = (freqEnd.QuadPart - freqStart.QuadPart);
+		uint64 eTime1 = freqEnd - freqStart;
 
 
-		QueryPerformanceCounter(&freqStart);
+		freqStart = GetPerofrmanceCounter();
 		for (int32 i = 0; i < ITER_CNT; i++)
 		{
 			const SS::StringW StrItem = StrList[i];
 			HashMap.Add(StrItem, i);
 		}
-		QueryPerformanceCounter(&freqEnd);
+		freqEnd = GetPerofrmanceCounter();
 
-		int64 eTime2 = (freqEnd.QuadPart - freqStart.QuadPart);
+		int64 eTime2 = freqEnd - freqStart;
 
 		int64 TimeDiff = eTime1 - eTime2;
 		int a = 0;
@@ -217,7 +220,7 @@ void ContainerTest_HashMap()
 		for (int32 i = 0; i < ITER_CNT; i++)
 		{
 			utf16 TempStr[2000];
-			wsprintf(TempStr, L"MyString: %d", i);
+			swprintf_s(TempStr, sizeof(TempStr)/sizeof(utf16), L"MyString: %d", i);
 
 			int32* FoundItem = HashMap.Find(TempStr);
 

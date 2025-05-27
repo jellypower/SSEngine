@@ -7,14 +7,12 @@
 
 #include<tchar.h>
 #include<intrin.h>
-#include<dxgidebug.h>
 
 #endif
 
 #define DEBUG 1
 
 #include<stdio.h>
-#include<typeinfo>
 
 #define SS_LOG(...) printf_s(__VA_ARGS__) 
 #define WSS_LOG(...) wprintf(__VA_ARGS__)
@@ -48,7 +46,6 @@
 #define _CRTDBG_MAP_ALLOC
 #define DBG_NEW new (_NORMAL_BLOCK , __FILE__ , __LINE__)
 #define DBG_MALLOC(s) _malloc_dbg(s,_NORMAL_BLOCK,__FILE__,__LINE__)
-#include <stdlib.h>
 
 
 // ======================================================================================

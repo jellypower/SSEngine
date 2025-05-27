@@ -1,5 +1,6 @@
 #pragma once
 #include <new>
+#include <string.h>
 
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 #include "SSEngineDefault/Public/SSDebugLogger.h"
