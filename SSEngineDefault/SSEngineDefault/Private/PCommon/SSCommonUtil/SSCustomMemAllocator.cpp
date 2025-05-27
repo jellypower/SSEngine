@@ -1,4 +1,5 @@
-#include "SSCustomMemAllocator.h"
+#define DLL_EXPORT
+#include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 
 SSCustomMemChunkAllocator::SSCustomMemChunkAllocator(int32 InEachPageSize, int32 MinAllocSize, const utf16* AllocatorName) :
 	_EachPageSize(InEachPageSize),

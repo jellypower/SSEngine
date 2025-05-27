@@ -1,4 +1,5 @@
-﻿#include "TestFunctions.h"
+﻿#define DLL_EXPORT
+#include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
 
 #include <unordered_map>
 

@@ -105,7 +105,7 @@
     <ClInclude Include="Public\SSFrameInfo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\SSInput.h">
+    <ClInclude Include="Public\Input\SSRawInputProcessorBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\SSNativeKeywords.h">
@@ -143,7 +143,7 @@
     <ClCompile Include="Public\TestCodes\TestFunctions.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Public\SSInput.cpp">
+    <ClCompile Include="Public\Input\SSRawInputProcessorBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp">

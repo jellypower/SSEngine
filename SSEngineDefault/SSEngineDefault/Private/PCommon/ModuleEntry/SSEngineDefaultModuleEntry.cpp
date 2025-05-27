@@ -7,6 +7,7 @@
 SS::SHashPoolNode* g_SHasherPool = nullptr;
 uint32 g_sHasherPoolCnt = 0;
 SSFrameInfo* g_FrameInfo = nullptr;
+SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
 
 void SSEngineDefaultModuleEntry(
 	SS::SHashPoolNode* InHasherPool,

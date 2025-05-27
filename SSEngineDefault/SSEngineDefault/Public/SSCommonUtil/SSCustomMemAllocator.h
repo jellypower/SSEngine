@@ -1,4 +1,6 @@
 #pragma once
+#include "SSEngineDefault/ModuleExportKeyword.h"
+
 #include "SSEngineDefault/Public/INoncopyable.h"
 #include "SSEngineDefault/Public/SSContainer/PooledLinkedList.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
@@ -6,8 +8,6 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
 #include "AllocatedChunkHeader.h"
-
-class SSCustomMemChunkAllocator;
 
 struct AvailableMemspace
 {
@@ -25,7 +25,7 @@ struct PageSet
 };
 
 
-class SSCustomMemChunkAllocator : public INoncopyable
+class SSENGINEDEFAULT_MODULE SSCustomMemChunkAllocator : public INoncopyable
 {
 private:
 	SS::PooledList<PageSet> _DefaultPages;

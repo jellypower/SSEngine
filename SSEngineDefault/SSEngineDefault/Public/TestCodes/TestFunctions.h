@@ -1,5 +1,6 @@
 ﻿#pragma once
+#include "SSEngineDefault/ModuleExportKeyword.h"
 
-void ContainerTest_PooledLinkedList();
-void ContainerTest_HashMap();
-void CustomHeapAllocatorTest();
+void SSENGINEDEFAULT_MODULE ContainerTest_PooledLinkedList();
+void SSENGINEDEFAULT_MODULE ContainerTest_HashMap();
+void SSENGINEDEFAULT_MODULE CustomHeapAllocatorTest();
