@@ -1,0 +1,83 @@
+﻿#pragma once
+#include "GALRenderDeviceContext.h"
+#include "SSEngineDefault/Public/INoncopyable.h"
+#include "SSEngineDefault/Public/SSContainer/PooledList.h"
+#include "SSEngineDefault/Public/SSContainer/Allocators/InlineAllocator.h"
+#include "SSGAL/Public/SSGALInlineSettings.h"
+#include "SSGAL/Public/GALRenderTArget/GALRenderTarget.h"
+
+struct GALRenderTargetDesc;
+class SSCustomMemChunkAllocator;
+class SSRenderer;
+class GALRenderTarget;
+class GALResourceUpdater;
+class MeshAsset;
+struct BasicRenderInstance;
+class ShaderAsset;
+class ConstantBufferPoolManager;
+class PSOPool;
+class RootSignaturePool;
+
+enum class ERenderDevicePlatnform : uint8
+{
+	None = 0,
+
+	DX12Raster,
+};
+
+// GraphicsAPI Abstraction Layer Device
+class GALRenderDevice : public INoncopyable
+{
+public:
+	GALRenderDevice(SSRenderer* OwnerRenderer);
+	virtual ~GALRenderDevice();
+
+public:
+	virtual void BeginRender() = 0;
+	virtual void EndRender() = 0;
+
+public:
+	SSRenderer* GetOwnerRenderer() const { return _OwnerRenderer; }
+
+	RootSignaturePool* GetRootSignaturePool() const { return _rootSignaturePool; }
+	PSOPool* GetPSOPool() const { return _PSOPool; }
+	SSCustomMemChunkAllocator* GetConstantBufferResourceAllocator() const { return _ConstantBufferResourceAllocator; }
+	SSCustomMemChunkAllocator* GetDescriptorTableAllocator() const { return _DescriptorTableAllocator; }
+
+	GALRenderTarget* GetDefaultViewportRenderTarget() const { return _DefaultViewportRenderTarget; }
+	uint64 GetCurFrameCnt() const { return _CurFrameCnt; }
+
+	virtual ERenderDevicePlatnform GetRenderDevicePlatform() const = 0;
+
+	virtual GALRenderDeviceContext* CreateRenderDeviceContext() = 0;
+	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) = 0;
+	virtual bool InstantiateShaderGPUAsset(ShaderAsset* ShaderAsset) = 0;
+
+	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) = 0;
+
+
+
+	virtual void TEMP_InitializePSOInstances();
+
+
+protected:
+	virtual void WaitForFence() = 0;
+	virtual void FenceFrame() = 0;
+
+protected:
+	SSRenderer* _OwnerRenderer = nullptr;
+
+	RootSignaturePool* _rootSignaturePool = nullptr;
+	PSOPool* _PSOPool = nullptr;
+	SSCustomMemChunkAllocator* _ConstantBufferResourceAllocator = nullptr;
+	SSCustomMemChunkAllocator* _DescriptorTableAllocator = nullptr;
+
+
+	GALRenderTarget* _DefaultViewportRenderTarget = nullptr;
+
+	int32 _NestedFrameCnt = SWAP_CHAIN_FRAME_COUNT;
+
+	uint64 _CurFrameCnt = 0;
+
+	SS::PooledList<GALRenderDeviceContext*, SS::InlineAllocator<10>> _ExecutedDeviceContext;
+};

@@ -1,0 +1,24 @@
+﻿#pragma once
+#include <d3dx12.h>
+
+#include "SSGAL/Public/GraphicsResourcePool/GraphicsResourceWrapper/PSOWrapper.h"
+
+class DX12PSOWrapper : public PSOWrapper
+{
+private:
+	const static D3D12_INPUT_ELEMENT_DESC* GetInputElementDesc(EInputLayoutType InputElementType, uint32& outElementCnt);
+
+private:
+	ID3D12PipelineState* _PipelineState = nullptr;
+
+	
+
+public:
+	DX12PSOWrapper(const PipelineDesc& pipelineDesc);
+	virtual ~DX12PSOWrapper();
+
+	virtual bool IsValid() const override;
+
+public:
+	ID3D12PipelineState* GetPipelineState() const { return _PipelineState; }
+};

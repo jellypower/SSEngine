@@ -1,0 +1,24 @@
+{
+  "shaderName": "phong",
+  "baseColorFactor": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "w": 0
+  },
+  "emissiveFactor": {
+    "x": 1,
+    "y": 1,
+    "z": 1,
+    "w": 1
+  },
+  "normalTextureScale": 0.699999988079071,
+  "metallicRoughnessFactor": {
+    "x": 0.5,
+    "y": 0.44859999418258667
+  },
+  "txDiffuseName": "diffuse",
+  "txMetallicName": "metallic",
+  "txNormalName": "normal",
+  "txEmissiveName": "emissive"
+}

@@ -1,0 +1,1543 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\CityHash.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\FixedList.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\PooledLinkedList.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\PooledList.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SHasherW.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSUtilityContainer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\StringHashMapA.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSDebugLogger.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSEngineDefault.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSFrameInfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSInput.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSNativeKeywords.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSNativeTypes.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSStaticMath.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSVector.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\StringUtilityFunctions.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSEngineInlineSettings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderCommon\SSVertexType.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderCommon\SSRendererInlineSettings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderBase\SSRenderer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSBuildSettings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderInstance\BasicRenderInstance.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\MeshAssetManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineMain\SSEngine.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\HashMap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ShaderAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\BasicHashFunctionCollection.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\FixedStringA.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\FixedStringW.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringContainerUtilsCollection.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderAssetConverter\Public\SSFBXImporter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\Allocators\InlineAllocator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\Allocators\HeapAllocator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringW.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\SSRendererBuildSetings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUAssetInstanceBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringA.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\RootSignatureWrapper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\PSOWrapper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12RootSignatureWrapper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12PSOWrapper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\RootSignaturePool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\DX12RootSignaturePool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\PSOPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\DX12PSOPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMaterialAssetInstanceBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\ConstantBufferPoolManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\ConstantBufferPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\DX12ConstantBufferPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\ConstantBufferWrapper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\DX12ConstantBufferWrapper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12ConstantBufferPoolManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\ModelAssetManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxalloc.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxarch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxdebug.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxnew.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxstdcompliant.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxtypes.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxarray.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxbitset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxcharptrset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxcontainerallocators.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxdynamicarray.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxfile.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxfolder.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxhashmap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxintrusivelist.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxmap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxmemorypool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxmultimap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxpair.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxredblacktree.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxstatus.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxstring.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxstringlist.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxtime.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxtimecode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxutils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxaffinematrix.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxdualquaternion.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxmath.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxmatrix.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxquaternion.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxtransforms.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxvector2.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxvector4.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\sync\fbxatomic.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\sync\fbxclock.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\sync\fbxsync.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\sync\fbxthread.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxclassid.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxconnectionpoint.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxdatatypes.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxemitter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxevent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxeventhandler.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxlistener.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxloadingstrategy.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxmanager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxmodule.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxobject.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxperipheral.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxplugin.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxplugincontainer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxproperty.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxpropertydef.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxpropertyhandle.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxpropertypage.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxpropertytypes.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxquery.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxqueryevent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxscopedloadingdirectory.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxscopedloadingfilename.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxstream.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxsymbol.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxsystemunit.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxxref.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladaanimationelement.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladaelement.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladaiostream.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladanamespace.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladatokens.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladautils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxreadercollada14.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxwritercollada14.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxio.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxreaderfbx5.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxreaderfbx6.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxreaderfbx7.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxwriterfbx5.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxwriterfbx6.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxwriterfbx7.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxbase64coder.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxcallbacks.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxexporter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxexternaldocreflistener.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxfiletokens.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxglobalcamerasettings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxgloballightsettings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxglobalsettings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxgobo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbximporter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxiobase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxiopluginregistry.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxiosettings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxiosettingspath.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxprogress.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxreader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxstatistics.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxstatisticsfbx.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxwriter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimcurve.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimcurvebase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimcurvefilters.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimcurvenode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimevalclassic.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimevalstate.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimevaluator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimlayer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimstack.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimutilities.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxcharacter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxcharacternodename.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxcharacterpose.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraint.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintaim.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintcustom.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintparent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintposition.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintrotation.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintscale.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintsinglechainik.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintutils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxcontrolset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxhik2fbxcharacter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxblendshape.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxblendshapechannel.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcache.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcachedeffect.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcamera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcamerastereo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcameraswitcher.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcluster.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxdeformer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxgenericnode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxgeometry.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxgeometrybase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxgeometryweightedmap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlayer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlayercontainer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlight.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlimitsutilities.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxline.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlodgroup.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxmarker.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxmesh.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnodeattribute.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnull.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnurbs.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnurbscurve.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnurbssurface.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxopticalreference.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxpatch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxproceduralgeometry.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxshape.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxskeleton.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxskin.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxsubdeformer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxsubdiv.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxtrimnurbssurface.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxvertexcachedeformer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxweightedmapping.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingoperator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingsentryview.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingtable.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingtablebase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingtableentry.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxconstantentryview.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxentryview.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxfiletexture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbximplementation.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbximplementationfilter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbximplementationutils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxlayeredtexture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxlayerentryview.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxoperatorentryview.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxproceduraltexture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxpropertyentryview.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsemanticentryview.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxshadingconventions.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsurfacelambert.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsurfacematerial.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsurfacematerialutils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsurfacephong.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxtexture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxaudio.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxaudiolayer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxaxissystem.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxcollection.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxcollectionexclusive.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxcontainer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxcontainertemplate.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxdisplaylayer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxdocument.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxdocumentinfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxenvironment.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxgroupname.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxlibrary.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxmediaclip.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxobjectfilter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxobjectmetadata.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxobjectscontainer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxpose.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxreference.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxscene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxselectionnode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxselectionset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxtakeinfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxthumbnail.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxvideo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxclonemanager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxdeformationsevaluator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxembeddedfilesaccumulator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxgeometryconverter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxmanipulators.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxmaterialconverter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxnamehandler.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxprocessor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxprocessorshaderdependency.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxprocessorxref.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxprocessorxrefuserlib.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategy.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategybase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategyfbx5.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategyfbx6.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategyfbx7.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategyutilities.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrootnodeutility.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxscenecheckutility.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxusernotification.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fbxsdk_def.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fbxsdk_nsbegin.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fbxsdk_nsend.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fbxsdk_version.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\c14n.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\catalog.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\chvalid.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\debugXML.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\dict.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\DOCBparser.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\encoding.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\entities.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\globals.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\hash.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\HTMLparser.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\HTMLtree.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\list.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\nanoftp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\nanohttp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\parser.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\parserInternals.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\pattern.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\relaxng.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\SAX.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\SAX2.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\schemasInternals.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\schematron.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\threads.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\tree.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\uri.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\valid.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xinclude.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xlink.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlautomata.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlerror.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlexports.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlIO.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlmemory.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlmodule.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlreader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlregexp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlsave.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlschemas.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlschemastypes.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlstring.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlunicode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlversion.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlwin32version.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlwriter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpath.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpathInternals.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpointer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\SObjectBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\SObjectGlobalHashMap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\ModuleEntry\SObjectModuleEntry.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\SObjConstructor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\SGameObject.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\SComponentBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\SWorld.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderInstance\RenderWorld.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\SObjectBase\SRendererUtil.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\SObjHashCode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\SSGALModuleEntry\GPUAssetInstanceFactory.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDevice.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDevice.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\GALInstanceGlobalVariablePrivate.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\DeviceQuery.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDeviceContext.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GALResourceUpdater.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12GALResourceUpdater.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderInstance\DX12GPURenderInstance_SM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\SObjectBase\SCameraComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\GeometryType.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GALRenderTArget\GALRenderTarget.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GPURenderInstance\RenderInstanceGPUMetadata.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\SSGALCommonEnums.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSCommonUtil\SSCustomMemAllocator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\TestCodes\TestClasses\TestCustomHeapAllocator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\TestCodes\TestFunctions.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\INoncopyable.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSCommonUtil\AllocatedChunkHeader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GALRenderTarget\GALCPUReadableTexture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Public\GALRenderTarget\GALRTCommonEnums.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\SSDirectXMathCustom.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineDefault\Public\GlobalVariableSet\GlobalVariableSet.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleEntryScriptRunner.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SObject\Public\GlobalVariableSet\GlobalVariableSet.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SSContainer\CityHash.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SHasherW.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SSFrameInfo.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Public\SSInput.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SSVector.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Private\PWin32\StringUtilityFunctions.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderBase\SSRenderer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderInstance\BasicRenderInstance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\MeshAssetManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineMain\SSEngine.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ShaderAsset.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderAssetConverter\Public\SSFBXImporter.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\SSRendererBuildSetings.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUAssetInstanceBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\RootSignatureWrapper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\PSOWrapper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12RootSignatureWrapper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12PSOWrapper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\RootSignaturePool.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\DX12RootSignaturePool.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\PSOPool.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\DX12PSOPool.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUMaterialAssetInstanceBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\ConstantBufferPoolManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\ConstantBufferPool.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\DX12ConstantBufferPool.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\ConstantBufferWrapper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\DX12ConstantBufferWrapper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12ConstantBufferPoolManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\ModelAssetManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SObject\Private\SObjectBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SObject\Private\SObjectGlobalHashMap.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SObject\Private\ModuleEntryImpl\SObjectModuleEntry.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SObject\Private\SObjConstructor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SObject\Private\SGameObject.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SObject\Private\SComponentBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SObject\Private\SWorld.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderInstance\RenderWorld.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\SObjectBase\SRendererUtil.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SObject\Private\SObjHashCode.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\RenderAsset\AssetManagerBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\SSGALModuleEntry\GPUAssetInstanceFactory.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GALRenderDevice\GALRenderDevice.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\GALInstanceGlobalVariablePrivate.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Private\PWin32\DeviceQuery.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GALRenderDevice\GALRenderDeviceContext.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GALResourceUpdater.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12GALResourceUpdater.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderInstance\DX12GPURenderInstance_SM.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSRenderer\Public\SObjectBase\SCameraComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GALRenderTArget\GALRenderTarget.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GPURenderInstance\RenderInstanceGPUMetadata.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Public\SSCommonUtil\SSCustomMemAllocator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Public\TestCodes\TestClasses\TestCustomHeapAllocator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Public\TestCodes\TestFunctions.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBAModelBuffer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GALRenderTarget\GALCPUReadableTexture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Public\GALRenderTarget\GALRTCommonEnums.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineDefault\Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleEntryScriptRunner.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SSRenderer.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="SSRenderer.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="SSEngineDefault\Public\SSContainer\SSContainer.natvis" />
+  </ItemGroup>
+</Project>

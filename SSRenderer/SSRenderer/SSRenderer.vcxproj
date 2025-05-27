@@ -1,0 +1,668 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.614.1\build\native\Microsoft.Direct3D.D3D12.props" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.614.1\build\native\Microsoft.Direct3D.D3D12.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{ad66ad0e-2b82-4d7e-bf12-b84c5fde7d67}</ProjectGuid>
+    <RootNamespace>SSRenderer</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxalloc.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxarch.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxdebug.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxnew.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxstdcompliant.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxtypes.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxarray.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxbitset.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxcharptrset.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxcontainerallocators.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxdynamicarray.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxfile.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxfolder.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxhashmap.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxintrusivelist.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxmap.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxmemorypool.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxmultimap.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxpair.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxredblacktree.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxset.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxstatus.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxstring.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxstringlist.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxtime.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxtimecode.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\base\fbxutils.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxclassid.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxconnectionpoint.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxdatatypes.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxemitter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxevent.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxeventhandler.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxlistener.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxloadingstrategy.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxmanager.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxmodule.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxobject.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxperipheral.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxplugin.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxplugincontainer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxproperty.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxpropertydef.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxpropertyhandle.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxpropertypage.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxpropertytypes.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxquery.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxqueryevent.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxscopedloadingdirectory.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxscopedloadingfilename.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxstream.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxsymbol.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxsystemunit.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\fbxxref.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxaffinematrix.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxdualquaternion.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxmath.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxmatrix.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxquaternion.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxtransforms.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxvector2.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\math\fbxvector4.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\sync\fbxatomic.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\sync\fbxclock.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\sync\fbxsync.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\sync\fbxthread.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fbxsdk_def.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fbxsdk_nsbegin.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fbxsdk_nsend.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fbxsdk_version.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladaanimationelement.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladaelement.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladaiostream.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladanamespace.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladatokens.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxcolladautils.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxreadercollada14.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\collada\fbxwritercollada14.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxbase64coder.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxcallbacks.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxexporter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxexternaldocreflistener.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxfiletokens.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxglobalcamerasettings.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxgloballightsettings.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxglobalsettings.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxgobo.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbximporter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxiobase.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxiopluginregistry.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxiosettings.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxiosettingspath.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxprogress.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxreader.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxstatistics.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxstatisticsfbx.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbxwriter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxio.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxreaderfbx5.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxreaderfbx6.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxreaderfbx7.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxwriterfbx5.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxwriterfbx6.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\fileio\fbx\fbxwriterfbx7.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimcurve.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimcurvebase.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimcurvefilters.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimcurvenode.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimevalclassic.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimevalstate.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimevaluator.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimlayer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimstack.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\animation\fbxanimutilities.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxcharacter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxcharacternodename.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxcharacterpose.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraint.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintaim.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintcustom.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintparent.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintposition.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintrotation.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintscale.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintsinglechainik.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxconstraintutils.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxcontrolset.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\constraint\fbxhik2fbxcharacter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxaudio.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxaudiolayer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxaxissystem.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxcollection.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxcollectionexclusive.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxcontainer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxcontainertemplate.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxdisplaylayer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxdocument.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxdocumentinfo.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxenvironment.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxgroupname.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxlibrary.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxmediaclip.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxobjectfilter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxobjectmetadata.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxobjectscontainer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxpose.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxreference.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxscene.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxselectionnode.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxselectionset.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxtakeinfo.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxthumbnail.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\fbxvideo.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxblendshape.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxblendshapechannel.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcache.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcachedeffect.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcamera.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcamerastereo.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcameraswitcher.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxcluster.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxdeformer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxgenericnode.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxgeometry.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxgeometrybase.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxgeometryweightedmap.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlayer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlayercontainer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlight.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlimitsutilities.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxline.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxlodgroup.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxmarker.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxmesh.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnode.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnodeattribute.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnull.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnurbs.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnurbscurve.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxnurbssurface.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxopticalreference.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxpatch.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxproceduralgeometry.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxshape.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxskeleton.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxskin.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxsubdeformer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxsubdiv.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxtrimnurbssurface.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxvertexcachedeformer.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\geometry\fbxweightedmapping.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingoperator.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingsentryview.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingtable.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingtablebase.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxbindingtableentry.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxconstantentryview.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxentryview.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxfiletexture.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbximplementation.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbximplementationfilter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbximplementationutils.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxlayeredtexture.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxlayerentryview.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxoperatorentryview.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxproceduraltexture.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxpropertyentryview.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsemanticentryview.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxshadingconventions.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsurfacelambert.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsurfacematerial.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsurfacematerialutils.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxsurfacephong.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\scene\shading\fbxtexture.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxclonemanager.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxdeformationsevaluator.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxembeddedfilesaccumulator.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxgeometryconverter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxmanipulators.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxmaterialconverter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxnamehandler.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxprocessor.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxprocessorshaderdependency.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxprocessorxref.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxprocessorxrefuserlib.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategy.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategybase.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategyfbx5.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategyfbx6.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategyfbx7.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrenamingstrategyutilities.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxrootnodeutility.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxscenecheckutility.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\utils\fbxusernotification.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\c14n.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\catalog.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\chvalid.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\debugXML.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\dict.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\DOCBparser.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\encoding.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\entities.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\globals.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\hash.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\HTMLparser.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\HTMLtree.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\list.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\nanoftp.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\nanohttp.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\parser.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\parserInternals.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\pattern.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\relaxng.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\SAX.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\SAX2.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\schemasInternals.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\schematron.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\threads.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\tree.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\uri.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\valid.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xinclude.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xlink.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlautomata.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlerror.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlexports.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlIO.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlmemory.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlmodule.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlreader.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlregexp.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlsave.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlschemas.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlschemastypes.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlstring.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlunicode.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlversion.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlwin32version.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xmlwriter.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpath.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpathInternals.h" />
+    <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpointer.h" />
+    <ClInclude Include="ModuleEntryScriptRunner.h" />
+    <ClInclude Include="SObject\Public\GlobalVariableSet\GlobalVariableSet.h" />
+    <ClInclude Include="SSEngineDefault\Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.h" />
+    <ClInclude Include="SSEngineDefault\Public\GlobalVariableSet\GlobalVariableSet.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSCommonUtil\AllocatedChunkHeader.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSCommonUtil\SSCustomMemAllocator.h" />
+    <ClInclude Include="SSEngineDefault\Public\GeometryType.h" />
+    <ClInclude Include="SSEngineDefault\Public\DeviceQuery.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSDirectXMathCustom.h" />
+    <ClInclude Include="SSEngineDefault\Public\TestCodes\TestClasses\TestCustomHeapAllocator.h" />
+    <ClInclude Include="SSEngineDefault\Public\TestCodes\TestFunctions.h" />
+    <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
+    <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
+    <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDevice.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12GALResourceUpdater.h" />
+    <ClInclude Include="SSGAL\Private\GALInstanceGlobalVariablePrivate.h" />
+    <ClInclude Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h" />
+    <ClInclude Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.h" />
+    <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDeviceContext.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderInstance\DX12GPURenderInstance_SM.h" />
+    <ClInclude Include="SSGAL\Public\GALRenderTarget\GALCPUReadableTexture.h" />
+    <ClInclude Include="SSGAL\Public\GALRenderTarget\GALRenderTarget.h" />
+    <ClInclude Include="SSGAL\Public\GALRenderTarget\GALRTCommonEnums.h" />
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GALResourceUpdater.h" />
+    <ClInclude Include="SSGAL\Public\SSGALCommonEnums.h" />
+    <ClInclude Include="SSGAL\Public\SSGALModuleEntry\GPUAssetInstanceFactory.h" />
+    <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDevice.h" />
+    <ClInclude Include="SSGAL\Public\GPURenderInstance\RenderInstanceGPUMetadata.h" />
+    <ClInclude Include="SObject\Public\SComponentBase.h" />
+    <ClInclude Include="SObject\Public\SGameObject.h" />
+    <ClInclude Include="SObject\Public\SObjConstructor.h" />
+    <ClInclude Include="SObject\Public\SObjectBase.h" />
+    <ClInclude Include="SObject\Public\SObjectGlobalHashMap.h" />
+    <ClInclude Include="SObject\Public\SObjHashCode.h" />
+    <ClInclude Include="SObject\Public\ModuleEntry\SObjectModuleEntry.h" />
+    <ClInclude Include="SObject\Public\SWorld.h" />
+    <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
+    <ClInclude Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h" />
+    <ClInclude Include="SSRenderer\Public\RenderInstance\RenderWorld.h" />
+    <ClInclude Include="SSRenderer\Public\SObjectBase\SCameraComponent.h" />
+    <ClInclude Include="SSRenderer\Public\SObjectBase\SRendererUtil.h" />
+    <ClInclude Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\DX12ConstantBufferWrapper.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\DX12ConstantBufferPool.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\DX12PSOPool.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\DX12RootSignaturePool.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12ConstantBufferPoolManager.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12PSOWrapper.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12RootSignatureWrapper.h" />
+    <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h" />
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\ConstantBufferWrapper.h" />
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\ConstantBufferPool.h" />
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\ConstantBufferPoolManager.h" />
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\PSOPool.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\ModelAssetManager.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.h" />
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMaterialAssetInstanceBase.h" />
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\PSOWrapper.h" />
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\RootSignatureWrapper.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringA.h" />
+    <ClInclude Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.h" />
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h" />
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUAssetInstanceBase.h" />
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\Allocators\HeapAllocator.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\Allocators\InlineAllocator.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\FixedStringW.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\FixedStringA.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\BasicHashFunctionCollection.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringContainerUtilsCollection.h" />
+    <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ShaderAsset.h" />
+    <ClInclude Include="SSGAL\Public\GraphicsResourcePool\RootSignaturePool.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\HashMap.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.h" />
+    <ClInclude Include="SSEngineMain\SSEngine.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\MeshAssetManager.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="SSBuildSettings.h" />
+    <ClInclude Include="SSRenderer\Public\RenderBase\SSRenderer.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSEngineInlineSettings.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\CityHash.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\FixedList.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\PooledLinkedList.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\PooledList.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SHasherW.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSUtilityContainer.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\StringHashMapA.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSDebugLogger.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSEngineDefault.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSFrameInfo.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSInput.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSNativeKeywords.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSNativeTypes.h" />
+    <ClInclude Include="SSEngineDefault\Public\INoncopyable.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSStaticMath.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSVector.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\StringUtilityFunctions.h" />
+    <ClInclude Include="SSRenderer\Public\RenderCommon\SSVertexType.h" />
+    <ClInclude Include="SSRenderer\Public\RenderCommon\SSRendererInlineSettings.h" />
+    <ClInclude Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.h" />
+    <ClInclude Include="SSRenderer\Public\SSRendererBuildSetings.h" />
+    <ClInclude Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.h" />
+    <ClInclude Include="SSRenderer\Public\RenderInstance\BasicRenderInstance.h" />
+    <ClInclude Include="SSRenderAssetConverter\Public\SSFBXImporter.h" />
+    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringW.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ModuleEntryScriptRunner.cpp" />
+    <ClCompile Include="SSEngineDefault\Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp" />
+    <ClCompile Include="SSEngineDefault\Public\SSCommonUtil\SSCustomMemAllocator.cpp" />
+    <ClCompile Include="SSEngineDefault\Private\PWin32\DeviceQuery.cpp" />
+    <ClCompile Include="SSEngineDefault\Public\TestCodes\TestClasses\TestCustomHeapAllocator.cpp" />
+    <ClCompile Include="SSEngineDefault\Public\TestCodes\TestFunctions.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12GALResourceUpdater.cpp" />
+    <ClCompile Include="SSGAL\Private\GALInstanceGlobalVariablePrivate.cpp" />
+    <ClCompile Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBAModelBuffer.cpp" />
+    <ClCompile Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.cpp" />
+    <ClCompile Include="SSGAL\Public\GALRenderDevice\GALRenderDeviceContext.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderInstance\DX12GPURenderInstance_SM.cpp" />
+    <ClCompile Include="SSGAL\Public\GALRenderTarget\GALCPUReadableTexture.cpp" />
+    <ClCompile Include="SSGAL\Public\GALRenderTarget\GALRenderTarget.cpp" />
+    <ClCompile Include="SSGAL\Public\GALRenderTarget\GALRTCommonEnums.cpp" />
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GALResourceUpdater.cpp" />
+    <ClCompile Include="SSGAL\Public\SSGALModuleEntry\GPUAssetInstanceFactory.cpp" />
+    <ClCompile Include="SSGAL\Public\GALRenderDevice\GALRenderDevice.cpp" />
+    <ClCompile Include="SSGAL\Public\GPURenderInstance\RenderInstanceGPUMetadata.cpp" />
+    <ClCompile Include="SObject\Private\SComponentBase.cpp" />
+    <ClCompile Include="SObject\Private\SGameObject.cpp" />
+    <ClCompile Include="SObject\Private\SObjConstructor.cpp" />
+    <ClCompile Include="SObject\Private\SObjectBase.cpp" />
+    <ClCompile Include="SObject\Private\SObjectGlobalHashMap.cpp" />
+    <ClCompile Include="SObject\Private\SObjHashCode.cpp" />
+    <ClCompile Include="SObject\Private\ModuleEntryImpl\SObjectModuleEntry.cpp" />
+    <ClCompile Include="SObject\Private\SWorld.cpp" />
+    <ClCompile Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\AssetManagerBase.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderInstance\RenderWorld.cpp" />
+    <ClCompile Include="SSRenderer\Public\SObjectBase\SCameraComponent.cpp" />
+    <ClCompile Include="SSRenderer\Public\SObjectBase\SRendererUtil.cpp" />
+    <ClCompile Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\DX12ConstantBufferWrapper.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\DX12ConstantBufferPool.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\DX12PSOPool.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\DX12RootSignaturePool.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12ConstantBufferPoolManager.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12PSOWrapper.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GraphicsResourcePool\GraphicsResourceWrapper\DX12RootSignatureWrapper.cpp" />
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\ConstantBufferWrapper.cpp" />
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\ConstantBuffer\ConstantBufferPool.cpp" />
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\ConstantBufferPoolManager.cpp" />
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\PSOPool.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\ModelAssetManager.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.cpp" />
+    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUMaterialAssetInstanceBase.cpp" />
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\PSOWrapper.cpp" />
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\RootSignatureWrapper.cpp" />
+    <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.cpp" />
+    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp" />
+    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUAssetInstanceBase.cpp" />
+    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.cpp" />
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ShaderAsset.cpp" />
+    <ClCompile Include="SSGAL\Public\GraphicsResourcePool\RootSignaturePool.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.cpp" />
+    <ClCompile Include="SSEngineMain\SSEngine.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderAsset\MeshAssetManager.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderBase\SSRenderer.cpp" />
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SSContainer\CityHash.cpp" />
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SHasherW.cpp" />
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SSFrameInfo.cpp" />
+    <ClCompile Include="SSEngineDefault\Public\SSInput.cpp" />
+    <ClCompile Include="SSEngineDefault\Private\PCommon\SSVector.cpp" />
+    <ClCompile Include="SSEngineDefault\Private\PWin32\StringUtilityFunctions.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.cpp" />
+    <ClCompile Include="SSRenderer\Public\SSRendererBuildSetings.cpp" />
+    <ClCompile Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.cpp" />
+    <ClCompile Include="SSRenderer\Public\RenderInstance\BasicRenderInstance.cpp" />
+    <ClCompile Include="SSRenderAssetConverter\Public\SSFBXImporter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SSRenderer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico" />
+    <Image Include="SSRenderer.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="SSEngineDefault\Public\SSContainer\SSContainer.natvis" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.614.1\build\native\Microsoft.Direct3D.D3D12.targets" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.614.1\build\native\Microsoft.Direct3D.D3D12.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>이 프로젝트는 이 컴퓨터에 없는 NuGet 패키지를 참조합니다. 해당 패키지를 다운로드하려면 NuGet 패키지 복원을 사용하십시오. 자세한 내용은 http://go.microsoft.com/fwlink/?LinkID=322105를 참조하십시오. 누락된 파일은 {0}입니다.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.614.1\build\native\Microsoft.Direct3D.D3D12.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.614.1\build\native\Microsoft.Direct3D.D3D12.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.614.1\build\native\Microsoft.Direct3D.D3D12.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.614.1\build\native\Microsoft.Direct3D.D3D12.targets'))" />
+  </Target>
+</Project>

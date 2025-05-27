@@ -1,0 +1,132 @@
+{
+  "textureList": [
+
+    {
+      "textureName": "EMPTY",
+      "texturePath": "Resource/Texture/EMPTY.dds"
+    },
+    {
+      "textureName": "WHITE",
+      "texturePath": "Resource/Texture/WHITE.dds"
+    },
+    {
+      "textureName": "BLACK",
+      "texturePath": "Resource/Texture/BLACK.dds"
+    },
+    {
+      "textureName": "EMPTYNORMAL",
+      "texturePath": "Resource/Texture/EMPTYNORMAL.dds"
+    },
+
+
+
+
+    {
+      "textureName": "Teeth_Bump",
+      "texturePath": "Resource/Texture/Teeth_Bump.dds"
+    },
+    {
+      "textureName": "Teeth_reflection",
+      "texturePath": "Resource/Texture/Teeth_reflection.dds"
+    },
+    {
+      "textureName": "Teeth_SSS_Color",
+      "texturePath": "Resource/Texture/Teeth_SSS_Color.dds"
+    },
+
+
+
+
+    {
+      "textureName": "Worm_Bump",
+      "texturePath": "Resource/Texture/Worm_Bump.dds"
+    },
+    {
+      "textureName": "Worm_reflection",
+      "texturePath": "Resource/Texture/Worm_reflection.dds"
+    },
+    {
+      "textureName": "Worm_SSS_Color",
+      "texturePath": "Resource/Texture/Worm_SSS_Color.dds"
+    },
+
+
+
+
+    {
+      "textureName": "rp_nathan_animated_003_dif",
+      "texturePath": "Resource/Texture/rp_nathan_animated_003_dif.dds"
+    },
+
+
+
+
+    {
+      "textureName": "Torso_Base_color",
+      "texturePath": "Resource/Texture/Torso_Base_color.dds"
+    },
+    {
+      "textureName": "Helmet_Base_color",
+      "texturePath": "Resource/Texture/Helmet_Base_color.dds"
+    },
+    {
+      "textureName": "Legs_Base_color",
+      "texturePath": "Resource/Texture/Legs_Base_color.dds"
+    },
+    {
+      "textureName": "Accessories_Base_color",
+      "texturePath": "Resource/Texture/Accessories_Base_color.dds"
+    },
+    {
+      "textureName": "AncientCape_Base_color",
+      "texturePath": "Resource/Texture/AncientCape_Base_color.dds"
+    },
+
+
+
+
+    {
+      "textureName": "Accessories_Normal_OpenGL",
+      "texturePath": "Resource/Texture/Accessories_Normal_OpenGL.dds"
+    },
+    {
+      "textureName": "AncientCape_Normal_OpenGL",
+      "texturePath": "Resource/Texture/AncientCape_Normal_OpenGL.dds"
+    },
+    {
+      "textureName": "Helmet_Normal_OpenGL",
+      "texturePath": "Resource/Texture/Helmet_Normal_OpenGL.dds"
+    },
+    {
+      "textureName": "Legs_Normal_OpenGL",
+      "texturePath": "Resource/Texture/Legs_Normal_OpenGL.dds"
+    },
+    {
+      "textureName": "Torso_Normal_OpenGL",
+      "texturePath": "Resource/Texture/Torso_Normal_OpenGL.dds"
+    },
+
+
+
+
+    {
+      "textureName": "Helmet_Emissive",
+      "texturePath": "Resource/Texture/Helmet_Emissive.dds"
+    },
+    {
+      "textureName": "Legs_Emissive",
+      "texturePath": "Resource/Texture/Legs_Emissive.dds"
+    },
+    {
+      "textureName": "Accessories_Emissive",
+      "texturePath": "Resource/Texture/Accessories_Emissive.dds"
+    },
+    {
+      "textureName": "Torso_Emissive",
+      "texturePath": "Resource/Texture/Torso_Emissive.dds"
+    }
+
+
+
+  ]
+}
