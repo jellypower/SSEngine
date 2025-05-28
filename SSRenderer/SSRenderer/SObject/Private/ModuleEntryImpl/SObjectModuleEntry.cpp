@@ -14,7 +14,7 @@ SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 
 void SObjectModuleEntry(SS::SHashPoolNode* InHasherPool,
 	uint32 InHasherPoolCnt,
-	SSFrameInfo* InFrameInfo)
+	FrameInfoProcessorBase* InFrameInfoProcessor)
 {
 	if (g_ObjectHashMap != nullptr)
 	{
@@ -26,7 +26,7 @@ void SObjectModuleEntry(SS::SHashPoolNode* InHasherPool,
 
 	g_SHasherPool = InHasherPool;
 	g_sHasherPoolCnt = InHasherPoolCnt;
-	g_FrameInfo = InFrameInfo;
+	g_FrameInfoProcessor = InFrameInfoProcessor;
 }
 
 void CheckLiveSobjects()

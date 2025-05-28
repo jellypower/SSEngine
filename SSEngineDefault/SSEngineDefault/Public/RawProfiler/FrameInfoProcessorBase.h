@@ -1,16 +1,14 @@
 #pragma once
 #include "SSEngineDefault/ModuleExportKeyword.h"
 
+#include "SSEngineDefault/Public/SSNativeKeywords.h"
+#include "SSEngineDefault/Public/SSVector.h"
+#include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 
-#include "SSVector.h"
-#include "SSNativeKeywords.h"
-#include "GlobalVariableSet/GlobalVariableSet.h"
 
-
-class SSENGINEDEFAULT_MODULE SSFrameInfo
+class SSENGINEDEFAULT_MODULE FrameInfoProcessorBase
 {
 private:
-
 	uint64 _perfFrequency = 0;
 
 	uint64 _frameCount = 0;
@@ -30,25 +28,20 @@ private:
 	Vector2ui32 _windowSize;
 
 public:
-	static SSFrameInfo* Get()
-	{
-		return g_FrameInfo;
-	}
 
 	/**
 	* return DeltaTime in ms
 	*/
-	static double GetDeltaTime() { return g_FrameInfo->_deltaTime; }
-	static double GetFPS() { return g_FrameInfo->_FPS; }
-	static double GetElapsedTime() { return g_FrameInfo->_elapsedTime; }
-	static Vector2ui32 GetWindowSize() { return g_FrameInfo->_windowSize; }
-	static uint64 GetFrameCnt() { return g_FrameInfo->_frameCount; }
+	double GetDeltaTime() const { return _deltaTime; }
+	double GetFPS() const { return _FPS; }
+	double GetElapsedTime() const { return _elapsedTime; }
+	Vector2ui32 GetWindowSize() const { return _windowSize; }
+	uint64 GetFrameCnt() const { return _frameCount; }
 
 
 public:
 	void BeginFrameXXX();
 	void PerFrameXXX();
 	void ProcessWindowResizeXXX(uint32 width, uint32 height);
-
 };
 

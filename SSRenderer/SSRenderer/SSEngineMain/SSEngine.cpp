@@ -2,7 +2,7 @@
 
 #include <SSEngineDefault/Public/RawInput/KeyCodeEnums.h>
 
-#include "SSEngineDefault/Public/SSFrameInfo.h"
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
 
 #include "SObject/Public/SWorld.h"

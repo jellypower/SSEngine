@@ -3,23 +3,22 @@
 
 #include "SSEngineDefault/Private/PWin32/RawInput/Win32SSRawInputProcessor.h"
 #include "SSEngineDefault/Public/SSDebugLogger.h"
-#include "SSEngineDefault/Public/SSFrameInfo.h"
 #include "SSEngineDefault/Public/SSContainer/SHasherW.h"
 
 SS::SHashPoolNode* g_SHasherPool = nullptr;
 uint32 g_sHasherPoolCnt = 0;
-SSFrameInfo* g_FrameInfo = nullptr;
+FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
 SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
 
 void SSEngineDefaultModuleEntry(
 	SS::SHashPoolNode* InHasherPool,
 	uint32 InHasherPoolCnt,
-	SSFrameInfo* InFrameInfo,
+	FrameInfoProcessorBase* InFrameInfo,
 	SSRawInputProcessorBase* InRawInputProcessor)
 {
 	g_SHasherPool = InHasherPool;
 	g_sHasherPoolCnt = InHasherPoolCnt;
-	g_FrameInfo = InFrameInfo;
+	g_FrameInfoProcessor = InFrameInfo;
 	g_RawInputProcessor = InRawInputProcessor;
 }
 
@@ -29,8 +28,8 @@ SSRawInputProcessorBase* CreateInputProcessor()
 	return InputProcessor;
 }
 
-SSFrameInfo* CreateFrameInfo()
+FrameInfoProcessorBase* CreateFrameInfo()
 {
-	SSFrameInfo* FrameInfo = DBG_NEW SSFrameInfo();
+	FrameInfoProcessorBase* FrameInfo = DBG_NEW FrameInfoProcessorBase();
 	return FrameInfo;
 }

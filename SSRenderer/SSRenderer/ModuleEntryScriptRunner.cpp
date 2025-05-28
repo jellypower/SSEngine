@@ -4,15 +4,15 @@
 #include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "SSEngineDefault/Public/SSDebugLogger.h"
 #include "SSEngineDefault/Public/SSEngineInlineSettings.h"
-#include "SSEngineDefault/Public/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h"
+#include "SSEngineDefault/Public/RawProfiler/FrameInfoProcessorBase.h"
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 #include "SSEngineDefault/Public/SSContainer/SHasherW.h"
 
 
 SS::SHashPoolNode* g_SHasherPool = nullptr;
 uint32 g_sHasherPoolCnt = 0;
-SSFrameInfo* g_FrameInfo = nullptr;
+FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
 SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
 
 void CleanupSHasher()
@@ -44,20 +44,20 @@ void RunModuleEntryScript()
 {
 	g_SHasherPool = DBG_NEW SS::SHashPoolNode[SHASHER_DEFAULT_POOL_SIZE];
 	g_sHasherPoolCnt = SHASHER_DEFAULT_POOL_SIZE;
-	g_FrameInfo = CreateFrameInfo();
+	g_FrameInfoProcessor = CreateFrameInfo();
 	g_RawInputProcessor = CreateInputProcessor();
 
 
 	SSEngineDefaultModuleEntry(
 		g_SHasherPool,
 		SHASHER_DEFAULT_POOL_SIZE,
-		g_FrameInfo,
+		g_FrameInfoProcessor,
 		g_RawInputProcessor);
 
 	SObjectModuleEntry(
 		g_SHasherPool,
 		SHASHER_DEFAULT_POOL_SIZE,
-		g_FrameInfo);
+		g_FrameInfoProcessor);
 
 }
 
@@ -69,6 +69,6 @@ void RunModuleExitScript()
 	delete g_RawInputProcessor;
 	g_RawInputProcessor = nullptr;
 
-	delete g_FrameInfo;
-	g_FrameInfo = nullptr;
+	delete g_FrameInfoProcessor;
+	g_FrameInfoProcessor = nullptr;
 }

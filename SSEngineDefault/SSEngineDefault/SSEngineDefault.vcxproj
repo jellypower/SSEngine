@@ -163,8 +163,9 @@
     <ClInclude Include="Public\GeometryType.h" />
     <ClInclude Include="Public\GlobalVariableSet\GlobalVariableSet.h" />
     <ClInclude Include="Public\INoncopyable.h" />
-    <ClInclude Include="Public\ProfilerUtils.h" />
+    <ClInclude Include="Public\RawProfiler\ProfilerUtils.h" />
     <ClInclude Include="Public\RawInput\SSInput.h" />
+    <ClInclude Include="Public\RawProfiler\SSFrameInfo.h" />
     <ClInclude Include="Public\SSCommonUtil\AllocatedChunkHeader.h" />
     <ClInclude Include="Public\SSCommonUtil\SSCustomMemAllocator.h" />
     <ClInclude Include="Public\SSContainer\Allocators\HeapAllocator.h" />
@@ -188,7 +189,7 @@
     <ClInclude Include="Public\SSDirectXMathCustom.h" />
     <ClInclude Include="Public\SSEngineDefault.h" />
     <ClInclude Include="Public\SSEngineInlineSettings.h" />
-    <ClInclude Include="Public\SSFrameInfo.h" />
+    <ClInclude Include="Public\RawProfiler\FrameInfoProcessorBase.h" />
     <ClInclude Include="Public\RawInput\SSRawInputProcessorBase.h" />
     <ClInclude Include="Public\SSNativeKeywords.h" />
     <ClInclude Include="Public\SSNativeTypes.h" />
@@ -207,7 +208,7 @@
     <ClCompile Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.cpp" />
     <ClCompile Include="Private\PWin32\ProfilerUtils.cpp" />
     <ClCompile Include="Private\PCommon\SSContainer\CityHash.cpp" />
-    <ClCompile Include="Private\PCommon\SSFrameInfo.cpp" />
+    <ClCompile Include="Private\PCommon\RawProfiler\FrameInfoProcessorBase.cpp" />
     <ClCompile Include="Private\PCommon\SSVector.cpp" />
     <ClCompile Include="Private\PWin32\DeviceQuery.cpp" />
     <ClCompile Include="Private\PWin32\StringUtilityFunctions.cpp" />

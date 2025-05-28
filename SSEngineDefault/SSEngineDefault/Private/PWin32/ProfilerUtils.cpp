@@ -1,7 +1,9 @@
 ﻿#define DLL_EXPORT
-#include "SSEngineDefault/Public/ProfilerUtils.h"
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 
 #include <Windows.h>
+
+#include "SSEngineDefault/Public/SSNativeKeywords.h"
 
 uint64 GetPerofrmanceCounter()
 {

@@ -3,7 +3,7 @@
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
 class SSRawInputProcessorBase;
-class SSFrameInfo;
+class FrameInfoProcessorBase;
 
 namespace SS
 {
@@ -15,8 +15,8 @@ namespace SS
 SSENGINEDEFAULT_MODULE void SSEngineDefaultModuleEntry(
 	SS::SHashPoolNode* InHasherPool,
 	uint32 InHasherPoolCnt,
-	SSFrameInfo* InFrameInfo,
+	FrameInfoProcessorBase* InFrameInfo,
 	SSRawInputProcessorBase* InRawInputProcessor);
 
 SSENGINEDEFAULT_MODULE SSRawInputProcessorBase* CreateInputProcessor();
-SSENGINEDEFAULT_MODULE SSFrameInfo* CreateFrameInfo();
+SSENGINEDEFAULT_MODULE FrameInfoProcessorBase* CreateFrameInfo();

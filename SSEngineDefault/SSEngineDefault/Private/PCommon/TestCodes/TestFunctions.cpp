@@ -6,7 +6,7 @@
 
 #include "TestClasses/TestCustomHeapAllocator.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
-#include "SSEngineDefault/Public/ProfilerUtils.h"
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 
 void ContainerTest_PooledLinkedList()
 {

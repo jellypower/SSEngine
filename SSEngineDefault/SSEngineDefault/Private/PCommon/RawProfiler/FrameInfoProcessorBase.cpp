@@ -1,20 +1,20 @@
 #define DLL_EXPORT
-#include "SSEngineDefault/Public/SSFrameInfo.h"
+#include "SSEngineDefault/Public/RawProfiler/FrameInfoProcessorBase.h"
 
-#include "SSEngineDefault/Public/ProfilerUtils.h"
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 
 constexpr double FRAME_LOW_LIMIT = 1 / 1000.0;
 
 
 
-void SSFrameInfo::BeginFrameXXX()
+void FrameInfoProcessorBase::BeginFrameXXX()
 {
 	_perfFrequency = GetPerformanceFrequency();
 	_currentTick = GetPerofrmanceCounter();
 	_lastFPSCheckTick = _currentTick;
 }
 
-void SSFrameInfo::PerFrameXXX()
+void FrameInfoProcessorBase::PerFrameXXX()
 {
 	_frameCount++;
 	_frameCntDuringInFPSCheckterval++;
@@ -46,7 +46,7 @@ void SSFrameInfo::PerFrameXXX()
 	_elapsedTime += _deltaTime;
 }
 
-void SSFrameInfo::ProcessWindowResizeXXX(uint32 width, uint32 height)
+void FrameInfoProcessorBase::ProcessWindowResizeXXX(uint32 width, uint32 height)
 {
 	_windowSize.X = width;
 	_windowSize.Y = height;

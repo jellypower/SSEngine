@@ -3,9 +3,9 @@
 #include "SSEngineDefault/ModuleExportKeyword.h"
 
 #include "SSEngineDefault/Public/INoncopyable.h"
-#include "SSEngineDefault/Public/SSFrameInfo.h"
+#include "SSEngineDefault/Public/RawProfiler/FrameInfoProcessorBase.h"
 #include "SSEngineDefault/Public/SSNativeTypes.h"
-
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
 
 class SSENGINEDEFAULT_MODULE SSRawInputProcessorBase : public INoncopyable

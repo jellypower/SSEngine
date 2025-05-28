@@ -2,7 +2,7 @@
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
 class SSRawInputProcessorBase;
-class SSFrameInfo;
+class FrameInfoProcessorBase;
 namespace SS
 {
 	class SHashPoolNode;
@@ -12,5 +12,5 @@ namespace SS
 
 extern SS::SHashPoolNode* g_SHasherPool;
 extern uint32 g_sHasherPoolCnt;
-extern SSFrameInfo* g_FrameInfo;
+extern FrameInfoProcessorBase* g_FrameInfoProcessor;
 extern SSRawInputProcessorBase* g_RawInputProcessor;

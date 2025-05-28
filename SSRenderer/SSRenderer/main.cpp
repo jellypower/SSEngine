@@ -15,7 +15,6 @@
 #include "SSEngineMain/SSEngine.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
-#include "SSEngineDefault/Public/SSFrameInfo.h"
 #include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
 #include "SSGAL/Public/SSGALModuleEntry/GPUAssetInstanceFactory.h"
 
@@ -143,8 +142,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	MSG msg = { 0 };
 
-	SSFrameInfo::Get();
-	SSFrameInfo::Get()->BeginFrameXXX();
+	g_FrameInfoProcessor->BeginFrameXXX();
 
 	for (int32 i=0;i<10;i++)
 	{
@@ -164,7 +162,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		}
 		else
 		{
-			SSFrameInfo::Get()->PerFrameXXX();
+			g_FrameInfoProcessor->PerFrameXXX();
 			g_Engine->EnginePerFrame();
 			g_RawInputProcessor->ProcessInputEndOfFrame();
 		}
@@ -300,7 +298,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	case WM_SIZE:
-		SSFrameInfo::Get()->ProcessWindowResizeXXX(LOWORD(lParam), HIWORD(lParam));
+		g_FrameInfoProcessor->ProcessWindowResizeXXX(LOWORD(lParam), HIWORD(lParam));
 		break;
 
 	case WM_KEYDOWN:
