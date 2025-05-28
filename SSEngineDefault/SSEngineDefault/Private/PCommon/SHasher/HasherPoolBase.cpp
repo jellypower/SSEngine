@@ -1,6 +1,7 @@
 ﻿#include "HasherPoolBase.h"
 
-#include <string.h>
+#define _CRT_SECURE_NO_WARNINGS
+#include <cstring>
 
 #include "SSEngineDefault/Public/SSDebugLogger.h"
 
@@ -32,50 +33,7 @@ HasherPoolBase::~HasherPoolBase()
 	free(_HasherBucket);
 }
 
-uint64 HasherPoolBase::FindHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) const
-{
-	if (InLoweredStr == nullptr || InStrLen == 0)
-	{
-		SS_INTERRUPT();
-	}
-
-
-	union {
-		struct {
-			uint32 HashedValue; // 해쉬 상위 32비트
-			uint32 CurNodeCnt; // 해쉬 하위 32비트
-		};
-		uint64 HashX; // 해쉬 64비트 전체값
-	};
-
-
-	if (InHashedValue == 0)
-	{
-		InHashedValue = 1;
-	}
-	HashedValue = InHashedValue;
-
-	uint32 BucketIdx = HashedValue % _HasherBucketCnt;
-	
-	HasherPoolNode* CurHasherPoolNode = _HasherBucket[BucketIdx];
-	CurNodeCnt = 0;
-
-
-	while (CurHasherPoolNode != nullptr)
-	{
-		if (wcsncmp(CurHasherPoolNode->_str, InLoweredStr, InStrLen) == 0)
-		{
-			return HashX;
-		}
-
-		CurHasherPoolNode = CurHasherPoolNode->_next;
-		CurNodeCnt++;
-	}
-
-	return 0;
-}
-
-uint64 HasherPoolBase::AddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue)
+uint64 HasherPoolBase::FindOrAddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue)
 {
 	if (InLoweredStr == nullptr || InStrLen == 0)
 	{
@@ -103,25 +61,37 @@ uint64 HasherPoolBase::AddHasherValue(const utf16* InLoweredStr, uint32 InStrLen
 
 
 	uint64 InStrSpaceSize = sizeof(utf16) * (InStrLen + 1);
-	HasherPoolNode* NewNode = (HasherPoolNode*)DBG_MALLOC(sizeof(HasherPoolNode) + InStrSpaceSize);
-	NewNode->_next = nullptr;
-	NewNode->_strLen = InStrLen;
-	wcscpy_s(NewNode->_str, InStrLen + 1, InLoweredStr);
-
 	if (CurHasherPoolNode == nullptr)
 	{
+		HasherPoolNode* NewNode = (HasherPoolNode*)DBG_MALLOC(sizeof(HasherPoolNode) + InStrSpaceSize);
+		NewNode->_next = nullptr;
+		NewNode->_strLen = InStrLen;
+		wcscpy(NewNode->_str, InLoweredStr);
 		_HasherBucket[BucketIdx] = NewNode;
+
 		return HashX;
 	}
 
 
-	CurNodeCnt++;
-	while (CurHasherPoolNode->_next != nullptr)
+	while (true)
 	{
-		CurNodeCnt++;
-		CurHasherPoolNode = CurHasherPoolNode->_next;
-	}
+		if (wcscmp(CurHasherPoolNode->_str, InLoweredStr) == 0)
+		{
+			return HashX;
+		}
 
-	CurHasherPoolNode->_next = NewNode;
-	return HashX;
+		if (CurHasherPoolNode->_next == nullptr)
+		{
+			HasherPoolNode* NewNode = (HasherPoolNode*)DBG_MALLOC(sizeof(HasherPoolNode) + InStrSpaceSize);
+			NewNode->_next = nullptr;
+			NewNode->_strLen = InStrLen;
+			wcscpy(NewNode->_str, InLoweredStr);
+			CurHasherPoolNode->_next = NewNode;
+
+			return HashX;
+		}
+
+		CurHasherPoolNode = CurHasherPoolNode->_next;
+		CurNodeCnt++;
+	}
 }

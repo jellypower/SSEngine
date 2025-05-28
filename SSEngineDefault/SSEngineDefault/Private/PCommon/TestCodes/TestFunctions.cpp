@@ -458,7 +458,7 @@ void SHasherPoolTest()
 		int32 strLen = wcslen(LoweredStr);
 		int32 HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
 
-		PoolForTest->AddHasherValue(LoweredStr, strLen, HashedValue);
+		PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
 	}
 
 	for (int32 i = 0; i < 500; i++)
@@ -473,8 +473,8 @@ void SHasherPoolTest()
 		int32 strLen = wcslen(LoweredStr);
 		int32 HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
 
-		uint64 Value1 = PoolForTest->FindHasherValue(LoweredStr, strLen, HashedValue);
-		uint64 Value2 = PoolForTest->FindHasherValue(LoweredStr, strLen, HashedValue);
+		uint64 Value1 = PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
+		uint64 Value2 = PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
 
 		SS_ASSERT(Value1 == Value2);
 	}

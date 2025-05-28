@@ -5,7 +5,5 @@
 class IHasherPool : INoncopyable
 {
 public:
-	virtual uint64 FindHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) const = 0;
-	// !!! Calling AddHasherValue function for the same string is prohibited !!!
-	virtual uint64 AddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) = 0;
+	virtual uint64 FindOrAddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) = 0;
 };

@@ -16,9 +16,7 @@ public:
 	virtual ~HasherPoolBase();
 
 public:
-	uint64 FindHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) const override;
-	uint64 AddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) override;
-
+	uint64 FindOrAddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) override;
 
 private:
 	int32 _HasherBucketCnt;

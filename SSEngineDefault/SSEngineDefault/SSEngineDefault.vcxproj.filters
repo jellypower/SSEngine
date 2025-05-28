@@ -66,16 +66,10 @@
     <ClInclude Include="Public\SSContainer\PooledList.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\SSContainer\SHasherW.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Public\SSContainer\SSUtilityContainer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\SSContainer\StringHashMapA.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\TestCodes\TestClasses\TestCustomHeapAllocator.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\TestCodes\TestFunctions.h">
@@ -102,12 +96,6 @@
     <ClInclude Include="Public\SSEngineInlineSettings.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\SSFrameInfo.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Input\SSRawInputProcessorBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Public\SSNativeKeywords.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -126,7 +114,43 @@
     <ClInclude Include="ModuleExportKeyword.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\ProfilerUtils.h">
+    <ClInclude Include="Private\PCommon\SHasher\HasherPoolBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawInput\KeyCodeEnums.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawInput\RawInputUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawProfiler\ProfilerUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawInput\SSInput.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawProfiler\SSFrameInfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SHasher\IHasherPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SHasher\SHasherW.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawProfiler\FrameInfoProcessorBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawInput\SSRawInputProcessorBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -134,31 +158,10 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Public\SSCommonUtil\SSCustomMemAllocator.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Public\TestCodes\TestClasses\TestCustomHeapAllocator.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Public\TestCodes\TestFunctions.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Public\Input\SSRawInputProcessorBase.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Public\SSContainer\CityHash.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\PCommon\SHasherW.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\PCommon\SSFrameInfo.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PCommon\SSVector.cpp">
@@ -171,6 +174,39 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PWin32\ProfilerUtils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SHasher\HasherPoolBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SHasher\SHasherW.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\RawInput\Win32RawInputUtils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SSContainer\CityHash.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\RawProfiler\FrameInfoProcessorBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SSCommonUtil\SSCustomMemAllocator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\Input\SSRawInputProcessorBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\TestCodes\TestFunctions.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
