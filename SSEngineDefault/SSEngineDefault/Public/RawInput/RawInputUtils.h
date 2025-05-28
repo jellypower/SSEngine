@@ -1,10 +1,11 @@
 ﻿#pragma once
+#include "SSEngineDefault/ModuleExportKeyword.h"
 
 class SSRawInputProcessorBase;
 
 #ifdef _WINDOWS
 
 #include <Windows.h>
-void Win32ProcessInputEvent(SSRawInputProcessorBase* InRawInputProcessor, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+SSENGINEDEFAULT_MODULE void Win32ProcessInputEvent(SSRawInputProcessorBase* InRawInputProcessor, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #endif //_WINDOWS

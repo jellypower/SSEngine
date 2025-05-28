@@ -19,3 +19,4 @@ SSENGINEDEFAULT_MODULE void SSEngineDefaultModuleEntry(
 	SSRawInputProcessorBase* InRawInputProcessor);
 
 SSENGINEDEFAULT_MODULE SSRawInputProcessorBase* CreateInputProcessor();
+SSENGINEDEFAULT_MODULE SSFrameInfo* CreateFrameInfo();

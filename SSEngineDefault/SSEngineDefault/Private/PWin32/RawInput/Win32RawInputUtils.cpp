@@ -1,4 +1,5 @@
-﻿#include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
+﻿#define DLL_EXPORT
+#include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
 
 #include "Win32SSRawInputProcessor.h"
 

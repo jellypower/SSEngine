@@ -7,15 +7,15 @@
 
 #include <shellapi.h>
 #include <shobjidl.h>
+#include <SSEngineDefault/Public/RawInput/RawInputUtils.h>
+#include <SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h>
 
 
 #include "ModuleEntryScriptRunner.h"
-#include "SSEngineDefault/Private/PCommon/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "SSEngineMain/SSEngine.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/SSFrameInfo.h"
-#include "SSEngineDefault/Public/SSInput.h"
 #include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
 #include "SSGAL/Public/SSGALModuleEntry/GPUAssetInstanceFactory.h"
 
@@ -143,7 +143,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	MSG msg = { 0 };
 
-	SSInput::Get();
 	SSFrameInfo::Get();
 	SSFrameInfo::Get()->BeginFrameXXX();
 
@@ -167,15 +166,13 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		{
 			SSFrameInfo::Get()->PerFrameXXX();
 			g_Engine->EnginePerFrame();
-			SSInput::Get()->ProcessInputEndOfFrame();
+			g_RawInputProcessor->ProcessInputEndOfFrame();
 		}
 	}
 	g_Engine->CleanupEngine();
 
 	// End Of Loop
 	{
-		SSInput::Release();
-
 		delete g_Engine;
 		g_Engine = nullptr;
 	}
@@ -296,7 +293,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KILLFOCUS:
 	case WM_MOUSELEAVE:
 	case WM_NCMOUSELEAVE:
-		SSInput::Get()->ClearCurInputState();
+		g_RawInputProcessor->ResetCurInputState();
 		break;
 
 	case WM_DESTROY:
@@ -316,7 +313,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONUP:
 	case WM_MOUSEWHEEL:
-		SSInput::Get()->ProcessInputEventForWindowsInternal(hWnd, message, wParam, lParam);
+		Win32ProcessInputEvent(g_RawInputProcessor, hWnd, message, wParam, lParam);
 		break;
 
 	default:

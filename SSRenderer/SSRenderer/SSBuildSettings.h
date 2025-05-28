@@ -13,6 +13,8 @@
 // FBXSDK
 #pragma comment(lib, "libfbxsdk.lib")
 
+// SSEngine
+#pragma comment(lib, "SSEngineDefault.lib")
 
 
 // __declspec(dllexport) 을 사용하면 외부 dll에서도 해당 변수의 값을 알 수 있음

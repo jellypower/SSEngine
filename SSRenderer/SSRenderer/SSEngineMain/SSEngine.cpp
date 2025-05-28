@@ -1,7 +1,9 @@
 #include "SSEngine.h"
 
+#include <SSEngineDefault/Public/RawInput/KeyCodeEnums.h>
+
 #include "SSEngineDefault/Public/SSFrameInfo.h"
-#include "SSEngineDefault/Public/SSInput.h"
+#include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
 
 #include "SObject/Public/SWorld.h"
 #include "SObject/Public/SGameObject.h"
@@ -10,6 +12,7 @@
 
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+#include "SSEngineDefault/Public/RawInput/SSInput.h"
 
 #include "SSRenderer/Public/SObjectBase/SCameraComponent.h"
 
@@ -176,7 +179,7 @@ void SSEngine::TEMP_ProcessInput()
 	}
 
 	if (SSInput::GetMouse(EMouseCode::MOUSE_RIGHT))
-	{
+	{	
 		constexpr float CAM_ROT_SPEED = 2;
 		constexpr float CAM_XROT_MAX = 0.9;
 

@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);$(SolutionDir)..\SSEngineDefault;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -114,8 +114,11 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SSEngineDefault\$(IntDir);$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)..\SSEngineDefault\$(IntDir)DLL</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -126,15 +129,18 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);$(SolutionDir)..\SSEngineDefault;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SSEngineDefault\$(IntDir);$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)..\SSEngineDefault\$(IntDir)DLL</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk.h" />
@@ -422,15 +428,6 @@
     <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpointer.h" />
     <ClInclude Include="ModuleEntryScriptRunner.h" />
     <ClInclude Include="SObject\Public\GlobalVariableSet\GlobalVariableSet.h" />
-    <ClInclude Include="SSEngineDefault\Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.h" />
-    <ClInclude Include="SSEngineDefault\Public\GlobalVariableSet\GlobalVariableSet.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSCommonUtil\AllocatedChunkHeader.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSCommonUtil\SSCustomMemAllocator.h" />
-    <ClInclude Include="SSEngineDefault\Public\GeometryType.h" />
-    <ClInclude Include="SSEngineDefault\Public\DeviceQuery.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSDirectXMathCustom.h" />
-    <ClInclude Include="SSEngineDefault\Public\TestCodes\TestClasses\TestCustomHeapAllocator.h" />
-    <ClInclude Include="SSEngineDefault\Public\TestCodes\TestFunctions.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
@@ -486,7 +483,6 @@
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMaterialAssetInstanceBase.h" />
     <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\PSOWrapper.h" />
     <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\RootSignatureWrapper.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringA.h" />
     <ClInclude Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.h" />
     <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.h" />
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.h" />
@@ -494,12 +490,6 @@
     <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h" />
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUAssetInstanceBase.h" />
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\Allocators\HeapAllocator.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\Allocators\InlineAllocator.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\FixedStringW.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\FixedStringA.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\BasicHashFunctionCollection.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringContainerUtilsCollection.h" />
     <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.h" />
@@ -507,7 +497,6 @@
     <ClInclude Include="SSGAL\Public\GraphicsResourcePool\RootSignaturePool.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\HashMap.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.h" />
     <ClInclude Include="SSEngineMain\SSEngine.h" />
@@ -519,24 +508,6 @@
     <ClInclude Include="SSBuildSettings.h" />
     <ClInclude Include="SSRenderer\Public\RenderBase\SSRenderer.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSEngineInlineSettings.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\CityHash.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\FixedList.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\PooledLinkedList.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\PooledList.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SHasherW.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSUtilityContainer.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\StringHashMapA.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSDebugLogger.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSEngineDefault.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSFrameInfo.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSInput.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSNativeKeywords.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSNativeTypes.h" />
-    <ClInclude Include="SSEngineDefault\Public\INoncopyable.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSStaticMath.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSVector.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\StringUtilityFunctions.h" />
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSVertexType.h" />
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSRendererInlineSettings.h" />
     <ClInclude Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.h" />
@@ -544,16 +515,10 @@
     <ClInclude Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\BasicRenderInstance.h" />
     <ClInclude Include="SSRenderAssetConverter\Public\SSFBXImporter.h" />
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringW.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleEntryScriptRunner.cpp" />
-    <ClCompile Include="SSEngineDefault\Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp" />
-    <ClCompile Include="SSEngineDefault\Public\SSCommonUtil\SSCustomMemAllocator.cpp" />
-    <ClCompile Include="SSEngineDefault\Private\PWin32\DeviceQuery.cpp" />
-    <ClCompile Include="SSEngineDefault\Public\TestCodes\TestClasses\TestCustomHeapAllocator.cpp" />
-    <ClCompile Include="SSEngineDefault\Public\TestCodes\TestFunctions.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
@@ -613,7 +578,6 @@
     <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp" />
     <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUAssetInstanceBase.cpp" />
     <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.cpp" />
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp" />
@@ -628,12 +592,6 @@
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\MeshAssetManager.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderBase\SSRenderer.cpp" />
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SSContainer\CityHash.cpp" />
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SHasherW.cpp" />
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SSFrameInfo.cpp" />
-    <ClCompile Include="SSEngineDefault\Public\SSInput.cpp" />
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SSVector.cpp" />
-    <ClCompile Include="SSEngineDefault\Private\PWin32\StringUtilityFunctions.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.cpp" />
     <ClCompile Include="SSRenderer\Public\SSRendererBuildSetings.cpp" />
@@ -650,9 +608,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="SSEngineDefault\Public\SSContainer\SSContainer.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

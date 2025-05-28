@@ -1,5 +1,7 @@
 ﻿#include "SObject/Public/SObjectGlobalHashMap.h"
 
+#include <Windows.h>
+
 SObjectGlobalHashMap::SObjectGlobalHashMap()
 	: _ObjectMapPool(SOBJECT_HASHMAP_HEADLIST_SIZE, SOBJECT_HASHMAP_BUCKET_SIZE)
 {

@@ -28,3 +28,9 @@ SSRawInputProcessorBase* CreateInputProcessor()
 	Win32SSRawInputProcessor* InputProcessor = DBG_NEW Win32SSRawInputProcessor();
 	return InputProcessor;
 }
+
+SSFrameInfo* CreateFrameInfo()
+{
+	SSFrameInfo* FrameInfo = DBG_NEW SSFrameInfo();
+	return FrameInfo;
+}

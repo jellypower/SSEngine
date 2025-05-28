@@ -24,58 +24,7 @@
     <ClInclude Include="Resource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\CityHash.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\FixedList.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\PooledLinkedList.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\PooledList.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SHasherW.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSUtilityContainer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\StringHashMapA.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSDebugLogger.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSEngineDefault.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSFrameInfo.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSInput.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSNativeKeywords.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSNativeTypes.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSStaticMath.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSVector.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\StringUtilityFunctions.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSEngineInlineSettings.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSVertexType.h">
@@ -114,9 +63,6 @@
     <ClInclude Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\HashMap.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -129,28 +75,7 @@
     <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\BasicHashFunctionCollection.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\FixedStringA.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\FixedStringW.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringContainerUtilsCollection.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSRenderAssetConverter\Public\SSFBXImporter.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\Allocators\InlineAllocator.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\Allocators\HeapAllocator.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringW.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\SSRendererBuildSetings.h">
@@ -181,9 +106,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSContainer\SSString\SSStringA.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Public\GraphicsResourcePool\GraphicsResourceWrapper\RootSignatureWrapper.h">
@@ -1146,9 +1068,6 @@
     <ClInclude Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\DeviceQuery.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDeviceContext.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -1170,9 +1089,6 @@
     <ClInclude Include="SSRenderer\Public\SObjectBase\SCameraComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\GeometryType.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSGAL\Public\GALRenderTArget\GALRenderTarget.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -1188,25 +1104,10 @@
     <ClInclude Include="SSGAL\Public\SSGALCommonEnums.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSCommonUtil\SSCustomMemAllocator.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\TestCodes\TestClasses\TestCustomHeapAllocator.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\TestCodes\TestFunctions.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\INoncopyable.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSCommonUtil\AllocatedChunkHeader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h">
@@ -1227,15 +1128,6 @@
     <ClInclude Include="SSGAL\Public\GALRenderTarget\GALRTCommonEnums.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\SSDirectXMathCustom.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSEngineDefault\Public\GlobalVariableSet\GlobalVariableSet.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleEntryScriptRunner.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -1245,24 +1137,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SSContainer\CityHash.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SHasherW.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SSFrameInfo.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Public\SSInput.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SSVector.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Private\PWin32\StringUtilityFunctions.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.cpp">
@@ -1302,9 +1176,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderAssetConverter\Public\SSFBXImporter.cpp">
@@ -1445,9 +1316,6 @@
     <ClCompile Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSEngineDefault\Private\PWin32\DeviceQuery.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SSGAL\Public\GALRenderDevice\GALRenderDeviceContext.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -1481,15 +1349,6 @@
     <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSEngineDefault\Public\SSCommonUtil\SSCustomMemAllocator.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Public\TestCodes\TestClasses\TestCustomHeapAllocator.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSEngineDefault\Public\TestCodes\TestFunctions.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -1514,9 +1373,6 @@
     <ClCompile Include="SSGAL\Public\GALRenderTarget\GALRTCommonEnums.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSEngineDefault\Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleEntryScriptRunner.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -1536,8 +1392,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="SSEngineDefault\Public\SSContainer\SSContainer.natvis" />
   </ItemGroup>
 </Project>

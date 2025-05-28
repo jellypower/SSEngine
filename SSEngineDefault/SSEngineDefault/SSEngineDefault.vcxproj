@@ -119,8 +119,12 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <OutputFile>$(OutDir)$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -141,13 +145,16 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <OutputFile>$(OutDir)$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
-    <ClInclude Include="Private\PWin32\RawInput\Win32RawInputUtils.cpp" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
     <ClInclude Include="Public\RawInput\KeyCodeEnums.h" />
     <ClInclude Include="Public\RawInput\RawInputUtils.h" />
@@ -157,6 +164,7 @@
     <ClInclude Include="Public\GlobalVariableSet\GlobalVariableSet.h" />
     <ClInclude Include="Public\INoncopyable.h" />
     <ClInclude Include="Public\ProfilerUtils.h" />
+    <ClInclude Include="Public\RawInput\SSInput.h" />
     <ClInclude Include="Public\SSCommonUtil\AllocatedChunkHeader.h" />
     <ClInclude Include="Public\SSCommonUtil\SSCustomMemAllocator.h" />
     <ClInclude Include="Public\SSContainer\Allocators\HeapAllocator.h" />
@@ -195,6 +203,7 @@
     <ClCompile Include="Private\PCommon\SHasherW.cpp" />
     <ClCompile Include="Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.cpp" />
+    <ClCompile Include="Private\PWin32\RawInput\Win32RawInputUtils.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.cpp" />
     <ClCompile Include="Private\PWin32\ProfilerUtils.cpp" />
     <ClCompile Include="Private\PCommon\SSContainer\CityHash.cpp" />
