@@ -446,7 +446,7 @@ void SHasherPoolTest()
 {
 	IHasherPool* PoolForTest = CreateHasherPool(10000);
 
-	for (int32 i=0;i<500;i++)
+	for (int32 i=0;i<5000;i++)
 	{
 
 		utf16 TempStr[500];
@@ -461,7 +461,7 @@ void SHasherPoolTest()
 		PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
 	}
 
-	for (int32 i = 0; i < 500; i++)
+	for (int32 i = 0; i < 5000; i++)
 	{
 
 		utf16 TempStr[500];
