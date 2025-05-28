@@ -1,6 +1,6 @@
 ﻿#include "SStaticMeshRenderComponent.h"
 
-#include "SObject/Public/SGameObject.h"
+#include "SSContentsBase/SGameObject.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 #include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"

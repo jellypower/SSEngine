@@ -1,6 +1,6 @@
-﻿#include "SObject/Public/SGameObject.h"
+﻿#include "SSContentsBase/SGameObject.h"
 
-#include "SObject/Public/SComponentBase.h"
+#include "SSContentsBase/SComponentBase.h"
 #include "SSContentsBase/SWorld.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 

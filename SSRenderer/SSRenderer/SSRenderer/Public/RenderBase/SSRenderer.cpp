@@ -1,7 +1,7 @@
 #include "SSRenderer.h"
 
-#include "SObject/Public/SGameObject.h"
-#include "SObject/Public/SWorld.h"
+#include "SSContentsBase/SGameObject.h"
+#include "SSContentsBase/SWorld.h"
 
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"

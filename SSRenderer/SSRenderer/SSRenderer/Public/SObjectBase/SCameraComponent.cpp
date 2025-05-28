@@ -1,6 +1,6 @@
 ﻿#include "SCameraComponent.h"
 
-#include "SObject/Public/SGameObject.h"
+#include "SSContentsBase/SGameObject.h"
 #include "SSGAL/Public/GALRenderTArget/GALRenderTarget.h"
 
 void SCameraComponent::PostConstructHierarchy()

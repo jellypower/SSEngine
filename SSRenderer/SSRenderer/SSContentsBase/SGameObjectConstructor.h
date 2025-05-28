@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include <concepts>
 
-#include "SObjectBase.h"
-
+#include "SSContentsBase/SGameObject.h"
 
 class SGameObject;
 
-class SObjConstructor
+class SGameObjectConstructor
 {
 private:
 	static void InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW ObjectName);

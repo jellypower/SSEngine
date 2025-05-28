@@ -6,8 +6,8 @@
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
 
 #include "SSContentsBase/SWorld.h"
-#include "SObject/Public/SGameObject.h"
-#include "SObject/Public/SObjConstructor.h"
+#include "SSContentsBase/SGameObject.h"
+#include "SSContentsBase/SGameObjectConstructor.h"
 #include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
 
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
@@ -49,7 +49,7 @@ void SSEngine::StartupEngine()
 
 	RenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
 
-	_DefaultWorld = SObjConstructor::New<SWorld>(L"World");
+	_DefaultWorld = SGameObjectConstructor::New<SWorld>(L"World");
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
 	{
@@ -69,7 +69,7 @@ void SSEngine::StartupEngine()
 	}
 
 	{
-		SGameObject* CameraObject = SObjConstructor::New<SGameObject>(L"DefaultCameraObject");
+		SGameObject* CameraObject = SGameObjectConstructor::New<SGameObject>(L"DefaultCameraObject");
 		_DefaultWorld->AddToWorld(CameraObject);
 		SCameraComponent* Camera = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
 
@@ -97,7 +97,7 @@ void SSEngine::CleanupEngine()
 	bool IsAnyObjectReminInWorld = _DefaultWorld->IsAnyObjectRemainInWorld();
 	SS_ASSERT(IsAnyObjectReminInWorld == false);
 
-	SObjConstructor::Delete(_DefaultWorld);
+	SGameObjectConstructor::Delete(_DefaultWorld);
 	_DefaultWorld = nullptr;
 	
 

@@ -2,8 +2,7 @@
 
 #include "SRenderComponentBase.h"
 #include "SStaticMeshRenderComponent.h"
-#include "SObject/Public/SGameObject.h"
-#include "SObject/Public/SObjConstructor.h"
+#include "SSContentsBase/SGameObjectConstructor.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"
 #include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
@@ -22,7 +21,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 		return nullptr;
 	}
 
-	SGameObject* NewGameObj = SObjConstructor::New<SGameObject>(MdlcAssetName);
+	SGameObject* NewGameObj = SGameObjectConstructor::New<SGameObject>(MdlcAssetName);
 
 	if (MdlcAsset->GetChildCnt() == 2) // 단일 모델이면
 	{
@@ -54,7 +53,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 	else
 	{
 		InstantiateModelObjTree_Recursion(MdlcAsset, MDLC_PLACEMENTREF_ROOT_IDX, NewGameObj);
-		SObjConstructor::FinishConstructHierarchy(NewGameObj);
+		SGameObjectConstructor::FinishConstructHierarchy(NewGameObj);
 		return NewGameObj;
 	}
 }
@@ -69,7 +68,7 @@ SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 		return nullptr;
 	}
 
-	SGameObject* NewGameObj = SObjConstructor::New<SGameObject>(ModelAssetName);
+	SGameObject* NewGameObj = SGameObjectConstructor::New<SGameObject>(ModelAssetName);
 	SStaticMeshRenderComponent* NewStaticMeshComp = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(lModelAsset->GetAssetName());
 	NewStaticMeshComp->SetModelAsset(lModelAsset->GetAssetName());
 	NewStaticMeshComp->PostConstructHierarchy();
@@ -85,7 +84,7 @@ void SRendererUtil::InstantiateModelObjTree_Recursion(const ModelCombinationAsse
 	for (int32 ChildIdx : ThisAssetPlacement.ChildIndices)
 	{
 		const AssetPlacementReference& ChildAssetPlacement = MdlcAsset->GetChildAt(ChildIdx);
-		SGameObject* NewChildObj = SObjConstructor::New<SGameObject>(ChildAssetPlacement.PlacementName);
+		SGameObject* NewChildObj = SGameObjectConstructor::New<SGameObject>(ChildAssetPlacement.PlacementName);
 		NewChildObj->SetParent(CurGameObject);
 		NewChildObj->SetTransform(ChildAssetPlacement.Transform);
 		if (ChildAssetPlacement.AssetName.IsEmpty() == false)

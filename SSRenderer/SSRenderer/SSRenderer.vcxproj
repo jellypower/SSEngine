@@ -450,9 +450,9 @@
     <ClInclude Include="SSGAL\Public\SSGALModuleEntry\GPUAssetInstanceFactory.h" />
     <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDevice.h" />
     <ClInclude Include="SSGAL\Public\GPURenderInstance\RenderInstanceGPUMetadata.h" />
-    <ClInclude Include="SObject\Public\SComponentBase.h" />
-    <ClInclude Include="SObject\Public\SGameObject.h" />
-    <ClInclude Include="SObject\Public\SObjConstructor.h" />
+    <ClInclude Include="SSContentsBase\SComponentBase.h" />
+    <ClInclude Include="SSContentsBase\SGameObject.h" />
+    <ClInclude Include="SSContentsBase\SGameObjectConstructor.h" />
     <ClInclude Include="SObject\Public\SObjectBase.h" />
     <ClInclude Include="SObject\Public\SObjectGlobalHashMap.h" />
     <ClInclude Include="SObject\Public\SObjHashCode.h" />
@@ -540,9 +540,9 @@
     <ClCompile Include="SSGAL\Public\SSGALModuleEntry\GPUAssetInstanceFactory.cpp" />
     <ClCompile Include="SSGAL\Public\GALRenderDevice\GALRenderDevice.cpp" />
     <ClCompile Include="SSGAL\Public\GPURenderInstance\RenderInstanceGPUMetadata.cpp" />
-    <ClCompile Include="SObject\Private\SComponentBase.cpp" />
-    <ClCompile Include="SObject\Private\SGameObject.cpp" />
-    <ClCompile Include="SObject\Private\SObjConstructor.cpp" />
+    <ClCompile Include="SSContentsBase\SComponentBase.cpp" />
+    <ClCompile Include="SSContentsBase\SGameObject.cpp" />
+    <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp" />
     <ClCompile Include="SObject\Private\SObjectBase.cpp" />
     <ClCompile Include="SObject\Private\SObjectGlobalHashMap.cpp" />
     <ClCompile Include="SObject\Private\SObjHashCode.cpp" />

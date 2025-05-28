@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SObjectBase.h"
+#include "SObject/Public/SObjectBase.h"
 
 class SGameObject;
 

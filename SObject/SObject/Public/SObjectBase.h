@@ -4,7 +4,7 @@
 
 class SObjectBase : public INoncopyable
 {
-	friend class SGameObjectConstructor;
+	friend class SObjConstructor;
 private:
 	SObjHashCode _HashCode = nullptr;
 	SS::SHasherW _ObjectName;

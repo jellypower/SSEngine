@@ -1,5 +1,5 @@
-﻿#include "SObject/Public/SComponentBase.h"
-#include "SObject/Public/SGameObject.h"
+﻿#include "SSContentsBase/SComponentBase.h"
+#include "SSContentsBase/SGameObject.h"
 
 void SComponentBase::InitComponentWithParent(SGameObject* InParent)
 {

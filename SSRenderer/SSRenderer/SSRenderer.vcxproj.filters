@@ -1023,13 +1023,13 @@
     <ClInclude Include="SObject\Public\ModuleEntry\SObjectModuleEntry.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SObject\Public\SObjConstructor.h">
+    <ClInclude Include="SSContentsBase\SGameObjectConstructor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SObject\Public\SGameObject.h">
+    <ClInclude Include="SSContentsBase\SGameObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SObject\Public\SComponentBase.h">
+    <ClInclude Include="SSContentsBase\SComponentBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.h">
@@ -1274,13 +1274,13 @@
     <ClCompile Include="SObject\Private\ModuleEntryImpl\SObjectModuleEntry.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SObject\Private\SObjConstructor.cpp">
+    <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SObject\Private\SGameObject.cpp">
+    <ClCompile Include="SSContentsBase\SGameObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SObject\Private\SComponentBase.cpp">
+    <ClCompile Include="SSContentsBase\SComponentBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.cpp">

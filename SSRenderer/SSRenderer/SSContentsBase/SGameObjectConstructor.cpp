@@ -1,12 +1,12 @@
-﻿#include "SObject/Public/SObjConstructor.h"
+﻿#include "SSContentsBase/SGameObjectConstructor.h"
 
-#include "SObject/Public/SComponentBase.h"
-#include "SObject/Public/SGameObject.h"
+#include "SSContentsBase/SComponentBase.h"
+#include "SSContentsBase/SGameObject.h"
 #include "SObject/Public/SObjectGlobalHashMap.h"
 #include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
 
 
-void SObjConstructor::InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW ObjectName)
+void SGameObjectConstructor::InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW ObjectName)
 {
 	InNewObject->_ObjectName = ObjectName;
 	SObjHashCode NewHashCode = g_ObjectHashMap->InsertNewObject(InNewObject);
@@ -14,7 +14,7 @@ void SObjConstructor::InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW
 	InNewObject->PostConstruct();
 }
 
-void SObjConstructor::FinishConstructHierarchy_Recursion(SGameObject* CurGameObject)
+void SGameObjectConstructor::FinishConstructHierarchy_Recursion(SGameObject* CurGameObject)
 {
 	CurGameObject->MarkHierarchyInitialized();
 
@@ -33,7 +33,7 @@ void SObjConstructor::FinishConstructHierarchy_Recursion(SGameObject* CurGameObj
 	}
 }
 
-void SObjConstructor::Destroy_Recursive(SGameObject* ObjToDestroy)
+void SGameObjectConstructor::Destroy_Recursive(SGameObject* ObjToDestroy)
 {
 	int32 ChildCnt = ObjToDestroy->GetChildCnt();
 	for (int32 i = ChildCnt - 1; i >= 0; i--)
@@ -46,13 +46,13 @@ void SObjConstructor::Destroy_Recursive(SGameObject* ObjToDestroy)
 	for (int32 i = CompCnt - 1; i >= 0; i--)
 	{
 		SComponentBase* CompItem = ObjToDestroy->GetComponentByIdx(i);
-		SObjConstructor::Delete(CompItem);
+		SGameObjectConstructor::Delete(CompItem);
 	}
 
-	SObjConstructor::Delete(ObjToDestroy);
+	SGameObjectConstructor::Delete(ObjToDestroy);
 }
 
-void SObjConstructor::PreDestructHierarchy_Recursive(SGameObject* ObjToDestroy)
+void SGameObjectConstructor::PreDestructHierarchy_Recursive(SGameObject* ObjToDestroy)
 {
 	int32 ChildCnt = ObjToDestroy->GetChildCnt();
 	for (int32 i = ChildCnt - 1; i >= 0; i--)
@@ -69,7 +69,7 @@ void SObjConstructor::PreDestructHierarchy_Recursive(SGameObject* ObjToDestroy)
 	}
 }
 
-void SObjConstructor::Delete(SObjectBase* Obj)
+void SGameObjectConstructor::Delete(SObjectBase* Obj)
 {
 	Obj->PreDestruct();
 	SObjHashCode HashCodeToRemove = Obj->GetHashCode();
@@ -77,13 +77,13 @@ void SObjConstructor::Delete(SObjectBase* Obj)
 	delete Obj;
 }
 
-void SObjConstructor::DestroyAll(SGameObject* RootObjToDestroy)
+void SGameObjectConstructor::DestroyAll(SGameObject* RootObjToDestroy)
 {
 	PreDestructHierarchy_Recursive(RootObjToDestroy);
 	Destroy_Recursive(RootObjToDestroy);
 }
 
-void SObjConstructor::FinishConstructHierarchy(SGameObject* RootObject)
+void SGameObjectConstructor::FinishConstructHierarchy(SGameObject* RootObject)
 {
 	FinishConstructHierarchy_Recursion(RootObject);
 }

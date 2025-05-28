@@ -1,7 +1,7 @@
 ﻿#include "SSContentsBase/SWorld.h"
 
-#include "SObject/Public/SComponentBase.h"
-#include "SObject/Public/SGameObject.h"
+#include "SSContentsBase/SComponentBase.h"
+#include "SSContentsBase/SGameObject.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderInstance/BasicRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/RenderWorld.h"
@@ -24,14 +24,14 @@ SWorld::~SWorld()
 
 void SWorld::PostConstruct()
 {
-	_WorldRootObject = SObjConstructor::New<SGameObject>(L"WorldRoot");
+	_WorldRootObject = SGameObjectConstructor::New<SGameObject>(L"WorldRoot");
 	SObjHashCode WorldHashCode = GetHashCode();
 	AddWorldRootObject(_WorldRootObject);
 }
 
 void SWorld::PreDestruct()
 {
-	SObjConstructor::Delete(_WorldRootObject);
+	SGameObjectConstructor::Delete(_WorldRootObject);
 	_WorldRootObject = nullptr;
 }
 
@@ -60,7 +60,7 @@ void SWorld::DestroyAllObjectsInWorld()
 		SGameObject* ChildItem = _WorldRootObject->GetChild(i);
 		RemoveFromWorld(ChildItem);
 
-		SObjConstructor::DestroyAll(ChildItem);
+		SGameObjectConstructor::DestroyAll(ChildItem);
 	}
 }
 

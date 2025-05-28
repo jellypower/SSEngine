@@ -1,7 +1,7 @@
 ﻿#include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
-#include "SObject/Public/SGameObject.h"
+#include "SSContentsBase/SGameObject.h"
 
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
 #include "SSGAL/Private/DX12/GPURenderAsset/DX12GPUMaterialAssetInstance.h"

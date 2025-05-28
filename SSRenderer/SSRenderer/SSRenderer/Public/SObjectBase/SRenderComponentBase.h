@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SObject/Public/SComponentBase.h"
+#include "SSContentsBase/SComponentBase.h"
 #include "SObject/Public/SObjectBase.h"
 
 class BasicRenderInstance;
