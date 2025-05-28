@@ -7,4 +7,4 @@ class SSRawInputProcessorBase;
 #include <Windows.h>
 void Win32ProcessInputEvent(SSRawInputProcessorBase* InRawInputProcessor, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-#endif
+#endif //_WINDOWS
