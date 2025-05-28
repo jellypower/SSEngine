@@ -5,7 +5,7 @@
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
 
-#include "SObject/Public/SWorld.h"
+#include "SSContentsBase/SWorld.h"
 #include "SObject/Public/SGameObject.h"
 #include "SObject/Public/SObjConstructor.h"
 #include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"

@@ -457,7 +457,7 @@
     <ClInclude Include="SObject\Public\SObjectGlobalHashMap.h" />
     <ClInclude Include="SObject\Public\SObjHashCode.h" />
     <ClInclude Include="SObject\Public\ModuleEntry\SObjectModuleEntry.h" />
-    <ClInclude Include="SObject\Public\SWorld.h" />
+    <ClInclude Include="SSContentsBase\SWorld.h" />
     <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
     <ClInclude Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h" />
@@ -547,7 +547,7 @@
     <ClCompile Include="SObject\Private\SObjectGlobalHashMap.cpp" />
     <ClCompile Include="SObject\Private\SObjHashCode.cpp" />
     <ClCompile Include="SObject\Private\ModuleEntryImpl\SObjectModuleEntry.cpp" />
-    <ClCompile Include="SObject\Private\SWorld.cpp" />
+    <ClCompile Include="SSContentsBase\SWorld.cpp" />
     <ClCompile Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\AssetManagerBase.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderInstance\RenderWorld.cpp" />

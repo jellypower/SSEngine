@@ -1035,7 +1035,7 @@
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SObject\Public\SWorld.h">
+    <ClInclude Include="SSContentsBase\SWorld.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\RenderInstance\RenderWorld.h">
@@ -1286,7 +1286,7 @@
     <ClCompile Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SObject\Private\SWorld.cpp">
+    <ClCompile Include="SSContentsBase\SWorld.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\RenderInstance\RenderWorld.cpp">

@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "SObjConstructor.h"
-#include "SObjectBase.h"
+#include "SObject/Public/SObjConstructor.h"
+#include "SObject/Public/SObjectBase.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
