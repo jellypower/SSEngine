@@ -4,5 +4,5 @@
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
 
-uint64 SSENGINEDEFAULT_MODULE GetPerofrmanceCounter();
-uint64 SSENGINEDEFAULT_MODULE GetPerformanceFrequency();
+SSENGINEDEFAULT_MODULE_NATIVE uint64 GetPerofrmanceCounter();
+SSENGINEDEFAULT_MODULE_NATIVE uint64 GetPerformanceFrequency();

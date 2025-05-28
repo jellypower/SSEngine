@@ -9,4 +9,4 @@ struct SSDeviceInfo
 	int32 LogicalCoreCnt = 0;
 };
 
-SSENGINEDEFAULT_MODULE bool QueryDeviceInfo(SSDeviceInfo* OutDeviceInfo);
+SSENGINEDEFAULT_MODULE_NATIVE bool QueryDeviceInfo(SSDeviceInfo* OutDeviceInfo);

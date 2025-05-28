@@ -117,7 +117,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)..\SSEngineDefault\$(IntDir);$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)..\SSEngineDefault\$(IntDir)DLL</Command>
+      <Command>copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)DLL" "$(SolutionDir)$(IntDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,7 +139,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)..\SSEngineDefault\$(IntDir);$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)..\SSEngineDefault\$(IntDir)DLL</Command>
+      <Command>copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)DLL" "$(SolutionDir)$(IntDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -6,6 +6,6 @@ class SSRawInputProcessorBase;
 #ifdef _WINDOWS
 
 #include <Windows.h>
-SSENGINEDEFAULT_MODULE void Win32ProcessInputEvent(SSRawInputProcessorBase* InRawInputProcessor, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+SSENGINEDEFAULT_MODULE_NATIVE void Win32ProcessInputEvent(SSRawInputProcessorBase* InRawInputProcessor, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #endif //_WINDOWS

@@ -12,11 +12,11 @@ namespace SS
 
 
 
-SSENGINEDEFAULT_MODULE void SSEngineDefaultModuleEntry(
+SSENGINEDEFAULT_MODULE_NATIVE void SSEngineDefaultModuleEntry(
 	SS::SHashPoolNode* InHasherPool,
 	uint32 InHasherPoolCnt,
 	FrameInfoProcessorBase* InFrameInfo,
 	SSRawInputProcessorBase* InRawInputProcessor);
 
-SSENGINEDEFAULT_MODULE SSRawInputProcessorBase* CreateInputProcessor();
-SSENGINEDEFAULT_MODULE FrameInfoProcessorBase* CreateFrameInfo();
+SSENGINEDEFAULT_MODULE_NATIVE SSRawInputProcessorBase* CreateInputProcessor();
+SSENGINEDEFAULT_MODULE_NATIVE FrameInfoProcessorBase* CreateFrameInfo();
