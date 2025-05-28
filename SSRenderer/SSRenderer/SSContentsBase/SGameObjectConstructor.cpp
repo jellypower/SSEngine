@@ -4,15 +4,8 @@
 #include "SSContentsBase/SGameObject.h"
 #include "SObject/Public/SObjectGlobalHashMap.h"
 #include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
+#include "SObject/Public/ModuleEntry/SObjectFactory.h"
 
-
-void SGameObjectConstructor::InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW ObjectName)
-{
-	InNewObject->_ObjectName = ObjectName;
-	SObjHashCode NewHashCode = g_ObjectHashMap->InsertNewObject(InNewObject);
-	InNewObject->_HashCode = NewHashCode;
-	InNewObject->PostConstruct();
-}
 
 void SGameObjectConstructor::FinishConstructHierarchy_Recursion(SGameObject* CurGameObject)
 {
@@ -46,10 +39,10 @@ void SGameObjectConstructor::Destroy_Recursive(SGameObject* ObjToDestroy)
 	for (int32 i = CompCnt - 1; i >= 0; i--)
 	{
 		SComponentBase* CompItem = ObjToDestroy->GetComponentByIdx(i);
-		SGameObjectConstructor::Delete(CompItem);
+		DelSObject(CompItem);
 	}
 
-	SGameObjectConstructor::Delete(ObjToDestroy);
+	DelSObject(ObjToDestroy);
 }
 
 void SGameObjectConstructor::PreDestructHierarchy_Recursive(SGameObject* ObjToDestroy)
@@ -69,13 +62,6 @@ void SGameObjectConstructor::PreDestructHierarchy_Recursive(SGameObject* ObjToDe
 	}
 }
 
-void SGameObjectConstructor::Delete(SObjectBase* Obj)
-{
-	Obj->PreDestruct();
-	SObjHashCode HashCodeToRemove = Obj->GetHashCode();
-	g_ObjectHashMap->RemoveObject(HashCodeToRemove);
-	delete Obj;
-}
 
 void SGameObjectConstructor::DestroyAll(SGameObject* RootObjToDestroy)
 {

@@ -49,7 +49,7 @@ void SSEngine::StartupEngine()
 
 	RenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
 
-	_DefaultWorld = SGameObjectConstructor::New<SWorld>(L"World");
+	_DefaultWorld = NewSObject<SWorld>(L"World");
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
 	{
@@ -69,7 +69,7 @@ void SSEngine::StartupEngine()
 	}
 
 	{
-		SGameObject* CameraObject = SGameObjectConstructor::New<SGameObject>(L"DefaultCameraObject");
+		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
 		_DefaultWorld->AddToWorld(CameraObject);
 		SCameraComponent* Camera = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
 
@@ -97,7 +97,7 @@ void SSEngine::CleanupEngine()
 	bool IsAnyObjectReminInWorld = _DefaultWorld->IsAnyObjectRemainInWorld();
 	SS_ASSERT(IsAnyObjectReminInWorld == false);
 
-	SGameObjectConstructor::Delete(_DefaultWorld);
+	DelSObject(_DefaultWorld);
 	_DefaultWorld = nullptr;
 	
 

@@ -21,7 +21,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 		return nullptr;
 	}
 
-	SGameObject* NewGameObj = SGameObjectConstructor::New<SGameObject>(MdlcAssetName);
+	SGameObject* NewGameObj = NewSObject<SGameObject>(MdlcAssetName);
 
 	if (MdlcAsset->GetChildCnt() == 2) // 단일 모델이면
 	{
@@ -68,7 +68,7 @@ SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 		return nullptr;
 	}
 
-	SGameObject* NewGameObj = SGameObjectConstructor::New<SGameObject>(ModelAssetName);
+	SGameObject* NewGameObj = NewSObject<SGameObject>(ModelAssetName);
 	SStaticMeshRenderComponent* NewStaticMeshComp = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(lModelAsset->GetAssetName());
 	NewStaticMeshComp->SetModelAsset(lModelAsset->GetAssetName());
 	NewStaticMeshComp->PostConstructHierarchy();
@@ -84,7 +84,7 @@ void SRendererUtil::InstantiateModelObjTree_Recursion(const ModelCombinationAsse
 	for (int32 ChildIdx : ThisAssetPlacement.ChildIndices)
 	{
 		const AssetPlacementReference& ChildAssetPlacement = MdlcAsset->GetChildAt(ChildIdx);
-		SGameObject* NewChildObj = SGameObjectConstructor::New<SGameObject>(ChildAssetPlacement.PlacementName);
+		SGameObject* NewChildObj = NewSObject<SGameObject>(ChildAssetPlacement.PlacementName);
 		NewChildObj->SetParent(CurGameObject);
 		NewChildObj->SetTransform(ChildAssetPlacement.Transform);
 		if (ChildAssetPlacement.AssetName.IsEmpty() == false)

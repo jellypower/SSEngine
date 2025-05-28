@@ -24,14 +24,14 @@ SWorld::~SWorld()
 
 void SWorld::PostConstruct()
 {
-	_WorldRootObject = SGameObjectConstructor::New<SGameObject>(L"WorldRoot");
+	_WorldRootObject = NewSObject<SGameObject>(L"WorldRoot");
 	SObjHashCode WorldHashCode = GetHashCode();
 	AddWorldRootObject(_WorldRootObject);
 }
 
 void SWorld::PreDestruct()
 {
-	SGameObjectConstructor::Delete(_WorldRootObject);
+	DelSObject(_WorldRootObject);
 	_WorldRootObject = nullptr;
 }
 

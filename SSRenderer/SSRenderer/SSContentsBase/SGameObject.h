@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "SObject/Public/SObjectBase.h"
+#include "SObject/Public/ModuleEntry/SObjectFactory.h"
+
 
 class SWorld;
 class SComponentBase;
@@ -53,7 +55,7 @@ public:
 	T* CreateComponent(SS::SHasherW ComponentName)
 	{
 		static_assert(std::derived_from<T, SComponentBase>);
-		T* NewComponent = SGameObjectConstructor::New<T>(ComponentName);
+		T* NewComponent = NewSObject<T>(ComponentName);
 		AddComponent(NewComponent);
 		return NewComponent;
 	}
