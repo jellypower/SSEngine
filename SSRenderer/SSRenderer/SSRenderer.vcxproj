@@ -427,7 +427,7 @@
     <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpathInternals.h" />
     <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpointer.h" />
     <ClInclude Include="ModuleEntryScriptRunner.h" />
-    <ClInclude Include="SObject\Public\GlobalVariableSet\GlobalVariableSet.h" />
+    <ClInclude Include="SObject\Public\GlobalVariableSet\SObjectGlobalVariableSet.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />

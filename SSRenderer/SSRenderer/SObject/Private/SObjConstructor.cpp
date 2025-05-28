@@ -3,7 +3,7 @@
 #include "SObject/Public/SComponentBase.h"
 #include "SObject/Public/SGameObject.h"
 #include "SObject/Public/SObjectGlobalHashMap.h"
-#include "SObject/Public/GlobalVariableSet/GlobalVariableSet.h"
+#include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
 
 
 void SObjConstructor::InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW ObjectName)

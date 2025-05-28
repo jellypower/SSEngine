@@ -1,7 +1,7 @@
 ﻿#include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
 
 #include "SObject/Public/SObjectGlobalHashMap.h"
-#include "SObject/Public/GlobalVariableSet/GlobalVariableSet.h"
+#include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
 
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 

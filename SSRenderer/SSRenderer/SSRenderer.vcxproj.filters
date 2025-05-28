@@ -1131,7 +1131,7 @@
     <ClInclude Include="ModuleEntryScriptRunner.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SObject\Public\GlobalVariableSet\GlobalVariableSet.h">
+    <ClInclude Include="SObject\Public\GlobalVariableSet\SObjectGlobalVariableSet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
