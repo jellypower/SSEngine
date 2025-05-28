@@ -2,6 +2,7 @@
 #include "SSEngineDefault/ModuleExportKeyword.h"
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
+class SSRawInputProcessorBase;
 class SSFrameInfo;
 
 namespace SS
@@ -14,4 +15,7 @@ namespace SS
 SSENGINEDEFAULT_MODULE void SSEngineDefaultModuleEntry(
 	SS::SHashPoolNode* InHasherPool,
 	uint32 InHasherPoolCnt,
-	SSFrameInfo* InFrameInfo);
+	SSFrameInfo* InFrameInfo,
+	SSRawInputProcessorBase* InRawInputProcessor);
+
+SSENGINEDEFAULT_MODULE SSRawInputProcessorBase* CreateInputProcessor();
