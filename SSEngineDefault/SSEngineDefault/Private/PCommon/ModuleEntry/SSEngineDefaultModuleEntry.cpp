@@ -1,6 +1,7 @@
 #define DLL_EXPORT
 #include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 
+#include "SSEngineDefault/Private/PCommon/SHasher/HasherPoolBase.h"
 #include "SSEngineDefault/Private/PWin32/RawInput/Win32SSRawInputProcessor.h"
 #include "SSEngineDefault/Public/SSDebugLogger.h"
 #include "SSEngineDefault/Public/SHasher/SHasherW.h"
@@ -32,4 +33,10 @@ FrameInfoProcessorBase* CreateFrameInfo()
 {
 	FrameInfoProcessorBase* FrameInfo = DBG_NEW FrameInfoProcessorBase();
 	return FrameInfo;
+}
+
+IHasherPool* CreateHasherPool(int32 InBucketCnt)
+{
+	HasherPoolBase* NewHasherPool = DBG_NEW HasherPoolBase(InBucketCnt);
+	return NewHasherPool;
 }

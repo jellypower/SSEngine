@@ -13,11 +13,33 @@ HasherPoolBase::HasherPoolBase(int32 InBucketCnt)
 
 HasherPoolBase::~HasherPoolBase()
 {
+	for (uint32 i = 0; i < _HasherBucketCnt; i++)
+	{
+		HasherPoolNode* CurNode = _HasherBucket[i];
+		if (CurNode == nullptr)
+		{
+			continue;
+		}
 
+		while (CurNode != nullptr)
+		{
+			HasherPoolNode* NextNode = CurNode->_next;
+			free(CurNode);
+			CurNode = NextNode;
+		}
+	}
+
+	free(_HasherBucket);
 }
 
 uint64 HasherPoolBase::FindHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) const
 {
+	if (InLoweredStr == nullptr || InStrLen == 0)
+	{
+		SS_INTERRUPT();
+	}
+
+
 	union {
 		struct {
 			uint32 HashedValue; // 해쉬 상위 32비트
@@ -53,8 +75,13 @@ uint64 HasherPoolBase::FindHasherValue(const utf16* InLoweredStr, uint32 InStrLe
 	return 0;
 }
 
-uint64 HasherPoolBase::AddHasherValue(const utf16* InStr, uint32 InStrLen, uint32 InHashedValue)
+uint64 HasherPoolBase::AddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue)
 {
+	if (InLoweredStr == nullptr || InStrLen == 0)
+	{
+		SS_INTERRUPT();
+	}
+
 	union {
 		struct {
 			uint32 HashedValue; // 해쉬 상위 32비트
@@ -79,7 +106,7 @@ uint64 HasherPoolBase::AddHasherValue(const utf16* InStr, uint32 InStrLen, uint3
 	HasherPoolNode* NewNode = (HasherPoolNode*)DBG_MALLOC(sizeof(HasherPoolNode) + InStrSpaceSize);
 	NewNode->_next = nullptr;
 	NewNode->_strLen = InStrLen;
-	wcscpy_s(NewNode->_str, InStrLen + 1, InStr);
+	wcscpy_s(NewNode->_str, InStrLen + 1, InLoweredStr);
 
 	if (CurHasherPoolNode == nullptr)
 	{

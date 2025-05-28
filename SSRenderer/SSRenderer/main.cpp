@@ -102,7 +102,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	{
 		return 0;
 	}
-
+	
 	AnalyzeCommandLineArgs();
 
 #ifdef _DEBUG
@@ -149,6 +149,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		ContainerTest_PooledLinkedList();
 		ContainerTest_HashMap();
 		CustomHeapAllocatorTest();
+		SHasherPoolTest();
 	}
 
 

@@ -4,9 +4,12 @@
 #include <unordered_map>
 
 
+#include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "TestClasses/TestCustomHeapAllocator.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
+#include "SSEngineDefault/Public/SHasher/IHasherPool.h"
+#include "SSEngineDefault/Public/SSContainer/CityHash.h"
 
 void ContainerTest_PooledLinkedList()
 {
@@ -437,4 +440,44 @@ void CustomHeapAllocatorTest()
 		Allocator.ReleaseDefaultPages();
 	}
 
+}
+
+void SHasherPoolTest()
+{
+	IHasherPool* PoolForTest = CreateHasherPool(10000);
+
+	for (int32 i=0;i<500;i++)
+	{
+
+		utf16 TempStr[500];
+		swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
+		utf16 LoweredStr[500];
+
+		LowerStr(TempStr, LoweredStr);
+
+		int32 strLen = wcslen(LoweredStr);
+		int32 HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
+
+		PoolForTest->AddHasherValue(LoweredStr, strLen, HashedValue);
+	}
+
+	for (int32 i = 0; i < 500; i++)
+	{
+
+		utf16 TempStr[500];
+		swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
+		utf16 LoweredStr[500];
+
+		LowerStr(TempStr, LoweredStr);
+
+		int32 strLen = wcslen(LoweredStr);
+		int32 HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
+
+		uint64 Value1 = PoolForTest->FindHasherValue(LoweredStr, strLen, HashedValue);
+		uint64 Value2 = PoolForTest->FindHasherValue(LoweredStr, strLen, HashedValue);
+
+		SS_ASSERT(Value1 == Value2);
+	}
+
+	delete PoolForTest;
 }
