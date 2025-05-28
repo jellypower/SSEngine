@@ -10,7 +10,7 @@
 #include "SSNativeTypes.h"
 #include "SSVector.h"
 
-#include "SSContainer/SHasherW.h"
+#include "SHasher/SHasherW.h"
 #include "SSContainer/SSString/StringUtilityFunctions.h"
 #include "SSContainer/SSString/SSStringW.h"
 

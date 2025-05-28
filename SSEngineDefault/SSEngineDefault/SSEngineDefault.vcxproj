@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Private\PCommon\SHasher\HasherPoolBase.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
     <ClInclude Include="Public\RawInput\KeyCodeEnums.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Public\RawProfiler\ProfilerUtils.h" />
     <ClInclude Include="Public\RawInput\SSInput.h" />
     <ClInclude Include="Public\RawProfiler\SSFrameInfo.h" />
+    <ClInclude Include="Public\SHasher\IHasherPool.h" />
     <ClInclude Include="Public\SSCommonUtil\AllocatedChunkHeader.h" />
     <ClInclude Include="Public\SSCommonUtil\SSCustomMemAllocator.h" />
     <ClInclude Include="Public\SSContainer\Allocators\HeapAllocator.h" />
@@ -176,7 +178,7 @@
     <ClInclude Include="Public\SSContainer\HashMap.h" />
     <ClInclude Include="Public\SSContainer\PooledLinkedList.h" />
     <ClInclude Include="Public\SSContainer\PooledList.h" />
-    <ClInclude Include="Public\SSContainer\SHasherW.h" />
+    <ClInclude Include="Public\SHasher\SHasherW.h" />
     <ClInclude Include="Public\SSContainer\SSString\FixedStringA.h" />
     <ClInclude Include="Public\SSContainer\SSString\FixedStringW.h" />
     <ClInclude Include="Public\SSContainer\SSString\SSStringA.h" />
@@ -201,7 +203,8 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp" />
-    <ClCompile Include="Private\PCommon\SHasherW.cpp" />
+    <ClCompile Include="Private\PCommon\SHasher\HasherPoolBase.cpp" />
+    <ClCompile Include="Private\PCommon\SHasher\SHasherW.cpp" />
     <ClCompile Include="Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputUtils.cpp" />
