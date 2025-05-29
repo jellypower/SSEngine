@@ -4,8 +4,9 @@
 
 
 void Internal_InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW ObjectName);
-
 void DelSObject(SObjectBase* Obj);
+
+
 template<typename T>
 inline static T* NewSObject(SS::SHasherW InNewObjName)
 {

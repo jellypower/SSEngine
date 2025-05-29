@@ -10,6 +10,10 @@ private:
 
 
 public:
+	SObjHashCode GetHashCode() const { return _HashCode; }
+	SS::SHasherW GetObjectName() const { return _ObjectName; }
+
+
 	void SetHashCodeXXX(SObjHashCode InHashCode) { _HashCode = InHashCode; }
 	void SetObjectNameXXX(SS::SHasherW InObjectName) { _ObjectName = InObjectName; }
 
