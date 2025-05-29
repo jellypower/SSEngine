@@ -15,7 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ModuleExportKeyword.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="Public\GlobalVariableSet\SObjectGlobalVariableSet.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\ModuleEntry\SObjectFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\ModuleEntry\SObjectModuleEntry.h">
@@ -30,7 +36,7 @@
     <ClInclude Include="Public\SObjHashCode.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleExportKeyword.h">
+    <ClInclude Include="SObjectBuildSettings.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +44,10 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\ModuleEntryImpl\SObjectModuleEntry.cpp">
+    <ClCompile Include="Private\ModuleEntryImpl\SObjectFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\SObjectBase.cpp">
+    <ClCompile Include="Private\ModuleEntryImpl\SObjectModuleEntry.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\SObjectGlobalHashMap.cpp">

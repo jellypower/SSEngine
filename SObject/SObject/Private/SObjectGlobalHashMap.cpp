@@ -1,4 +1,5 @@
-﻿#include "SObject/Public/SObjectGlobalHashMap.h"
+﻿#define DLL_EXPORT
+#include "SObject/Public/SObjectGlobalHashMap.h"
 
 #include <Windows.h>
 

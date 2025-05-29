@@ -119,7 +119,12 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SSEngineDefault\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -140,20 +145,27 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SSEngineDefault\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Public\GlobalVariableSet\SObjectGlobalVariableSet.h" />
+    <ClInclude Include="Public\ModuleEntry\SObjectFactory.h" />
     <ClInclude Include="Public\ModuleEntry\SObjectModuleEntry.h" />
     <ClInclude Include="Public\SObjectBase.h" />
     <ClInclude Include="Public\SObjectGlobalHashMap.h" />
     <ClInclude Include="Public\SObjHashCode.h" />
+    <ClInclude Include="SObjectBuildSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Private\ModuleEntryImpl\SObjectFactory.cpp" />
     <ClCompile Include="Private\ModuleEntryImpl\SObjectModuleEntry.cpp" />
-    <ClCompile Include="Private\SObjectBase.cpp" />
     <ClCompile Include="Private\SObjectGlobalHashMap.cpp" />
     <ClCompile Include="Private\SObjHashCode.cpp" />
   </ItemGroup>

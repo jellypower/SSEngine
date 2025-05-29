@@ -1,12 +1,11 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/SSEngineDefault.h"
+#include "SObject/ModuleExportKeyword.h"
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 
 class SSFrameInfo;
 class SObjectGlobalHashMap;
 
-void SObjectModuleEntry(SS::SHashPoolNode* InHasherPool,
-	uint32 InHasherPoolCnt,
-	FrameInfoProcessorBase* InFrameInfoProcessor);
-void CheckLiveSobjects();
-void CleanupSObjSystem();
+SOBJECT_MODULE_NATIVE SObjectGlobalHashMap* CreateSObjectGlobalHashMap();
+SOBJECT_MODULE_NATIVE void SObjectModuleEntry(
+	SObjectGlobalHashMap* InSObjectHashMap,
+	IHasherPool* InHasherPool);

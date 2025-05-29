@@ -1,9 +1,11 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+#include "SObject/ModuleExportKeyword.h"
+
 class SObjectBase;
 
-class SObjHashCode
+class SOBJECT_MODULE SObjHashCode
 {
 	static constexpr int64 SOBJ_NATIVEVALUE_NULL = 0;
 
