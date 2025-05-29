@@ -1,4 +1,4 @@
-#define DLL_EXPORT
+#define SSENGINEDEFAULT_MODULE_EXPORT
 #include "SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h"
 
 #include <string.h>

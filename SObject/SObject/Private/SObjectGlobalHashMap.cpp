@@ -1,4 +1,4 @@
-﻿#define DLL_EXPORT
+﻿#define SOBJECT_MODULE_EXPORT
 #include "SObject/Public/SObjectGlobalHashMap.h"
 
 #include <Windows.h>

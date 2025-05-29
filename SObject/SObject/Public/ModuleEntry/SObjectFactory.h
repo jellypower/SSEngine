@@ -1,10 +1,12 @@
 ﻿#pragma once
+#include "SObject/ModuleExportKeyword.h"
+
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SObject/Public/SObjectBase.h"
 
 
-void Internal_InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW ObjectName);
-void DelSObject(SObjectBase* Obj);
+SOBJECT_MODULE_NATIVE void Internal_InitSObjectBaseInfo(SObjectBase* InNewObject, SS::SHasherW ObjectName);
+SOBJECT_MODULE_NATIVE void DelSObject(SObjectBase* Obj);
 
 
 template<typename T>

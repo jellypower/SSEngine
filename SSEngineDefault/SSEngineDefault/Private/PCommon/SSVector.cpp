@@ -1,4 +1,4 @@
-#define DLL_EXPORT
+#define SSENGINEDEFAULT_MODULE_EXPORT
 #include "SSEngineDefault/Public/SSVector.h"
 
 Vector4f const Vector4f::Forward = Vector4f(0, 0, 1, 0);

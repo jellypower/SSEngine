@@ -1,4 +1,4 @@
-﻿#define DLL_EXPORT
+﻿#define SOBJECT_MODULE_EXPORT
 #include "SObject/Public/SObjHashCode.h"
 #include "SObject/Public/SObjectBase.h"
 #include "SObject/Public/SObjectGlobalHashMap.h"
@@ -7,7 +7,7 @@
 
 SObjHashCode::SObjHashCode(SObjectBase* InObject)
 {
-	_NativeValue = InObject->_HashCode._NativeValue;
+	_NativeValue = InObject->GetHashCode()._NativeValue;
 }
 
 SObjectBase* SObjHashCode::GetSObject() const

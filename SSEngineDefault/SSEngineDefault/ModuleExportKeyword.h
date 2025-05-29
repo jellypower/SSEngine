@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef DLL_EXPORT
+#ifdef SSENGINEDEFAULT_MODULE_EXPORT
 #define SSENGINEDEFAULT_MODULE __declspec(dllexport)
 #define SSENGINEDEFAULT_MODULE_NATIVE extern "C" __declspec(dllexport)
 #else

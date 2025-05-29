@@ -1,4 +1,4 @@
-#define DLL_EXPORT
+#define SSENGINEDEFAULT_MODULE_EXPORT
 #include "SSEngineDefault/Public/SSContainer/BasicHashFunctionCollection.h"
 
 #include "SSEngineDefault/Public/SSContainer/CityHash.h"

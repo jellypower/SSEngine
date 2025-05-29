@@ -1,4 +1,5 @@
-﻿#include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
+﻿#define SOBJECT_MODULE_EXPORT
+#include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
 
 #include "SObject/Public/SObjectGlobalHashMap.h"
 #include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
@@ -6,7 +7,10 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
 
+
+
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
+
 IHasherPool* g_HasherPool = nullptr;
 FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
 SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
