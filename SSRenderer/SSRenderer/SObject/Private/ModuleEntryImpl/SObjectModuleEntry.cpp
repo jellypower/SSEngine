@@ -7,13 +7,10 @@
 
 
 // TODO: 25/05/26 주석 풀기
-//SS::SHashPoolNode* g_SHasherPool = nullptr;
-//uint32 g_sHasherPoolCnt = 0;
 //SSFrameInfo* g_FrameInfo = nullptr;
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 
-void SObjectModuleEntry(SS::SHashPoolNode* InHasherPool,
-	uint32 InHasherPoolCnt,
+void SObjectModuleEntry(
 	FrameInfoProcessorBase* InFrameInfoProcessor)
 {
 	if (g_ObjectHashMap != nullptr)
@@ -24,8 +21,6 @@ void SObjectModuleEntry(SS::SHashPoolNode* InHasherPool,
 
 	g_ObjectHashMap = DBG_NEW SObjectGlobalHashMap();
 
-	g_SHasherPool = InHasherPool;
-	g_sHasherPoolCnt = InHasherPoolCnt;
 	g_FrameInfoProcessor = InFrameInfoProcessor;
 }
 

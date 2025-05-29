@@ -219,7 +219,14 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 
 			// model combination asset creation
 			NewAssetPlacementRef.AssetName = NewModelAssetName;
-			NewAssetPlacementRef.PlacementName = tempAssetName.C_Str();
+			if (tempAssetName.GetStrLen() == 0)
+			{
+				NewAssetPlacementRef.PlacementName = L"Object";
+			}
+			else
+			{
+				NewAssetPlacementRef.PlacementName = tempAssetName.C_Str();
+			}
 
 
 			ModelAssetManager->AddToAssetPool(newModel);

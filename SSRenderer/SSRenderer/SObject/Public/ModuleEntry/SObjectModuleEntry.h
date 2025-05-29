@@ -5,8 +5,7 @@
 class SSFrameInfo;
 class SObjectGlobalHashMap;
 
-void SObjectModuleEntry(SS::SHashPoolNode* InHasherPool,
-	uint32 InHasherPoolCnt,
+void SObjectModuleEntry(
 	FrameInfoProcessorBase* InFrameInfoProcessor);
 void CheckLiveSobjects();
 void CleanupSObjSystem();

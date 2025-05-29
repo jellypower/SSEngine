@@ -6,16 +6,11 @@ class IHasherPool;
 class SSRawInputProcessorBase;
 class FrameInfoProcessorBase;
 
-namespace SS
-{
-	class SHashPoolNode;
-}
-
 
 
 SSENGINEDEFAULT_MODULE_NATIVE void SSEngineDefaultModuleEntry(
-	SS::SHashPoolNode* InHasherPool,
 	uint32 InHasherPoolCnt,
+	IHasherPool* InHasherPool,
 	FrameInfoProcessorBase* InFrameInfo,
 	SSRawInputProcessorBase* InRawInputProcessor);
 

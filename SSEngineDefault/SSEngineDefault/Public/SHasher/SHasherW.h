@@ -4,24 +4,8 @@
 #include "SSEngineDefault/Public/SSEngineInlineSettings.h"
 
 
-
-constexpr utf16 HASHER_EMPTY[] = L"EMPTY";
-
 namespace SS {
 	class StringW;
-	class SHasherW;
-
-	class SSENGINEDEFAULT_MODULE SHashPoolNode
-	{
-	public:
-		utf16* _str = nullptr;
-		uint32 _strLen = 0;
-		SHashPoolNode* _next = nullptr;
-
-	public:
-		SHashPoolNode();
-		SHashPoolNode(const utf16* str, uint32 inStrLen);
-	};
 }
 
 namespace SS {
@@ -34,20 +18,18 @@ namespace SS {
 
 
 	private:
-
 		union {
 			struct {
-				uint32 _hashH; // 해쉬 상위 32비트
-				uint32 _hashL; // 해쉬 하위 32비트
+				uint32 _HashedValue; // 해쉬 상위 32비트
+				uint32 _CurNodeCnt; // 해쉬 하위 32비트
 			};
 			uint64 _hashX; // 해쉬 64비트 전체값
 		};
 
-
 	public:
 		SHasherW();
-		SHasherW(const char* inStr);
 		SHasherW(const utf16* str);
+		SHasherW(const char* inStr);
 		explicit SHasherW(const SS::StringW& inStr);
 
 		SHasherW(const SS::SHasherW& rhs);
@@ -56,9 +38,8 @@ namespace SS {
 		bool operator==(SHasherW rhs) const;
 
 		bool IsEmpty() const;
-		const utf16* C_Str(uint32* const outStrLen = nullptr) const;
+		const utf16* C_Str(uint32* const OutStrLen = nullptr) const;
 		uint64 GetDirectValue() const { return _hashX; }
 
 	};
-
 };

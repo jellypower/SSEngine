@@ -470,8 +470,8 @@ void SHasherPoolTest()
 
 		LowerStr(TempStr, LoweredStr);
 
-		int32 strLen = wcslen(LoweredStr);
-		int32 HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
+		uint32 strLen = wcslen(LoweredStr);
+		uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
 
 		uint64 Value1 = PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
 		uint64 Value2 = PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
@@ -491,6 +491,11 @@ void SHasherPoolTest()
 
 void SHasherTest()
 {
+	SS::PooledList<int32> list;
+	list.PushBack(1);
+	list.PushBack(1);
+	list.PushBack(1);
+
 	for (int32 i = 0; i < 5000; i++)
 	{
 		utf16 TempStr[500];

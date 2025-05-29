@@ -167,16 +167,21 @@
     <DisplayString>{{HashX = { _hashX }}}</DisplayString>
     <Expand>
       <CustomListItems MaxItemsPerView="1">
-        <Variable Name="HashPoolNode" InitialValue="(g_SHasherPool + _hashH % g_sHasherPoolCnt)"/>
-        <Variable Name="iNodeStepCnt" InitialValue="_hashL"/>
+        <Variable Name="iNodeStepCnt" InitialValue="_CurNodeCnt"/>
+        <Variable Name="pHashPoolNode" InitialValue="*(g_HasherPool->_HasherBucket + _HashedValue % g_HasherPool->_HasherBucketCnt)"/>
 
         <Loop>
-          <Exec>iNodeStepCnt--</Exec>
-          <If Condition="iNodeStepCnt == -1">
-            <Item Name ="Str">HashPoolNode->_str</Item>
+
+          <If Condition="_HashedValue == 0">
             <Break/>
           </If>
-          <Exec>HashPoolNode = HashPoolNode->_next</Exec>
+          
+          <Exec>iNodeStepCnt--</Exec>
+          <If Condition="iNodeStepCnt == -1">
+            <Item Name ="Str">pHashPoolNode->_str</Item>
+            <Break/>
+          </If>
+          <Exec>pHashPoolNode = pHashPoolNode->_next</Exec>
         </Loop>
       </CustomListItems>
     </Expand>

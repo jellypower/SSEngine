@@ -1,6 +1,7 @@
 ﻿#include "HasherPoolBase.h"
 
 #define _CRT_SECURE_NO_WARNINGS
+
 #include <cstring>
 
 #include "SSEngineDefault/Public/SSDebugLogger.h"
@@ -31,6 +32,40 @@ HasherPoolBase::~HasherPoolBase()
 	}
 
 	free(_HasherBucket);
+}
+
+const utf16* HasherPoolBase::FindC_Str(uint64 InHashX, uint32* const OutStrLen) const
+{
+	static constexpr utf16 EMPTY_STR[] = L"EMPTY";
+	if (InHashX == 0)
+	{
+		return EMPTY_STR;
+	}
+
+	union {
+		struct {
+			uint32 HashedValue; // 해쉬 상위 32비트
+			uint32 CurNodeCnt; // 해쉬 하위 32비트
+		};
+		uint64 HashX; // 해쉬 64비트 전체값
+	};
+
+	HashX = InHashX;
+
+
+	HasherPoolNode* CurHashPoolNode = _HasherBucket[HashedValue % _HasherBucketCnt];
+
+	for (uint32 i = 0; i < CurNodeCnt; i++)
+	{
+		CurHashPoolNode = CurHashPoolNode->_next;
+	}
+
+	if (OutStrLen != nullptr)
+	{
+		*OutStrLen = CurHashPoolNode->_strLen;
+	}
+
+	return CurHashPoolNode->_str;
 }
 
 uint64 HasherPoolBase::FindOrAddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue)
@@ -87,6 +122,7 @@ uint64 HasherPoolBase::FindOrAddHasherValue(const utf16* InLoweredStr, uint32 In
 			NewNode->_strLen = InStrLen;
 			wcscpy(NewNode->_str, InLoweredStr);
 			CurHasherPoolNode->_next = NewNode;
+			CurNodeCnt++;
 
 			return HashX;
 		}

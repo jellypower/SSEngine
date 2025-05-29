@@ -210,7 +210,4 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="Public\SSContainer\SSContainer.natvis" />
-  </ItemGroup>
 </Project>
