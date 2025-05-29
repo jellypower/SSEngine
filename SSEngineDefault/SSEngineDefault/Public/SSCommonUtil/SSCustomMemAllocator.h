@@ -47,7 +47,7 @@ public:
 	void ReserveDefaultPage(int64 NewDefaultPageCnt);
 	void ReleaseDefaultPages();
 
-	AllocatedChunkHeader AllocChunk(int32 NeededSize, SS::SHasherW ChunkName = SS::SHasherW::GetEmpty());
+	AllocatedChunkHeader AllocChunk(int32 NeededSize, SS::SHasherW ChunkName = SS::SHasherW::Empty);
 	void ReleaseChunk(const AllocatedChunkHeader& ChunkToRelease);
 
 

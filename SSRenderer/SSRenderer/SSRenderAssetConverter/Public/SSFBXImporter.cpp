@@ -60,7 +60,7 @@ void SSFBXImporter::ClearFbxSceneFile()
 		_currentScene->Destroy();
 	}
 	_currentScene = nullptr;
-	_boundFilePath = SS::SHasherW::GetEmpty();
+	_boundFilePath = SS::SHasherW::Empty;
 }
 
 void SSFBXImporter::SetRendererToImportAsset(SSRenderer* RendererToImport)

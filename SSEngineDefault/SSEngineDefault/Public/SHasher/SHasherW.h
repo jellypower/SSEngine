@@ -14,7 +14,7 @@ namespace SS {
 	class SSENGINEDEFAULT_MODULE SHasherW
 	{
 	public:
-		static SHasherW GetEmpty();
+		static SHasherW Empty;
 
 
 	private:

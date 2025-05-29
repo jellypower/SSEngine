@@ -8,10 +8,7 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/StringUtilityFunctions.h"
 using namespace SS;
 
-SHasherW SHasherW::GetEmpty()
-{
-	return SHasherW();
-}
+SHasherW SHasherW::Empty = SHasherW();
 
 SHasherW::SHasherW()
 {
@@ -62,7 +59,7 @@ SHasherW& SHasherW::operator=(SHasherW rhs)
 
 bool SHasherW::IsEmpty() const
 {
-	return this->GetDirectValue() == GetEmpty().GetDirectValue();
+	return _hashX == 0;
 }
 
 bool SHasherW::operator==(SHasherW rhs) const

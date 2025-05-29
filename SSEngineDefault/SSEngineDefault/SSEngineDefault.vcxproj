@@ -123,8 +123,8 @@
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRenderer\$(IntDir)"
+copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir)..\SSRenderer\$(IntDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,8 +150,8 @@
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRenderer\$(IntDir)"
+copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir)..\SSRenderer\$(IntDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

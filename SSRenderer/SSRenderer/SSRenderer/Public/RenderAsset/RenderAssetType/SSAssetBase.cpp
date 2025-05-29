@@ -7,7 +7,7 @@ SSAssetBase::SSAssetBase(EAssetType InAssetType, SS::SHasherW InAssetName, SS::S
 }
 
 SSAssetBase::SSAssetBase(EAssetType InAssetType)
-	: _assetType(InAssetType), _assetName(SS::SHasherW::GetEmpty()), _assetPath(SS::SHasherW::GetEmpty())
+	: _assetType(InAssetType), _assetName(SS::SHasherW::Empty), _assetPath(SS::SHasherW::Empty)
 {
 }
 

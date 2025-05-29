@@ -18,8 +18,8 @@ private:
 	FbxManager* _FBXManager = nullptr;
 	FbxImporter* _FBXImporter = nullptr;
 	FbxScene* _currentScene = nullptr;
-	SS::SHasherW _boundFilePath = SS::SHasherW::GetEmpty();
-	SS::SHasherW _boundFileName = SS::SHasherW::GetEmpty();
+	SS::SHasherW _boundFilePath = SS::SHasherW::Empty;
+	SS::SHasherW _boundFileName = SS::SHasherW::Empty;
 
 	SS::PooledList<SS::pair<::FbxMesh*, SS::SHasherW>> _importedMeshNames;
 
