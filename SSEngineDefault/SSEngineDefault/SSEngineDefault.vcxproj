@@ -222,6 +222,9 @@
     <ClCompile Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestFunctions.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Public\SSContainer\SSContainer.natvis" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
