@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);$(SolutionDir)..\SSEngineDefault;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -114,11 +114,14 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\SSEngineDefault\$(IntDir);$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)DLL" "$(SolutionDir)$(IntDir)"
-copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
+copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"
+
+copy "$(SolutionDir)..\SObject\$(IntDir)DLL" "$(SolutionDir)$(IntDir)"
+copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,18 +133,21 @@ copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);$(SolutionDir)..\SSEngineDefault;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\SSEngineDefault\$(IntDir);$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(ProjectDir)\ExternLibs\FBXSDK\lib\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)DLL" "$(SolutionDir)$(IntDir)"
-copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
+copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"
+
+copy "$(SolutionDir)..\SObject\$(IntDir)DLL" "$(SolutionDir)$(IntDir)"
+copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -429,8 +435,6 @@ copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</
     <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpathInternals.h" />
     <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpointer.h" />
     <ClInclude Include="ModuleEntryScriptRunner.h" />
-    <ClInclude Include="SObject\Public\GlobalVariableSet\SObjectGlobalVariableSet.h" />
-    <ClInclude Include="SObject\Public\ModuleEntry\SObjectFactory.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
@@ -456,10 +460,6 @@ copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</
     <ClInclude Include="SSContentsBase\SComponentBase.h" />
     <ClInclude Include="SSContentsBase\SGameObject.h" />
     <ClInclude Include="SSContentsBase\SGameObjectConstructor.h" />
-    <ClInclude Include="SObject\Public\SObjectBase.h" />
-    <ClInclude Include="SObject\Public\SObjectGlobalHashMap.h" />
-    <ClInclude Include="SObject\Public\SObjHashCode.h" />
-    <ClInclude Include="SObject\Public\ModuleEntry\SObjectModuleEntry.h" />
     <ClInclude Include="SSContentsBase\SWorld.h" />
     <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
     <ClInclude Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.h" />
@@ -522,7 +522,6 @@ copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleEntryScriptRunner.cpp" />
-    <ClCompile Include="SObject\Private\ModuleEntryImpl\SObjectFactory.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
@@ -547,10 +546,6 @@ copy "$(SolutionDir)..\SSEngineDefault\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</
     <ClCompile Include="SSContentsBase\SComponentBase.cpp" />
     <ClCompile Include="SSContentsBase\SGameObject.cpp" />
     <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp" />
-    <ClCompile Include="SObject\Private\SObjectBase.cpp" />
-    <ClCompile Include="SObject\Private\SObjectGlobalHashMap.cpp" />
-    <ClCompile Include="SObject\Private\SObjHashCode.cpp" />
-    <ClCompile Include="SObject\Private\ModuleEntryImpl\SObjectModuleEntry.cpp" />
     <ClCompile Include="SSContentsBase\SWorld.cpp" />
     <ClCompile Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\AssetManagerBase.cpp" />

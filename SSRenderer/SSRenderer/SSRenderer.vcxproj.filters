@@ -1014,15 +1014,6 @@
     <ClInclude Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SObject\Public\SObjectBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SObject\Public\SObjectGlobalHashMap.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SObject\Public\ModuleEntry\SObjectModuleEntry.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSContentsBase\SGameObjectConstructor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -1042,9 +1033,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRendererUtil.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SObject\Public\SObjHashCode.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h">
@@ -1129,12 +1117,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ModuleEntryScriptRunner.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SObject\Public\GlobalVariableSet\SObjectGlobalVariableSet.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SObject\Public\ModuleEntry\SObjectFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1268,15 +1250,6 @@
     <ClCompile Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SObject\Private\SObjectBase.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SObject\Private\SObjectGlobalHashMap.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SObject\Private\ModuleEntryImpl\SObjectModuleEntry.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -1296,9 +1269,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\SObjectBase\SRendererUtil.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SObject\Private\SObjHashCode.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\RenderAsset\AssetManagerBase.cpp">
@@ -1379,9 +1349,6 @@
     <ClCompile Include="ModuleEntryScriptRunner.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SObject\Private\ModuleEntryImpl\SObjectFactory.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SSRenderer.rc">
@@ -1398,5 +1365,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Natvis\SSEngineDefault.natvis" />
   </ItemGroup>
 </Project>
