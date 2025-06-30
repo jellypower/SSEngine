@@ -1,11 +1,13 @@
 ﻿#include "DX12PSOWrapper.h"
 
+#include "DX12GALShaderWrapper.h"
 #include "DX12RootSignaturePool.h"
 #include "DX12RootSignatureWrapper.h"
 #include "SSGAL/Private/GALInstanceGlobalVariablePrivate.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
+#include "SSGAL/Private/PCommon/GALWrapper/PSOPool.h"
+#include "SSGAL/Public/GALWrapper/GALShaderPool.h"
 
-#include "SSGAL/Private/DX12/GPURenderAsset/DX12GPUShaderAssetInstance.h"
 #include "SSRenderer/Public/RenderAsset/ShaderAssetManager.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ShaderAsset.h"
@@ -51,12 +53,14 @@ const D3D12_INPUT_ELEMENT_DESC* DX12PSOWrapper::GetInputElementDesc(EInputLayout
 	}
 }
 
-DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc)
-	: PSOWrapper(pipelineDesc)
+DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwnerPSOPool)
+	: PSOWrapper(pipelineDesc, InOwnerPSOPool)
 {
+	DX12GALRenderDevice* GALDevice = (DX12GALRenderDevice*)InOwnerPSOPool->GetOwnerDevice();
+	ID3D12Device5* D3DDevice = GALDevice->GetD3DDevice();
+	GALShaderPool* ShaderPool = GALDevice->GetShaderPool();
+
 	DX12RootSignaturePool* RootSignaturePool = (DX12RootSignaturePool*)(SSGALModule::Private::g_GALRenderDevice)->GetRootSignaturePool();
-	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)SSGALModule::Private::g_GALRenderDevice)->GetD3DDevice();
-	ShaderAssetManager* lShaderAssetManager = SSGALModule::Private::g_Renderer->GetShaderAssetManager();
 
 
 	const DX12RootSignatureWrapper* RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignaturePool->GetRootSignature(pipelineDesc.RootSignatureType);
@@ -68,37 +72,22 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc)
 	ID3D12RootSignature* RootSignature = RootSignatureWrapper->GetRootSignatureInstantce();
 
 
-	const ShaderAsset* VS = lShaderAssetManager->FindShaderAsset(pipelineDesc.VSName);
+	const DX12GALShaderWrapper* VS = (DX12GALShaderWrapper*)ShaderPool->FindShader(pipelineDesc.VSName);
 	if (VS == nullptr)
 	{
 		DEBUG_BREAK();
 		return;
 	}
 
-	const ShaderAsset* PS = lShaderAssetManager->FindShaderAsset(pipelineDesc.PSName);
+	const DX12GALShaderWrapper* PS = (DX12GALShaderWrapper*)ShaderPool->FindShader(pipelineDesc.PSName);
 	if (PS == nullptr)
 	{
 		DEBUG_BREAK();
 		return;
 	}
 
-	DX12GPUShaderAssetInstance* VSShaderGPUInstance = (DX12GPUShaderAssetInstance*)VS->GetGPUInstance();
-	if (VSShaderGPUInstance == nullptr)
-	{
-		DEBUG_BREAK();
-		return;
-	}
-
-
-	DX12GPUShaderAssetInstance* PSShaderGPUInstance = (DX12GPUShaderAssetInstance*)PS->GetGPUInstance();
-	if (PSShaderGPUInstance == nullptr)
-	{
-		DEBUG_BREAK();
-		return;
-	}
-
-	ID3DBlob* VSBlob = VSShaderGPUInstance->GetCompiledShader();
-	ID3DBlob* PSBlob = PSShaderGPUInstance->GetCompiledShader();
+	ID3DBlob* VSBlob = VS->GetCompiledShader();
+	ID3DBlob* PSBlob = PS->GetCompiledShader();
 
 
 	uint32 inputElementCnt = 0;

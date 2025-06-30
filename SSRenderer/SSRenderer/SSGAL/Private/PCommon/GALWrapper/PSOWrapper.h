@@ -3,6 +3,8 @@
 #include "RootSignatureWrapper.h"
 
 
+class PSOPool;
+
 enum class EInputLayoutType : int32
 {
 	NONE = 0,
@@ -41,10 +43,11 @@ int64 HashValue(const PipelineDesc& inValue);
 class PSOWrapper : public INoncopyable
 {
 private:
+	PSOPool* _OwnerPSOPool = nullptr;
 	PipelineDesc _pipelineDesc;
 
 public:
-	PSOWrapper(const PipelineDesc& pipelineDesc);
+	PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwnerPSOPool);
 	virtual ~PSOWrapper();
 
 	virtual bool IsValid() const = 0;

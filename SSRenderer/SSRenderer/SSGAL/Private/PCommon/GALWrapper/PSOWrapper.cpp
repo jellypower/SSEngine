@@ -36,8 +36,8 @@ int64 HashValue(const PipelineDesc& inValue)
 }
 
 
-PSOWrapper::PSOWrapper(const PipelineDesc& pipelineDesc)
-	: _pipelineDesc(pipelineDesc)
+PSOWrapper::PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwnerPSOPool)
+	: _pipelineDesc(pipelineDesc), _OwnerPSOPool(InOwnerPSOPool)
 {
 }
 

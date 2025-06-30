@@ -2,12 +2,15 @@
 
 #include "RenderAssetType/ShaderAsset.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
+#include "SSGAL/Public/GALWrapper/GALShaderPool.h"
 #include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
-ShaderAssetManager::ShaderAssetManager()
-	: _shaderMap(ASSETMANAGER_DEFAULT_HASHMAP_CAPACITY)
+ShaderAssetManager::ShaderAssetManager(SSRenderer* InOwnerRenderer) :
+	_shaderMap(ASSETMANAGER_DEFAULT_HASHMAP_CAPACITY),
+	_OwnerRenderer(InOwnerRenderer)
+
 {
 }
 
@@ -29,31 +32,30 @@ ShaderAsset* ShaderAssetManager::FindShaderAsset(SS::SHasherW InShaderName) cons
 
 void ShaderAssetManager::InstantiateAllShaders()
 {
-	// TODO: 지금은 임의대로 Shader리스트를 관리하지만 나중에는 별도의 파일로 뺴서 관리하자
-	ShaderAsset* newShader = nullptr;
-
-	struct ShaderAssetConstructorDesc
+	const utf16* ShaderNames[] =
 	{
-		SS::SHasherW InAssetName;
-		SS::SHasherW InAssetPath;
-		const char* entryPoint;
-		EShaderType InShaderType;
+		{L"TempVertexShader"},
+		{L"TempPixelShader"},
+		{L"LambertShaderVS"},
+		{L"LambertShaderPS"},
 	};
 
-	ShaderAssetConstructorDesc DescSet[] =
+	GALRenderDevice* GALRenderDevice = _OwnerRenderer->_GALRenderDevice;
+	GALShaderPool* ShaderPool = GALRenderDevice->GetShaderPool();
+	for (const utf16* u16NewShaderName : ShaderNames)
 	{
-		{L"TempVertexShader", L"Resource/Shader/tempShader.hlsl", "VSMain", EShaderType::VertexShader},
-		{L"TempPixelShader", L"Resource/Shader/tempShader.hlsl", "PSMain", EShaderType::PixelShader},
-		{L"LambertShaderVS", L"Resource/Shader/LambertShader.hlsl", "VS", EShaderType::VertexShader},
-		{L"LambertShaderPS", L"Resource/Shader/LambertShader.hlsl", "PS", EShaderType::PixelShader},
-	};
+		SS::SHasherW NewShaderName = u16NewShaderName;
 
-	for (const ShaderAssetConstructorDesc& DescItem : DescSet)
-	{
-		ShaderAsset* newShader = DBG_NEW ShaderAsset(DescItem.InAssetName, DescItem.InAssetPath, DescItem.entryPoint, DescItem.InShaderType);
-		_shaderMap.Add(DescItem.InAssetName, newShader);
+		GALShaderWrapper* ShaderWrapperItem = ShaderPool->FindShader(NewShaderName);
 
-		SSRendererModule::Private::g_Renderer->_GALRenderDevice->InstantiateShaderGPUAsset(newShader);
+		if (ShaderWrapperItem == nullptr)
+		{
+			SS_ASSERT(false);
+			continue;
+		}
+
+		ShaderAsset* newShader = DBG_NEW ShaderAsset(NewShaderName);
+		_shaderMap.Add(NewShaderName, newShader);
 	}
 }
 
@@ -62,7 +64,6 @@ void ShaderAssetManager::ReleaseAllShaders()
 	for (SS::pair<SS::SHasherW, ShaderAsset*>& shaderItem : _shaderMap)
 	{
 		ShaderAsset* shaderAsset = shaderItem.second;
-		shaderAsset->ReleaseGPUInstance();
 		delete shaderAsset;
 	}
 

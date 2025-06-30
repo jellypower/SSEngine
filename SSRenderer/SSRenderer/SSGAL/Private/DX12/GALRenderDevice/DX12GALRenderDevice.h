@@ -29,8 +29,6 @@ public:
 	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) override;
 
 
-	// Instantiate Functions
-	virtual bool InstantiateShaderGPUAsset(ShaderAsset* InShaderAsset) override;
 
 	ID3D12Device5* GetD3DDevice() const { return _D3DDevice; }
 	ID3D12CommandQueue* GetD3DCommandQueue() const { return _D3DCommandQueue; }

@@ -84,9 +84,6 @@
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -97,12 +94,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\RootSignatureWrapper.h">
@@ -130,9 +121,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMaterialAssetInstanceBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h">
@@ -1101,7 +1089,22 @@
     <ClInclude Include="SSGAL\Public\GALWrapper\GALShaderWrapper.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GALShaderWrapper.h">
+    <ClInclude Include="SSGAL\Public\GALWrapper\GALShaderPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\GALPCommonShaderPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderPool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderWrapper.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1154,9 +1157,6 @@
     <ClCompile Include="SSRenderer\Public\SSRendererBuildSetings.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -1167,9 +1167,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\RootSignatureWrapper.cpp">
@@ -1194,9 +1191,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12PSOPool.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\RenderAsset\ModelAssetManager.cpp">
@@ -1280,10 +1274,19 @@
     <ClCompile Include="ModuleEntryScriptRunner.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Public\GALWrapper\GALShaderWrapper.cpp">
+    <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GALShaderWrapper.cpp">
+    <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderPool.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderWrapper.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

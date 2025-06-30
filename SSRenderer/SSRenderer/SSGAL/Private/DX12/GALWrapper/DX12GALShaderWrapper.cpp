@@ -2,9 +2,18 @@
 
 #include <d3dcompiler.h>
 
-void DX12GALShaderWrapper::CompileShaderInstance()
+DX12GALShaderWrapper::DX12GALShaderWrapper(const ShaderConstructDesc& InDesc, GALShaderPool* InOwnerPool)
 {
-	using namespace SS;
+	_OwnerShaderPool = InOwnerPool;
+
+	_ShaderName = InDesc.InAssetName;
+	_ShaderPath = InDesc.InAssetPath;
+	_entryPointName = InDesc.entryPoint;
+	_shaderType = InDesc.InShaderType;
+}
+
+bool DX12GALShaderWrapper::CompileShaderInstance()
+{
 
 #ifdef _DEBUG
 	// Enable better shader debugging with the graphics debugging tools.
@@ -23,8 +32,8 @@ void DX12GALShaderWrapper::CompileShaderInstance()
 	switch (GetShaderType())
 	{
 	case EShaderType::Undefined:
-		SS_CLASS_ERR_LOG("Invalid shader type.");
-		return;
+		SS_ASSERT_MSG("Invalid shader type.");
+		return false;
 	case EShaderType::VertexShader:
 		shaderTargetName = "vs_5_0";
 		break;
@@ -33,7 +42,7 @@ void DX12GALShaderWrapper::CompileShaderInstance()
 		break;
 	}
 
-	PooledList<D3D_SHADER_MACRO, InlineAllocator<DEFAULT_SHADER_MACRO_CNT_MAX>> DX12ShaderMacros;
+	SS::PooledList<D3D_SHADER_MACRO, SS::InlineAllocator<DEFAULT_SHADER_MACRO_CNT_MAX>> DX12ShaderMacros;
 	for (const SS::pair<SS::FixedStringA<SHADER_MACRO_DEFINE_STRLEN_MAX>, SS::FixedStringA<SHADER_MACRO_DEFINE_STRLEN_MAX>>&
 		shaderMacroItem : GetShaderMacroSet())
 	{
@@ -62,11 +71,11 @@ void DX12GALShaderWrapper::CompileShaderInstance()
 		{
 			errorStr = (char*)errorBlob->GetBufferPointer();
 		}
-		SS_CLASS_ERR_LOG("%s\n", errorStr);
-		return;
+		SS_ASSERT_MSG("compile failed.");
+		return false;
 	}
 
-	return;
+	return true;
 }
 
 void DX12GALShaderWrapper::ReleaseShaderInstance()

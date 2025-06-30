@@ -1,7 +1,10 @@
 ﻿#include "PSOPool.h"
 
+
+constexpr int32 TEMP_PSOMAP_CAPACITY = 5000;
+
 PSOPool::PSOPool()
-	: _PSOMap(5000)
+	: _PSOMap(TEMP_PSOMAP_CAPACITY)
 {
 }
 
@@ -15,7 +18,7 @@ const PSOWrapper* PSOPool::FindOrAddPSO(const PipelineDesc& PipelineDesc)
 
 	if(Result == nullptr)
 	{
-		PSOWrapper* NewWrapper = InstantiatePSO(PipelineDesc);
+		PSOWrapper* NewWrapper = CreatePSO(PipelineDesc);
 		if(NewWrapper != nullptr)
 		{
 			_PSOMap.Add(PipelineDesc, NewWrapper);

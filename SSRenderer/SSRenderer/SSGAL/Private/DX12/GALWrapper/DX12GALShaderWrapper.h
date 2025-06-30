@@ -6,7 +6,9 @@
 class DX12GALShaderWrapper : public GALShaderWrapper
 {
 public:
-	virtual void CompileShaderInstance() override;
+	DX12GALShaderWrapper(const ShaderConstructDesc& InDesc, GALShaderPool* InOwnerPool);
+
+	virtual bool CompileShaderInstance() override;
 	virtual void ReleaseShaderInstance() override;
 
 

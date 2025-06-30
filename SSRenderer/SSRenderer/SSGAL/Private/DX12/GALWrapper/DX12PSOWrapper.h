@@ -10,11 +10,10 @@ private:
 
 private:
 	ID3D12PipelineState* _PipelineState = nullptr;
-
 	
 
 public:
-	DX12PSOWrapper(const PipelineDesc& pipelineDesc);
+	DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwnerPSOPool);
 	virtual ~DX12PSOWrapper();
 
 	virtual bool IsValid() const override;

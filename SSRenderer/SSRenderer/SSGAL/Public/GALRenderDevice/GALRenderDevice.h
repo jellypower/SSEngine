@@ -6,6 +6,7 @@
 #include "SSGAL/Public/SSGALInlineSettings.h"
 #include "SSGAL/Public/GALRenderTArget/GALRenderTarget.h"
 
+class GALShaderPool;
 struct GALRenderTargetDesc;
 class SSCustomMemChunkAllocator;
 class SSRenderer;
@@ -36,6 +37,7 @@ public:
 	SSRenderer* GetOwnerRenderer() const { return _OwnerRenderer; }
 
 	RootSignaturePool* GetRootSignaturePool() const { return _rootSignaturePool; }
+	GALShaderPool* GetShaderPool() const { return _ShaderPool; }
 	PSOPool* GetPSOPool() const { return _PSOPool; }
 	SSCustomMemChunkAllocator* GetConstantBufferResourceAllocator() const { return _ConstantBufferResourceAllocator; }
 	SSCustomMemChunkAllocator* GetDescriptorTableAllocator() const { return _DescriptorTableAllocator; }
@@ -47,7 +49,6 @@ public:
 
 	virtual GALRenderDeviceContext* CreateRenderDeviceContext() = 0;
 	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) = 0;
-	virtual bool InstantiateShaderGPUAsset(ShaderAsset* ShaderAsset) = 0;
 
 	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) = 0;
 
@@ -60,6 +61,7 @@ protected:
 	SSRenderer* _OwnerRenderer = nullptr;
 
 	RootSignaturePool* _rootSignaturePool = nullptr;
+	GALShaderPool* _ShaderPool = nullptr;
 	PSOPool* _PSOPool = nullptr;
 	SSCustomMemChunkAllocator* _ConstantBufferResourceAllocator = nullptr;
 	SSCustomMemChunkAllocator* _DescriptorTableAllocator = nullptr;

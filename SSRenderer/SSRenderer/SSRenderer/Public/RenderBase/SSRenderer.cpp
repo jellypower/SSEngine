@@ -239,8 +239,7 @@ void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, SCameraCompon
 
 void SSRenderer::InitAssetManagers()
 {
-	_shaderAssetManager = DBG_NEW ShaderAssetManager();
-	_shaderAssetManager->InstantiateAllShaders();
+	_shaderAssetManager = DBG_NEW ShaderAssetManager(this);
 
 	_meshAssetManager = DBG_NEW MeshAssetManager(1000, 100);
 

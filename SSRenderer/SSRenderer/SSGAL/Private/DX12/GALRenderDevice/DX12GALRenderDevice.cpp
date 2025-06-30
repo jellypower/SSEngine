@@ -6,9 +6,9 @@
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12DescriptorHeapCustomAllocator.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALSwapChainRenderTarget.h"
+#include "SSGAL/Private/DX12/GALWrapper/DX12GALShaderPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12RootSignaturePool.h"
-#include "SSGAL/Private/DX12/GPURenderAsset/DX12GPUShaderAssetInstance.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ShaderAsset.h"
@@ -188,7 +188,10 @@ lb_loop:
 	_rootSignaturePool = DBG_NEW DX12RootSignaturePool();
 	_rootSignaturePool->InstantiateAllRootSignatures();
 
-	_PSOPool = DBG_NEW DX12PSOPool();
+	_ShaderPool = DBG_NEW DX12GALShaderPool();
+	_ShaderPool->Initialize();
+
+	_PSOPool = DBG_NEW DX12PSOPool(this);
 }
 
 DX12GALRenderDevice::~DX12GALRenderDevice()
@@ -201,6 +204,8 @@ DX12GALRenderDevice::~DX12GALRenderDevice()
 	_PSOPool->ReleaseAllPSO();
 	delete _PSOPool;
 	_PSOPool = nullptr;
+
+	delete _ShaderPool;
 
 	_rootSignaturePool->ReleaseAllRoogSignatures();
 	delete _rootSignaturePool;
@@ -299,20 +304,6 @@ GALRenderTarget* DX12GALRenderDevice::CreateRenderTarget(const GALRenderTargetDe
 	return NewRenderTarget;
 }
 
-bool DX12GALRenderDevice::InstantiateShaderGPUAsset(ShaderAsset* InShaderAsset)
-{
-	DX12GPUShaderAssetInstance* newShaderAsset = DBG_NEW DX12GPUShaderAssetInstance(InShaderAsset);
-
-	if (newShaderAsset->IsValid() == false)
-	{
-		DEBUG_BREAK();
-		delete newShaderAsset;
-		return false;
-	}
-
-	InShaderAsset->_shaderGPUAssetInstance = newShaderAsset;
-	return true;
-}
 
 void DX12GALRenderDevice::WaitForFence()
 {

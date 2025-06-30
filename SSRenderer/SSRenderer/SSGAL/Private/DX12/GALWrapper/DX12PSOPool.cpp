@@ -1,10 +1,16 @@
 ﻿#include "DX12PSOPool.h"
 
 #include "DX12PSOWrapper.h"
+#include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 
-PSOWrapper* DX12PSOPool::InstantiatePSO(const PipelineDesc& PipelineDesc) const
+DX12PSOPool::DX12PSOPool(DX12GALRenderDevice* InRenderDevice)
 {
-	DX12PSOWrapper* NewPSOWrapper = DBG_NEW DX12PSOWrapper(PipelineDesc);
+	_OwnerDevice = InRenderDevice;
+}
+
+PSOWrapper* DX12PSOPool::CreatePSO(const PipelineDesc& PipelineDesc)
+{
+	DX12PSOWrapper* NewPSOWrapper = DBG_NEW DX12PSOWrapper(PipelineDesc, this);
 
 	if(NewPSOWrapper->IsValid() == false)
 	{

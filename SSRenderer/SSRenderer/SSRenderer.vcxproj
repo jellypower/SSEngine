@@ -444,8 +444,12 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.h" />
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GALShaderWrapper.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderPool.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderWrapper.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.h" />
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h" />
     <ClInclude Include="SSGAL\Private\GALInstanceGlobalVariablePrivate.h" />
+    <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\GALPCommonShaderPool.h" />
     <ClInclude Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h" />
     <ClInclude Include="SSGAL\Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.h" />
     <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDeviceContext.h" />
@@ -454,6 +458,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSGAL\Public\GALRenderTarget\GALRenderTarget.h" />
     <ClInclude Include="SSGAL\Public\GALRenderTarget\GALRTCommonEnums.h" />
     <ClInclude Include="SSGAL\Private\PCommon\GALResourceUpdater\GALResourceUpdater.h" />
+    <ClInclude Include="SSGAL\Public\GALWrapper\GALShaderPool.h" />
     <ClInclude Include="SSGAL\Public\GALWrapper\GALShaderWrapper.h" />
     <ClInclude Include="SSGAL\Public\SSGALCommonEnums.h" />
     <ClInclude Include="SSGAL\Public\SSGALModuleEntry\GPUAssetInstanceFactory.h" />
@@ -472,7 +477,6 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12PSOPool.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12RootSignaturePool.h" />
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12PSOWrapper.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12RootSignatureWrapper.h" />
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h" />
@@ -483,10 +487,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\PSOWrapper.h" />
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\RootSignatureWrapper.h" />
     <ClInclude Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.h" />
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.h" />
-    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h" />
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h" />
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.h" />
     <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h" />
@@ -526,11 +527,14 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.cpp" />
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GALShaderWrapper.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderPool.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderWrapper.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp" />
     <ClCompile Include="SSGAL\Private\GALInstanceGlobalVariablePrivate.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GPURenderInstance\DX12GPURenderInstance_SM.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALResourceUpdater\GALResourceUpdater.cpp" />
-    <ClCompile Include="SSGAL\Public\GALWrapper\GALShaderWrapper.cpp" />
+    <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp" />
     <ClCompile Include="SSGAL\Public\SSGALModuleEntry\GPUAssetInstanceFactory.cpp" />
     <ClCompile Include="SSContentsBase\SComponentBase.cpp" />
     <ClCompile Include="SSContentsBase\SGameObject.cpp" />
@@ -544,7 +548,6 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12PSOPool.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12RootSignaturePool.cpp" />
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12PSOWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12RootSignatureWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\PSOPool.cpp" />
@@ -553,9 +556,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\PSOWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\RootSignatureWrapper.cpp" />
     <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp" />
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.cpp" />
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp" />
