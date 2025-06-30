@@ -14,7 +14,6 @@ class GALRenderTarget;
 class GALResourceUpdater;
 class MeshAsset;
 struct BasicRenderInstance;
-class ShaderAsset;
 class ConstantBufferPoolManager;
 class PSOPool;
 class RootSignaturePool;

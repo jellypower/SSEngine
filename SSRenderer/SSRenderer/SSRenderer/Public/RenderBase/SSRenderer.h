@@ -17,7 +17,6 @@ class ModelAssetManager;
 class ConstantBufferPoolManager;
 class GlobalRenderDeviceBase;
 class MaterialAssetManager;
-class ShaderAssetManager;
 class MeshAssetManager;
 class PSOPool;
 class RootSignaturePool;
@@ -29,7 +28,6 @@ public:
 	GALRenderDeviceContext* _MainDeviceContext = nullptr;
 
 private:
-	ShaderAssetManager* _shaderAssetManager = nullptr;
 	MaterialAssetManager* _materialAssetManager = nullptr;
 	MeshAssetManager* _meshAssetManager = nullptr;
 	ModelAssetManager* _ModelAssetManager = nullptr;
@@ -48,7 +46,6 @@ public:
 	virtual ~SSRenderer();
 
 
-	ShaderAssetManager* GetShaderAssetManager() const { return _shaderAssetManager; }
 	MaterialAssetManager* GetMaterialAssetManager() const { return _materialAssetManager; }
 	MeshAssetManager* GetMeshAssetManager() const { return _meshAssetManager; }
 	ModelAssetManager* GetModelAssetManager() const { return _ModelAssetManager; }

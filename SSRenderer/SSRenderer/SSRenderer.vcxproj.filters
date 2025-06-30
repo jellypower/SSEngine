@@ -66,12 +66,6 @@
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ShaderAsset.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -1140,12 +1134,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ShaderAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp">

@@ -13,7 +13,6 @@
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/ModelCombinationAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/ShaderAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
@@ -239,8 +238,6 @@ void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, SCameraCompon
 
 void SSRenderer::InitAssetManagers()
 {
-	_shaderAssetManager = DBG_NEW ShaderAssetManager(this);
-
 	_meshAssetManager = DBG_NEW MeshAssetManager(1000, 100);
 
 	_materialAssetManager = DBG_NEW MaterialAssetManager(1000, 1000);
@@ -279,7 +276,4 @@ void SSRenderer::CleanupAssetMnagers()
 	delete _meshAssetManager;
 	_meshAssetManager = nullptr;
 
-	_shaderAssetManager->ReleaseAllShaders();
-	delete _shaderAssetManager;
-	_shaderAssetManager = nullptr;
 }

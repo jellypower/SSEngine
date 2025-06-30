@@ -492,9 +492,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ShaderAsset.h" />
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\RootSignaturePool.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.h" />
@@ -560,9 +558,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp" />
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ShaderAsset.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\RootSignaturePool.cpp" />
-    <ClCompile Include="SSRenderer\Public\RenderAsset\ShaderAssetManager.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.cpp" />

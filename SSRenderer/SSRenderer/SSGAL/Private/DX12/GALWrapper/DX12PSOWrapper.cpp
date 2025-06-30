@@ -8,9 +8,7 @@
 #include "SSGAL/Private/PCommon/GALWrapper/PSOPool.h"
 #include "SSGAL/Public/GALWrapper/GALShaderPool.h"
 
-#include "SSRenderer/Public/RenderAsset/ShaderAssetManager.h"
 
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ShaderAsset.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
 
 
