@@ -1,6 +1,6 @@
 ﻿#include "DX12PSOPool.h"
 
-#include "GraphicsResourceWrapper/DX12PSOWrapper.h"
+#include "DX12PSOWrapper.h"
 
 PSOWrapper* DX12PSOPool::InstantiatePSO(const PipelineDesc& PipelineDesc) const
 {

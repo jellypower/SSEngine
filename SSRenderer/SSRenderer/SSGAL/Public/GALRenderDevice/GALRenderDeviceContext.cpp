@@ -1,6 +1,7 @@
 ﻿#include "GALRenderDeviceContext.h"
 
-#include "SSGAL/Public/GraphicsResourcePool/GALResourceUpdater.h"
+#include "SSGAL/Private/PCommon/GALResourceUpdater/GALResourceUpdater.h"
+
 
 GALRenderDeviceContext::GALRenderDeviceContext(GALRenderDevice* InRenderDevice)
 {

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSGAL/Public/GraphicsResourcePool/RootSignaturePool.h"
+#include "SSGAL/Private/PCommon/GALWrapper/RootSignaturePool.h"
 
 class DX12RootSignaturePool : public RootSignaturePool
 {

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSGAL/Public/GraphicsResourcePool/PSOPool.h"
+#include "SSGAL/Private/PCommon/GALWrapper/PSOPool.h"
 
 class DX12PSOPool : public PSOPool
 {

@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <d3d12.h>
-#include "SSGAL/Public/GraphicsResourcePool/GALResourceUpdater.h"
 
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
+#include "SSGAL/Private/PCommon/GALResourceUpdater/GALResourceUpdater.h"
 
 class DX12GALRenderDevice;
 class DX12GALRenderDeviceContext;

@@ -6,20 +6,19 @@
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12DescriptorHeapCustomAllocator.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALSwapChainRenderTarget.h"
+#include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
+#include "SSGAL/Private/DX12/GALWrapper/DX12RootSignaturePool.h"
 #include "SSGAL/Private/DX12/GPURenderAsset/DX12GPUShaderAssetInstance.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/DX12PSOPool.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/DX12RootSignaturePool.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/GraphicsResourceWrapper/DX12ConstantBufferPoolManager.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
-#include "SSGAL/Public/GraphicsResourcePool/ConstantBufferPoolManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ShaderAsset.h"
 
 
 
 DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, SSRenderer* OwnerRenderer, bool EnableDebugLayer, bool EnableGPUBaseValidataion)
-	: GALRenderDevice(OwnerRenderer)
 {
+	_OwnerRenderer = OwnerRenderer;
+
 	_hInst = InhInst;
 	_hWnd = InhWnd;
 

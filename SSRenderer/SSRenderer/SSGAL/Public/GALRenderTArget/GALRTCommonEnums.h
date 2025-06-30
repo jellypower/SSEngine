@@ -1,6 +1,9 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
+
+// GAL Render Target Common Enums
+
 enum class ERenderTargetType : uint8
 {
 	None = 0,

@@ -12,8 +12,8 @@ class MeshAsset;
 class GALRenderDeviceContext : public INoncopyable
 {
 public:
-	GALRenderDeviceContext(GALRenderDevice* InRenderDevice);
-	virtual ~GALRenderDeviceContext();
+	GALRenderDeviceContext(GALRenderDevice* InRenderDevice); // MODL: 분리
+	virtual ~GALRenderDeviceContext(); // MODL: 분리
 
 public:
 	virtual bool IsValid() const = 0;

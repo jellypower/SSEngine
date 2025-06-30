@@ -1,12 +1,11 @@
 ﻿#include "DX12PSOWrapper.h"
 
+#include "DX12RootSignaturePool.h"
 #include "DX12RootSignatureWrapper.h"
 #include "SSGAL/Private/GALInstanceGlobalVariablePrivate.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 
 #include "SSGAL/Private/DX12/GPURenderAsset/DX12GPUShaderAssetInstance.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/DX12PSOPool.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/DX12RootSignaturePool.h"
 #include "SSRenderer/Public/RenderAsset/ShaderAssetManager.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ShaderAsset.h"

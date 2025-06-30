@@ -6,7 +6,7 @@ class MeshAsset;
 class GPUMeshAssetInstanceBase : public GPUAssetInstanceBase
 {
 public:
-	GPUMeshAssetInstanceBase(MeshAsset* ownerMeshAsset);
+	GPUMeshAssetInstanceBase(MeshAsset* ownerMeshAsset); // MODL: ºÐ¸®
 	virtual ~GPUMeshAssetInstanceBase();
 };
 

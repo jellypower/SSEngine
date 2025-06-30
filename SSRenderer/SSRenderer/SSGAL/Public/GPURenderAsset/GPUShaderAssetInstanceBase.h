@@ -6,5 +6,5 @@ class ShaderAsset;
 class GPUShaderAssetInstanceBase : public GPUAssetInstanceBase
 {
 public:
-	GPUShaderAssetInstanceBase(ShaderAsset* ownerShaderAsset);
+	GPUShaderAssetInstanceBase(ShaderAsset* ownerShaderAsset); // MODL: 분리
 };

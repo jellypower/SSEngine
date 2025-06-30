@@ -7,7 +7,6 @@
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
-#include "SSGAL/Public/GraphicsResourcePool/ConstantBufferPoolManager.h"
 
 #include "SSRenderer/Public/SSRendererModuleEntry/SSRendererFactory.h"
 #include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"

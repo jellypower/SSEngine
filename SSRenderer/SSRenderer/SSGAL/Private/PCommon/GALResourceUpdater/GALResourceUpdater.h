@@ -7,7 +7,7 @@ class GALRenderDeviceContext;
 class GALResourceUpdater : INoncopyable
 {
 public:
-	GALResourceUpdater(GALRenderDevice* RenderDevice, GALRenderDeviceContext* InRenderDeviceContext);
+	GALResourceUpdater(GALRenderDevice* RenderDevice, GALRenderDeviceContext* InRenderDeviceContext); // MODL: 분리
 
 	virtual void ResetUpdateBuffer() = 0;
 	

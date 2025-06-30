@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <d3dx12.h>
 
-#include "SSGAL/Public/GraphicsResourcePool/GraphicsResourceWrapper/RootSignatureWrapper.h"
+#include "SSGAL/Private/PCommon/GALWrapper/RootSignatureWrapper.h"
 
 enum class EGRD3D12SamplerDescType
 {

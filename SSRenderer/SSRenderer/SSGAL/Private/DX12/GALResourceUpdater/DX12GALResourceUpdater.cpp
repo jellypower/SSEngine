@@ -1,6 +1,7 @@
-﻿#include "DX12GALResourceUpdater.h"
+﻿#include <d3dx12.h>
 
-#include "DX12RootSignatureWrapper.h"
+#include "DX12GALResourceUpdater.h"
+
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
@@ -178,7 +179,7 @@ ID3D12Resource* DX12GALResourceUpdater::RentUpdateBuffer(int32& OutBufferStartOf
 		_CurDefaultBufferIdx++;
 	}
 
-	if (_DefaultUploadBuffers.GetSize() <= _CurDefaultBufferIdx)
+	if (_DefaultUploadBuffers.GetSize() <= _CurDefaultBufferIdx) // 예약돼있는 페이지보다 더 많은 양이 필요한 경우 증량
 	{
 		CD3DX12_HEAP_PROPERTIES UploadHeapTypeProp(D3D12_HEAP_TYPE_UPLOAD);
 		CD3DX12_RESOURCE_DESC ResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(GAL_DEFAULT_RESOURCEUUPDATER_PAGESIZE);

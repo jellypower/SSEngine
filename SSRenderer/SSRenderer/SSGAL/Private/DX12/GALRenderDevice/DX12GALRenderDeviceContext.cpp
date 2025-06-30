@@ -4,17 +4,17 @@
 #include "SSContentsBase/SGameObject.h"
 
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
-#include "SSGAL/Private/DX12/GPURenderAsset/DX12GPUMaterialAssetInstance.h"
 #include "SSGAL/Private/DX12/GPURenderAsset/DX12GPUMeshAssetInstance.h"
 #include "SSGAL/Private/DX12/GPURenderInstance/DX12GPURenderInstance_SM.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/DX12PSOPool.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/GraphicsResourceWrapper/DX12GALResourceUpdater.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/GraphicsResourceWrapper/DX12PSOWrapper.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/GraphicsResourceWrapper/DX12RootSignatureWrapper.h"
+
+#include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
+#include "SSGAL/Private/DX12/GALWrapper/DX12PSOWrapper.h"
+#include "SSGAL/Private/DX12/GALWrapper/DX12RootSignaturePool.h"
+#include "SSGAL/Private/DX12/GALWrapper/DX12RootSignatureWrapper.h"
+#include "SSGAL/Private/DX12/GALResourceUpdater/DX12GALResourceUpdater.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
-#include "SSGAL/Public/GraphicsResourcePool/RootSignaturePool.h"
 
 #include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"

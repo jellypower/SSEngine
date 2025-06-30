@@ -2,8 +2,8 @@
 
 #include "SSGAL/Private/GALInstanceGlobalVariablePrivate.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/DX12PSOPool.h"
-#include "SSGAL/Private/DX12/GraphicsResourcePool/GraphicsResourceWrapper/DX12PSOWrapper.h"
+#include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
+#include "SSGAL/Private/DX12/GALWrapper/DX12PSOWrapper.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
 
 

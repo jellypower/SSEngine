@@ -1,1 +1,0 @@
-﻿#include "GALRTCommonEnums.h"

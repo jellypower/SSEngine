@@ -29,10 +29,6 @@ enum class ERenderDevicePlatnform : uint8
 class GALRenderDevice : public INoncopyable
 {
 public:
-	GALRenderDevice(SSRenderer* OwnerRenderer);
-	virtual ~GALRenderDevice();
-
-public:
 	virtual void BeginRender() = 0;
 	virtual void EndRender() = 0;
 
@@ -54,10 +50,6 @@ public:
 	virtual bool InstantiateShaderGPUAsset(ShaderAsset* ShaderAsset) = 0;
 
 	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) = 0;
-
-
-
-	virtual void TEMP_InitializePSOInstances();
 
 
 protected:

@@ -1,6 +1,6 @@
 ﻿#include "DX12RootSignaturePool.h"
 
-#include "GraphicsResourceWrapper/DX12RootSignatureWrapper.h"
+#include "DX12RootSignatureWrapper.h"
 
 void DX12RootSignaturePool::InstantiateAllRootSignatures()
 {

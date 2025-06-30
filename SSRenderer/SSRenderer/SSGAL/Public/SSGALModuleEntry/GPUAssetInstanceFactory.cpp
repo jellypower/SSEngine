@@ -13,7 +13,11 @@ GALRenderDevice* CreateGALRenderDevice(
 	DX12GALRenderDevice* NewRenderDevice = DBG_NEW DX12GALRenderDevice(
 		InhInst, InhWnd, Renderer, EnableDebugLayer, EnableGPUBaseValidataion);
 
-	NewRenderDevice->TEMP_InitializePSOInstances();
+
+	PSOPool* PSOPool = NewRenderDevice->GetPSOPool();
+	{
+		// TEMP_InitializePSOPool
+	}
 
 
 	return NewRenderDevice;

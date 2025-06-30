@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "GraphicsResourceWrapper/PSOWrapper.h"
+#include "PSOWrapper.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 class PSOPool : public INoncopyable
@@ -14,6 +14,7 @@ public:
 
 	const PSOWrapper* FindOrAddPSO(const PipelineDesc& PipelineDesc);
 	virtual void ReleaseAllPSO();
+
 protected:
 	virtual PSOWrapper* InstantiatePSO(const PipelineDesc& PipelineDesc) const = 0;
 };

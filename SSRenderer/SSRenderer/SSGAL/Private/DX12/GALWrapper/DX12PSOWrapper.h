@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <d3dx12.h>
 
-#include "SSGAL/Public/GraphicsResourcePool/GraphicsResourceWrapper/PSOWrapper.h"
+#include "SSGAL/Private/PCommon/GALWrapper/PSOWrapper.h"
 
 class DX12PSOWrapper : public PSOWrapper
 {
