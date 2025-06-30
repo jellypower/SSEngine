@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include "GPUAssetInstanceBase.h"
+#include "SSEngineDefault/Public/INoncopyable.h"
 
 class MaterialAsset;
 
-class GPUMaterialAssetInstanceBase : public GPUAssetInstanceBase
+class GPUMaterialAssetInstanceBase : public INoncopyable
 {
-public:
-	GPUMaterialAssetInstanceBase(MaterialAsset* ownerMaterial); // MODL: 분리
+protected:
+	MaterialAsset* _OwnerMaterialAsset = nullptr;
 };

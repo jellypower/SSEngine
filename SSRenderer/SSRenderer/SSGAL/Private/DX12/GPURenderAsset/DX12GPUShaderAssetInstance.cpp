@@ -5,9 +5,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ShaderAsset.h"
 
 DX12GPUShaderAssetInstance::DX12GPUShaderAssetInstance(ShaderAsset* ownerShader)
-	: GPUShaderAssetInstanceBase(ownerShader)
 {
-	using namespace SS;
 
 #ifdef _DEBUG
 	// Enable better shader debugging with the graphics debugging tools.
@@ -36,7 +34,7 @@ DX12GPUShaderAssetInstance::DX12GPUShaderAssetInstance(ShaderAsset* ownerShader)
 		break;
 	}
 
-	PooledList<D3D_SHADER_MACRO, InlineAllocator<DEFAULT_SHADER_MACRO_CNT_MAX>> DX12ShaderMacros;
+	SS::PooledList<D3D_SHADER_MACRO, SS::InlineAllocator<DEFAULT_SHADER_MACRO_CNT_MAX>> DX12ShaderMacros;
 	for (const SS::pair<SS::FixedStringA<SHADER_MACRO_DEFINE_STRLEN_MAX>, SS::FixedStringA<SHADER_MACRO_DEFINE_STRLEN_MAX>>&
 		shaderMacroItem : ownerShader->GetShaderMacros())
 	{

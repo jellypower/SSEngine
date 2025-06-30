@@ -12,10 +12,6 @@ class MeshAsset;
 class GALRenderDeviceContext : public INoncopyable
 {
 public:
-	GALRenderDeviceContext(GALRenderDevice* InRenderDevice); // MODL: 분리
-	virtual ~GALRenderDeviceContext(); // MODL: 분리
-
-public:
 	virtual bool IsValid() const = 0;
 	GALRenderDevice* GetOwnerRenderDevice() const { return _OwnerRenderDevice; }
 
@@ -34,12 +30,12 @@ public:
 
 	virtual void Draw(BasicRenderInstance* InRenderInstance) = 0;
 
+protected:
+	virtual void ResetRenderState() = 0;
+
 public:
 	void SetCameraVPTransform(const XMMATRIX& InTransform) { _CameraVPTransform = InTransform; }
 	void SetCameraPosition(const XMVECTOR& InPos) { _CameraPosition = InPos; }
-
-protected:
-	virtual void ResetRenderState();
 
 
 protected:

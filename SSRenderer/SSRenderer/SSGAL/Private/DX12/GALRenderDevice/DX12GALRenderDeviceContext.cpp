@@ -25,8 +25,9 @@
 
 
 DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 InitialCommandListCnt)
-	: GALRenderDeviceContext(InRenderDevice)
 {
+	_OwnerRenderDevice = InRenderDevice;
+
 	ID3D12Device5* D3DDevice = InRenderDevice->GetD3DDevice();
 
 	_CommandAllocators.Reserve(InitialCommandListCnt * 2);
@@ -107,6 +108,8 @@ DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 
 	_CommandLists.Resize(0);
 	_CommandAllocators.Resize(0);
+
+	delete _ResourceUpdater;
 }
 
 bool DX12GALRenderDeviceContext::IsValid() const
@@ -399,7 +402,7 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(ModelAsset* InModelAsset, D
 
 void DX12GALRenderDeviceContext::ResetRenderState()
 {
-	GALRenderDeviceContext::ResetRenderState();
+	_ResourceUpdater->ResetUpdateBuffer();
 	ResetCommandList();
 }
 

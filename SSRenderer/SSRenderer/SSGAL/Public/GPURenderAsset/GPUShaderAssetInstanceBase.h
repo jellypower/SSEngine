@@ -1,10 +1,14 @@
 ﻿#pragma once
-#include "GPUAssetInstanceBase.h"
+#include "SSEngineDefault/Public/INoncopyable.h"
+
 
 class ShaderAsset;
 
-class GPUShaderAssetInstanceBase : public GPUAssetInstanceBase
+class GPUShaderAssetInstanceBase : public INoncopyable
 {
+protected:
+	ShaderAsset* _OwnerShaderAsset;
+
 public:
-	GPUShaderAssetInstanceBase(ShaderAsset* ownerShaderAsset); // MODL: 분리
+	virtual bool IsValid() const = 0;
 };

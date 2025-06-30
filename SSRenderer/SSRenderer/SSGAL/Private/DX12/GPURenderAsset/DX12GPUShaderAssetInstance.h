@@ -9,7 +9,7 @@ public:
 	DX12GPUShaderAssetInstance(ShaderAsset* ownerShader);
 	virtual ~DX12GPUShaderAssetInstance();
 
-	bool IsValid() const override;
+	virtual bool IsValid() const override;
 
 	ID3DBlob* GetCompiledShader() const { return _compiledShader; }
 

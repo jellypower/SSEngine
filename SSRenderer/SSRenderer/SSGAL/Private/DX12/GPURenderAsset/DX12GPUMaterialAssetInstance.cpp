@@ -7,9 +7,10 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
 
 
-DX12GPUMaterialAssetInstance::DX12GPUMaterialAssetInstance(MaterialAsset* ownerMaterial):
-	 GPUMaterialAssetInstanceBase(ownerMaterial)
+DX12GPUMaterialAssetInstance::DX12GPUMaterialAssetInstance(MaterialAsset* ownerMaterial)
 {
+	_OwnerMaterialAsset = ownerMaterial;
+
 	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)SSGALModule::Private::g_GALRenderDevice)->GetD3DDevice();
 	DX12PSOPool* PSOPool = (DX12PSOPool*)SSGALModule::Private::g_GALRenderDevice->GetPSOPool();
 
@@ -32,9 +33,4 @@ DX12GPUMaterialAssetInstance::DX12GPUMaterialAssetInstance(MaterialAsset* ownerM
 
 DX12GPUMaterialAssetInstance::~DX12GPUMaterialAssetInstance()
 {
-}
-
-bool DX12GPUMaterialAssetInstance::IsValid() const
-{
-	return false;
 }

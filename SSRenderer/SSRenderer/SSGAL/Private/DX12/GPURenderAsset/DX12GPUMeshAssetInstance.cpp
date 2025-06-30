@@ -1,11 +1,9 @@
 #include "DX12GPUMeshAssetInstance.h"
 
-#include "SSEngineDefault/Public/SSDebugLogger.h"
-
 
 DX12GPUMeshAssetInstance::DX12GPUMeshAssetInstance(MeshAsset* ownerMeshAsset)
-	: GPUMeshAssetInstanceBase(ownerMeshAsset)
 {
+	_OwnerMeshAsset = ownerMeshAsset;
 }
 
 DX12GPUMeshAssetInstance::~DX12GPUMeshAssetInstance()
@@ -19,9 +17,4 @@ DX12GPUMeshAssetInstance::~DX12GPUMeshAssetInstance()
 	{
 		_IndexBuffer->Release();
 	}
-}
-
-bool DX12GPUMeshAssetInstance::IsValid() const
-{
-	return _VertexBuffer != nullptr;
 }

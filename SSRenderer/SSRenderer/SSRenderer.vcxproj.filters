@@ -84,9 +84,6 @@
     <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUAssetInstanceBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -1157,9 +1154,6 @@
     <ClCompile Include="SSRenderer\Public\SSRendererBuildSetings.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -1176,9 +1170,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUShaderAssetInstance.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUShaderAssetInstanceBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\RootSignatureWrapper.cpp">
@@ -1203,9 +1194,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12PSOPool.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSGAL\Public\GPURenderAsset\GPUMaterialAssetInstanceBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.cpp">
@@ -1253,9 +1241,6 @@
     <ClCompile Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Public\GALRenderDevice\GALRenderDeviceContext.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -1272,9 +1257,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\SObjectBase\SCameraComponent.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSGAL\Public\GPURenderInstance\RenderInstanceGPUMetadata.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.cpp">

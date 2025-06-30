@@ -1,12 +1,11 @@
 #pragma once
-#include "GPUAssetInstanceBase.h"
+#include "SSEngineDefault/Public/INoncopyable.h"
 
 class MeshAsset;
 
-class GPUMeshAssetInstanceBase : public GPUAssetInstanceBase
+class GPUMeshAssetInstanceBase : public INoncopyable
 {
-public:
-	GPUMeshAssetInstanceBase(MeshAsset* ownerMeshAsset); // MODL: ºÐ¸®
-	virtual ~GPUMeshAssetInstanceBase();
+protected:
+	MeshAsset* _OwnerMeshAsset = nullptr;
 };
 

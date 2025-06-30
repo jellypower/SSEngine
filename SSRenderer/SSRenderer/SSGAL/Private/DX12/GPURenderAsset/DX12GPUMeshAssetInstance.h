@@ -9,7 +9,6 @@ class DX12GPUMeshAssetInstance : public GPUMeshAssetInstanceBase
 public:
 	DX12GPUMeshAssetInstance(MeshAsset* ownerMeshAsset);
 	virtual ~DX12GPUMeshAssetInstance();
-	bool IsValid() const override;
 
 public:
 	ID3D12Resource* _VertexBuffer = nullptr;
@@ -19,4 +18,3 @@ public:
 	int32 _SubMeshCnt = 0;
 	D3D12_INDEX_BUFFER_VIEW _IndexBufferView[SUBMESH_COUNT_MAX];
 };
-
