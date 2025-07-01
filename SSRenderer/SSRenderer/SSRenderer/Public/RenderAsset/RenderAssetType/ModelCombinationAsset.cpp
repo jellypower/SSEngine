@@ -21,10 +21,6 @@ ModelCombinationAsset::ModelCombinationAsset(SS::SHasherW InAssetName, SS::SHash
 	_childs.Reserve(ChildCnt);
 }
 
-ModelCombinationAsset::ModelCombinationAsset()
-	: SSAssetBase(EAssetType::ModelCombination)
-{
-}
 
 void ModelCombinationAsset::AddNewChild(const AssetPlacementReference& newReference)
 {

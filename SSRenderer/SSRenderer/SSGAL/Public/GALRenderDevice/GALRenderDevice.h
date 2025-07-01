@@ -4,7 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSEngineDefault/Public/SSContainer/Allocators/InlineAllocator.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
-#include "SSGAL/Public/GALRenderTArget/GALRenderTarget.h"
+#include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
 
 class GALShaderPool;
 struct GALRenderTargetDesc;

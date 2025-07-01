@@ -8,7 +8,6 @@ enum class ERenderInstanceType;
 class GALRIMetadata : INoncopyable
 {
 protected:
-	SObjHashCode _OwnerHashCode;
 	const BasicRenderInstance* _OwnerRenderInstance = nullptr;
 
 public:

@@ -4,7 +4,6 @@
 class GALRIMetadata;
 enum class ERenderInstanceType : int32;
 class ModelAsset;
-class SRenderComponentBase;
 
 
 
@@ -16,7 +15,6 @@ class BasicRenderInstance : public INoncopyable
 {
 public:
 	void ReleaseGALRI();
-	virtual ~BasicRenderInstance();
 
 public:
 	ERenderInstanceType _Type; 

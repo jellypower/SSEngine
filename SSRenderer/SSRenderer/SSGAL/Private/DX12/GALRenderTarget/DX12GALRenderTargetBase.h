@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <d3d12.h>
 
-#include "SSGAL/Public/GALRenderTArget/GALRenderTarget.h"
+#include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
 
 
 class DX12GALRenderTargetBase : public GALRenderTarget

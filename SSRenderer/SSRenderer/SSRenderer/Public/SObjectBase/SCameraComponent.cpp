@@ -1,7 +1,7 @@
 ﻿#include "SCameraComponent.h"
 
 #include "SSContentsBase/SGameObject.h"
-#include "SSGAL/Public/GALRenderTArget/GALRenderTarget.h"
+#include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
 
 void SCameraComponent::PostConstructHierarchy()
 {

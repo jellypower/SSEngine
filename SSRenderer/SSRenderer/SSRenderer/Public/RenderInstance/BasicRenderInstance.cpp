@@ -10,7 +10,3 @@ void BasicRenderInstance::ReleaseGALRI()
 		_GALRIMetadata = nullptr;
 	}
 }
-
-BasicRenderInstance::~BasicRenderInstance()
-{
-}
