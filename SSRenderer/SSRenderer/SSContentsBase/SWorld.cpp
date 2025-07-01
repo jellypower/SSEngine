@@ -2,10 +2,11 @@
 
 #include "SSContentsBase/SComponentBase.h"
 #include "SSContentsBase/SGameObject.h"
+
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/RenderWorld.h"
-#include "SSRenderer/Public/SObjectBase/SRenderComponentBase.h"
+#include "SSRenderer/Public/SObjectBase/RenderComponent/SRenderComponentBase.h"
 
 SWorld::SWorld() :
 	_ObjectsByHashCode(WORLD_OBJECTMAP_HASHMAP_SIZE, WORLD_OBJECTMAP_HASHBUCKET_SIZE),

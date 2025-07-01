@@ -1,9 +1,12 @@
 ﻿#include "SRendererUtil.h"
 
-#include "SRenderComponentBase.h"
-#include "SStaticMeshRenderComponent.h"
+
+#include "RenderComponent/SRenderComponentBase.h"
+#include "RenderComponent/SStaticMeshRenderComponent.h"
+
 #include "SSContentsBase/SGameObjectConstructor.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+
 #include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"
 #include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/ModelCombinationAssetManager.h"

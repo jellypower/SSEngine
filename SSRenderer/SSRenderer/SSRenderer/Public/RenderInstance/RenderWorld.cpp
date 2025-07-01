@@ -6,7 +6,6 @@
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
-#include "SSRenderer/Public/SObjectBase/SRenderComponentBase.h"
 
 RenderWorld::RenderWorld() :
 	_RenderInstanceByHashCode(RENDERWORLD_HASHMAP_SIZE, RENDERWORLD_BUCKET_CAPACITY)
@@ -56,14 +55,14 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 
 void RenderWorld::RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove)
 {
-	IRenderInstance** ppBasicRenderInstance = _RenderInstanceByHashCode.Find(RenderInstanceIDToRemove);
-	if (ppBasicRenderInstance == nullptr)
+	IRenderInstance** ppRenderInstance = _RenderInstanceByHashCode.Find(RenderInstanceIDToRemove);
+	if (ppRenderInstance == nullptr)
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	IRenderInstance* RenderInstanceToRemove = *ppBasicRenderInstance;
+	IRenderInstance* RenderInstanceToRemove = *ppRenderInstance;
 	if (RenderInstanceToRemove == nullptr)
 	{
 		SS_ASSERT(false);

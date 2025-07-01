@@ -981,7 +981,7 @@
     <ClInclude Include="SSContentsBase\SComponentBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.h">
+    <ClInclude Include="SSRenderer\Public\SObjectBase\RenderComponent\SRenderComponentBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSContentsBase\SWorld.h">
@@ -1023,7 +1023,7 @@
     <ClInclude Include="SSGAL\Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.h">
+    <ClInclude Include="SSRenderer\Public\SObjectBase\RenderComponent\SStaticMeshRenderComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.h">
@@ -1187,7 +1187,7 @@
     <ClCompile Include="SSContentsBase\SComponentBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.cpp">
+    <ClCompile Include="SSRenderer\Public\SObjectBase\RenderComponent\SRenderComponentBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSContentsBase\SWorld.cpp">
@@ -1220,7 +1220,7 @@
     <ClCompile Include="SSGAL\Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.cpp">
+    <ClCompile Include="SSRenderer\Public\SObjectBase\RenderComponent\SStaticMeshRenderComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.cpp">
