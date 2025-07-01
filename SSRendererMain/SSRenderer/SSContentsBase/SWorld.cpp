@@ -4,7 +4,7 @@
 #include "SSContentsBase/SGameObject.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/RenderBase/RenderWorld.h"
+#include "SSRenderer/Public/SObjectBase/RenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/SObjectBase/RenderComponent/SRenderComponentBase.h"
 

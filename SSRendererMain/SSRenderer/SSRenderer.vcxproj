@@ -472,7 +472,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\IRIMesh.h" />
-    <ClInclude Include="SSRenderer\Public\RenderBase\RenderWorld.h" />
+    <ClInclude Include="SSRenderer\Public\SObjectBase\RenderWorld.h" />
     <ClInclude Include="SSRenderer\Private\RenderInstance\RIStaticMesh.h" />
     <ClInclude Include="SSRenderer\Public\SObjectBase\SCameraComponent.h" />
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRendererUtil.h" />
@@ -565,7 +565,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\SSAssetBase.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\MeshAsset.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderAsset\MeshAssetManager.cpp" />
-    <ClCompile Include="SSRenderer\Private\RenderBase\SSRenderer.cpp" />
+    <ClCompile Include="SSRenderer\Private\SObjectBase\SSRenderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SSRenderer\Private\SObjectBase\RenderComponent\SStaticMeshRenderComponent.cpp" />
     <ClCompile Include="SSRenderer\Private\ModuleEntry\SSRendererFactory.cpp" />

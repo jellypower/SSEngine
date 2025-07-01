@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "SObject/Public/SObjHashCode.h"
+
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 class RIStaticMesh : public IRIMesh

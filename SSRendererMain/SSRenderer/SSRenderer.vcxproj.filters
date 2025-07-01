@@ -987,7 +987,7 @@
     <ClInclude Include="SSContentsBase\SWorld.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderBase\RenderWorld.h">
+    <ClInclude Include="SSRenderer\Public\SObjectBase\RenderWorld.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRendererUtil.h">
@@ -1112,7 +1112,7 @@
     <ClCompile Include="SSRenderer\Private\ModuleEntry\SSRendererFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Private\RenderBase\SSRenderer.cpp">
+    <ClCompile Include="SSRenderer\Private\SObjectBase\SSRenderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Private\RenderAsset\MeshAssetManager.cpp">

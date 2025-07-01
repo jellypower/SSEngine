@@ -1,5 +1,5 @@
 #pragma once
-#include "SObject/Public/SObjHashCode.h"
+#include "SSEngineDefault/Public/SSEngineDefault.h"
 
 class GALRIMetadata;
 enum class ERenderInstanceType : int32;
