@@ -16,7 +16,6 @@
 
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
-#include "SSGAL/Public/SSGALModuleEntry/GPUAssetInstanceFactory.h"
 
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
 
@@ -129,7 +128,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 
 	SSRenderer* EngineRenderer = CreateRenderer(g_hInst, g_hWnd);
-	InjectRendererToGALModule(EngineRenderer);
 	g_Engine = DBG_NEW SSEngine(EngineRenderer);
 
 	g_Engine->InjectImportFilePath_TMP(FbxFilePathToLoad.C_Str());

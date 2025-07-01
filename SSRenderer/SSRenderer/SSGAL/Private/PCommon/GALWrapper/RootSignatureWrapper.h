@@ -1,6 +1,8 @@
 #pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class RootSignaturePool;
+
 enum class ERootSignatureType : int32
 {
 	NONE = -1,
@@ -23,11 +25,12 @@ FORCEINLINE const utf16* ToUtf16Str(ERootSignatureType e)
 
 class RootSignatureWrapper : public INoncopyable
 {
-private:
+protected:
 	ERootSignatureType _rootSignatureType = ERootSignatureType::NONE;
+	RootSignaturePool* _OwnerRenderSignaturePool = nullptr;
 
 public:
-	RootSignatureWrapper(ERootSignatureType rootSignatureType);
+	RootSignatureWrapper(ERootSignatureType rootSignatureType, RootSignaturePool* InOwnerRootSignaturePool);
 	virtual ~RootSignatureWrapper();
 
 	virtual bool IsValid() const = 0;

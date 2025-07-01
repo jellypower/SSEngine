@@ -4,10 +4,12 @@
 #include "SSGAL/Public/GPURenderAsset/GPUMeshAssetInstanceBase.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
+class DX12GALRenderDevice;
+
 class DX12GPUMeshAssetInstance : public GPUMeshAssetInstanceBase
 {
 public:
-	DX12GPUMeshAssetInstance(MeshAsset* ownerMeshAsset);
+	DX12GPUMeshAssetInstance(MeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice);
 	virtual ~DX12GPUMeshAssetInstance();
 
 public:

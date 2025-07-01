@@ -1,13 +1,14 @@
 ﻿#include "DX12RootSignatureWrapper.h"
 
 
-#include "SSGAL/Private/GALInstanceGlobalVariablePrivate.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
+#include "SSGAL/Private/PCommon/GALWrapper/RootSignaturePool.h"
 
-DX12RootSignatureWrapper::DX12RootSignatureWrapper(ERootSignatureType RootSignatureType)
-	: RootSignatureWrapper(RootSignatureType)
+DX12RootSignatureWrapper::DX12RootSignatureWrapper(ERootSignatureType RootSignatureType, RootSignaturePool* InOwnerRootSignaturePool)
+	: RootSignatureWrapper(RootSignatureType, InOwnerRootSignaturePool)
 {
-	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)SSGALModule::Private::g_GALRenderDevice)->GetD3DDevice();
+	DX12GALRenderDevice* OwnerRenderDevice = (DX12GALRenderDevice*)_OwnerRenderSignaturePool->GetOwnerRenderDeivce();
+	ID3D12Device5* D3DDevice = OwnerRenderDevice->GetD3DDevice();
 
 	ID3DBlob* Signature = nullptr;
 	ID3DBlob* Error = nullptr;

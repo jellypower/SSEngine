@@ -17,7 +17,7 @@ private:
 	ID3D12RootSignature* _D3DRootSignature = nullptr;
 
 public:
-	DX12RootSignatureWrapper(ERootSignatureType RootSignatureType);
+	DX12RootSignatureWrapper(ERootSignatureType RootSignatureType, RootSignaturePool* InOwnerRootSignaturePool);
 	virtual ~DX12RootSignatureWrapper();
 
 	ID3D12RootSignature* GetRootSignatureInstantce() const { return _D3DRootSignature; }

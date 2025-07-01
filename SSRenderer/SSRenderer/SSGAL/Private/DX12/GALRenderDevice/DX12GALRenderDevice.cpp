@@ -1,7 +1,6 @@
 ﻿#include "DX12GALRenderDevice.h"
 
 #include "DX12GALRenderDeviceContext.h"
-#include "SSGAL/Private/GALInstanceGlobalVariablePrivate.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourceAllocator.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12DescriptorHeapCustomAllocator.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
@@ -165,8 +164,6 @@ lb_loop:
 	}
 
 
-	SSGALModule::Private::g_GALRenderDevice = this;
-
 	constexpr int32 DESCRIPTOR_HEAP_PAGE_SIZE = 1024 * 10; // 10 KB
 	_DescriptorTableAllocator = DBG_NEW DX12DescriptorHeapCustomAllocator(
 		this,
@@ -184,7 +181,7 @@ lb_loop:
 		L"DX12GALRenderDevice::_ConstantBufferResourceAllocator");
 	_ConstantBufferResourceAllocator->ReserveDefaultPage(2);
 
-	_rootSignaturePool = DBG_NEW DX12RootSignaturePool();
+	_rootSignaturePool = DBG_NEW DX12RootSignaturePool(this);
 	_rootSignaturePool->InstantiateAllRootSignatures();
 
 	_ShaderPool = DBG_NEW DX12GALShaderPool();

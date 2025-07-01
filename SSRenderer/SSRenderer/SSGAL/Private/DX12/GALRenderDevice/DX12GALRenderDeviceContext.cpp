@@ -127,10 +127,11 @@ bool DX12GALRenderDeviceContext::InstantiateMeshGPUAsset(MeshAsset* InMeshAsset)
 	HRESULT hr = S_OK;
 
 	DX12GALResourceUpdater* DX12ResourceUpdater = (DX12GALResourceUpdater*)_ResourceUpdater;
-	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice)->GetD3DDevice();
+	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
+	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
 	ID3D12GraphicsCommandList* CurCommandList = _CommandLists[_CurCommandListIdx];
 
-	DX12GPUMeshAssetInstance* NewGPUMeshAssetInstance = DBG_NEW DX12GPUMeshAssetInstance(InMeshAsset);
+	DX12GPUMeshAssetInstance* NewGPUMeshAssetInstance = DBG_NEW DX12GPUMeshAssetInstance(InMeshAsset, OwnerDX12RenderDevice);
 
 
 	{
@@ -327,7 +328,7 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(ModelAsset* InModelAsset, D
 	const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {
-	GALRenderDevice* OwnerDevice = GetOwnerRenderDevice();
+	PCommonGALRenderDevice* OwnerDevice = (PCommonGALRenderDevice*)GetOwnerRenderDevice();
 	SSRenderer* Renderer = OwnerDevice->GetOwnerRenderer();
 	RootSignaturePool* lRootSignaturePool = OwnerDevice->GetRootSignaturePool();
 	DX12PSOPool* PSOPool = (DX12PSOPool*)OwnerDevice->GetPSOPool();

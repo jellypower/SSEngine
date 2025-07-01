@@ -13,7 +13,7 @@ class SSRenderer;
 class GALRenderTarget;
 class GALResourceUpdater;
 class MeshAsset;
-struct BasicRenderInstance;
+class BasicRenderInstance;
 class ConstantBufferPoolManager;
 class PSOPool;
 class RootSignaturePool;
@@ -35,9 +35,7 @@ public:
 public:
 	SSRenderer* GetOwnerRenderer() const { return _OwnerRenderer; }
 
-	RootSignaturePool* GetRootSignaturePool() const { return _rootSignaturePool; }
 	GALShaderPool* GetShaderPool() const { return _ShaderPool; }
-	PSOPool* GetPSOPool() const { return _PSOPool; }
 	SSCustomMemChunkAllocator* GetConstantBufferResourceAllocator() const { return _ConstantBufferResourceAllocator; }
 	SSCustomMemChunkAllocator* GetDescriptorTableAllocator() const { return _DescriptorTableAllocator; }
 
@@ -59,9 +57,7 @@ protected:
 protected:
 	SSRenderer* _OwnerRenderer = nullptr;
 
-	RootSignaturePool* _rootSignaturePool = nullptr;
 	GALShaderPool* _ShaderPool = nullptr;
-	PSOPool* _PSOPool = nullptr;
 	SSCustomMemChunkAllocator* _ConstantBufferResourceAllocator = nullptr;
 	SSCustomMemChunkAllocator* _DescriptorTableAllocator = nullptr;
 

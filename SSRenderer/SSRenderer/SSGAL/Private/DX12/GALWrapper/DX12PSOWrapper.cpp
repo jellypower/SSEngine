@@ -3,7 +3,6 @@
 #include "DX12GALShaderWrapper.h"
 #include "DX12RootSignaturePool.h"
 #include "DX12RootSignatureWrapper.h"
-#include "SSGAL/Private/GALInstanceGlobalVariablePrivate.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/PCommon/GALWrapper/PSOPool.h"
 #include "SSGAL/Public/GALWrapper/GALShaderPool.h"
@@ -57,8 +56,7 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwne
 	DX12GALRenderDevice* GALDevice = (DX12GALRenderDevice*)InOwnerPSOPool->GetOwnerDevice();
 	ID3D12Device5* D3DDevice = GALDevice->GetD3DDevice();
 	GALShaderPool* ShaderPool = GALDevice->GetShaderPool();
-
-	DX12RootSignaturePool* RootSignaturePool = (DX12RootSignaturePool*)(SSGALModule::Private::g_GALRenderDevice)->GetRootSignaturePool();
+	DX12RootSignaturePool* RootSignaturePool = (DX12RootSignaturePool*)GALDevice->GetRootSignaturePool();
 
 
 	const DX12RootSignatureWrapper* RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignaturePool->GetRootSignature(pipelineDesc.RootSignatureType);

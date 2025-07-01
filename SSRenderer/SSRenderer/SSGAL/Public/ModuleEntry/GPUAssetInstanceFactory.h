@@ -13,5 +13,3 @@ GALRenderDevice* CreateGALRenderDevice(
 	HWND InhWnd,
 	bool EnableDebugLayer,
 	bool EnableGPUBaseValidataion);
-
-void InjectRendererToGALModule(SSRenderer* InRenderer);

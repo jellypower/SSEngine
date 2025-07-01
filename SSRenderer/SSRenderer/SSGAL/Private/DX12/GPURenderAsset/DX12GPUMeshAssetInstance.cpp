@@ -1,9 +1,12 @@
 #include "DX12GPUMeshAssetInstance.h"
 
+#include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 
-DX12GPUMeshAssetInstance::DX12GPUMeshAssetInstance(MeshAsset* ownerMeshAsset)
+
+DX12GPUMeshAssetInstance::DX12GPUMeshAssetInstance(MeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice)
 {
 	_OwnerMeshAsset = ownerMeshAsset;
+	_OwnerRenderDevice = InOwnerRenderDevice;
 }
 
 DX12GPUMeshAssetInstance::~DX12GPUMeshAssetInstance()

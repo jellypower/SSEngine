@@ -3,14 +3,14 @@
 #include <dxgi1_4.h>
 #include <dxgidebug.h>
 
-#include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
+#include "SSGAL/Private/PCommon/GALRenderDevice/PCommonGALRenderDevice.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
 struct GALRenderTargetDesc;
 class BasicRenderInstance;
 
-class DX12GALRenderDevice : public GALRenderDevice
+class DX12GALRenderDevice : public PCommonGALRenderDevice
 {
 public:
 	DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, SSRenderer* OwnerRenderer, bool EnableDebugLayer, bool EnableGPUBaseValidataion);
