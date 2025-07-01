@@ -405,4 +405,4 @@ FodyWeavers.xsd
 *.fbx
 
 # Extern Libs
-SSRenderer/SSRenderer/ExternLibs
+SSRendererMain/SSRenderer/ExternLibs
