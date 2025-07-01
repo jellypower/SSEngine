@@ -7,19 +7,13 @@ class SCameraComponent;
 struct AssetInstanceReferencer;
 class ModelAsset;
 class MeshAsset;
-class SSAssetBase;
 class RenderWorld;
 class GALRenderDeviceContext;
 class GALRenderDevice;
-class IRenderInstance;
 class ModelCombinationAssetManager;
 class ModelAssetManager;
-class ConstantBufferPoolManager;
-class GlobalRenderDeviceBase;
 class MaterialAssetManager;
 class MeshAssetManager;
-class PSOPool;
-class RootSignaturePool;
 
 class SSRenderer : public INoncopyable
 {
@@ -77,7 +71,7 @@ private:
 
 
 	void InitAssetManagers();
-	void CleanupRenderer();
 	void CleanupAssetMnagers();
+	void CleanupRenderer();
 };
 

@@ -1,12 +1,11 @@
-﻿#include <dxgi1_3.h>
-#include <dxgidebug.h>
+﻿#include <Windows.h>
+#include <shellapi.h>
+#include <shobjidl.h>
 
 #include "SSBuildSettings.h"
 #include "framework.h"
 #include "Resource.h"
 
-#include <shellapi.h>
-#include <shobjidl.h>
 #include <SSEngineDefault/Public/RawInput/RawInputUtils.h>
 #include <SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h>
 
@@ -177,15 +176,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 
 	RunModuleExitScript();
-
-
-	// D3D12 Resource Check
-	IDXGIDebug1* pDebug = nullptr;
-	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
-	{
-		HRESULT hr = pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
-		int32 RefCnt = pDebug->Release();
-	}
 
 	// Resource Check
 	{
