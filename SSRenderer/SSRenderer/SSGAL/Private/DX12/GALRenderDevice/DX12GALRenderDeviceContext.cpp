@@ -15,13 +15,15 @@
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
+#include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 
 #include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
-#include "SSRenderer/Public/RenderInstance/BasicRenderInstance.h"
+#include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
+#include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 
 DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 InitialCommandListCnt)
@@ -259,12 +261,13 @@ bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(MaterialAsset* InMater
 	return false;
 }
 
-void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance)
+void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance)
 {
-	if (InRenderInstance->_Type == ERenderInstanceType::StaticMesh)
+	if (InRenderInstance->GetRIType() == ERenderInstanceType::StaticMesh)
 	{
-		DX12GALRIMetadata_SM* NewGALRI = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InRenderInstance);
-		InRenderInstance->_GALRIMetadata = NewGALRI;
+		RIStaticMesh* InRIStaticMesh = (RIStaticMesh*)InRenderInstance;
+		DX12GALRIMetadata_SM* NewGALRI = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InRIStaticMesh);
+		InRIStaticMesh->_MetaData = NewGALRI;
 	}
 	else
 	{
@@ -295,28 +298,25 @@ void DX12GALRenderDeviceContext::ClearRenderTarget(GALRenderTarget* InRenderTarg
 	DX12RenderTarget->ClearRenderTarget(CurCommandList);
 }
 
-void DX12GALRenderDeviceContext::Draw(BasicRenderInstance* InRenderInstance)
+void DX12GALRenderDeviceContext::Draw(IRenderInstance* InRenderInstance)
 {
-	if (InRenderInstance->_GALRIMetadata == nullptr)
+	if (InRenderInstance->GetGALMetadata() == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
 	}
 
-	SGameObject* GameObj = (SGameObject*)InRenderInstance->_GameObjectHashCode.GetSObject();
-	XMMATRIX ObjTransformMat = GameObj->GetWorldTransformMatrix();
-	XMMATRIX ObjRotMat = GameObj->GetWorldRot().AsMatrix();
-
-//	if (GameObj->GetObjectName() == L"Plane.009")5
-//	{
-//		DEBUG_BREAK();
-//	}
+	XMMATRIX ObjTransformMat = InRenderInstance->GetWorldTransformMatrix();
+	XMMATRIX ObjRotMat = InRenderInstance->GetWorldRotationMatrix();
 
 
-	switch (InRenderInstance->_Type)
+	switch (InRenderInstance->GetRIType())
 	{
 	case ERenderInstanceType::StaticMesh:
-		TEMP_DrawStaticMesh(InRenderInstance->_ModelRef, (DX12GALRIMetadata_SM*)InRenderInstance->_GALRIMetadata, ObjTransformMat, ObjRotMat);
-		break;
+	{
+		IRIMesh* RIMesh = (IRIMesh*)InRenderInstance;
+		TEMP_DrawStaticMesh(RIMesh->GetModelAsset(), (DX12GALRIMetadata_SM*)RIMesh->GetGALMetadata(), ObjTransformMat, ObjRotMat);
+	}
+	break;
 
 	default:
 		SS_INTERRUPT();
@@ -324,7 +324,9 @@ void DX12GALRenderDeviceContext::Draw(BasicRenderInstance* InRenderInstance)
 	}
 }
 
-void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(ModelAsset* InModelAsset, DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
+void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(
+	ModelAsset* InModelAsset,
+	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
 	const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {

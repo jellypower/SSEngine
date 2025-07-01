@@ -4,7 +4,7 @@
 class MaterialAsset;
 enum class EResourceStateType : uint8;
 class GALRenderTarget;
-class BasicRenderInstance;
+class IRenderInstance;
 class GALResourceUpdater;
 class GALRenderDevice;
 class MeshAsset;
@@ -21,14 +21,14 @@ public:
 
 	virtual bool GenerateMeshGALAsset(MeshAsset* InMeshAsset) = 0;
 	virtual bool GenerateMaterialGALAsset(MaterialAsset* InMaterialAsset) = 0;
-	virtual void GenerateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance) = 0;
+	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;
 	virtual void SetRenderTarget(GALRenderTarget* InRenderTarget) = 0;
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) = 0;
 
 
-	virtual void Draw(BasicRenderInstance* InRenderInstance) = 0;
+	virtual void Draw(IRenderInstance* InRenderInstance) = 0;
 
 protected:
 	virtual void ResetRenderState() = 0;

@@ -8,7 +8,7 @@
 
 
 struct GALRenderTargetDesc;
-class BasicRenderInstance;
+class IRenderInstance;
 
 class DX12GALRenderDevice : public PCommonGALRenderDevice
 {

@@ -5,6 +5,7 @@
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
+class IRIMesh;
 struct CBARenderEnvParam;
 struct CBAModelBuffer;
 class DX12GALRenderDevice;
@@ -31,7 +32,7 @@ private:
 	DX12GALRenderDevice* _OwnerRenderDevice;
 
 public:
-	DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, const BasicRenderInstance* InOwnerRenderInstance);
+	DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, const IRIMesh* InOwnerRenderInstance);
 	virtual ~DX12GALRIMetadata_SM();
 
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() override;

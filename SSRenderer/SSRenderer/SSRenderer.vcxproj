@@ -471,7 +471,9 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
     <ClInclude Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h" />
+    <ClInclude Include="SSRenderer\Public\RenderInstance\IRIMesh.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\RenderWorld.h" />
+    <ClInclude Include="SSRenderer\Private\RenderInstance\RIStaticMesh.h" />
     <ClInclude Include="SSRenderer\Public\SObjectBase\SCameraComponent.h" />
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRendererUtil.h" />
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.h" />
@@ -508,9 +510,8 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSVertexType.h" />
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSRendererInlineSettings.h" />
     <ClInclude Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.h" />
-    <ClInclude Include="SSRenderer\Public\SSRendererBuildSetings.h" />
     <ClInclude Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.h" />
-    <ClInclude Include="SSRenderer\Public\RenderInstance\BasicRenderInstance.h" />
+    <ClInclude Include="SSRenderer\Public\RenderInstance\IRenderInstance.h" />
     <ClInclude Include="SSRenderAssetConverter\Public\SSFBXImporter.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -540,6 +541,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\AssetManagerBase.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderInstance\RenderWorld.cpp" />
+    <ClCompile Include="SSRenderer\Private\RenderInstance\RIStaticMesh.cpp" />
     <ClCompile Include="SSRenderer\Public\SObjectBase\SCameraComponent.cpp" />
     <ClCompile Include="SSRenderer\Public\SObjectBase\SRendererUtil.cpp" />
     <ClCompile Include="SSRenderer\Public\SObjectBase\SRenderComponentBase.cpp" />
@@ -553,14 +555,12 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\PSOWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\RootSignatureWrapper.cpp" />
     <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp" />
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\RootSignaturePool.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.cpp" />
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.cpp" />
     <ClCompile Include="SSEngineMain\SSEngine.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.cpp" />
     <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.cpp" />
@@ -568,9 +568,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSRenderer\Public\RenderBase\SSRenderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.cpp" />
-    <ClCompile Include="SSRenderer\Public\SSRendererBuildSetings.cpp" />
     <ClCompile Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.cpp" />
-    <ClCompile Include="SSRenderer\Public\RenderInstance\BasicRenderInstance.cpp" />
     <ClCompile Include="SSRenderAssetConverter\Public\SSFBXImporter.cpp" />
   </ItemGroup>
   <ItemGroup>

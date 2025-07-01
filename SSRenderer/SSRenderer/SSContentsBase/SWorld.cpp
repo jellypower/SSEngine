@@ -3,7 +3,7 @@
 #include "SSContentsBase/SComponentBase.h"
 #include "SSContentsBase/SGameObject.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/RenderInstance/BasicRenderInstance.h"
+#include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/RenderWorld.h"
 #include "SSRenderer/Public/SObjectBase/SRenderComponentBase.h"
 
@@ -200,7 +200,8 @@ void SWorld::RemoveGameObjectItem(SGameObject* InObjectToRemove)
 
 		if (SRenderComponentBase* RenderComponent = dynamic_cast<SRenderComponentBase*>(CompItem))
 		{
-			_RenderWorld->RemoveFromWorld(RenderComponent->GetRenderInstance()->_GameObjectHashCode);
+			SObjHashCode HashCode(RenderComponent->GetRenderInstance()->GetGameObjectIDNative());
+			_RenderWorld->RemoveFromWorld(HashCode);
 		}
 	}
 

@@ -11,7 +11,7 @@ class SSAssetBase;
 class RenderWorld;
 class GALRenderDeviceContext;
 class GALRenderDevice;
-struct BasicRenderInstance;
+class IRenderInstance;
 class ModelCombinationAssetManager;
 class ModelAssetManager;
 class ConstantBufferPoolManager;

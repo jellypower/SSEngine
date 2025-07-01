@@ -9,16 +9,17 @@
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/RenderInstance/BasicRenderInstance.h"
+#include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
+#include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
-DX12GALRIMetadata_SM::DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, const BasicRenderInstance* InOwnerRenderInstance)
+DX12GALRIMetadata_SM::DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, const IRIMesh* InOwnerRenderInstance)
 {
 	_OwnerRenderDevice = (DX12GALRenderDevice*)InRenderDevice;
 	ID3D12Device5* D3DDevice = _OwnerRenderDevice->GetD3DDevice();
 	SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
 	DX12DescriptorHeapCustomAllocator* DescriptorTableAllocator = (DX12DescriptorHeapCustomAllocator*)_OwnerRenderDevice->GetDescriptorTableAllocator();
-	_SubMeshCntCache = InOwnerRenderInstance->_ModelRef->GetSubMeshCnt();
-	SS::SHasherW ModelName = InOwnerRenderInstance->_ModelRef->GetAssetName();
+	_SubMeshCntCache = InOwnerRenderInstance->GetModelAsset()->GetSubMeshCnt();
+	SS::SHasherW ModelName = InOwnerRenderInstance->GetModelAsset()->GetAssetName();
 
 	_OwnerRenderInstance = InOwnerRenderInstance;
 

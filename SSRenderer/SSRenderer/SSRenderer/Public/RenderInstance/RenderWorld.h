@@ -3,7 +3,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 class SSRenderer;
-class BasicRenderInstance;
+class IRenderInstance;
 
 constexpr int32 RENDERWORLD_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 RENDERWORLD_BUCKET_CAPACITY = 1024;
@@ -15,12 +15,12 @@ public:
 	void InitializeRenderWorld(SSRenderer* OwnerRenderer);
 
 public:
-	const SS::HashMap<SObjHashCode, BasicRenderInstance*>& GetRenderInstanceMap() const { return _RenderInstanceByHashCode; }
+	const SS::HashMap<SObjHashCode, IRenderInstance*>& GetRenderInstanceMap() const { return _RenderInstanceByHashCode; }
 
 	bool IsAnyInstanceRemainInWorld() const;
 	
-	void AddToWorld(BasicRenderInstance* RenderInstance);
-	void RemoveFromWorld(SObjHashCode RenderInstanceToRemove);
+	void AddToWorld(IRenderInstance* InRenderInstance);
+	void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove);
 
 	void CommitRenderInstanceTransform();
 
@@ -28,5 +28,5 @@ public:
 private:
 	SSRenderer* _OwnerRenderer;
 
-	SS::HashMap<SObjHashCode, BasicRenderInstance*> _RenderInstanceByHashCode;
+	SS::HashMap<SObjHashCode, IRenderInstance*> _RenderInstanceByHashCode;
 };

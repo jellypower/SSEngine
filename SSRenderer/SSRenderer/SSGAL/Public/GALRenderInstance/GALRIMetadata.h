@@ -1,14 +1,14 @@
 #pragma once
-#include "SObject/Public/SObjHashCode.h"
+#include "SSEngineDefault/Public/INoncopyable.h"
 
-class BasicRenderInstance;
+class IRenderInstance;
 enum class ERenderInstanceType;
 
 // GAL Render Instance Metadata
 class GALRIMetadata : INoncopyable
 {
 protected:
-	const BasicRenderInstance* _OwnerRenderInstance = nullptr;
+	const IRenderInstance* _OwnerRenderInstance = nullptr;
 
 public:
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() = 0;

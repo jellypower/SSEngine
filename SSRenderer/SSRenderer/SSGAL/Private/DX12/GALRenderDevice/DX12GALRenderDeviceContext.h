@@ -25,17 +25,19 @@ public:
 
 	virtual bool GenerateMeshGALAsset(MeshAsset* InMeshAsset) override;
 	virtual bool GenerateMaterialGALAsset(MaterialAsset* InMaterialAsset) override;
-	virtual void GenerateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance) override;
+	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
 	virtual void SetRenderTarget(GALRenderTarget* InRenderTarget) override;
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) override;
 
-	virtual void Draw(BasicRenderInstance* InRenderInstance) override;
+	virtual void Draw(IRenderInstance* InRenderInstance) override;
 
 
 private:
-	void TEMP_DrawStaticMesh(ModelAsset* InModelAsset, DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
+	void TEMP_DrawStaticMesh(
+		ModelAsset* InModelAsset,
+		DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
 		const XMMATRIX& DrawMat,
 		const XMMATRIX& DrawRotMat);
 

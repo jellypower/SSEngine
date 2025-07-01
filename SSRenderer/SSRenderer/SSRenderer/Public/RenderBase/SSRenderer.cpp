@@ -228,10 +228,10 @@ void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, SCameraCompon
 		return;
 	}
 
-	const SS::HashMap<SObjHashCode, BasicRenderInstance*>& RenderInstanceMap = WorldToRender->GetRenderInstanceMap();
-	for (const SS::pair<SObjHashCode, BasicRenderInstance*>& InstancePairItem : RenderInstanceMap)
+	const SS::HashMap<SObjHashCode, IRenderInstance*>& RenderInstanceMap = WorldToRender->GetRenderInstanceMap();
+	for (const SS::pair<SObjHashCode, IRenderInstance*>& InstancePairItem : RenderInstanceMap)
 	{
-		BasicRenderInstance* InstanceItem = InstancePairItem.second;
+		IRenderInstance* InstanceItem = InstancePairItem.second;
 		Executor->Draw(InstanceItem);
 	}
 }
