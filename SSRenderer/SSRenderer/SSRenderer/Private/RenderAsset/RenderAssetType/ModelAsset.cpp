@@ -1,4 +1,4 @@
-﻿#include "ModelAsset.h"
+﻿#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 
 ModelAsset::ModelAsset(SS::SHasherW inAssetName, SS::SHasherW inAssetPath)
 	: SSAssetBase(EAssetType::Model, inAssetName, inAssetPath)

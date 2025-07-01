@@ -1,10 +1,8 @@
-﻿#include "SRendererUtil.h"
+﻿#include "SSRenderer/Public/SObjectBase/SRendererUtil.h"
 
-
-#include "RenderComponent/SRenderComponentBase.h"
-#include "RenderComponent/SStaticMeshRenderComponent.h"
 
 #include "SSContentsBase/SGameObjectConstructor.h"
+
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
 #include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"
@@ -13,6 +11,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/SObjectBase/RenderComponent/SStaticMeshRenderComponent.h"
 
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 {

@@ -1,4 +1,4 @@
-﻿#include "SCameraComponent.h"
+﻿#include "SSRenderer/Public/SObjectBase/SCameraComponent.h"
 
 #include "SSContentsBase/SGameObject.h"
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"

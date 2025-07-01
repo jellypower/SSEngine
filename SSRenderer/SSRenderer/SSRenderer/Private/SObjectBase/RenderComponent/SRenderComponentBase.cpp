@@ -1,4 +1,5 @@
-﻿#include "SRenderComponentBase.h"
+﻿#include "SSRenderer/Public/SObjectBase/RenderComponent/SRenderComponentBase.h"
+
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
 void SRenderComponentBase::SetModelAsset(SS::SHasherW ModelAssetName)

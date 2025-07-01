@@ -1,6 +1,6 @@
-﻿#include "ModelCombinationAssetManager.h"
+﻿#include "SSRenderer/Public/RenderAsset/ModelCombinationAssetManager.h"
 
-#include "RenderAssetType/ModelCombinationAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 
 ModelCombinationAssetManager::ModelCombinationAssetManager():
 	_assetHashMap(1000, 100)

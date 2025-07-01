@@ -1,4 +1,4 @@
-﻿#include "ModelCombinationAsset.h"
+﻿#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 
 AssetPlacementReference::AssetPlacementReference(AssetPlacementReference&& rhs)
 {

@@ -1,4 +1,4 @@
-﻿#include "SStaticMeshRenderComponent.h"
+﻿#include "SSRenderer/Public/SObjectBase/RenderComponent/SStaticMeshRenderComponent.h"
 
 #include "SSContentsBase/SGameObject.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"

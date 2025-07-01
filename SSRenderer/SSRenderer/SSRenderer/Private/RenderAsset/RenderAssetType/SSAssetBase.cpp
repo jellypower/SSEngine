@@ -1,4 +1,4 @@
-#include "SSAssetBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/SSAssetBase.h"
 
 
 SSAssetBase::SSAssetBase(EAssetType InAssetType, SS::SHasherW InAssetName, SS::SHasherW  InAssetPath)

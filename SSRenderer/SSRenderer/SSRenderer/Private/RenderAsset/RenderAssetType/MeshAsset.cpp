@@ -1,4 +1,4 @@
-#include "MeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 
 #include "SSGAL/Public/GALRenderAsset/GALMeshAssetWrapperBase.h"
 

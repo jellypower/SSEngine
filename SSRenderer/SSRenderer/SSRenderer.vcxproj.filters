@@ -24,7 +24,7 @@
     <ClInclude Include="Resource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.h">
+    <ClInclude Include="SSRenderer\Public\ModuleEntry\SSRendererFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSVertexType.h">
@@ -987,7 +987,7 @@
     <ClInclude Include="SSContentsBase\SWorld.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderInstance\RenderWorld.h">
+    <ClInclude Include="SSRenderer\Public\RenderBase\RenderWorld.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\SObjectBase\SRendererUtil.h">
@@ -1109,28 +1109,28 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\SSRendererModuleEntry\SSRendererFactory.cpp">
+    <ClCompile Include="SSRenderer\Private\ModuleEntry\SSRendererFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderBase\SSRenderer.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderBase\SSRenderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\MeshAssetManager.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\MeshAssetManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\MeshAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\SSAssetBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSEngineMain\SSEngine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\MaterialAssetManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\MaterialAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\Utils\SSDX12Utils.cpp">
@@ -1139,10 +1139,10 @@
     <ClCompile Include="SSRenderAssetConverter\Public\SSFBXImporter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\ModelAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp">
@@ -1172,10 +1172,10 @@
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12PSOPool.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\ModelAssetManager.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\ModelAssetManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\ModelCombinationAssetManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp">
@@ -1187,19 +1187,19 @@
     <ClCompile Include="SSContentsBase\SComponentBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\SObjectBase\RenderComponent\SRenderComponentBase.cpp">
+    <ClCompile Include="SSRenderer\Private\SObjectBase\RenderComponent\SRenderComponentBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSContentsBase\SWorld.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderInstance\RenderWorld.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderBase\RenderWorld.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\SObjectBase\SRendererUtil.cpp">
+    <ClCompile Include="SSRenderer\Private\SObjectBase\SRendererUtil.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\RenderAsset\AssetManagerBase.cpp">
+    <ClCompile Include="SSRenderer\Private\RenderAsset\AssetManagerBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\ModuleEntry\GALInstanceFactory.cpp">
@@ -1220,13 +1220,13 @@
     <ClCompile Include="SSGAL\Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\SObjectBase\RenderComponent\SStaticMeshRenderComponent.cpp">
+    <ClCompile Include="SSRenderer\Private\SObjectBase\RenderComponent\SStaticMeshRenderComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderer\Public\SObjectBase\SCameraComponent.cpp">
+    <ClCompile Include="SSRenderer\Private\SObjectBase\SCameraComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.cpp">

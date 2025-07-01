@@ -1,6 +1,7 @@
-#include "MeshAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 
-#include "RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCommon/CommonDataType.h"
 
 MeshAssetManager::MeshAssetManager(int32 AssetHashMapCapacity, int32 AssetHashMapBucketCapacity)
 	: AssetManagerBase(AssetHashMapCapacity, AssetHashMapBucketCapacity)

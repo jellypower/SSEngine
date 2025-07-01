@@ -1,6 +1,6 @@
-﻿#include "AssetManagerBase.h"
+﻿#include "SSRenderer/Public/RenderAsset/AssetManagerBase.h"
 
-#include "RenderAssetType/SSAssetBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/SSAssetBase.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
 AssetManagerBase::AssetManagerBase(int32 AssetHashMapCapacity, int32 AssetHashMapBucketCapacity)

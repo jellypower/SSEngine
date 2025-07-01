@@ -1,6 +1,7 @@
-#include "MaterialAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
 
-#include "RenderAssetType/MaterialAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCommon/CommonDataType.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
