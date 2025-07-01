@@ -1,4 +1,4 @@
-﻿#include "GPUAssetInstanceFactory.h"
+﻿#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 

@@ -999,7 +999,7 @@
     <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Public\ModuleEntry\GPUAssetInstanceFactory.h">
+    <ClInclude Include="SSGAL\Public\ModuleEntry\GALInstanceFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDevice.h">
@@ -1211,7 +1211,7 @@
     <ClCompile Include="SSRenderer\Public\RenderAsset\AssetManagerBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Public\ModuleEntry\GPUAssetInstanceFactory.cpp">
+    <ClCompile Include="SSGAL\Private\DX12\ModuleEntry\GALInstanceFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp">

@@ -461,7 +461,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSGAL\Public\GALWrapper\GALShaderPool.h" />
     <ClInclude Include="SSGAL\Public\GALWrapper\GALShaderWrapper.h" />
     <ClInclude Include="SSGAL\Public\SSGALCommonEnums.h" />
-    <ClInclude Include="SSGAL\Public\ModuleEntry\GPUAssetInstanceFactory.h" />
+    <ClInclude Include="SSGAL\Public\ModuleEntry\GALInstanceFactory.h" />
     <ClInclude Include="SSGAL\Public\GALRenderDevice\GALRenderDevice.h" />
     <ClInclude Include="SSGAL\Public\GALRenderInstance\GALRIMetadata.h" />
     <ClInclude Include="SSContentsBase\SComponentBase.h" />
@@ -532,7 +532,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALResourceUpdater\GALResourceUpdater.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp" />
-    <ClCompile Include="SSGAL\Public\ModuleEntry\GPUAssetInstanceFactory.cpp" />
+    <ClCompile Include="SSGAL\Private\DX12\ModuleEntry\GALInstanceFactory.cpp" />
     <ClCompile Include="SSContentsBase\SComponentBase.cpp" />
     <ClCompile Include="SSContentsBase\SGameObject.cpp" />
     <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp" />

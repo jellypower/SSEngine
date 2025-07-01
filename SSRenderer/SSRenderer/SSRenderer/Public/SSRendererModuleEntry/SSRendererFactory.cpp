@@ -3,7 +3,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
 
-#include "SSGAL/Public/ModuleEntry/GPUAssetInstanceFactory.h"
+#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 #include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
