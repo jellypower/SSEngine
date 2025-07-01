@@ -2,6 +2,9 @@
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 
 
+class RootSignaturePool;
+class PSOPool;
+
 class PCommonGALRenderDevice : public GALRenderDevice
 {
 public:

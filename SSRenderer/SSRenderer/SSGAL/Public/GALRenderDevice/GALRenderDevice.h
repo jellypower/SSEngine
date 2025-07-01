@@ -11,12 +11,6 @@ struct GALRenderTargetDesc;
 class SSCustomMemChunkAllocator;
 class SSRenderer;
 class GALRenderTarget;
-class GALResourceUpdater;
-class MeshAsset;
-class BasicRenderInstance;
-class ConstantBufferPoolManager;
-class PSOPool;
-class RootSignaturePool;
 
 enum class ERenderDevicePlatnform : uint8
 {
