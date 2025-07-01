@@ -75,7 +75,7 @@
     <ClInclude Include="SSRenderer\Public\SSRendererBuildSetings.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMeshAssetInstanceBase.h">
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GALMeshAssetWrapperBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h">
@@ -114,7 +114,7 @@
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12PSOPool.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Public\GPURenderAsset\GPUMaterialAssetInstanceBase.h">
+    <ClInclude Include="SSGAL\Public\GPURenderAsset\GALMaterialAssetWrapperBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h">
@@ -1029,7 +1029,7 @@
     <ClInclude Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderInstance\DX12GPURenderInstance_SM.h">
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderInstance\DX12GALRIMetadata_SM.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\SObjectBase\SCameraComponent.h">
@@ -1038,7 +1038,7 @@
     <ClInclude Include="SSGAL\Public\GALRenderTArget\GALRenderTarget.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Public\GPURenderInstance\RenderInstanceGPUMetadata.h">
+    <ClInclude Include="SSGAL\Public\GPURenderInstance\GALRIMetadata.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.h">
@@ -1089,10 +1089,10 @@
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderPool.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.h">
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GALMaterialAssetWrapper.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.h">
+    <ClInclude Include="SSGAL\Private\DX12\GPURenderAsset\DX12GALMeshAssetWrapper.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderWrapper.h">
@@ -1232,7 +1232,7 @@
     <ClCompile Include="SSRenderer\Public\SObjectBase\SStaticMeshRenderComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderInstance\DX12GPURenderInstance_SM.cpp">
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderInstance\DX12GALRIMetadata_SM.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Public\SObjectBase\SCameraComponent.cpp">
@@ -1265,10 +1265,10 @@
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderPool.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMaterialAssetInstance.cpp">
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GALMaterialAssetWrapper.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GPUMeshAssetInstance.cpp">
+    <ClCompile Include="SSGAL\Private\DX12\GPURenderAsset\DX12GALMeshAssetWrapper.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12GALShaderWrapper.cpp">

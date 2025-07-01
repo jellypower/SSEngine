@@ -1,15 +1,15 @@
-#include "DX12GPUMeshAssetInstance.h"
+#include "DX12GALMeshAssetWrapper.h"
 
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 
 
-DX12GPUMeshAssetInstance::DX12GPUMeshAssetInstance(MeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice)
+DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(MeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice)
 {
 	_OwnerMeshAsset = ownerMeshAsset;
 	_OwnerRenderDevice = InOwnerRenderDevice;
 }
 
-DX12GPUMeshAssetInstance::~DX12GPUMeshAssetInstance()
+DX12GALMeshAssetWrapper::~DX12GALMeshAssetWrapper()
 {
 	if (_VertexBuffer != nullptr)
 	{

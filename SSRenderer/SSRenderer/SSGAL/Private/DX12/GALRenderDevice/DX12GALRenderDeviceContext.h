@@ -5,9 +5,9 @@
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
 class ModelAsset;
-class DX12GPUMaterialAssetInstance;
-class DX12GPURenderInstance_SM;
-class DX12GPUMeshAssetInstance;
+class DX12GALMaterialAssetWrapper;
+class DX12GALRIMetadata_SM;
+class DX12GALMeshAssetWrapper;
 class DX12GALResourceUpdater;
 class DX12GALRenderDevice;
 
@@ -23,9 +23,9 @@ public:
 	virtual void BeginRender() override;
 	virtual void EndRender() override;
 
-	virtual bool InstantiateMeshGPUAsset(MeshAsset* InMeshAsset) override;
-	virtual bool InstantiateMaterialGPUAsset(MaterialAsset* InMaterialAsset) override;
-	virtual void InstantiateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance) override;
+	virtual bool GenerateMeshGALAsset(MeshAsset* InMeshAsset) override;
+	virtual bool GenerateMaterialGALAsset(MaterialAsset* InMaterialAsset) override;
+	virtual void GenerateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
 	virtual void SetRenderTarget(GALRenderTarget* InRenderTarget) override;
@@ -35,7 +35,7 @@ public:
 
 
 private:
-	void TEMP_DrawStaticMesh(ModelAsset* InModelAsset, DX12GPURenderInstance_SM* DX12RenderInstanceMetaData,
+	void TEMP_DrawStaticMesh(ModelAsset* InModelAsset, DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
 		const XMMATRIX& DrawMat,
 		const XMMATRIX& DrawRotMat);
 

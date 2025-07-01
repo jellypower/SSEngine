@@ -4,7 +4,7 @@
 class GALRenderDevice;
 class MaterialAsset;
 
-class GPUMaterialAssetInstanceBase : public INoncopyable
+class GALMaterialAssetWrapperBase : public INoncopyable
 {
 protected:
 	MaterialAsset* _OwnerMaterialAsset = nullptr;

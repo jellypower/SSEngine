@@ -1,4 +1,4 @@
-﻿#include "DX12GPURenderInstance_SM.h"
+﻿#include "DX12GALRIMetadata_SM.h"
 
 #include <d3dx12.h>
 
@@ -11,7 +11,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderInstance/BasicRenderInstance.h"
 
-DX12GPURenderInstance_SM::DX12GPURenderInstance_SM(GALRenderDevice* InRenderDevice, const BasicRenderInstance* InOwnerRenderInstance)
+DX12GALRIMetadata_SM::DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, const BasicRenderInstance* InOwnerRenderInstance)
 {
 	_OwnerRenderDevice = (DX12GALRenderDevice*)InRenderDevice;
 	ID3D12Device5* D3DDevice = _OwnerRenderDevice->GetD3DDevice();
@@ -66,7 +66,7 @@ DX12GPURenderInstance_SM::DX12GPURenderInstance_SM(GALRenderDevice* InRenderDevi
 	}
 }
 
-DX12GPURenderInstance_SM::~DX12GPURenderInstance_SM()
+DX12GALRIMetadata_SM::~DX12GALRIMetadata_SM()
 {
 	SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
 	SSCustomMemChunkAllocator* DescriptorTableAllocator = _OwnerRenderDevice->GetDescriptorTableAllocator();
@@ -76,7 +76,7 @@ DX12GPURenderInstance_SM::~DX12GPURenderInstance_SM()
 	ConstantBufferAllocator->ReleaseChunk(_RenderEnvCBChunk);
 }
 
-ERenderInstanceType DX12GPURenderInstance_SM::GetMetadataRenderInstanceType()
+ERenderInstanceType DX12GALRIMetadata_SM::GetMetadataRenderInstanceType()
 {
 	return ERenderInstanceType::StaticMesh;
 }

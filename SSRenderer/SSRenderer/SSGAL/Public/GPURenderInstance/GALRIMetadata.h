@@ -4,7 +4,8 @@
 class BasicRenderInstance;
 enum class ERenderInstanceType;
 
-class RenderInstanceGPUMetadata : INoncopyable
+// GAL Render Instance Metadata
+class GALRIMetadata : INoncopyable
 {
 protected:
 	SObjHashCode _OwnerHashCode;

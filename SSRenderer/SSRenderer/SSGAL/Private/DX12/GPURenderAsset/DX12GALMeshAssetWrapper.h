@@ -1,16 +1,16 @@
 #pragma once
 #include <d3d12.h>
 
-#include "SSGAL/Public/GPURenderAsset/GPUMeshAssetInstanceBase.h"
+#include "SSGAL/Public/GPURenderAsset/GALMeshAssetWrapperBase.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 class DX12GALRenderDevice;
 
-class DX12GPUMeshAssetInstance : public GPUMeshAssetInstanceBase
+class DX12GALMeshAssetWrapper : public GALMeshAssetWrapperBase
 {
 public:
-	DX12GPUMeshAssetInstance(MeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice);
-	virtual ~DX12GPUMeshAssetInstance();
+	DX12GALMeshAssetWrapper(MeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice);
+	virtual ~DX12GALMeshAssetWrapper();
 
 public:
 	ID3D12Resource* _VertexBuffer = nullptr;

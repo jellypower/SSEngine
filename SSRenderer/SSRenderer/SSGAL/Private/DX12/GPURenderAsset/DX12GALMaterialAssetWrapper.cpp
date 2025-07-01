@@ -1,4 +1,4 @@
-﻿#include "DX12GPUMaterialAssetInstance.h"
+﻿#include "DX12GALMaterialAssetWrapper.h"
 
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
@@ -6,7 +6,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
 
 
-DX12GPUMaterialAssetInstance::DX12GPUMaterialAssetInstance(MaterialAsset* ownerMaterial, DX12GALRenderDevice* InOwnerRenderDevice)
+DX12GALMaterialAssetWrapper::DX12GALMaterialAssetWrapper(MaterialAsset* ownerMaterial, DX12GALRenderDevice* InOwnerRenderDevice)
 {
 	_OwnerMaterialAsset = ownerMaterial;
 	_OwnerRenderDevice = InOwnerRenderDevice;
@@ -32,6 +32,6 @@ DX12GPUMaterialAssetInstance::DX12GPUMaterialAssetInstance(MaterialAsset* ownerM
 
 }
 
-DX12GPUMaterialAssetInstance::~DX12GPUMaterialAssetInstance()
+DX12GALMaterialAssetWrapper::~DX12GALMaterialAssetWrapper()
 {
 }

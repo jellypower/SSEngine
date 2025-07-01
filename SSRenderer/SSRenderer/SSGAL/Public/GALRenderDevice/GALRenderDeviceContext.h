@@ -19,9 +19,9 @@ public:
 	virtual void EndRender() = 0;
 
 
-	virtual bool InstantiateMeshGPUAsset(MeshAsset* InMeshAsset) = 0;
-	virtual bool InstantiateMaterialGPUAsset(MaterialAsset* InMaterialAsset) = 0;
-	virtual void InstantiateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance) = 0;
+	virtual bool GenerateMeshGALAsset(MeshAsset* InMeshAsset) = 0;
+	virtual bool GenerateMaterialGALAsset(MaterialAsset* InMaterialAsset) = 0;
+	virtual void GenerateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance) = 0;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;
 	virtual void SetRenderTarget(GALRenderTarget* InRenderTarget) = 0;

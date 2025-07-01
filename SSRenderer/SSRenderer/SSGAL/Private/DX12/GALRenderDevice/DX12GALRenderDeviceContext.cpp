@@ -4,8 +4,8 @@
 #include "SSContentsBase/SGameObject.h"
 
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
-#include "SSGAL/Private/DX12/GPURenderAsset/DX12GPUMeshAssetInstance.h"
-#include "SSGAL/Private/DX12/GPURenderInstance/DX12GPURenderInstance_SM.h"
+#include "SSGAL/Private/DX12/GPURenderAsset/DX12GALMeshAssetWrapper.h"
+#include "SSGAL/Private/DX12/GPURenderInstance/DX12GALRIMetadata_SM.h"
 
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOWrapper.h"
@@ -117,9 +117,9 @@ bool DX12GALRenderDeviceContext::IsValid() const
 	return _CommandLists.GetSize() != 0;
 }
 
-bool DX12GALRenderDeviceContext::InstantiateMeshGPUAsset(MeshAsset* InMeshAsset)
+bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(MeshAsset* InMeshAsset)
 {
-	if (InMeshAsset->_GPUMeshAsset != nullptr)
+	if (InMeshAsset->_GALMeshAsset != nullptr)
 	{
 		return false;
 	}
@@ -131,7 +131,7 @@ bool DX12GALRenderDeviceContext::InstantiateMeshGPUAsset(MeshAsset* InMeshAsset)
 	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
 	ID3D12GraphicsCommandList* CurCommandList = _CommandLists[_CurCommandListIdx];
 
-	DX12GPUMeshAssetInstance* NewGPUMeshAssetInstance = DBG_NEW DX12GPUMeshAssetInstance(InMeshAsset, OwnerDX12RenderDevice);
+	DX12GALMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALMeshAssetWrapper(InMeshAsset, OwnerDX12RenderDevice);
 
 
 	{
@@ -172,13 +172,13 @@ bool DX12GALRenderDeviceContext::InstantiateMeshGPUAsset(MeshAsset* InMeshAsset)
 		NewVertexBufferView.StrideInBytes = EachVertexSize;
 		NewVertexBufferView.SizeInBytes = VertexBufferSize;
 
-		NewGPUMeshAssetInstance->_VertexBuffer = NewVertexBuffer;
-		NewGPUMeshAssetInstance->_VertexBufferView = NewVertexBufferView;
+		NewGALMeshAsset->_VertexBuffer = NewVertexBuffer;
+		NewGALMeshAsset->_VertexBufferView = NewVertexBufferView;
 	}
 
 	{
 		int32 SubMeshCnt = InMeshAsset->GetSubMeshCnt();
-		NewGPUMeshAssetInstance->_SubMeshCnt = SubMeshCnt;
+		NewGALMeshAsset->_SubMeshCnt = SubMeshCnt;
 		int32 WholeIdxDataCnt = InMeshAsset->WholeIndexDataCnt();
 		const uint32* IndexData = InMeshAsset->GetIndexData();
 		int32 WholeIndexBufferSize = sizeof(uint32) * WholeIdxDataCnt;
@@ -209,7 +209,7 @@ bool DX12GALRenderDeviceContext::InstantiateMeshGPUAsset(MeshAsset* InMeshAsset)
 			goto lb_fail;
 		}
 
-		NewGPUMeshAssetInstance->_IndexBuffer = NewIndexBuffer;
+		NewGALMeshAsset->_IndexBuffer = NewIndexBuffer;
 
 		int32 CurIdxDataCnt = 0;
 		int32 Offset = 0;
@@ -222,36 +222,36 @@ bool DX12GALRenderDeviceContext::InstantiateMeshGPUAsset(MeshAsset* InMeshAsset)
 			NewIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 			NewIndexBufferView.SizeInBytes = CurIdxDataCnt * sizeof(uint32);
 
-			NewGPUMeshAssetInstance->_IndexBufferView[i] = NewIndexBufferView;
+			NewGALMeshAsset->_IndexBufferView[i] = NewIndexBufferView;
 
 			Offset += CurIdxDataCnt;
 		}
 	}
 
-	InMeshAsset->_GPUMeshAsset = NewGPUMeshAssetInstance;
+	InMeshAsset->_GALMeshAsset = NewGALMeshAsset;
 
 	return true;
 
 lb_fail:
-	if (NewGPUMeshAssetInstance != nullptr)
+	if (NewGALMeshAsset != nullptr)
 	{
-		if (NewGPUMeshAssetInstance->_VertexBuffer != nullptr)
+		if (NewGALMeshAsset->_VertexBuffer != nullptr)
 		{
-			NewGPUMeshAssetInstance->_VertexBuffer->Release();
+			NewGALMeshAsset->_VertexBuffer->Release();
 		}
 
-		if (NewGPUMeshAssetInstance->_IndexBuffer != nullptr)
+		if (NewGALMeshAsset->_IndexBuffer != nullptr)
 		{
-			NewGPUMeshAssetInstance->_IndexBuffer->Release();
+			NewGALMeshAsset->_IndexBuffer->Release();
 		}
 
-		delete NewGPUMeshAssetInstance;
+		delete NewGALMeshAsset;
 	}
 
 	return false;
 }
 
-bool DX12GALRenderDeviceContext::InstantiateMaterialGPUAsset(MaterialAsset* InMaterialAsset)
+bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(MaterialAsset* InMaterialAsset)
 {
 
 
@@ -259,11 +259,11 @@ bool DX12GALRenderDeviceContext::InstantiateMaterialGPUAsset(MaterialAsset* InMa
 	return false;
 }
 
-void DX12GALRenderDeviceContext::InstantiateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance)
+void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(BasicRenderInstance* InRenderInstance)
 {
 	if (InRenderInstance->_Type == ERenderInstanceType::StaticMesh)
 	{
-		DX12GPURenderInstance_SM* NewGPURenderInstance = DBG_NEW DX12GPURenderInstance_SM(_OwnerRenderDevice, InRenderInstance);
+		DX12GALRIMetadata_SM* NewGPURenderInstance = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InRenderInstance);
 		InRenderInstance->_GPUMetadata = NewGPURenderInstance;
 	}
 	else
@@ -299,7 +299,7 @@ void DX12GALRenderDeviceContext::Draw(BasicRenderInstance* InRenderInstance)
 {
 	if (InRenderInstance->_GPUMetadata == nullptr)
 	{
-		InstantiateRenderInstanceMetadata(InRenderInstance);
+		GenerateRenderInstanceMetadata(InRenderInstance);
 	}
 
 	SGameObject* GameObj = (SGameObject*)InRenderInstance->_GameObjectHashCode.GetSObject();
@@ -315,7 +315,7 @@ void DX12GALRenderDeviceContext::Draw(BasicRenderInstance* InRenderInstance)
 	switch (InRenderInstance->_Type)
 	{
 	case ERenderInstanceType::StaticMesh:
-		TEMP_DrawStaticMesh(InRenderInstance->_ModelRef, (DX12GPURenderInstance_SM*)InRenderInstance->_GPUMetadata, ObjTransformMat, ObjRotMat);
+		TEMP_DrawStaticMesh(InRenderInstance->_ModelRef, (DX12GALRIMetadata_SM*)InRenderInstance->_GPUMetadata, ObjTransformMat, ObjRotMat);
 		break;
 
 	default:
@@ -324,7 +324,7 @@ void DX12GALRenderDeviceContext::Draw(BasicRenderInstance* InRenderInstance)
 	}
 }
 
-void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(ModelAsset* InModelAsset, DX12GPURenderInstance_SM* DX12RenderInstanceMetaData,
+void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(ModelAsset* InModelAsset, DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
 	const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {
@@ -341,8 +341,8 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(ModelAsset* InModelAsset, D
 
 
 	MeshAsset* lMeshAsset = (MeshAsset*)MeshAssetManager->FindAssetByName(MeshAssetName);
-	DX12GPUMeshAssetInstance* GPUMeshAsset = (DX12GPUMeshAssetInstance*)lMeshAsset->_GPUMeshAsset;
-	const D3D12_VERTEX_BUFFER_VIEW& GPUMeshAssetVertexBuffer = GPUMeshAsset->_VertexBufferView;
+	DX12GALMeshAssetWrapper* GALMeshAsset = (DX12GALMeshAssetWrapper*)lMeshAsset->_GALMeshAsset;
+	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 
 
 	const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(ERootSignatureType::SS_TEMP_ROOTSIGNATURE);
@@ -361,7 +361,7 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(ModelAsset* InModelAsset, D
 	CurCommandList->SetDescriptorHeaps(1, &RenderInstanceDescHeap);
 	CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CurCommandList->IASetVertexBuffers(0, 1, &GPUMeshAssetVertexBuffer);
+	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 
 
 	{
@@ -384,7 +384,7 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(ModelAsset* InModelAsset, D
 	int32 IdxDataOffset = 0;
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
-		CurCommandList->IASetIndexBuffer(&GPUMeshAsset->_IndexBufferView[i]);
+		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
 		int32 CurIdxDataCnt = lMeshAsset->GetIndexDataCnt(i);
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0);
 		IdxDataOffset += CurIdxDataCnt;

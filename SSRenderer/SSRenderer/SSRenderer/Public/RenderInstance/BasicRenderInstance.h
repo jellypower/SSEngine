@@ -1,6 +1,6 @@
 #pragma once
 #include "SObject/Public/SObjHashCode.h"
-#include "SSGAL/Public/GPURenderInstance/RenderInstanceGPUMetadata.h"
+#include "SSGAL/Public/GPURenderInstance/GALRIMetadata.h"
 
 enum class ERenderInstanceType : int32;
 class ModelAsset;
@@ -22,6 +22,6 @@ public:
 	ERenderInstanceType _Type; 
 	SObjHashCode _GameObjectHashCode = nullptr;
 	ModelAsset* _ModelRef = nullptr;
-	RenderInstanceGPUMetadata* _GPUMetadata = nullptr;
+	GALRIMetadata* _GPUMetadata = nullptr;
 };
 

@@ -4,7 +4,7 @@
 class GALRenderDevice;
 class MeshAsset;
 
-class GPUMeshAssetInstanceBase : public INoncopyable
+class GALMeshAssetWrapperBase : public INoncopyable
 {
 protected:
 	MeshAsset* _OwnerMeshAsset = nullptr;

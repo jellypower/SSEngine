@@ -2,7 +2,7 @@
 #include <d3d12.h>
 
 #include "SSEngineDefault/Public/SSCommonUtil/AllocatedChunkHeader.h"
-#include "SSGAL/Public/GPURenderInstance/RenderInstanceGPUMetadata.h"
+#include "SSGAL/Public/GPURenderInstance/GALRIMetadata.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 struct CBARenderEnvParam;
@@ -10,7 +10,7 @@ struct CBAModelBuffer;
 class DX12GALRenderDevice;
 class GALRenderDevice;
 
-class DX12GPURenderInstance_SM : public RenderInstanceGPUMetadata
+class DX12GALRIMetadata_SM : public GALRIMetadata
 {
 public:
 	AllocatedChunkHeader _DescriptorTableChunk;
@@ -31,8 +31,8 @@ private:
 	DX12GALRenderDevice* _OwnerRenderDevice;
 
 public:
-	DX12GPURenderInstance_SM(GALRenderDevice* InRenderDevice, const BasicRenderInstance* InOwnerRenderInstance);
-	virtual ~DX12GPURenderInstance_SM();
+	DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, const BasicRenderInstance* InOwnerRenderInstance);
+	virtual ~DX12GALRIMetadata_SM();
 
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() override;
 };

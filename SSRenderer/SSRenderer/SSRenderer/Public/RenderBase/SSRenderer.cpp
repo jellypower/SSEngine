@@ -193,11 +193,11 @@ void SSRenderer::InstantiatePendingAssets(GALRenderDeviceContext* Executor)
 {
 	for (MeshAsset* MeshAssetItem : _InstanceStateChangedMesh)
 	{
-		if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->_GPUMeshAsset == nullptr)
+		if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->_GALMeshAsset == nullptr)
 		{
-			Executor->InstantiateMeshGPUAsset((MeshAsset*)MeshAssetItem);
+			Executor->GenerateMeshGALAsset((MeshAsset*)MeshAssetItem);
 		}
-		else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->_GPUMeshAsset != nullptr)
+		else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->_GALMeshAsset != nullptr)
 		{
 			((MeshAsset*)MeshAssetItem)->ReleaseGPUData();
 		}

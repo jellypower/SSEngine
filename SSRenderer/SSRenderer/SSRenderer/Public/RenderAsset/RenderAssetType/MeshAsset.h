@@ -2,7 +2,7 @@
 #include "SSAssetBase.h"
 #include "VertexTypes/SSDefaultVertexTypes.h"
 
-class GPUMeshAssetInstanceBase;
+class GALMeshAssetWrapperBase;
 
 enum class EMeshType
 {
@@ -22,7 +22,7 @@ class MeshAsset : public SSAssetBase
 {
 	friend class SSFBXImporterUtils;
 public:
-	GPUMeshAssetInstanceBase* _GPUMeshAsset = nullptr;
+	GALMeshAssetWrapperBase* _GALMeshAsset = nullptr;
 
 protected:
 	EMeshType _meshType = EMeshType::None;

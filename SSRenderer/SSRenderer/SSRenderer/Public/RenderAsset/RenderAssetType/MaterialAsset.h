@@ -1,12 +1,12 @@
 #pragma once
 #include "SSAssetBase.h"
 
-class GPUMaterialAssetInstanceBase;
+class GALMaterialAssetWrapperBase;
 
 class MaterialAsset : public SSAssetBase
 {
 public:
-	GPUMaterialAssetInstanceBase* _GPUInstance = nullptr;
+	GALMaterialAssetWrapperBase* _GALMaterial = nullptr;
 
 	// TEMP
 public:
