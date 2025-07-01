@@ -31,7 +31,7 @@ void MeshAssetManager::ReleaseAllAssets()
 
 		MeshAsset* MeshAssetItem = (MeshAsset*)item.second;
 
-		MeshAssetItem->ReleaseGPUData();
+		MeshAssetItem->ReleaseGALData();
 		MeshAssetItem->ReleaseSystemData();
 		delete MeshAssetItem;
 	}

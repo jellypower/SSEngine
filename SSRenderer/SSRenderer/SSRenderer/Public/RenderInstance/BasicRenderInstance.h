@@ -1,7 +1,7 @@
 #pragma once
 #include "SObject/Public/SObjHashCode.h"
-#include "SSGAL/Public/GPURenderInstance/GALRIMetadata.h"
 
+class GALRIMetadata;
 enum class ERenderInstanceType : int32;
 class ModelAsset;
 class SRenderComponentBase;
@@ -15,13 +15,13 @@ class SRenderComponentBase;
 class BasicRenderInstance : public INoncopyable
 {
 public:
-	void ReleaseGPURenderInstance();
+	void ReleaseGALRI();
 	virtual ~BasicRenderInstance();
 
 public:
 	ERenderInstanceType _Type; 
 	SObjHashCode _GameObjectHashCode = nullptr;
 	ModelAsset* _ModelRef = nullptr;
-	GALRIMetadata* _GPUMetadata = nullptr;
+	GALRIMetadata* _GALRIMetadata = nullptr;
 };
 

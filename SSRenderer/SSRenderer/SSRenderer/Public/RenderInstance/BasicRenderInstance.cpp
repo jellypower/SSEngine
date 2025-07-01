@@ -1,11 +1,13 @@
 #include "BasicRenderInstance.h"
 
-void BasicRenderInstance::ReleaseGPURenderInstance()
+#include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
+
+void BasicRenderInstance::ReleaseGALRI()
 {
-	if (_GPUMetadata != nullptr)
+	if (_GALRIMetadata != nullptr)
 	{
-		delete _GPUMetadata;
-		_GPUMetadata = nullptr;
+		delete _GALRIMetadata;
+		_GALRIMetadata = nullptr;
 	}
 }
 

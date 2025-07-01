@@ -58,7 +58,7 @@ public:
 
 
 	void ReleaseSystemData();
-	void ReleaseGPUData();
+	void ReleaseGALData();
 
 };
 

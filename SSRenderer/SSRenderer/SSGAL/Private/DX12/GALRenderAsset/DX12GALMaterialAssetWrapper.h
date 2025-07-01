@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSGAL/Public/GPURenderAsset/GALMaterialAssetWrapperBase.h"
+#include "SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h"
 
 class DX12GALRenderDevice;
 class DX12PSOWrapper;

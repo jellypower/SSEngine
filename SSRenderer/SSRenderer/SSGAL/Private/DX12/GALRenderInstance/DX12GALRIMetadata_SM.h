@@ -2,7 +2,7 @@
 #include <d3d12.h>
 
 #include "SSEngineDefault/Public/SSCommonUtil/AllocatedChunkHeader.h"
-#include "SSGAL/Public/GPURenderInstance/GALRIMetadata.h"
+#include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 struct CBARenderEnvParam;

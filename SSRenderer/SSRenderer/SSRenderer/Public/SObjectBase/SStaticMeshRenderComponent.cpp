@@ -38,6 +38,6 @@ void SStaticMeshRenderComponent::DestructRenderInstance()
 		return;
 	}
 
-	_RenderInstance->ReleaseGPURenderInstance();
+	_RenderInstance->ReleaseGALRI();
 	delete _RenderInstance;
 }

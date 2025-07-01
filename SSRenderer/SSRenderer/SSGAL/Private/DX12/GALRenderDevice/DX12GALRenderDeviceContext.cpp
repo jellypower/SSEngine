@@ -2,10 +2,10 @@
 #include "DX12GALRenderDeviceContext.h"
 
 #include "SSContentsBase/SGameObject.h"
+#include "SSGAL/Private/DX12/GALRenderAsset/DX12GALMeshAssetWrapper.h"
+#include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRIMetadata_SM.h"
 
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
-#include "SSGAL/Private/DX12/GPURenderAsset/DX12GALMeshAssetWrapper.h"
-#include "SSGAL/Private/DX12/GPURenderInstance/DX12GALRIMetadata_SM.h"
 
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOWrapper.h"
@@ -263,8 +263,8 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(BasicRenderInsta
 {
 	if (InRenderInstance->_Type == ERenderInstanceType::StaticMesh)
 	{
-		DX12GALRIMetadata_SM* NewGPURenderInstance = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InRenderInstance);
-		InRenderInstance->_GPUMetadata = NewGPURenderInstance;
+		DX12GALRIMetadata_SM* NewGALRI = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InRenderInstance);
+		InRenderInstance->_GALRIMetadata = NewGALRI;
 	}
 	else
 	{
@@ -297,7 +297,7 @@ void DX12GALRenderDeviceContext::ClearRenderTarget(GALRenderTarget* InRenderTarg
 
 void DX12GALRenderDeviceContext::Draw(BasicRenderInstance* InRenderInstance)
 {
-	if (InRenderInstance->_GPUMetadata == nullptr)
+	if (InRenderInstance->_GALRIMetadata == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
 	}
@@ -315,7 +315,7 @@ void DX12GALRenderDeviceContext::Draw(BasicRenderInstance* InRenderInstance)
 	switch (InRenderInstance->_Type)
 	{
 	case ERenderInstanceType::StaticMesh:
-		TEMP_DrawStaticMesh(InRenderInstance->_ModelRef, (DX12GALRIMetadata_SM*)InRenderInstance->_GPUMetadata, ObjTransformMat, ObjRotMat);
+		TEMP_DrawStaticMesh(InRenderInstance->_ModelRef, (DX12GALRIMetadata_SM*)InRenderInstance->_GALRIMetadata, ObjTransformMat, ObjRotMat);
 		break;
 
 	default:

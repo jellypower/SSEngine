@@ -1,7 +1,7 @@
 #pragma once
 #include <d3d12.h>
 
-#include "SSGAL/Public/GPURenderAsset/GALMeshAssetWrapperBase.h"
+#include "SSGAL/Public/GALRenderAsset/GALMeshAssetWrapperBase.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 class DX12GALRenderDevice;

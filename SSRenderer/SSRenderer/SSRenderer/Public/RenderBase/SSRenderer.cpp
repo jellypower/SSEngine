@@ -199,7 +199,7 @@ void SSRenderer::InstantiatePendingAssets(GALRenderDeviceContext* Executor)
 		}
 		else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->_GALMeshAsset != nullptr)
 		{
-			((MeshAsset*)MeshAssetItem)->ReleaseGPUData();
+			((MeshAsset*)MeshAssetItem)->ReleaseGALData();
 		}
 	}
 

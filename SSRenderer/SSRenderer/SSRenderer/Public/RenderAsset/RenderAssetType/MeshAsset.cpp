@@ -1,6 +1,6 @@
 #include "MeshAsset.h"
 
-#include "SSGAL/Public/GPURenderAsset/GALMeshAssetWrapperBase.h"
+#include "SSGAL/Public/GALRenderAsset/GALMeshAssetWrapperBase.h"
 
 MeshAsset::MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, EMeshType InMeshType) :
 	SSAssetBase(EAssetType::Mesh, InAssetName, InAssetPath),
@@ -30,7 +30,7 @@ void MeshAsset::ReleaseSystemData()
 	_wholeIndexDataCnt = 0;
 }
 
-void MeshAsset::ReleaseGPUData()
+void MeshAsset::ReleaseGALData()
 {
 	delete _GALMeshAsset;
 	_GALMeshAsset = nullptr;
