@@ -4,9 +4,11 @@
 #include "SSContentsBase/SGameObject.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/SObjectBase/RenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
-#include "SSRenderer/Public/SObjectBase/RenderComponent/SRenderComponentBase.h"
+
+#include "SSRenderer/Public/RenderBase/RenderWorld.h"
+#include "SRenderContent/Public/RenderComponent/SRenderComponentBase.h"
+
 
 SWorld::SWorld() :
 	_ObjectsByHashCode(WORLD_OBJECTMAP_HASHMAP_SIZE, WORLD_OBJECTMAP_HASHBUCKET_SIZE),

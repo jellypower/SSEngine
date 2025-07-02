@@ -435,6 +435,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpathInternals.h" />
     <ClInclude Include="ExternLibs\FBXSDK\include\libxml2\libxml\xpointer.h" />
     <ClInclude Include="ModuleEntryScriptRunner.h" />
+    <ClInclude Include="SRenderContent\Private\Camera\RenderCamera.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
     <ClInclude Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
@@ -469,14 +470,15 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSContentsBase\SGameObjectConstructor.h" />
     <ClInclude Include="SSContentsBase\SWorld.h" />
     <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
-    <ClInclude Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.h" />
+    <ClInclude Include="SSRenderer\Public\SSRendererGlobalVariableSet.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h" />
+    <ClInclude Include="SSRenderer\Public\RenderInstance\IRenderCamera.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\IRIMesh.h" />
-    <ClInclude Include="SSRenderer\Public\SObjectBase\RenderWorld.h" />
+    <ClInclude Include="SSRenderer\Public\RenderBase\RenderWorld.h" />
     <ClInclude Include="SSRenderer\Private\RenderInstance\RIStaticMesh.h" />
-    <ClInclude Include="SSRenderer\Public\SObjectBase\SCameraComponent.h" />
-    <ClInclude Include="SSRenderer\Public\SObjectBase\SRendererUtil.h" />
-    <ClInclude Include="SSRenderer\Public\SObjectBase\RenderComponent\SRenderComponentBase.h" />
+    <ClInclude Include="SRenderContent\Public\Camera\SCameraComponent.h" />
+    <ClInclude Include="SRenderContent\Public\SRendererUtil.h" />
+    <ClInclude Include="SRenderContent\Public\RenderComponent\SRenderComponentBase.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12PSOPool.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12RootSignaturePool.h" />
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12PSOWrapper.h" />
@@ -509,7 +511,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSVertexType.h" />
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSRendererInlineSettings.h" />
-    <ClInclude Include="SSRenderer\Public\SObjectBase\RenderComponent\SStaticMeshRenderComponent.h" />
+    <ClInclude Include="SRenderContent\Public\RenderComponent\SStaticMeshRenderComponent.h" />
     <ClInclude Include="SSRenderer\Public\ModuleEntry\SSRendererFactory.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\IRenderInstance.h" />
     <ClInclude Include="SSRenderAssetConverter\Public\SSFBXImporter.h" />
@@ -517,6 +519,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleEntryScriptRunner.cpp" />
+    <ClCompile Include="SRenderContent\Private\Camera\RenderCamera.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
@@ -538,13 +541,12 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSContentsBase\SGameObject.cpp" />
     <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp" />
     <ClCompile Include="SSContentsBase\SWorld.cpp" />
-    <ClCompile Include="SSRenderer\Private\SSRendererGlobalVariablePrivate.cpp" />
-    <ClCompile Include="SSRenderer\Private\RenderAsset\AssetManagerBase.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderBase\RenderWorld.cpp" />
+    <ClCompile Include="SSRenderer\Private\RenderAsset\AssetManagerBase.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderInstance\RIStaticMesh.cpp" />
-    <ClCompile Include="SSRenderer\Private\SObjectBase\SCameraComponent.cpp" />
-    <ClCompile Include="SSRenderer\Private\SObjectBase\SRendererUtil.cpp" />
-    <ClCompile Include="SSRenderer\Private\SObjectBase\RenderComponent\SRenderComponentBase.cpp" />
+    <ClCompile Include="SRenderContent\Private\Camera\SCameraComponent.cpp" />
+    <ClCompile Include="SRenderContent\Private\SRendererUtil.cpp" />
+    <ClCompile Include="SRenderContent\Private\RenderComponent\SRenderComponentBase.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12PSOPool.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12RootSignaturePool.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12PSOWrapper.cpp" />
@@ -565,9 +567,9 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\SSAssetBase.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\MeshAsset.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderAsset\MeshAssetManager.cpp" />
-    <ClCompile Include="SSRenderer\Private\SObjectBase\SSRenderer.cpp" />
+    <ClCompile Include="SSRenderer\Private\RenderBase\SSRenderer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SSRenderer\Private\SObjectBase\RenderComponent\SStaticMeshRenderComponent.cpp" />
+    <ClCompile Include="SRenderContent\Private\RenderComponent\SStaticMeshRenderComponent.cpp" />
     <ClCompile Include="SSRenderer\Private\ModuleEntry\SSRendererFactory.cpp" />
     <ClCompile Include="SSRenderAssetConverter\Public\SSFBXImporter.cpp" />
   </ItemGroup>

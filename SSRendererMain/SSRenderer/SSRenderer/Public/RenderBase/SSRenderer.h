@@ -2,8 +2,8 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class IRenderCamera;
 class GALRenderTarget;
-class SCameraComponent;
 struct AssetInstanceReferencer;
 class ModelAsset;
 class MeshAsset;
@@ -32,7 +32,7 @@ private:
 	SS::PooledList<MeshAsset*> _InstanceStateChangedMaterial;
 
 private:
-	SCameraComponent* _CurRenderCamera = nullptr;
+	IRenderCamera* _CurRenderCamera = nullptr;
 	GALRenderTarget* _PixelPickerRenderTarget = nullptr;
 
 public:
@@ -49,7 +49,7 @@ public:
 	RenderWorld* CreateRenderWorld();
 
 	// 여기서 Camera한테 World를 찾아서 SetRenderWorld해준다.
-	void SetRenderCamera(SCameraComponent* InCamera);
+	void SetRenderCamera(IRenderCamera* InCamera);
 
 
 	void AddModelInstanceReference(ModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer);
@@ -67,7 +67,7 @@ public:
 
 private:
 	void InstantiatePendingAssets(GALRenderDeviceContext* Executor);
-	void DrawRenderWorld(GALRenderDeviceContext* Executor, SCameraComponent* InCamera);
+	void DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera* InCamera);
 
 
 	void InitAssetManagers();

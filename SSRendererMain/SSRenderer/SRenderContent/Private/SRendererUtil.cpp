@@ -1,21 +1,22 @@
-﻿#include "SSRenderer/Public/SObjectBase/SRendererUtil.h"
+﻿#include "SRenderContent/Public/SRendererUtil.h"
 
 
 #include "SSContentsBase/SGameObjectConstructor.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
-#include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"
 #include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/ModelCombinationAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
-#include "SSRenderer/Public/SObjectBase/RenderComponent/SStaticMeshRenderComponent.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+
+#include "SRenderContent/Public/RenderComponent/SStaticMeshRenderComponent.h"
 
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 {
-	const ModelCombinationAssetManager* MdlcAssetManager = SSRendererModule::Private::g_Renderer->GetModelCombinationAssetManager();
+	const ModelCombinationAssetManager* MdlcAssetManager = g_Renderer->GetModelCombinationAssetManager();
 	const ModelCombinationAsset* MdlcAsset = MdlcAssetManager->FindMdlcByName(MdlcAssetName);
 	if (MdlcAsset == nullptr)
 	{
@@ -62,7 +63,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 
 SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 {
-	const ModelAssetManager* MdlAssetManager = SSRendererModule::Private::g_Renderer->GetModelAssetManager();
+	const ModelAssetManager* MdlAssetManager = g_Renderer->GetModelAssetManager();
 	const ModelAsset* lModelAsset = (ModelAsset*)MdlAssetManager->FindAssetByName(ModelAssetName);
 	if (lModelAsset == nullptr)
 	{

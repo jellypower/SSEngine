@@ -1,21 +1,40 @@
-﻿#include "SSRenderer/Public/SObjectBase/SCameraComponent.h"
+﻿#include "SRenderContent/Public/Camera/SCameraComponent.h"
 
+#include "RenderCamera.h"
 #include "SSContentsBase/SGameObject.h"
+#include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderBase/SSRenderer.h"
 
 void SCameraComponent::PostConstructHierarchy()
 {
+	_RenderCamera = DBG_NEW RenderCamera(this);
 	ConstructRenderTarget();
 }
 
 void SCameraComponent::PreDestructHierarchy()
 {
 	DestructRenderTarget();
+	delete _RenderCamera;
+	_RenderCamera = nullptr;
 }
 
 XMMATRIX SCameraComponent::GetVPMatrix() const
 {
-	const Vector2f& WidthHeight = _RenderTarget->GetViewportBoxSize().WidthHeight;
+	Vector2f WidthHeight;
+	if (_RenderTarget != nullptr)
+	{
+		WidthHeight = _RenderTarget->GetViewportBoxSize().WidthHeight;
+	}
+	else
+	{
+		GALRenderDevice* RenderDevice = g_Renderer->_GALRenderDevice;
+		GALRenderTarget* RenderTarget = RenderDevice->GetDefaultViewportRenderTarget();
+		WidthHeight = RenderTarget->GetViewportBoxSize().WidthHeight;
+	}
+
+
 	XMMATRIX ProjectionMat = XMMatrixPerspectiveFovLH(_FOV, WidthHeight.X / WidthHeight.Y, _NearZ, _FarZ);
 
 	const SGameObject* Parent = GetParent();

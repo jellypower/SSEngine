@@ -1,4 +1,4 @@
-﻿#include "SSRenderer/Public/SObjectBase/RenderComponent/SRenderComponentBase.h"
+﻿#include "SRenderContent/Public/RenderComponent/SRenderComponentBase.h"
 
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 

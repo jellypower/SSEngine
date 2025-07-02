@@ -4,9 +4,13 @@
 
 
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
-#include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
+
+
+extern SSRenderer* g_Renderer = nullptr;
+
 
 SSRenderer* CreateRenderer(HINSTANCE InhInst, HWND InhWnd)
 {
@@ -41,7 +45,7 @@ SSRenderer* CreateRenderer(HINSTANCE InhInst, HWND InhWnd)
 	newRenderer->_MainDeviceContext = MainDeviceContext;
 
 
-	SSRendererModule::Private::g_Renderer = newRenderer;
+	g_Renderer = newRenderer;
 	return newRenderer;
 
 lb_error:

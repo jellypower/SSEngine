@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSContentsBase/SComponentBase.h"
 
+class IRenderCamera;
 class GALRenderTarget;
 
 
@@ -13,13 +14,20 @@ class SCameraComponent : public SComponentBase
 public:
 	GALRenderTarget* _RenderTarget = nullptr;
 
+private:
+	IRenderCamera* _RenderCamera = nullptr;
+
+	float _FOV; // FOV's unit is "Radian", "Y Degree" 
+	float _NearZ;
+	float _FarZ;
+
 public:
 	virtual void PostConstructHierarchy() override;
 	virtual void PreDestructHierarchy() override;
 
 public:
+	IRenderCamera* GetRenderCamera() const { return _RenderCamera; }
 	XMMATRIX GetVPMatrix() const;
-
 
 	void SetFOVWithRadians(float InRadians);
 	void SetFOVWithDegrees(float InDegrees);
@@ -29,10 +37,4 @@ public:
 protected:
 	void ConstructRenderTarget();
 	void DestructRenderTarget();
-
-private:
-	float _FOV; // FOV's unit is "Radian", "Y Degree" 
-	float _NearZ;
-	float _FarZ;
-
 };

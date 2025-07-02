@@ -1,9 +1,10 @@
-﻿#include "SSRenderer/Public/SObjectBase/RenderComponent/SStaticMeshRenderComponent.h"
+﻿#include "SRenderContent/Public/RenderComponent/SStaticMeshRenderComponent.h"
 
 #include "SSContentsBase/SGameObject.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
-#include "SSRenderer/Private/SSRendererGlobalVariablePrivate.h"
+
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/SSAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCommon/CommonDataType.h"
@@ -16,7 +17,7 @@ void SStaticMeshRenderComponent::ConstructRenderInstance()
 	RIStaticMesh* NewStaticMeshRI = DBG_NEW RIStaticMesh();
 	_RenderInstance = NewStaticMeshRI;
 
-	ModelAssetManager* ModelAssetManager = SSRendererModule::Private::g_Renderer->GetModelAssetManager();
+	ModelAssetManager* ModelAssetManager = g_Renderer->GetModelAssetManager();
 
 	SS_ASSERT(_ModelAssetName.IsEmpty() == false);
 	SSAssetBase* FoundModelRef = ModelAssetManager->FindAssetByName(_ModelAssetName);

@@ -1,6 +1,6 @@
 #include "SSEngine.h"
 
-#include <SSEngineDefault/Public/RawInput/KeyCodeEnums.h>
+#include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
 
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
@@ -14,13 +14,13 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 
-#include "SSRenderer/Public/SObjectBase/SCameraComponent.h"
 
 #include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
-#include "SSRenderer/Public/SObjectBase/SRendererUtil.h"
 
+#include "SRenderContent/Public/SRendererUtil.h"
+#include "SRenderContent/Public/Camera/SCameraComponent.h"
 
 
 SSEngine* g_Engine = nullptr;
@@ -70,16 +70,17 @@ void SSEngine::StartupEngine()
 
 	{
 		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
+		SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
+		SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
 		_DefaultWorld->AddToWorld(CameraObject);
-		SCameraComponent* Camera = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
 
-		Camera->SetFOVWithDegrees(90);
-		Camera->SetNearZ(0.01f);
-		Camera->SetFarZ(10000.f);
+		CameraComp->SetFOVWithDegrees(90);
+		CameraComp->SetNearZ(0.01f);
+		CameraComp->SetFarZ(10000.f);
 		CameraObject->SetPosition(Vector4f(0,0,-10.f,0));
 		CameraObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 0, 1, 0)));
-		TEMP_Camera = Camera;
-		_Renderer->SetRenderCamera(Camera);
+		TEMP_Camera = CameraComp;
+		_Renderer->SetRenderCamera(CameraComp->GetRenderCamera());
 	}
 }
 

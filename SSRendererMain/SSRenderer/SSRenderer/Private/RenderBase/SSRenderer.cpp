@@ -1,5 +1,6 @@
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
 
+
 #include "SSContentsBase/SGameObject.h"
 #include "SSContentsBase/SWorld.h"
 
@@ -16,8 +17,9 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/SSAssetBase.h"
-#include "SSRenderer/Public/SObjectBase/RenderWorld.h"
-#include "SSRenderer/Public/SObjectBase/SCameraComponent.h"
+
+#include "SSRenderer/Public/RenderBase/RenderWorld.h"
+#include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 
 
 SSRenderer::SSRenderer()
@@ -119,15 +121,8 @@ RenderWorld* SSRenderer::CreateRenderWorld()
 	return NewRenderWorld;
 }
 
-void SSRenderer::SetRenderCamera(SCameraComponent* InCamera)
+void SSRenderer::SetRenderCamera(IRenderCamera* InCamera)
 {
-	if (InCamera->_RenderTarget != nullptr)
-	{
-		SS_INTERRUPT();
-		return;
-	}
-
-	InCamera->_RenderTarget = _GALRenderDevice->GetDefaultViewportRenderTarget();
 	_CurRenderCamera = InCamera;
 }
 
@@ -163,10 +158,18 @@ void SSRenderer::PerFrame()
 
 			XMMATRIX VPMatrix = _CurRenderCamera->GetVPMatrix();
 			VPMatrix = XMMatrixTranspose(VPMatrix);
-			SGameObject* CameraObj = _CurRenderCamera->GetParent();
 			_MainDeviceContext->SetCameraVPTransform(VPMatrix);
-			_MainDeviceContext->SetCameraPosition(CameraObj->GetTransform().Position.SimdVec);
-			_MainDeviceContext->SetRenderTarget(_CurRenderCamera->_RenderTarget);
+			_MainDeviceContext->SetCameraPosition(_CurRenderCamera->GetCameraTransform().Position.SimdVec);
+
+			if (_CurRenderCamera->GetSpecificRenderTarget() == nullptr)
+			{
+				_MainDeviceContext->SetRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
+			}
+			else
+			{
+				_MainDeviceContext->SetRenderTarget(_CurRenderCamera->GetSpecificRenderTarget());
+			}
+
 	
 
 			InstantiatePendingAssets(_MainDeviceContext);
@@ -205,22 +208,9 @@ void SSRenderer::InstantiatePendingAssets(GALRenderDeviceContext* Executor)
 	_InstanceStateChangedMesh.Clear();
 }
 
-void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, SCameraComponent* InCamera)
+void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera* InCamera)
 {
-	SGameObject* Parent = InCamera->GetParent();
-	if (Parent == nullptr)
-	{
-		SS_INTERRUPT();
-	}
-
-	SWorld* World = Parent->GetIncludedWorldRef();
-	if (World == nullptr)
-	{
-		DEBUG_BREAK();
-		return;
-	}
-
-	RenderWorld* WorldToRender = World->GetRenderWorld();
+	const RenderWorld* WorldToRender = InCamera->GetIcludedRenderWorld();
 	if (WorldToRender == nullptr)
 	{
 		DEBUG_BREAK();
