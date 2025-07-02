@@ -25,6 +25,8 @@ public:
 	virtual void PreDestructHierarchy() override;
 	// virtual void PreDestruct() override;
 
+	void OnGameObjectTransformCommited() override;
+
 protected:
 	virtual void ConstructRenderInstance() = 0;
 	virtual void DestructRenderInstance() = 0;

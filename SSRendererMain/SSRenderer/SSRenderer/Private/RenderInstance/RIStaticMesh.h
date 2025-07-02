@@ -15,9 +15,13 @@ public:
 	virtual const XMMATRIX& GetWorldRotationMatrix() const override;
 
 	void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) override;
+	void SetWorldTransformMatrix(const XMMATRIX& InMatrix) override;
+	void SetWorldRotation(const Quaternion& InRotation) override;
 
 
 public:
+	XMMATRIX _WorldTransformMatrix;
+	XMMATRIX _WorldRotationMatrix;
 	SObjHashCode _GameObjectHashCode = nullptr;
 	ModelAsset* _ModelRef = nullptr;
 	GALRIMetadata* _MetaData = nullptr;

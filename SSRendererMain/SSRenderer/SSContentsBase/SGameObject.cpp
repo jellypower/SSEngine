@@ -6,9 +6,13 @@
 
 bool SGameObject::IsRootInWorld() const
 {
+	SGameObject* Parent = GetParent();
+	if (Parent == nullptr)
+	{
+		return true; // 부모가 없는 경우에도 Root로 취급한다.
+	}
 	SWorld* World = GetIncludedWorldRef();
 
-	SGameObject* Parent = GetParent();
 	SGameObject* WorldRoot = World->GetWorldRootObject();
 
 	return Parent == WorldRoot;
@@ -46,9 +50,9 @@ XMMATRIX SGameObject::GetWorldTransformMatrix() const
 	}
 
 	SGameObject* Parent = GetParent();
-	XMMATRIX ParentTransformMat = Parent->GetWorldTransformMatrix();
+	XMMATRIX ParentWorldTransformMat = Parent->GetWorldTransformMatrix();
 
-	return TransformMat * ParentTransformMat;
+	return TransformMat * ParentWorldTransformMat;
 }
 
 Quaternion SGameObject::GetWorldRot() const
@@ -67,26 +71,26 @@ void SGameObject::SetTransform(const Transform& InTransform)
 {
 	_transform = InTransform;
 	_transform.Position.W = 1.f;
-	MarkTransformUpdateNeeded();
+	MarkTransformCommitNeeded();
 }
 
 void SGameObject::SetPosition(const Vector4f& InPosition)
 {
 	_transform.Position = InPosition;
 	_transform.Position.W = 1.f;
-	MarkTransformUpdateNeeded();
+	MarkTransformCommitNeeded();
 }
 
 void SGameObject::SetRotation(const Quaternion& InRotation)
 {
 	_transform.Rotation = InRotation;
-	MarkTransformUpdateNeeded();
+	MarkTransformCommitNeeded();
 }
 
 void SGameObject::SetScale(const Vector4f& InScale)
 {
 	_transform.Scale = InScale;
-	MarkTransformUpdateNeeded();
+	MarkTransformCommitNeeded();
 }
 
 void SGameObject::SetParent(SGameObject* InNewParent)
@@ -133,6 +137,7 @@ void SGameObject::AddComponent(SComponentBase* InComponent)
 void SGameObject::OnEnterTheWorld(SObjHashCode WorldHashCode)
 {
 	_IncludedWorldHash = WorldHashCode;
+	MarkTransformCommitNeeded();
 }
 
 void SGameObject::OnExitTheWorld()
@@ -141,22 +146,40 @@ void SGameObject::OnExitTheWorld()
 }
 
 
-void SGameObject::MarkTransformUpdateNeeded()
+void SGameObject::MarkTransformCommitNeeded()
 {
-	uint64 CurFrameCnt = SSFrameInfo::GetFrameCnt();
-	if (_TransformCommitedFrameCnt < CurFrameCnt)
+	if (_bTransformCommitReserved == false)
 	{
-		_TransformCommitedFrameCnt = CurFrameCnt;
-
+		_bTransformCommitReserved = true;
 		SWorld* World = GetIncludedWorldRef();
 
-		World->AddTransformCommitNeededObj(this);
-
-		int32 ChildCnt = GetChildCnt();
-		for (int32 i=0;i<ChildCnt;i++)
+		if (World != nullptr)
 		{
-			SGameObject* ChildItem = GetChild(i);
-			ChildItem->MarkTransformUpdateNeeded();
+			World->AddTransformCommitNeededObj(this);
 		}
+	}
+}
+
+void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const Quaternion& ParentRotation)
+{
+	XMMATRIX ThisTransformMat = _transform.AsMatrix();
+	_CommittedWorldTransformMat = ThisTransformMat * ParentWorldTransformMat;
+	_CommittedWorldRotation =  ParentRotation * _transform.Rotation;
+	_bTransformCommitReserved = false;
+	_TransformCommitedFrameCnt = SSFrameInfo::GetFrameCnt();
+
+	for (SComponentBase* ComponentItem : _Components)
+	{
+		ComponentItem->OnGameObjectTransformCommited();
+	}
+
+	for (SGameObject* ChildItem : _Children)
+	{
+		ChildItem->CommitTransform(_CommittedWorldTransformMat, _CommittedWorldRotation);
+	}
+
+	for (SComponentBase* ComponentItem : _Components)
+	{
+		ComponentItem->OnChildrenGameObjectTransformCommitted();
 	}
 }

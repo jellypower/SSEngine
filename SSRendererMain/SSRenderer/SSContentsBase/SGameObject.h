@@ -10,22 +10,26 @@ class SGameObject : public SObjectBase
 {
 private:
 	Transform _transform;
-	uint64 _TransformCommitedFrameCnt = 0;
+	XMMATRIX _CommittedWorldTransformMat;
+	Quaternion _CommittedWorldRotation;
 
-	bool _IsHierarchyInitialized = false;
-	SObjHashCode _IncludedWorldHash = nullptr;
-	SGameObject* _Parent = nullptr;
 	SS::PooledList<SGameObject*, SS::InlineAllocator<8>> _Children;
 	SS::PooledList<SComponentBase*, SS::InlineAllocator<8>> _Components;
+
+	SObjHashCode _IncludedWorldHash = nullptr;
+	SGameObject* _Parent = nullptr;
+
+	uint64 _TransformCommitedFrameCnt = 0;
+	bool _bIsHierarchyInitialized = false;
+	bool _bTransformCommitReserved = false;
+
 
 public:
 	bool IsRootInWorld() const;
 
 	SWorld* GetIncludedWorldRef() const;
 	SObjHashCode GetIncludedWorldHash() const { return _IncludedWorldHash; }
-	bool GetIsHierarchyInitialized() const { return _IsHierarchyInitialized; }
-
-	uint64 GetTransformCommitedFrameCnt() const { return _TransformCommitedFrameCnt; }
+	bool GetIsHierarchyInitialized() const { return _bIsHierarchyInitialized; }
 
 	int32 GetChildCnt() const { return _Children.GetSize(); }
 	SGameObject* GetChild(int32 ChildIdx) const { return _Children[ChildIdx]; }
@@ -39,14 +43,22 @@ public:
 	XMMATRIX GetWorldTransformMatrix() const;
 	Quaternion GetWorldRot() const;
 
+	uint64 GetTransformCommittedFrameCnt() const { return _TransformCommitedFrameCnt; }
+	bool IsTransformCommitReserved() const { return _bTransformCommitReserved; }
+	const XMMATRIX& GetCommittedWorldTransformMat() const { return _CommittedWorldTransformMat; }
+	const Quaternion& GetCommittedWorldRotation() const { return _CommittedWorldRotation; }
+
 public:
 	void SetTransform(const Transform& InTransform);
 	void SetPosition(const Vector4f& InPosition);
 	void SetRotation(const Quaternion& InRotation);
 	void SetScale(const Vector4f& InScale);
 
+	void MarkTransformCommitNeeded();
+	void CommitTransform(const XMMATRIX& ParentWorldTransformMat, const Quaternion& ParentRotation);
+
 	void SetParent(SGameObject* InNewParent);
-	void MarkHierarchyInitialized() { _IsHierarchyInitialized = true; }
+	void MarkHierarchyInitialized() { _bIsHierarchyInitialized = true; }
 
 	void OnEnterTheWorld(SObjHashCode WorldHashCode);
 	void OnExitTheWorld();
@@ -62,6 +74,4 @@ public:
 		return NewComponent;
 	}
 
-private:
-	void MarkTransformUpdateNeeded();
 };

@@ -1,5 +1,7 @@
 ﻿#include "SSContentsBase/SWorld.h"
 
+#include <SSEngineDefault/Public/RawProfiler/SSFrameInfo.h>
+
 #include "SSContentsBase/SComponentBase.h"
 #include "SSContentsBase/SGameObject.h"
 
@@ -69,7 +71,48 @@ void SWorld::DestroyAllObjectsInWorld()
 
 void SWorld::ProcessTransformCommit()
 {
-	
+	uint64 CurFrameCnt = SSFrameInfo::GetFrameCnt();
+
+	for (SS::pair<SObjHashCode, SGameObject*>& PairItem : _TransformCommitNeededObjs)
+	{
+		SGameObject* TransformCommitStartObject = PairItem.second;
+		if (TransformCommitStartObject->GetTransformCommittedFrameCnt() == CurFrameCnt)
+		{
+			continue;
+		}
+
+
+		// FindTransformCommitStartObject
+		{
+			SGameObject* CommitStartAncestorItem = TransformCommitStartObject->GetParent();
+			while (CommitStartAncestorItem != nullptr)
+			{
+				if (CommitStartAncestorItem->IsTransformCommitReserved())
+				{
+					TransformCommitStartObject = CommitStartAncestorItem;
+				}
+
+				CommitStartAncestorItem = CommitStartAncestorItem->GetParent();
+			}
+		}
+
+		SGameObject* TransformCommitStartParent = TransformCommitStartObject->GetParent();
+		XMMATRIX ParentWorldTransform;
+		Quaternion ParentWorldRotation;
+
+		if (TransformCommitStartParent == nullptr)
+		{
+			ParentWorldTransform = XMMatrixIdentity();
+		}
+		else
+		{
+			ParentWorldTransform = TransformCommitStartParent->GetWorldTransformMatrix();
+			ParentWorldRotation = TransformCommitStartParent->GetWorldRot();
+		}
+
+		TransformCommitStartObject->CommitTransform(ParentWorldTransform, ParentWorldRotation);
+	}
+
 
 	_TransformCommitNeededObjs.Clear();
 }

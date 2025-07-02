@@ -87,8 +87,8 @@ void SSEngine::StartupEngine()
 void SSEngine::EnginePerFrame()
 {
 	TEMP_ProcessInput();
-	_Renderer->PerFrame();
 	_DefaultWorld->ProcessTransformCommit();
+	_Renderer->PerFrame();
 }
 
 void SSEngine::CleanupEngine()

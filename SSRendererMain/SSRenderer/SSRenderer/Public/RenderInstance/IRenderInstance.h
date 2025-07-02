@@ -22,5 +22,7 @@ public:
 	virtual const XMMATRIX& GetWorldRotationMatrix() const = 0;
 
 	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) = 0;
+	virtual void SetWorldTransformMatrix(const XMMATRIX& InMatrix) = 0;
+	virtual void SetWorldRotation(const Quaternion& InRotation) = 0;
 };
 

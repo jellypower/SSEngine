@@ -20,4 +20,8 @@ public:
 	virtual void OnExitTheWorld() { }
 	virtual void PreDestructHierarchy() { }
 	// virtual void PreDestruct() { };
+
+
+	virtual void OnGameObjectTransformCommited() { }
+	virtual void OnChildrenGameObjectTransformCommitted() { }
 };

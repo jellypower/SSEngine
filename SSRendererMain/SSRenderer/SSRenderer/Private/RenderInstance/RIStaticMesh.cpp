@@ -35,19 +35,25 @@ ModelAsset* RIStaticMesh::GetModelAsset() const
 
 const XMMATRIX& RIStaticMesh::GetWorldTransformMatrix() const
 {
-	SGameObject* GameObj = (SGameObject*)_GameObjectHashCode.GetSObject();
-
-	return GameObj->GetWorldTransformMatrix(); // TODO: Transform Commit하는 과정 만들기
+	return _WorldTransformMatrix;
 }
 
 const XMMATRIX& RIStaticMesh::GetWorldRotationMatrix() const
 {
-	SGameObject* GameObj = (SGameObject*)_GameObjectHashCode.GetSObject();
-
-	return GameObj->GetWorldRot().AsMatrix(); // TODO: Transform Commit하는 과정 만들기
+	return _WorldRotationMatrix;
 }
 
 void RIStaticMesh::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover)
 {
 	_MetaData = MetadataToHandover;
+}
+
+void RIStaticMesh::SetWorldTransformMatrix(const XMMATRIX& InMatrix)
+{
+	_WorldTransformMatrix = InMatrix;
+}
+
+void RIStaticMesh::SetWorldRotation(const Quaternion& InRotation)
+{
+	_WorldRotationMatrix = InRotation.AsMatrix();
 }
