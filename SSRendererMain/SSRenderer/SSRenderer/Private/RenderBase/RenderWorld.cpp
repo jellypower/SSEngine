@@ -27,7 +27,7 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 {
 	MeshAssetManager* MeshAssetManager = _OwnerRenderer->GetMeshAssetManager();
 
-	SObjHashCode GameObjectHashCode = SObjHashCode(InRenderInstance->GetGameObjectIDNative());
+	SObjHashCode GameObjectHashCode = InRenderInstance->GetGameObjectID();
 	if (_RenderInstanceByHashCode.Find(GameObjectHashCode) != nullptr)
 	{
 		SS_ASSERT(false);
@@ -78,8 +78,7 @@ void RenderWorld::RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove)
 
 		AssetInstanceReferencer AssetReferencer;
 		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
-		SObjHashCode HashCode(RIMeshToRemove->GetGameObjectIDNative());
-		AssetReferencer.ObjHashCode = HashCode;
+		AssetReferencer.ObjHashCode = RIMeshToRemove->GetGameObjectID();
 		_OwnerRenderer->RemoveModelInstanceReference(RIMeshToRemove->GetModelAsset(), AssetReferencer);
 
 		_RenderInstanceByHashCode.Remove(RenderInstanceIDToRemove);

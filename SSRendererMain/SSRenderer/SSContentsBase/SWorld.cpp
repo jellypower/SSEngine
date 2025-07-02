@@ -201,8 +201,9 @@ void SWorld::RemoveGameObjectItem(SGameObject* InObjectToRemove)
 
 		if (SRenderComponentBase* RenderComponent = dynamic_cast<SRenderComponentBase*>(CompItem))
 		{
-			SObjHashCode HashCode(RenderComponent->GetRenderInstance()->GetGameObjectIDNative());
-			_RenderWorld->RemoveFromWorld(HashCode);
+			IRenderInstance* RenderInstance = RenderComponent->GetRenderInstance();
+			SObjHashCode GOID =  RenderInstance->GetGameObjectID();
+			_RenderWorld->RemoveFromWorld(GOID);
 		}
 	}
 

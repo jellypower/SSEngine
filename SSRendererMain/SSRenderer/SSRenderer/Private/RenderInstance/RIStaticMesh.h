@@ -6,7 +6,7 @@
 class RIStaticMesh : public IRIMesh
 {
 public:
-	virtual int64 GetGameObjectIDNative() const override;
+	virtual SObjHashCode GetGameObjectID() const override;
 	virtual ERenderInstanceType GetRIType() const override;
 	virtual const GALRIMetadata* GetGALMetadata() const	override;
 	virtual void ReleaseGALMetaData() override;

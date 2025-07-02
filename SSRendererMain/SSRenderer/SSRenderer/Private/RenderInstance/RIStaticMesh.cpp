@@ -4,9 +4,9 @@
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
 
-int64 RIStaticMesh::GetGameObjectIDNative() const
+SObjHashCode RIStaticMesh::GetGameObjectID() const
 {
-	return _GameObjectHashCode.GetNativeValue();
+	return _GameObjectHashCode;
 }
 
 ERenderInstanceType RIStaticMesh::GetRIType() const

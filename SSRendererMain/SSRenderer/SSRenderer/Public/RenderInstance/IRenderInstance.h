@@ -14,7 +14,7 @@ class ModelAsset;
 class IRenderInstance : public INoncopyable
 {
 public:
-	virtual int64 GetGameObjectIDNative() const = 0;
+	virtual SObjHashCode GetGameObjectID() const = 0;
 	virtual ERenderInstanceType GetRIType() const = 0;
 	virtual const GALRIMetadata* GetGALMetadata() const = 0;
 	virtual void ReleaseGALMetaData() = 0;
