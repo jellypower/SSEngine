@@ -123,8 +123,8 @@
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRenderer\$(IntDir)"
-copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir)..\SSRenderer\$(IntDir)</Command>
+      <Command>copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir)..\SSRendererMain\$(IntDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,8 +150,8 @@ copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir).
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRenderer\$(IntDir)"
-copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir)..\SSRenderer\$(IntDir)</Command>
+      <Command>copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir)..\SSRendererMain\$(IntDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

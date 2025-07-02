@@ -175,7 +175,7 @@ void ContainerTest_HashMap()
 	for (int32 i = 0; i < ITER_CNT; i++)
 	{
 		utf16 TempStr[2000];
-		swprintf_s(TempStr, sizeof(TempStr)/sizeof(utf16), L"MyString: %d", i);
+		swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
 
 		StrList.PushBack(TempStr);
 	}
@@ -224,7 +224,7 @@ void ContainerTest_HashMap()
 		for (int32 i = 0; i < ITER_CNT; i++)
 		{
 			utf16 TempStr[2000];
-			swprintf_s(TempStr, sizeof(TempStr)/sizeof(utf16), L"MyString: %d", i);
+			swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
 
 			int32* FoundItem = HashMap.Find(TempStr);
 
@@ -242,7 +242,6 @@ void ContainerTest_HashMap()
 		}
 
 		SS_ASSERT(HashMap.GetCnt() == 0);
-		HashMap.Clear();
 	}
 }
 
