@@ -189,7 +189,7 @@ void ContainerTest_HashMap()
 	SS::HashMap<SS::StringW, int32> HashMap(RESERVE_SIZE, RESERVE_SIZE);
 
 
-	// Test01
+	// Test01: 속도 테스트 
 	{
 		uint64 freqStart, freqEnd;
 
@@ -218,7 +218,7 @@ void ContainerTest_HashMap()
 	}
 
 
-	// Test02
+	// Test02: 찾기 지우기 테스트
 	{
 
 		for (int32 i = 0; i < ITER_CNT; i++)
@@ -236,7 +236,13 @@ void ContainerTest_HashMap()
 
 			int32 FoundValue = *FoundItem;
 			SS_ASSERT(FoundValue == i);
+
+			bool bRemoveSuccess = HashMap.Remove(TempStr);
+			SS_ASSERT(bRemoveSuccess);
 		}
+
+		SS_ASSERT(HashMap.GetCnt() == 0);
+		HashMap.Clear();
 	}
 }
 

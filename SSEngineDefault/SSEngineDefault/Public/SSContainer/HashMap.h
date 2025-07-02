@@ -160,13 +160,13 @@ namespace SS
 		}
 
 
-		void Remove(const KeyType& Key)
+		bool Remove(const KeyType& Key)
 		{
 			uint32 hashValue = HashValue(Key) % _hashMapCapacity;
 			const int64 itemPoolIdx = _hashValueToBucketHeadListIdx[hashValue];
 			if (itemPoolIdx == INVALID_IDX)
 			{
-				return;
+				return false;
 			}
 
 
@@ -174,26 +174,42 @@ namespace SS
 			HashMapBucket_INL* PrevNode = nullptr;
 			HashMapBucket_INL* CurNode = nullptr;
 
-			if(firstHashMapNode->_pair.first == Key)
+			if(firstHashMapNode->_pair.first == Key) // 링크드 리스트 노드중 첫 번째 노드가 삭제 대상일 경우
 			{
 				_bucketHeadList[itemPoolIdx]._next = firstHashMapNode->_next;
 				delete firstHashMapNode;
 				_cnt--;
-				goto lb_CleanupEmptyHashMapNodeHead;
+
+				if (_bucketHeadList[itemPoolIdx]._next == nullptr) // 링크드 리스트의 첫 번째 노드를 지우고 나서 남아있는 노드가 더는 없는 경우
+				{
+					_bucketHeadList.RemoveAtAndFillLast(itemPoolIdx);
+					_hashValueToBucketHeadListIdx[hashValue] = INVALID_IDX;
+
+
+					if (_bucketHeadList.GetSize() != 0 && 
+						_bucketHeadList.IsValidIndex(itemPoolIdx)) // bucket의 head의 인덱스가 바뀌었으니 값을 업데이트 해줌.
+					{
+						HashMapBucketHead_INL& replacedHead = _bucketHeadList[itemPoolIdx];
+						_hashValueToBucketHeadListIdx[replacedHead._hashValue] = itemPoolIdx;
+						replacedHead._idxInArray = itemPoolIdx;
+					}
+				}
+
+				return true;
 			}
 
 
 			PrevNode = firstHashMapNode;
 			CurNode = PrevNode->_next;
 
-			while (CurNode != nullptr)
+			while (CurNode != nullptr) // 두 번째 노드부터 삭제 대상일 경우
 			{
 				if(CurNode->_pair.first == Key)
 				{
 					PrevNode->_next = CurNode->_next;
 					delete CurNode;
 					_cnt--;
-					return;
+					return true;
 				}
 
 				PrevNode = PrevNode->_next;
@@ -201,24 +217,7 @@ namespace SS
 			}
 			
 
-lb_CleanupEmptyHashMapNodeHead:
-			if (_bucketHeadList[itemPoolIdx]._next == nullptr)
-			{
-				_bucketHeadList.RemoveAtAndFillLast(itemPoolIdx);
-				_hashValueToBucketHeadListIdx[hashValue] = INVALID_IDX;
-
-				if (_bucketHeadList.GetSize() == 0)
-				{
-					return;
-				}
-
-				if (_bucketHeadList.IsValidIndex(itemPoolIdx)) {
-					HashMapBucketHead_INL& replacedHead = _bucketHeadList[itemPoolIdx];
-					_hashValueToBucketHeadListIdx[replacedHead._hashValue] = itemPoolIdx;
-					replacedHead._idxInArray = itemPoolIdx;
-				}
-			}
-
+			return false; // 동일한 Key의 노드를 찾지 못한 경우
 		}
 
 		ValueType* Find(const KeyType& Key)
@@ -286,6 +285,11 @@ lb_CleanupEmptyHashMapNodeHead:
 				}
 
 				HashMapBucket_INL* nextBucketNode = curBucketNode->_next;
+
+
+				uint32 hashedValue = HashValue(curBucketNode->_pair.first) % _hashMapCapacity;
+				_hashValueToBucketHeadListIdx[hashedValue] = INVALID_IDX;
+
 				delete curBucketNode;
 				curBucketNode = nextBucketNode;
 			}
@@ -294,7 +298,7 @@ lb_CleanupEmptyHashMapNodeHead:
 			_bucketHeadList.SetSizeDirectly(0);
 			for(int64 i=0;i<_hashValueToBucketHeadListIdx.GetSize();i++)
 			{
-				_hashValueToBucketHeadListIdx[i] = INVALID_IDX;
+				SS_ASSERT(_hashValueToBucketHeadListIdx[i] == INVALID_IDX); // TODO: 검증되면 없애도 되는 코드
 			}
 
 			_cnt = 0;

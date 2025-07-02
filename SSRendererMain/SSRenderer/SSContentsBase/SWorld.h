@@ -18,7 +18,7 @@ class SWorld : public SObjectBase
 private:
 	SGameObject* _WorldRootObject = nullptr;
 	SS::HashMap<SObjHashCode, SGameObject*> _ObjectsByHashCode;
-	SS::HashMap<SObjHashCode, SGameObject*> _ObjectsNeedToUpdateTransform; // TODO: 업데이트 끝나면 Clear해줘야함
+	SS::HashMap<SObjHashCode, SGameObject*> _TransformCommitNeededObjs; // TODO: 업데이트 끝나면 Clear해줘야함
 
 	RenderWorld* _RenderWorld = nullptr;
 
@@ -38,8 +38,8 @@ public:
 	void RemoveFromWorld(SGameObject* InObjectToRemove);
 	void DestroyAllObjectsInWorld();
 
-	void ClearObjectsNeedToUpdateTransformList();
-	void AddObjectNeedToUpdateTransform(SGameObject* InObj);
+	void ProcessTransformCommit();
+	void AddTransformCommitNeededObj(SGameObject* InObj);
 
 private:
 	void AddToWorld_Recursion(SGameObject* InNewObject);

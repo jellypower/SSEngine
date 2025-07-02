@@ -10,7 +10,7 @@ class SGameObject : public SObjectBase
 {
 private:
 	Transform _transform;
-	uint64 _LastTransformUpdateFrameCnt = 0;
+	uint64 _TransformCommitedFrameCnt = 0;
 
 	bool _IsHierarchyInitialized = false;
 	SObjHashCode _IncludedWorldHash = nullptr;
@@ -24,6 +24,8 @@ public:
 	SWorld* GetIncludedWorldRef() const;
 	SObjHashCode GetIncludedWorldHash() const { return _IncludedWorldHash; }
 	bool GetIsHierarchyInitialized() const { return _IsHierarchyInitialized; }
+
+	uint64 GetTransformCommitedFrameCnt() const { return _TransformCommitedFrameCnt; }
 
 	int32 GetChildCnt() const { return _Children.GetSize(); }
 	SGameObject* GetChild(int32 ChildIdx) const { return _Children[ChildIdx]; }

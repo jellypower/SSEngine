@@ -11,9 +11,11 @@ public:
 	virtual const GALRIMetadata* GetGALMetadata() const	override;
 	virtual void ReleaseGALMetaData() override;
 	virtual ModelAsset* GetModelAsset() const override;
-
 	virtual const XMMATRIX& GetWorldTransformMatrix() const override;
 	virtual const XMMATRIX& GetWorldRotationMatrix() const override;
+
+	void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) override;
+
 
 public:
 	SObjHashCode _GameObjectHashCode = nullptr;

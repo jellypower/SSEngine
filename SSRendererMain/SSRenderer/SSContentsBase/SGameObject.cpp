@@ -144,13 +144,13 @@ void SGameObject::OnExitTheWorld()
 void SGameObject::MarkTransformUpdateNeeded()
 {
 	uint64 CurFrameCnt = SSFrameInfo::GetFrameCnt();
-	if (_LastTransformUpdateFrameCnt != CurFrameCnt)
+	if (_TransformCommitedFrameCnt < CurFrameCnt)
 	{
-		_LastTransformUpdateFrameCnt = CurFrameCnt;
+		_TransformCommitedFrameCnt = CurFrameCnt;
 
 		SWorld* World = GetIncludedWorldRef();
 
-		World->AddObjectNeedToUpdateTransform(this);
+		World->AddTransformCommitNeededObj(this);
 
 		int32 ChildCnt = GetChildCnt();
 		for (int32 i=0;i<ChildCnt;i++)

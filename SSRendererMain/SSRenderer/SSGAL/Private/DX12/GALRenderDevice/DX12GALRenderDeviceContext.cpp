@@ -264,9 +264,9 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 {
 	if (InRenderInstance->GetRIType() == ERenderInstanceType::StaticMesh)
 	{
-		RIStaticMesh* InRIStaticMesh = (RIStaticMesh*)InRenderInstance;
-		DX12GALRIMetadata_SM* NewGALRI = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InRIStaticMesh);
-		InRIStaticMesh->_MetaData = NewGALRI;
+		IRIMesh* InIRIMesh = (IRIMesh*)InRenderInstance;
+		DX12GALRIMetadata_SM* NewGALRI = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InIRIMesh);
+		InIRIMesh->InjectGALMetadataXXX(NewGALRI);
 	}
 	else
 	{

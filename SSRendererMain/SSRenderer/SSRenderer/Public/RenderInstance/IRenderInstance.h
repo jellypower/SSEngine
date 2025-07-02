@@ -20,5 +20,7 @@ public:
 	virtual void ReleaseGALMetaData() = 0;
 	virtual const XMMATRIX& GetWorldTransformMatrix() const	= 0;
 	virtual const XMMATRIX& GetWorldRotationMatrix() const = 0;
+
+	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) = 0;
 };
 

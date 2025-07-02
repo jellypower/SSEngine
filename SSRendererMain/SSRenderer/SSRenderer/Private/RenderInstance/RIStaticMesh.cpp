@@ -46,3 +46,8 @@ const XMMATRIX& RIStaticMesh::GetWorldRotationMatrix() const
 
 	return GameObj->GetWorldRot().AsMatrix(); // TODO: Transform Commit하는 과정 만들기
 }
+
+void RIStaticMesh::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover)
+{
+	_MetaData = MetadataToHandover;
+}

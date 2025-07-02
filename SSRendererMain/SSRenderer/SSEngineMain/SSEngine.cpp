@@ -88,7 +88,7 @@ void SSEngine::EnginePerFrame()
 {
 	TEMP_ProcessInput();
 	_Renderer->PerFrame();
-	_DefaultWorld->ClearObjectsNeedToUpdateTransformList();
+	_DefaultWorld->ProcessTransformCommit();
 }
 
 void SSEngine::CleanupEngine()

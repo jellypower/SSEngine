@@ -12,7 +12,7 @@
 
 SWorld::SWorld() :
 	_ObjectsByHashCode(WORLD_OBJECTMAP_HASHMAP_SIZE, WORLD_OBJECTMAP_HASHBUCKET_SIZE),
-	_ObjectsNeedToUpdateTransform(TRANSFORM_UPDATE_HASHMAP_SIZE, TRANSFORM_UPDATE_HASHBUCKET_SIZE)
+	_TransformCommitNeededObjs(TRANSFORM_UPDATE_HASHMAP_SIZE, TRANSFORM_UPDATE_HASHBUCKET_SIZE)
 {
 }
 
@@ -67,12 +67,14 @@ void SWorld::DestroyAllObjectsInWorld()
 	}
 }
 
-void SWorld::ClearObjectsNeedToUpdateTransformList()
+void SWorld::ProcessTransformCommit()
 {
-	_ObjectsNeedToUpdateTransform.Clear();
+	
+
+	_TransformCommitNeededObjs.Clear();
 }
 
-void SWorld::AddObjectNeedToUpdateTransform(SGameObject* InObj)
+void SWorld::AddTransformCommitNeededObj(SGameObject* InObj)
 {
 	SObjHashCode WorldHashCode = GetHashCode();
 	if (WorldHashCode != InObj->GetIncludedWorldHash())
@@ -81,14 +83,13 @@ void SWorld::AddObjectNeedToUpdateTransform(SGameObject* InObj)
 	}
 
 	SObjHashCode InObjHashCode = InObj->GetHashCode();
-	SGameObject** ppFoundObj = _ObjectsNeedToUpdateTransform.Find(InObjHashCode);
+	SGameObject** ppFoundObj = _TransformCommitNeededObjs.Find(InObjHashCode);
 	if (ppFoundObj != nullptr)
 	{
-		// 부모 오브젝트의 위치가 업데이트 되면서 자식 오브젝트를 포함시켰으면 이미 존재할 수도 있음
-		return;
+		return; // 부모 오브젝트의 위치가 업데이트 되면서 자식 오브젝트를 포함시켰으면 이미 존재할 수도 있음
 	}
 
-	_ObjectsNeedToUpdateTransform.Add(InObjHashCode, InObj);
+	_TransformCommitNeededObjs.Add(InObjHashCode, InObj);
 }
 
 void SWorld::AddToWorld(SGameObject* InNewWorldObject, SGameObject* ParentObject)
