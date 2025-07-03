@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
 int32 SSFBXImporterUtils::CalcWholeNodeCnt_Recursion(const FbxNode* node)
@@ -234,7 +235,9 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 {
 	assert(fbxMesh != nullptr);
 
-	MeshAsset* NewMeshAsset = DBG_NEW MeshAsset(NewAssetName, InAssetPath, EMeshType::Rigid);
+	MeshAsset* NewMeshAsset = DBG_NEW MeshAsset(NewAssetName, InAssetPath);
+	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
+	NewMeshRawData->_MeshType = EMeshType::Rigid;
 
 	// - Load num
 	const uint32 layerNum = fbxMesh->GetLayerCount();
@@ -322,11 +325,11 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 
 
 	// - alloc vertex memory
-	NewMeshAsset->_vertexCnt = ssVertexBuffer.GetSize();
-	NewMeshAsset->_eachVertexSize = sizeof(SSDefaultVertex);
-	uint32 validVertexBufferSize = NewMeshAsset->_eachVertexSize * NewMeshAsset->_vertexCnt;
-	NewMeshAsset->_vertexData = DBG_MALLOC(validVertexBufferSize);
-	SSDefaultVertex* ssVertex = (SSDefaultVertex*)NewMeshAsset->_vertexData;
+	NewMeshRawData->_vertexCnt = ssVertexBuffer.GetSize();
+	NewMeshRawData->_eachVertexSize = sizeof(SSDefaultVertex);
+	uint32 validVertexBufferSize = NewMeshRawData->_eachVertexSize * NewMeshRawData->_vertexCnt;
+	NewMeshRawData->_vertexData = DBG_MALLOC(validVertexBufferSize);
+	SSDefaultVertex* ssVertex = (SSDefaultVertex*)NewMeshRawData->_vertexData;
 
 	// - copy to real time vertex buffer
 	memcpy_s(ssVertex, validVertexBufferSize, ssVertexBuffer.GetData(), validVertexBufferSize);
@@ -334,10 +337,10 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 
 	// - alloc index memory
 	if (fbxMesh->GetNode()->GetMaterial(0) != nullptr)
-		NewMeshAsset->_subMeshCnt = fbxMesh->GetNode()->GetMaterialCount();
+		NewMeshRawData->_subMeshCnt = fbxMesh->GetNode()->GetMaterialCount();
 	else
-		NewMeshAsset->_subMeshCnt = 1;
-	assert(NewMeshAsset->_subMeshCnt < SUBMESH_COUNT_MAX);
+		NewMeshRawData->_subMeshCnt = 1;
+	assert(NewMeshRawData->_subMeshCnt < SUBMESH_COUNT_MAX);
 
 	FbxGeometryElementMaterial* fbxElementMaterial = fbxMesh->GetElementMaterial();
 
@@ -353,26 +356,26 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 		for (uint32 i = 0; i < PolygonCount; i++) // 메테리얼이 1개 이상이니까 SubGeomtry별로 나눔
 		{
 			uint8 matIdx = materialIndices->GetAt(i);
-			NewMeshAsset->_indexDataCnt[matIdx] += ((fbxMesh->GetPolygonSize(i) - 2) * 3);
+			NewMeshRawData->_indexDataCnt[matIdx] += ((fbxMesh->GetPolygonSize(i) - 2) * 3);
 		}
 	}
 	else
 	{
 		for (uint32 i = 0; i < PolygonCount; i++) // 메테리얼 1개 고정이니까 그냥 다 더함
 		{
-			NewMeshAsset->_indexDataCnt[0] += (fbxMesh->GetPolygonSize(i) - 2);
+			NewMeshRawData->_indexDataCnt[0] += (fbxMesh->GetPolygonSize(i) - 2);
 		}
-		NewMeshAsset->_indexDataCnt[0] *= 3;
+		NewMeshRawData->_indexDataCnt[0] *= 3;
 	}
 
 	uint32 idxAcc = 0;
-	for (uint32 i = 0; i < NewMeshAsset->_subMeshCnt; i++)
+	for (uint32 i = 0; i < NewMeshRawData->_subMeshCnt; i++)
 	{
-		NewMeshAsset->_indexDataStartIndex[i] = idxAcc;
-		idxAcc += NewMeshAsset->_indexDataCnt[i];
+		NewMeshRawData->_indexDataStartIndex[i] = idxAcc;
+		idxAcc += NewMeshRawData->_indexDataCnt[i];
 	}
-	NewMeshAsset->_wholeIndexDataCnt = idxAcc;
-	NewMeshAsset->_indexData = (uint32*)DBG_MALLOC(sizeof(uint32) * NewMeshAsset->_wholeIndexDataCnt);
+	NewMeshRawData->_wholeIndexDataCnt = idxAcc;
+	NewMeshRawData->_indexData = (uint32*)DBG_MALLOC(sizeof(uint32) * NewMeshRawData->_wholeIndexDataCnt);
 
 
 	// 5. load index memory
@@ -384,20 +387,20 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 		{
 			uint32 PolygonVertexCount = fbxMesh->GetPolygonSize(i);
 			uint32 matIdx = materialIndices->GetAt(i);
-			uint32 idxDataStart = NewMeshAsset->_indexDataStartIndex[matIdx];
+			uint32 idxDataStart = NewMeshRawData->_indexDataStartIndex[matIdx];
 			for (uint32 j = 1; j < PolygonVertexCount - 1; j++)
 			{
 				SS::pair<uint32, int32> CtrlPointIdx = PolygonVertexToCtrlPointMap[i][0];
 				uint32 ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
-				NewMeshAsset->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx]] = ssVertexBufferIdx;
+				NewMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx]] = ssVertexBufferIdx;
 
 				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j];
 				ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
-				NewMeshAsset->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 1] = ssVertexBufferIdx;
+				NewMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 1] = ssVertexBufferIdx;
 
 				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j + 1];
 				ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
-				NewMeshAsset->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 2] = ssVertexBufferIdx;
+				NewMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 2] = ssVertexBufferIdx;
 
 				subMaterialIdxDataCounter[matIdx] += 3;
 			}
@@ -412,23 +415,23 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 			{
 				SS::pair<uint32, int32> CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j + 1];
 				uint32 ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
-				NewMeshAsset->_indexData[subMaterialIdxDataCounter[0]] = ssVertexBufferIdx;
+				NewMeshRawData->_indexData[subMaterialIdxDataCounter[0]] = ssVertexBufferIdx;
 
 				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j];
 				ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
-				NewMeshAsset->_indexData[subMaterialIdxDataCounter[0] + 1] = ssVertexBufferIdx;
+				NewMeshRawData->_indexData[subMaterialIdxDataCounter[0] + 1] = ssVertexBufferIdx;
 
 				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][0];
 				ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
-				NewMeshAsset->_indexData[subMaterialIdxDataCounter[0] + 2] = ssVertexBufferIdx;
+				NewMeshRawData->_indexData[subMaterialIdxDataCounter[0] + 2] = ssVertexBufferIdx;
 
 				subMaterialIdxDataCounter[0] += 3;
 			}
 		}
 	}
 
-	for (uint32 i = 0; i < NewMeshAsset->_subMeshCnt; i++)
-		assert(NewMeshAsset->_indexDataCnt[i] == subMaterialIdxDataCounter[i]);
+	for (uint32 i = 0; i < NewMeshRawData->_subMeshCnt; i++)
+		assert(NewMeshRawData->_indexDataCnt[i] == subMaterialIdxDataCounter[i]);
 
 
 
@@ -436,10 +439,10 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 	FbxGeometryElementTangent* fbxTangent = fbxMesh->GetElementTangent();
 	if (fbxTangent == nullptr)
 	{
-		for (uint32 subGeomIdx = 0; subGeomIdx < NewMeshAsset->_subMeshCnt; subGeomIdx++)
+		for (uint32 subGeomIdx = 0; subGeomIdx < NewMeshRawData->_subMeshCnt; subGeomIdx++)
 		{
-			uint32* thisIdxData = NewMeshAsset->_indexData + NewMeshAsset->_indexDataStartIndex[subGeomIdx];
-			int32 thisIdxDataNum = NewMeshAsset->_indexDataCnt[subGeomIdx];
+			uint32* thisIdxData = NewMeshRawData->_indexData + NewMeshRawData->_indexDataStartIndex[subGeomIdx];
+			int32 thisIdxDataNum = NewMeshRawData->_indexDataCnt[subGeomIdx];
 			assert(thisIdxDataNum % 3 == 0);
 
 			for (uint32 i = 0; i < thisIdxDataNum; i += 3)
@@ -461,5 +464,6 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 		}
 	}
 
+	NewMeshAsset->InjectRawDataXXX(NewMeshRawData);
 	return NewMeshAsset;
 }

@@ -12,6 +12,7 @@
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 
 #include "SRenderContent/Public/RenderComponent/SStaticMeshRenderComponent.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/IMeshRawData.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)

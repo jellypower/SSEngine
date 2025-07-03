@@ -470,6 +470,9 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSContentsBase\SGameObjectConstructor.h" />
     <ClInclude Include="SSContentsBase\SWorld.h" />
     <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IAssetBase.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshData\IMeshRawData.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshData\MeshDataDefault.h" />
     <ClInclude Include="SSRenderer\Public\RenderBase\IRenderer.h" />
     <ClInclude Include="SSRenderer\Public\RenderBase\IRenderWorld.h" />
     <ClInclude Include="SSRenderer\Public\SSRendererGlobalVariableSet.h" />

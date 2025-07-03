@@ -20,6 +20,7 @@
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
@@ -135,11 +136,25 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(MeshAsset* InMeshAsset)
 	DX12GALMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALMeshAssetWrapper(InMeshAsset, OwnerDX12RenderDevice);
 
 
+	const IMeshRawData* MeshRawData = InMeshAsset->GetMeshRawData();
+	const MeshRawDataDefault* DefaultMeshRawData = nullptr;
+	switch (MeshRawData->_MeshType)
 	{
-		int32 EachVertexSize = InMeshAsset->GetEachVertexSize();
-		int32 VertexCnt = InMeshAsset->GetVertexCnt();
+	case EMeshType::Rigid:
+	case EMeshType::Skinned:
+		DefaultMeshRawData = (MeshRawDataDefault*)MeshRawData;
+		break;
+
+	default:
+		SS_ASSERT(false);
+		break;
+	}
+	
+	{
+		int32 EachVertexSize = DefaultMeshRawData->_eachVertexSize;
+		int32 VertexCnt = DefaultMeshRawData->_vertexCnt;
 		uint64 VertexBufferSize = VertexCnt * EachVertexSize;
-		const void* VertexData = InMeshAsset->GetVertexData();
+		const void* VertexData = DefaultMeshRawData->_vertexData;
 
 		ID3D12Resource* NewVertexBuffer = nullptr;
 
@@ -178,10 +193,11 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(MeshAsset* InMeshAsset)
 	}
 
 	{
-		int32 SubMeshCnt = InMeshAsset->GetSubMeshCnt();
+		
+		int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;;
 		NewGALMeshAsset->_SubMeshCnt = SubMeshCnt;
-		int32 WholeIdxDataCnt = InMeshAsset->WholeIndexDataCnt();
-		const uint32* IndexData = InMeshAsset->GetIndexData();
+		int32 WholeIdxDataCnt = DefaultMeshRawData->_wholeIndexDataCnt;
+		const uint32* IndexData = DefaultMeshRawData->_indexData;
 		int32 WholeIndexBufferSize = sizeof(uint32) * WholeIdxDataCnt;
 
 		ID3D12Resource* NewIndexBuffer = nullptr;
@@ -216,7 +232,7 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(MeshAsset* InMeshAsset)
 		int32 Offset = 0;
 		for (int32 i = 0; i < SubMeshCnt; i++)
 		{
-			CurIdxDataCnt = InMeshAsset->GetIndexDataCnt(i);
+			CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
 
 			D3D12_INDEX_BUFFER_VIEW NewIndexBufferView;
 			NewIndexBufferView.BufferLocation = NewIndexBuffer->GetGPUVirtualAddress() + (sizeof(uint32) * Offset);
@@ -344,6 +360,19 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(
 	MeshAsset* lMeshAsset = (MeshAsset*)MeshAssetManager->FindAssetByName(MeshAssetName);
 	DX12GALMeshAssetWrapper* GALMeshAsset = (DX12GALMeshAssetWrapper*)lMeshAsset->_GALMeshAsset;
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
+	const IMeshRawData* MeshRawData = lMeshAsset->GetMeshRawData();
+	const MeshRawDataDefault* DefaultMeshRawData = nullptr;
+	switch (MeshRawData->_MeshType)
+	{
+	case EMeshType::Rigid:
+	case EMeshType::Skinned:
+		DefaultMeshRawData = (MeshRawDataDefault*)MeshRawData;
+		break;
+
+	default:
+		SS_ASSERT(false);
+		break;
+	}
 
 
 	const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(ERootSignatureType::SS_TEMP_ROOTSIGNATURE);
@@ -386,7 +415,8 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = lMeshAsset->GetIndexDataCnt(i);
+
+		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0);
 		IdxDataOffset += CurIdxDataCnt;
 	}

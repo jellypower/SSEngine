@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "MeshAsset.h"
 #include "SSAssetBase.h"
+#include "MeshData/IMeshRawData.h"
 
 
 enum class EMeshType;

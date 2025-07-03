@@ -2,13 +2,17 @@
 
 
 SSAssetBase::SSAssetBase(EAssetType InAssetType, SS::SHasherW InAssetName, SS::SHasherW  InAssetPath)
-	: _assetType(InAssetType), _assetName(InAssetName), _assetPath(InAssetPath)
 {
+	_assetType = InAssetType;
+	_assetName = InAssetName;
+	_assetPath = InAssetPath;
 }
 
 SSAssetBase::SSAssetBase(EAssetType InAssetType)
-	: _assetType(InAssetType), _assetName(SS::SHasherW::Empty), _assetPath(SS::SHasherW::Empty)
 {
+	_assetType = InAssetType;
+	_assetName = SS::SHasherW::Empty;
+	_assetPath = SS::SHasherW::Empty;
 }
 
 SSAssetBase::~SSAssetBase()
