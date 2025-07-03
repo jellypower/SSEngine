@@ -45,6 +45,12 @@ const XMMATRIX& RIStaticMesh::GetWorldRotationMatrix() const
 
 void RIStaticMesh::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover)
 {
+	if (_MetaData != nullptr)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
 	_MetaData = MetadataToHandover;
 }
 

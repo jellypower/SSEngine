@@ -18,7 +18,7 @@ class SWorld : public SObjectBase
 private:
 	SGameObject* _WorldRootObject = nullptr;
 	SS::HashMap<SObjHashCode, SGameObject*> _ObjectsByHashCode;
-	SS::HashMap<SObjHashCode, SGameObject*> _TransformCommitNeededObjs; // TODO: 업데이트 끝나면 Clear해줘야함
+	SS::HashMap<SObjHashCode, SGameObject*> _TransformCommitNeededObjs;
 
 	RenderWorld* _RenderWorld = nullptr;
 

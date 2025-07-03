@@ -14,9 +14,9 @@ public:
 	virtual const XMMATRIX& GetWorldTransformMatrix() const override;
 	virtual const XMMATRIX& GetWorldRotationMatrix() const override;
 
-	void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) override;
-	void SetWorldTransformMatrix(const XMMATRIX& InMatrix) override;
-	void SetWorldRotation(const Quaternion& InRotation) override;
+	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) override;
+	virtual void SetWorldTransformMatrix(const XMMATRIX& InMatrix) override;
+	virtual void SetWorldRotation(const Quaternion& InRotation) override;
 
 
 public:
