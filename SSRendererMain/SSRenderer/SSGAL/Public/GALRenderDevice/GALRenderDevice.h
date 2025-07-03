@@ -38,6 +38,11 @@ public:
 
 	virtual ERenderDevicePlatnform GetRenderDevicePlatform() const = 0;
 
+
+public:
+	virtual void BindRendererXXX(SSRenderer* InOwnerRenderer) = 0;
+
+
 	virtual GALRenderDeviceContext* CreateRenderDeviceContext() = 0;
 	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) = 0;
 

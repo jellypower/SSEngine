@@ -29,8 +29,8 @@ XMMATRIX SCameraComponent::GetVPMatrix() const
 	}
 	else
 	{
-		GALRenderDevice* RenderDevice = g_Renderer->_GALRenderDevice;
-		GALRenderTarget* RenderTarget = RenderDevice->GetDefaultViewportRenderTarget();
+		const GALRenderDevice* RenderDevice = g_Renderer->GetRenderDevice();
+		const GALRenderTarget* RenderTarget = RenderDevice->GetDefaultViewportRenderTarget();
 		WidthHeight = RenderTarget->GetViewportBoxSize().WidthHeight;
 	}
 

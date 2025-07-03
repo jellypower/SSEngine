@@ -534,6 +534,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSGAL\Private\DX12\GALRenderAsset\DX12GALMaterialAssetWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.cpp" />
+    <ClCompile Include="SSGAL\Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALResourceUpdater\GALResourceUpdater.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\ModuleEntry\GALInstanceFactory.cpp" />

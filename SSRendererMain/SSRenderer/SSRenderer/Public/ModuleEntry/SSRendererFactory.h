@@ -1,6 +1,5 @@
 #pragma once
-#include <Windows.h>
-
+class GALRenderDevice;
 class SSRenderer;
 
-SSRenderer* CreateRenderer(HINSTANCE InhInst, HWND InhWnd);
+SSRenderer* CreateRenderer(GALRenderDevice* InRenderDevice);

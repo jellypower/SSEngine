@@ -13,7 +13,7 @@ class IRenderInstance;
 class DX12GALRenderDevice : public PCommonGALRenderDevice
 {
 public:
-	DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, SSRenderer* OwnerRenderer, bool EnableDebugLayer, bool EnableGPUBaseValidataion);
+	DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool EnableDebugLayer, bool EnableGPUBaseValidataion);
 	virtual ~DX12GALRenderDevice();
 
 public:
@@ -22,6 +22,9 @@ public:
 
 
 	virtual ERenderDevicePlatnform GetRenderDevicePlatform() const override;
+
+
+public:
 
 	virtual GALRenderDeviceContext* CreateRenderDeviceContext() override;
 	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) override;

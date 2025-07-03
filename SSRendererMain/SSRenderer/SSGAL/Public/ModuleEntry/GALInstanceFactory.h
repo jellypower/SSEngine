@@ -8,7 +8,6 @@
 class SSRenderer;
 
 GALRenderDevice* CreateGALRenderDevice(
-	SSRenderer* Renderer,
 	HINSTANCE InhInst,
 	HWND InhWnd,
 	bool EnableDebugLayer,

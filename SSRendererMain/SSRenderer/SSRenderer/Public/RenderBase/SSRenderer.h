@@ -17,9 +17,9 @@ class MeshAssetManager;
 
 class SSRenderer : public INoncopyable
 {
-public:
-	GALRenderDevice* _GALRenderDevice = nullptr;
+protected:
 	GALRenderDeviceContext* _MainDeviceContext = nullptr;
+	GALRenderDevice* _GALRenderDevice = nullptr;
 
 private:
 	MaterialAssetManager* _materialAssetManager = nullptr;
@@ -36,8 +36,11 @@ private:
 	GALRenderTarget* _PixelPickerRenderTarget = nullptr;
 
 public:
-	SSRenderer();
+	SSRenderer(GALRenderDevice* InRenderDevice);
 	virtual ~SSRenderer();
+
+
+	GALRenderDevice* GetRenderDevice() const { return _GALRenderDevice; }
 
 
 	MaterialAssetManager* GetMaterialAssetManager() const { return _materialAssetManager; }

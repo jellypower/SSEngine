@@ -12,57 +12,22 @@
 extern SSRenderer* g_Renderer = nullptr;
 
 
-SSRenderer* CreateRenderer(HINSTANCE InhInst, HWND InhWnd)
+SSRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
 {
-	GALRenderDevice* NewRenderDevice = nullptr;
+	if (InRenderDevice == nullptr)
+	{
+		SS_ASSERT(false);
+		return nullptr;
+	}
+
 	GALRenderDeviceContext* MainDeviceContext = nullptr;
 	SSRenderer* newRenderer = nullptr;
 
 
-	newRenderer = DBG_NEW SSRenderer();
-
-
-	NewRenderDevice = CreateGALRenderDevice(
-		newRenderer,
-		InhInst,
-		InhWnd,
-		ENABLE_DEBUG_LAYER,
-		ENABLE_GPU_BASE_VALIDATIION);
-	if (NewRenderDevice == nullptr)
-	{
-		SS_ASSERT(false);
-		goto lb_error;
-	}
-	newRenderer->_GALRenderDevice = NewRenderDevice;
-
-
-	MainDeviceContext = NewRenderDevice->CreateRenderDeviceContext();
-	if (MainDeviceContext == nullptr)
-	{
-		SS_ASSERT(false);
-		goto lb_error;
-	}
-	newRenderer->_MainDeviceContext = MainDeviceContext;
+	newRenderer = DBG_NEW SSRenderer(InRenderDevice);
+	InRenderDevice->BindRendererXXX(newRenderer);
 
 
 	g_Renderer = newRenderer;
 	return newRenderer;
-
-lb_error:
-	if (newRenderer != nullptr)
-	{
-		delete newRenderer;
-	}
-
-	if (NewRenderDevice != nullptr)
-	{
-		delete NewRenderDevice;
-	}
-
-	if (MainDeviceContext != nullptr)
-	{
-		delete MainDeviceContext;
-	}
-
-	return nullptr;
 }

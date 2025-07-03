@@ -22,9 +22,10 @@
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 
 
-SSRenderer::SSRenderer()
+SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice)
 {
-
+	_GALRenderDevice = InRenderDevice;
+	_MainDeviceContext = _GALRenderDevice->CreateRenderDeviceContext();
 }
 
 SSRenderer::~SSRenderer()

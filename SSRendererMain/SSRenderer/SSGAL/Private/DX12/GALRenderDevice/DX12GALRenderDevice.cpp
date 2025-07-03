@@ -13,10 +13,8 @@
 
 
 
-DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, SSRenderer* OwnerRenderer, bool EnableDebugLayer, bool EnableGPUBaseValidataion)
+DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool EnableDebugLayer, bool EnableGPUBaseValidataion)
 {
-	_OwnerRenderer = OwnerRenderer;
-
 	_hInst = InhInst;
 	_hWnd = InhWnd;
 

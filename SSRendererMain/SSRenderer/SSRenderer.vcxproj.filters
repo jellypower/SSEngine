@@ -1274,6 +1274,9 @@
     <ClCompile Include="SRenderContent\Private\Camera\RenderCamera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="SSGAL\Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SSRenderer.rc">

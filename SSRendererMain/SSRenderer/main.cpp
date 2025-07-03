@@ -15,12 +15,11 @@
 
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
+#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 #include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
 #include "SSRenderer/Public/RenderBase/SSRenderer.h"
-
-
-
+#include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
 #define MAX_LOADSTRING 100
@@ -126,7 +125,12 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 
 
-	SSRenderer* EngineRenderer = CreateRenderer(g_hInst, g_hWnd);
+	GALRenderDevice* NewRenderDevice = CreateGALRenderDevice(
+		g_hInst,
+		g_hWnd,
+		ENABLE_DEBUG_LAYER,
+		ENABLE_GPU_BASE_VALIDATIION);
+	SSRenderer* EngineRenderer = CreateRenderer(NewRenderDevice);
 	g_Engine = DBG_NEW SSEngine(EngineRenderer);
 
 	g_Engine->InjectImportFilePath_TMP(FbxFilePathToLoad.C_Str());
