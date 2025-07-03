@@ -1,6 +1,6 @@
 #pragma once
 #include "SSAssetBase.h"
-#include "VertexTypes/SSDefaultVertexTypes.h"
+#include "SSGAL/Public/SSGALInlineSettings.h"
 
 class GALMeshAssetWrapperBase;
 
@@ -11,12 +11,7 @@ enum class EMeshType
 	Skinned = 2
 };
 
-struct alignas(16) SSDefaultVertex {
-	Vector4f Pos;
-	Vector4f Normal;
-	Vector4f Tangent;
-	Vector2f Uv[VERTEX_UV_MAP_COUNT_MAX];
-};
+
 
 class MeshAsset : public SSAssetBase 
 {

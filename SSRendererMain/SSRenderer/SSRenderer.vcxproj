@@ -499,7 +499,6 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\RootSignaturePool.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.h" />
     <ClInclude Include="SSEngineMain\SSEngine.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.h" />

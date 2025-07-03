@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
 int32 SSFBXImporterUtils::CalcWholeNodeCnt_Recursion(const FbxNode* node)
 {
