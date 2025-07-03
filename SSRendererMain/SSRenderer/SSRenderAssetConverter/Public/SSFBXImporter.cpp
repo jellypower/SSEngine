@@ -10,7 +10,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
 SSFBXImporter::SSFBXImporter()
@@ -63,7 +63,7 @@ void SSFBXImporter::ClearFbxSceneFile()
 	_boundFilePath = SS::SHasherW::Empty;
 }
 
-void SSFBXImporter::SetRendererToImportAsset(SSRenderer* RendererToImport)
+void SSFBXImporter::SetRendererToImportAsset(IRenderer* RendererToImport)
 {
 	_RendererToImportAsset = RendererToImport;
 }

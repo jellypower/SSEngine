@@ -3,13 +3,14 @@
 #include "SRenderContent/Public/Camera/SCameraComponent.h"
 #include "SSContentsBase/SGameObject.h"
 #include "SSContentsBase/SWorld.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 RenderCamera::RenderCamera(SCameraComponent* InOwnerCamera)
 {
 	_OwnerCamera = InOwnerCamera;
 }
 
-const RenderWorld* RenderCamera::GetIcludedRenderWorld() const
+const IRenderWorld* RenderCamera::GetIcludedRenderWorld() const
 {
 	SGameObject* Parent = _OwnerCamera->GetParent();
 	SWorld* World = Parent->GetIncludedWorldRef();

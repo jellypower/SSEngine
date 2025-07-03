@@ -4,6 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class IRenderWorld;
 class RenderWorld;
 constexpr int32 WORLD_OBJECTMAP_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 WORLD_OBJECTMAP_HASHBUCKET_SIZE = 512;
@@ -20,17 +21,17 @@ private:
 	SS::HashMap<SObjHashCode, SGameObject*> _ObjectsByHashCode;
 	SS::HashMap<SObjHashCode, SGameObject*> _TransformCommitNeededObjs;
 
-	RenderWorld* _RenderWorld = nullptr;
+	IRenderWorld* _RenderWorld = nullptr;
 
 public:
 	SWorld();
 	virtual ~SWorld();
 	void PostConstruct() override;
 	void PreDestruct() override;
-	virtual void InitializeWorld(RenderWorld* InRenderWorld);
+	virtual void InitializeWorld(IRenderWorld* InRenderWorld);
 
 public:
-	RenderWorld* GetRenderWorld() const { return _RenderWorld; }
+	IRenderWorld* GetRenderWorld() const { return _RenderWorld; }
 	SGameObject* GetWorldRootObject() const { return _WorldRootObject; }
 	bool IsAnyObjectRemainInWorld() const;
 

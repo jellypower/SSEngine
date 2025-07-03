@@ -8,7 +8,7 @@
 #include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/SSAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCommon/CommonDataType.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
 void SStaticMeshRenderComponent::ConstructRenderInstance()

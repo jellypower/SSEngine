@@ -17,15 +17,15 @@
 
 #include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
 
 #include "SRenderContent/Public/SRendererUtil.h"
 #include "SRenderContent/Public/Camera/SCameraComponent.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
 SSEngine* g_Engine = nullptr;
 
-SSEngine::SSEngine(SSRenderer* EngineRenderer) :
+SSEngine::SSEngine(IRenderer* EngineRenderer) :
 	_hashMap_TMP(200)
 {
 	_Renderer = EngineRenderer;
@@ -47,7 +47,7 @@ void SSEngine::StartupEngine()
 	TEMP_CreateTEMPMaterial();
 
 
-	RenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
+	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
 
 	_DefaultWorld = NewSObject<SWorld>(L"World");
 	_DefaultWorld->InitializeWorld(NewRenderWorld);

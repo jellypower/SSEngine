@@ -8,8 +8,8 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
-#include "SSRenderer/Public/RenderBase/RenderWorld.h"
 #include "SRenderContent/Public/RenderComponent/SRenderComponentBase.h"
+#include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 
 
 SWorld::SWorld() :
@@ -40,7 +40,7 @@ void SWorld::PreDestruct()
 	_WorldRootObject = nullptr;
 }
 
-void SWorld::InitializeWorld(RenderWorld* InRenderWorld)
+void SWorld::InitializeWorld(IRenderWorld* InRenderWorld)
 {
 	_RenderWorld = InRenderWorld;
 }

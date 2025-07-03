@@ -5,7 +5,6 @@
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 
 
-class SSRenderer;
 
 GALRenderDevice* CreateGALRenderDevice(
 	HINSTANCE InhInst,

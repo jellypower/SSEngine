@@ -6,10 +6,10 @@
 #include "SSGAL/Public/SSGALInlineSettings.h"
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
 
+class IRenderer;
 class GALShaderPool;
 struct GALRenderTargetDesc;
 class SSCustomMemChunkAllocator;
-class SSRenderer;
 class GALRenderTarget;
 
 enum class ERenderDevicePlatnform : uint8
@@ -27,7 +27,7 @@ public:
 	virtual void EndRender() = 0;
 
 public:
-	SSRenderer* GetOwnerRenderer() const { return _OwnerRenderer; }
+	IRenderer* GetOwnerRenderer() const { return _OwnerRenderer; }
 
 	GALShaderPool* GetShaderPool() const { return _ShaderPool; }
 	SSCustomMemChunkAllocator* GetConstantBufferResourceAllocator() const { return _ConstantBufferResourceAllocator; }
@@ -40,7 +40,7 @@ public:
 
 
 public:
-	virtual void BindRendererXXX(SSRenderer* InOwnerRenderer) = 0;
+	virtual void BindRendererXXX(IRenderer* InOwnerRenderer) = 0;
 
 
 	virtual GALRenderDeviceContext* CreateRenderDeviceContext() = 0;
@@ -54,7 +54,7 @@ protected:
 	virtual void FenceFrame() = 0;
 
 protected:
-	SSRenderer* _OwnerRenderer = nullptr;
+	IRenderer* _OwnerRenderer = nullptr;
 
 	GALShaderPool* _ShaderPool = nullptr;
 	SSCustomMemChunkAllocator* _ConstantBufferResourceAllocator = nullptr;

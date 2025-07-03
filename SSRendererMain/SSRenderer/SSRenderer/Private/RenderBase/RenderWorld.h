@@ -1,32 +1,30 @@
 ﻿#pragma once
 #include "SObject/Public/SObjHashCode.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
+#include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 
-class SSRenderer;
+class IRenderer;
 class IRenderInstance;
 
 constexpr int32 RENDERWORLD_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 RENDERWORLD_BUCKET_CAPACITY = 1024;
 
-class RenderWorld : public INoncopyable
+class RenderWorld : public IRenderWorld
 {
 public:
 	RenderWorld();
-	void InitializeRenderWorld(SSRenderer* OwnerRenderer);
+	void InitializeRenderWorld(IRenderer* OwnerRenderer);
 
 public:
 	const SS::HashMap<SObjHashCode, IRenderInstance*>& GetRenderInstanceMap() const { return _RenderInstanceByHashCode; }
 
-	bool IsAnyInstanceRemainInWorld() const;
+	bool IsAnyInstanceRemainInWorld() const override;
 	
-	void AddToWorld(IRenderInstance* InRenderInstance);
-	void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove);
-
-	void CommitRenderInstanceTransform();
+	void AddToWorld(IRenderInstance* InRenderInstance) override;
+	void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove) override;
 
 
 private:
-	SSRenderer* _OwnerRenderer;
-
+	IRenderer* _OwnerRenderer;
 	SS::HashMap<SObjHashCode, IRenderInstance*> _RenderInstanceByHashCode;
 };

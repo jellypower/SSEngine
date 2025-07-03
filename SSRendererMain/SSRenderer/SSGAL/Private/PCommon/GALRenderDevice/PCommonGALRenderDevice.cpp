@@ -1,6 +1,6 @@
 #include "PCommonGALRenderDevice.h"
 
-void PCommonGALRenderDevice::BindRendererXXX(SSRenderer* InOwnerRenderer)
+void PCommonGALRenderDevice::BindRendererXXX(IRenderer* InOwnerRenderer)
 {
 	if (_OwnerRenderer != nullptr)
 	{

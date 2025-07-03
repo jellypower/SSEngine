@@ -1,10 +1,11 @@
-﻿#include "SSRenderer/Public/RenderBase/RenderWorld.h"
+﻿#include "RenderWorld.h"
 
 
+#include "SSRenderer.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 RenderWorld::RenderWorld() :
@@ -13,7 +14,7 @@ RenderWorld::RenderWorld() :
 
 }
 
-void RenderWorld::InitializeRenderWorld(SSRenderer* OwnerRenderer)
+void RenderWorld::InitializeRenderWorld(IRenderer* OwnerRenderer)
 {
 	_OwnerRenderer = OwnerRenderer;
 }
@@ -46,7 +47,9 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 		AssetInstanceReferencer AssetReferencer;
 		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
 		AssetReferencer.ObjHashCode = GameObjectHashCode;
-		_OwnerRenderer->AddModelInstanceReference(InRIMesh->GetModelAsset(), AssetReferencer);
+
+		SSRenderer* OwnerRenderer = (SSRenderer*)_OwnerRenderer;
+		OwnerRenderer->AddModelInstanceReference(InRIMesh->GetModelAsset(), AssetReferencer);
 	}
 	break;
 	}
@@ -79,15 +82,11 @@ void RenderWorld::RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove)
 		AssetInstanceReferencer AssetReferencer;
 		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
 		AssetReferencer.ObjHashCode = RIMeshToRemove->GetGameObjectID();
-		_OwnerRenderer->RemoveModelInstanceReference(RIMeshToRemove->GetModelAsset(), AssetReferencer);
 
+		SSRenderer* OwnerRenderer = (SSRenderer*)_OwnerRenderer;
+		OwnerRenderer->RemoveModelInstanceReference(RIMeshToRemove->GetModelAsset(), AssetReferencer);
 		_RenderInstanceByHashCode.Remove(RenderInstanceIDToRemove);
 	}
 	break;
 	}
-}
-
-void RenderWorld::CommitRenderInstanceTransform()
-{
-
 }

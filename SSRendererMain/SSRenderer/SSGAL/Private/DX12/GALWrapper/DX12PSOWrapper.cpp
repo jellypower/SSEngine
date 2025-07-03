@@ -8,7 +8,6 @@
 #include "SSGAL/Public/GALWrapper/GALShaderPool.h"
 
 
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
 
 
 const D3D12_INPUT_ELEMENT_DESC* DX12PSOWrapper::GetInputElementDesc(EInputLayoutType InputElementType, uint32& outElementCnt)

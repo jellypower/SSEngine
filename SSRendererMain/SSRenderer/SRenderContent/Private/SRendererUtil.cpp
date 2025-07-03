@@ -9,10 +9,10 @@
 #include "SSRenderer/Public/RenderAsset/ModelCombinationAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 
 #include "SRenderContent/Public/RenderComponent/SStaticMeshRenderComponent.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 {

@@ -5,9 +5,9 @@
 
 #include "SSRenderAssetConverter/Public/SSFBXImporter.h"
 
+class IRenderer;
 class SGameObject;
 class SCameraComponent;
-class SSRenderer;
 class SWorld;
 class SSEngine;
 
@@ -16,7 +16,7 @@ extern SSEngine* g_Engine;
 class SSEngine
 {
 public:
-	SSEngine(SSRenderer* EngineRenderer);
+	SSEngine(IRenderer* EngineRenderer);
 	~SSEngine();
 
 	void StartupEngine();
@@ -32,7 +32,7 @@ private:
 	SWorld* _DefaultWorld = nullptr;
 
 private:
-	SSRenderer* _Renderer = nullptr;
+	IRenderer* _Renderer = nullptr;
 
 
 	SGameObject* TEMP_MdlcObj = nullptr;

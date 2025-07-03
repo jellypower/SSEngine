@@ -1,4 +1,5 @@
 #pragma once
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
@@ -15,19 +16,9 @@ class ModelAssetManager;
 class MaterialAssetManager;
 class MeshAssetManager;
 
-class SSRenderer : public INoncopyable
+class SSRenderer : public IRenderer
 {
-protected:
-	GALRenderDeviceContext* _MainDeviceContext = nullptr;
-	GALRenderDevice* _GALRenderDevice = nullptr;
-
 private:
-	MaterialAssetManager* _materialAssetManager = nullptr;
-	MeshAssetManager* _meshAssetManager = nullptr;
-	ModelAssetManager* _ModelAssetManager = nullptr;
-	ModelCombinationAssetManager* _ModelCombAssetManager = nullptr;
-
-
 	SS::PooledList<MeshAsset*> _InstanceStateChangedMesh;
 	SS::PooledList<MeshAsset*> _InstanceStateChangedMaterial;
 
@@ -40,19 +31,13 @@ public:
 	virtual ~SSRenderer();
 
 
-	GALRenderDevice* GetRenderDevice() const { return _GALRenderDevice; }
+public:
+	virtual void StartUp() override;
+	virtual void PerFrame() override;
+	virtual void CleanUp() override;
 
-
-	MaterialAssetManager* GetMaterialAssetManager() const { return _materialAssetManager; }
-	MeshAssetManager* GetMeshAssetManager() const { return _meshAssetManager; }
-	ModelAssetManager* GetModelAssetManager() const { return _ModelAssetManager; }
-	ModelCombinationAssetManager* GetModelCombinationAssetManager() const { return _ModelCombAssetManager; }
-
-
-	RenderWorld* CreateRenderWorld();
-
-	// 여기서 Camera한테 World를 찾아서 SetRenderWorld해준다.
-	void SetRenderCamera(IRenderCamera* InCamera);
+	virtual IRenderWorld* CreateRenderWorld() override;
+	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 
 
 	void AddModelInstanceReference(ModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer);
@@ -64,9 +49,7 @@ public:
 
 
 
-	void StartUp();
-	void PerFrame();
-	void CleanUp();
+
 
 private:
 	void InstantiatePendingAssets(GALRenderDeviceContext* Executor);

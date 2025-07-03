@@ -5,7 +5,7 @@
 #define FBXSDK_SHARED
 #include <fbxsdk.h>
 
-class SSRenderer;
+class IRenderer;
 class ModelCombinationAsset;
 struct AssetPlacementReference;
 class MaterialAsset;
@@ -23,7 +23,7 @@ private:
 
 	SS::PooledList<SS::pair<::FbxMesh*, SS::SHasherW>> _importedMeshNames;
 
-	SSRenderer* _RendererToImportAsset = nullptr;
+	IRenderer* _RendererToImportAsset = nullptr;
 
 public:
 	SSFBXImporter();
@@ -34,7 +34,7 @@ public:
 	bool BindFbxSceneFile(const utf16* inFilePath);
 	void ClearFbxSceneFile();
 
-	void SetRendererToImportAsset(SSRenderer* RendererToImport);
+	void SetRendererToImportAsset(IRenderer* RendererToImport);
 	void ImportCurrentFileToAssetManager();
 private:
 	void ImportCurrentFileToMaterialAsset();

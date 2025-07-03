@@ -1,5 +1,5 @@
 ﻿#pragma once
 
-class SSRenderer;
+class IRenderer;
 
-extern SSRenderer* g_Renderer;
+extern IRenderer* g_Renderer;

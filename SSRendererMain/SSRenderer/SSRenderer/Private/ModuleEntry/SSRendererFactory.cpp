@@ -4,15 +4,15 @@
 
 
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
+#include "SSRenderer/Private/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
-extern SSRenderer* g_Renderer = nullptr;
+extern IRenderer* g_Renderer = nullptr;
 
 
-SSRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
+IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
 {
 	if (InRenderDevice == nullptr)
 	{

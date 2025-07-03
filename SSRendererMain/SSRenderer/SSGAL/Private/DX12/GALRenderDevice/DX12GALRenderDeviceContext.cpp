@@ -20,7 +20,7 @@
 #include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
@@ -330,7 +330,7 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(
 	const XMMATRIX& DrawRotMat)
 {
 	PCommonGALRenderDevice* OwnerDevice = (PCommonGALRenderDevice*)GetOwnerRenderDevice();
-	SSRenderer* Renderer = OwnerDevice->GetOwnerRenderer();
+	IRenderer* Renderer = OwnerDevice->GetOwnerRenderer();
 	RootSignaturePool* lRootSignaturePool = OwnerDevice->GetRootSignaturePool();
 	DX12PSOPool* PSOPool = (DX12PSOPool*)OwnerDevice->GetPSOPool();
 	MeshAssetManager* MeshAssetManager = Renderer->GetMeshAssetManager();

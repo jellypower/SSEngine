@@ -470,11 +470,13 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSContentsBase\SGameObjectConstructor.h" />
     <ClInclude Include="SSContentsBase\SWorld.h" />
     <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
+    <ClInclude Include="SSRenderer\Public\RenderBase\IRenderer.h" />
+    <ClInclude Include="SSRenderer\Public\RenderBase\IRenderWorld.h" />
     <ClInclude Include="SSRenderer\Public\SSRendererGlobalVariableSet.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\IRenderCamera.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\IRIMesh.h" />
-    <ClInclude Include="SSRenderer\Public\RenderBase\RenderWorld.h" />
+    <ClInclude Include="SSRenderer\Private\RenderBase\RenderWorld.h" />
     <ClInclude Include="SSRenderer\Private\RenderInstance\RIStaticMesh.h" />
     <ClInclude Include="SRenderContent\Public\Camera\SCameraComponent.h" />
     <ClInclude Include="SRenderContent\Public\SRendererUtil.h" />
@@ -506,7 +508,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SSBuildSettings.h" />
-    <ClInclude Include="SSRenderer\Public\RenderBase\SSRenderer.h" />
+    <ClInclude Include="SSRenderer\Private\RenderBase\SSRenderer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSVertexType.h" />
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSRendererInlineSettings.h" />

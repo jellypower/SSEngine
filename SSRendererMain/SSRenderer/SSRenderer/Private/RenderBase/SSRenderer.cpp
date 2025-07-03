@@ -1,6 +1,7 @@
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
+#include "SSRenderer.h"
 
 
+#include "RenderWorld.h"
 #include "SSContentsBase/SGameObject.h"
 #include "SSContentsBase/SWorld.h"
 
@@ -18,7 +19,6 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/SSAssetBase.h"
 
-#include "SSRenderer/Public/RenderBase/RenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 
 
@@ -115,7 +115,7 @@ void SSRenderer::RemoveMeshInstanceReference(MeshAsset* MeshAssetToRemove, const
 	_InstanceStateChangedMesh.PushBack(MeshAssetToRemove);
 }
 
-RenderWorld* SSRenderer::CreateRenderWorld()
+IRenderWorld* SSRenderer::CreateRenderWorld()
 {
 	RenderWorld* NewRenderWorld = DBG_NEW RenderWorld();
 	NewRenderWorld->InitializeRenderWorld(this);
@@ -211,7 +211,7 @@ void SSRenderer::InstantiatePendingAssets(GALRenderDeviceContext* Executor)
 
 void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera* InCamera)
 {
-	const RenderWorld* WorldToRender = InCamera->GetIcludedRenderWorld();
+	RenderWorld* WorldToRender = (RenderWorld*)InCamera->GetIcludedRenderWorld();
 	if (WorldToRender == nullptr)
 	{
 		DEBUG_BREAK();

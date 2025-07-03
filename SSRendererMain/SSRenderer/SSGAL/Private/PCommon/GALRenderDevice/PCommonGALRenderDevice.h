@@ -13,7 +13,7 @@ public:
 
 
 public:
-	void BindRendererXXX(SSRenderer* InOwnerRenderer) override;
+	void BindRendererXXX(IRenderer* InOwnerRenderer) override;
 
 protected:
 	RootSignaturePool* _rootSignaturePool = nullptr;

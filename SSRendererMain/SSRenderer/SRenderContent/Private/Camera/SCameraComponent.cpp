@@ -5,7 +5,7 @@
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 void SCameraComponent::PostConstructHierarchy()
 {

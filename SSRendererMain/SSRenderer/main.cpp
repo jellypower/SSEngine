@@ -18,7 +18,6 @@
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 #include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
-#include "SSRenderer/Public/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
@@ -130,7 +129,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		g_hWnd,
 		ENABLE_DEBUG_LAYER,
 		ENABLE_GPU_BASE_VALIDATIION);
-	SSRenderer* EngineRenderer = CreateRenderer(NewRenderDevice);
+	IRenderer* EngineRenderer = CreateRenderer(NewRenderDevice);
 	g_Engine = DBG_NEW SSEngine(EngineRenderer);
 
 	g_Engine->InjectImportFilePath_TMP(FbxFilePathToLoad.C_Str());

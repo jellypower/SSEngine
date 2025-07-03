@@ -1,5 +1,5 @@
 #pragma once
+class IRenderer;
 class GALRenderDevice;
-class SSRenderer;
 
-SSRenderer* CreateRenderer(GALRenderDevice* InRenderDevice);
+IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice);
