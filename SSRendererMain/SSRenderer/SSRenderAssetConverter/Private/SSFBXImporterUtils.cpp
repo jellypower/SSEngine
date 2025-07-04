@@ -230,11 +230,11 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 	return outVertex;
 }
 
-MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh, SS::SHasherW NewAssetName, const utf16* InAssetPath)
+IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh, SS::SHasherW NewAssetName, const utf16* InAssetPath)
 {
 	assert(fbxMesh != nullptr);
 
-	MeshAsset* NewMeshAsset = DBG_NEW MeshAsset(NewAssetName, InAssetPath); // TODO: 辆加己 绝局扁
+	IMeshAssetMutable* NewMeshAsset = DBG_NEW MeshAsset(NewAssetName, InAssetPath); // TODO: 辆加己 绝局扁
 	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
 	NewMeshRawData->_MeshType = EMeshType::Rigid;
 

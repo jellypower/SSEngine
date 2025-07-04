@@ -1,8 +1,9 @@
 ﻿#pragma once
+#include "SSRenderer/Public/RenderAsset/Mutable/IModelAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
 
-class ModelAsset : public IModelAsset
+class ModelAsset : public IModelAssetMutable
 {
 public:
 	ModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath);

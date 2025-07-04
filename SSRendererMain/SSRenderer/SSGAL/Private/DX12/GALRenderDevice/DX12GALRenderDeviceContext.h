@@ -25,7 +25,7 @@ public:
 	virtual void BeginRender() override;
 	virtual void EndRender() override;
 
-	virtual bool GenerateMeshGALAsset(IMeshAsset* InMeshAsset) override;
+	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) override;
 	virtual bool GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset) override;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 

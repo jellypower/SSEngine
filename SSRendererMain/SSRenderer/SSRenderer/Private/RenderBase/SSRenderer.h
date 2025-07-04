@@ -3,8 +3,9 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
-class IModelAsset;
 class IMeshAsset;
+class IMeshAssetMutable;
+class IModelAsset;
 class IRenderCamera;
 class GALRenderTarget;
 struct AssetInstanceReferencer;
@@ -15,7 +16,7 @@ class GALRenderDevice;
 class SSRenderer : public IRenderer
 {
 private:
-	SS::PooledList<IMeshAsset*> _InstanceStateChangedMesh;
+	SS::PooledList<IMeshAssetMutable*> _InstanceStateChangedMesh;
 
 private:
 	IRenderCamera* _CurRenderCamera = nullptr;

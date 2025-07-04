@@ -9,16 +9,14 @@ class GALMeshAssetWrapperBase;
 
 class IMeshAsset : public IAssetBase
 {
-public:
-	GALMeshAssetWrapperBase* _GALMeshAsset = nullptr;
-
 protected:
 	const MeshRawDataBase* _MeshRawData = nullptr;
+	GALMeshAssetWrapperBase* _GALMeshAsset = nullptr;
 
 
 public:
 	const MeshRawDataBase* GetMeshRawData() const { return _MeshRawData; }
-	void InjectRawDataXXX(MeshRawDataBase* InRawData) { _MeshRawData = InRawData; }
+	const GALMeshAssetWrapperBase* GetGALMeshAsset() const { return _GALMeshAsset; }
 
 	virtual void ReleaseSystemData() = 0;
 	virtual void ReleaseGALData() = 0;

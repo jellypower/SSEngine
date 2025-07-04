@@ -1,12 +1,12 @@
 #pragma once
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/IMeshAssetMutable.h"
 
 struct MeshRawDataBase;
 class GALMeshAssetWrapperBase;
 
 
 
-class MeshAsset : public IMeshAsset 
+class MeshAsset : public IMeshAssetMutable
 {
 public:
 	MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath);

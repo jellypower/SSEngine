@@ -15,7 +15,7 @@
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
@@ -117,9 +117,9 @@ bool DX12GALRenderDeviceContext::IsValid() const
 	return _CommandLists.GetSize() != 0;
 }
 
-bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAsset* InMeshAsset)
+bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset)
 {
-	if (InMeshAsset->_GALMeshAsset != nullptr)
+	if (InMeshAsset->GetGALMeshAsset() != nullptr)
 	{
 		return false;
 	}
@@ -243,7 +243,7 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAsset* InMeshAsset)
 		}
 	}
 
-	InMeshAsset->_GALMeshAsset = NewGALMeshAsset;
+	InMeshAsset->InjectGALMeshAsset(NewGALMeshAsset);
 
 	return true;
 
@@ -352,7 +352,7 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(
 
 
 	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
-	DX12GALMeshAssetWrapper* GALMeshAsset = (DX12GALMeshAssetWrapper*)lMeshAsset->_GALMeshAsset;
+	const DX12GALMeshAssetWrapper* GALMeshAsset = (const DX12GALMeshAssetWrapper*)lMeshAsset->GetGALMeshAsset();
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
 	const MeshRawDataDefault* DefaultMeshRawData = nullptr;

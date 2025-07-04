@@ -471,6 +471,8 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSContentsBase\SWorld.h" />
     <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\IAssetManager.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\Mutable\IMeshAssetMutable.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\Mutable\IModelAssetMutable.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IAssetBase.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IMeshAsset.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IModelAsset.h" />

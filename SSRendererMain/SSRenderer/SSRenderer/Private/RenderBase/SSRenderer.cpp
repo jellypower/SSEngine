@@ -9,6 +9,7 @@
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
@@ -59,7 +60,7 @@ void SSRenderer::AddMeshInstanceReference(IMeshAsset* NewMeshAsset, const AssetI
 		return; // 이미 에셋 로딩이 돼있을 것이기 때문에 패스
 	}
 
-	_InstanceStateChangedMesh.PushBack(NewMeshAsset);
+	_InstanceStateChangedMesh.PushBack((IMeshAssetMutable*)NewMeshAsset);
 }
 
 void SSRenderer::RemoveModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)
@@ -93,7 +94,7 @@ void SSRenderer::RemoveMeshInstanceReference(IMeshAsset* MeshAssetToRemove, cons
 		return; // 언로드할게 없기 때문에 패스
 	}
 
-	_InstanceStateChangedMesh.PushBack(MeshAssetToRemove);
+	_InstanceStateChangedMesh.PushBack((IMeshAssetMutable*)MeshAssetToRemove);
 }
 
 IRenderWorld* SSRenderer::CreateRenderWorld()
@@ -175,13 +176,13 @@ void SSRenderer::CleanUp()
 
 void SSRenderer::InstantiatePendingAssets(GALRenderDeviceContext* Executor)
 {
-	for (IMeshAsset* MeshAssetItem : _InstanceStateChangedMesh)
+	for (IMeshAssetMutable* MeshAssetItem : _InstanceStateChangedMesh)
 	{
-		if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->_GALMeshAsset == nullptr)
+		if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->GetGALMeshAsset() == nullptr)
 		{
 			Executor->GenerateMeshGALAsset(MeshAssetItem);
 		}
-		else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->_GALMeshAsset != nullptr)
+		else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->GetGALMeshAsset() != nullptr)
 		{
 			MeshAssetItem->ReleaseGALData();
 		}

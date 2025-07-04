@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class IMeshAssetMutable;
 class IMaterialAsset;
-class IMeshAsset;
 enum class EResourceStateType : uint8;
 class GALRenderTarget;
 class IRenderInstance;
@@ -19,7 +19,7 @@ public:
 	virtual void EndRender() = 0;
 
 
-	virtual bool GenerateMeshGALAsset(IMeshAsset* InMeshAsset) = 0;
+	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) = 0;
 	virtual bool GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset) = 0;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 

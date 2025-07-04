@@ -133,7 +133,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			// geometry asset creation
 			::FbxMesh* fbxMesh = node->GetMesh();
 
-			MeshAsset* newMeshAsset = nullptr;
+			IMeshAsset* newMeshAsset = nullptr;
 			SS::SHasherW NewMeshName;
 
 			bool bIsMeshAssetAlreadyImported = false;
@@ -177,7 +177,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 				AssetManager->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), EAssetType::Model);
 			// TODO: 25/03/04 테스트하기
 
-			ModelAsset* newModel = DBG_NEW ModelAsset(NewModelAssetName, _boundFilePath);
+			IModelAssetMutable* newModel = DBG_NEW ModelAsset(NewModelAssetName, _boundFilePath);
 			SS_ASSERT(newMeshAsset);
 			newModel->SetMesh(newMeshAsset);
 
