@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelCombinationAsset.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
 
 
 
-class ModelCombinationAsset : public IModelCombinationAsset
+class ModelCombinationAsset : public IModelCombinationAssetMutable
 {
 public:
 	ModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt);

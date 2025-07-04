@@ -17,7 +17,7 @@
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 {
 	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-	const ModelCombinationAsset* MdlcAsset = (ModelCombinationAsset*)AssetManager->FindAssetByName(MdlcAssetName, EAssetType::ModelCombination);
+	const IModelCombinationAsset* MdlcAsset = (IModelCombinationAsset*)AssetManager->FindAssetByName(MdlcAssetName, EAssetType::ModelCombination);
 	if (MdlcAsset == nullptr)
 	{
 		SS_ASSERT(false);
@@ -64,7 +64,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 {
 	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-	const ModelAsset* lModelAsset = (ModelAsset*)AssetManager->FindAssetByName(ModelAssetName, EAssetType::Model);
+	const IModelAsset* lModelAsset = (IModelAsset*)AssetManager->FindAssetByName(ModelAssetName, EAssetType::Model);
 	if (lModelAsset == nullptr)
 	{
 		SS_ASSERT(false);
@@ -79,7 +79,7 @@ SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 	return NewGameObj;
 }
 
-void SRendererUtil::InstantiateModelObjTree_Recursion(const ModelCombinationAsset* MdlcAsset, int32 CurAssetIdx,
+void SRendererUtil::InstantiateModelObjTree_Recursion(const IModelCombinationAsset* MdlcAsset, int32 CurAssetIdx,
                                                       SGameObject* CurGameObject)
 {
 	const AssetPlacementReference& ThisAssetPlacement = MdlcAsset->GetChildAt(CurAssetIdx);

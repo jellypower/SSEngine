@@ -2,7 +2,9 @@
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
 int32 SSFBXImporterUtils::CalcWholeNodeCnt_Recursion(const FbxNode* node)
@@ -234,7 +236,10 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 {
 	assert(fbxMesh != nullptr);
 
-	IMeshAssetMutable* NewMeshAsset = DBG_NEW MeshAsset(NewAssetName, InAssetPath); // TODO: 종속성 없애기
+	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
+
+	
+	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
 	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
 	NewMeshRawData->_MeshType = EMeshType::Rigid;
 

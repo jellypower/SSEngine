@@ -3,7 +3,6 @@
 #include "SObject/Public/SObjectBase.h"
 
 class IRenderInstance;
-class ModelAsset;
 class SRenderComponentBase;
 
 class SRenderComponentBase : public SComponentBase

@@ -1,8 +1,9 @@
 ﻿#pragma once
-#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
 
-class AssetManagerBase : public IAssetManager
+
+class AssetManagerBase : public IAssetManagerMutable
 {
 private:
 	static const char* GetAssetSuffix(EAssetType InAssetType);
@@ -16,6 +17,12 @@ public:
 
 	virtual void AddToAssetPool(IAssetBase* newAsset) override;
 	virtual void ReleaseAllAssets() override;
+
+	virtual IMaterialAsset* CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
+	virtual IMeshAssetMutable* CreateEmptyMeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
+	virtual IModelAssetMutable* CreateEmptyModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
+	virtual IModelCombinationAssetMutable* CreateEmptyModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt) override;
+
 	virtual SS::SHasherW GenerateAssetName(const SS::StringW& fileName, const SS::StringW& nodeName, EAssetType InAssetType) const override;
 
 	virtual IAssetBase* FindAssetByName(SS::SHasherW InModelAssetName, EAssetType InAssetType) const override;

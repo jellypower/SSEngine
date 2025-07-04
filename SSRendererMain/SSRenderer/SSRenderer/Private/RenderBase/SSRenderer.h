@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class AssetManagerBase;
 class IMeshAsset;
 class IMeshAssetMutable;
 class IModelAsset;
@@ -16,6 +17,8 @@ class GALRenderDevice;
 class SSRenderer : public IRenderer
 {
 private:
+	AssetManagerBase* _AssetManager = nullptr;
+
 	SS::PooledList<IMeshAssetMutable*> _InstanceStateChangedMesh;
 
 private:
@@ -26,6 +29,9 @@ public:
 	SSRenderer(GALRenderDevice* InRenderDevice);
 	virtual ~SSRenderer();
 
+public:
+	IAssetManager* GetAssetManager() const override;
+	IAssetManagerMutable* GetMutableAssetManager() override;
 
 public:
 	virtual void StartUp() override;

@@ -5,8 +5,8 @@
 #define FBXSDK_SHARED
 #include <fbxsdk.h>
 
+class IModelCombinationAssetMutable;
 class IRenderer;
-class ModelCombinationAsset;
 struct AssetPlacementReference;
 class MaterialAsset;
 class MeshAsset;
@@ -40,7 +40,7 @@ private:
 	void ImportCurrentFileToMaterialAsset();
 	void ImportCurrentFileToModelAsset();
 
-	void ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, ModelCombinationAsset* MdlcAsset);
+	void ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset);
 
 	void PrintFbxNodeInfo(FbxNode* node);
 

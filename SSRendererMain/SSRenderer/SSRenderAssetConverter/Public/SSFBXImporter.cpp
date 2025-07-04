@@ -6,7 +6,7 @@
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
-#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
@@ -84,6 +84,8 @@ void SSFBXImporter::ImportCurrentFileToModelAsset()
 		return;
 	}
 
+	IAssetManagerMutable* AssetManager = _RendererToImportAsset->GetMutableAssetManager();
+
 	FbxNode* rootNode = _currentScene->GetRootNode();
 	uint32 childCount = rootNode->GetChildCount();
 
@@ -93,8 +95,11 @@ void SSFBXImporter::ImportCurrentFileToModelAsset()
 
 	const int32 whoeChildCnt = rootNode->GetChildCount(true);
 	const int32 rootChildCnt = rootNode->GetChildCount();
-	ModelCombinationAsset* newMdlcAsset = DBG_NEW ModelCombinationAsset(assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt + 1);
 
+
+	
+	IModelCombinationAssetMutable* newMdlcAsset = 
+		AssetManager->CreateEmptyModelCombinationAsset(assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt + 1);
 	AssetPlacementReference RootAssetPlacement;
 	RootAssetPlacement.ParentIdx = INVALID_IDX;
 	RootAssetPlacement.PlacementName = L"root";
@@ -107,7 +112,6 @@ void SSFBXImporter::ImportCurrentFileToModelAsset()
 		ImportCurrentFileToModelAsset_Recursion(rootNode->GetChild(i), MDLC_PLACEMENTREF_ROOT_IDX, newMdlcAsset);
 	}
 
-	IAssetManager* AssetManager = _RendererToImportAsset->GetAssetManager();
 	AssetManager->AddToAssetPool(newMdlcAsset);
 
 	// room.fbx/sketchup.001
@@ -115,10 +119,10 @@ void SSFBXImporter::ImportCurrentFileToModelAsset()
 	// room.fbx / book
 }
 
-void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, ModelCombinationAsset* MdlcAsset)
+void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset)
 {
 	// TODO: importer Skinning 적용 25/01/31
-	IAssetManager* AssetManager = _RendererToImportAsset->GetAssetManager();
+	IAssetManagerMutable* AssetManager = _RendererToImportAsset->GetMutableAssetManager();
 
 
 	uint32 childCount = node->GetChildCount();
@@ -166,7 +170,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			}
 			else
 			{
-				newMeshAsset = (MeshAsset*)AssetManager->FindAssetByName(NewMeshName, EAssetType::Mesh);
+				newMeshAsset = (IMeshAsset*)AssetManager->FindAssetByName(NewMeshName, EAssetType::Mesh);
 			}
 
 
@@ -177,7 +181,8 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 				AssetManager->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), EAssetType::Model);
 			// TODO: 25/03/04 테스트하기
 
-			IModelAssetMutable* newModel = DBG_NEW ModelAsset(NewModelAssetName, _boundFilePath);
+			
+			IModelAssetMutable* newModel = AssetManager->CreateEmptyModelAsset(NewModelAssetName, _boundFileName);
 			SS_ASSERT(newMeshAsset);
 			newModel->SetMesh(newMeshAsset);
 

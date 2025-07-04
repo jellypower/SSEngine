@@ -41,7 +41,4 @@ public:
 	int32 GetChildCnt() const { return _childs.GetSize(); }
 	const AssetPlacementReference& GetRootPlacementReference() const { return _childs[MDLC_PLACEMENTREF_ROOT_IDX]; }
 	const AssetPlacementReference& GetChildAt(int32 Idx) const { return _childs[Idx]; }
-	AssetPlacementReference& GetChildAtMutable(int32 Idx) { return _childs[Idx]; }
-
-	virtual void AddNewChild(const AssetPlacementReference& newReference) = 0;
 };

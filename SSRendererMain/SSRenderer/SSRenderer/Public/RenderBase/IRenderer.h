@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <SSEngineDefault/Public/INoncopyable.h>
 
+#include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
+
 class IAssetManager;
 class IRenderWorld;
 class IRenderCamera;
@@ -13,11 +15,12 @@ protected:
 	GALRenderDeviceContext* _MainDeviceContext = nullptr;
 	GALRenderDevice* _GALRenderDevice = nullptr;
 
-	IAssetManager* _AssetManager = nullptr;
-
 public:
 	GALRenderDevice* GetRenderDevice() const { return _GALRenderDevice; }
-	IAssetManager* GetAssetManager() const { return _AssetManager;  }
+
+public:
+	virtual IAssetManager* GetAssetManager() const = 0;
+	virtual IAssetManagerMutable* GetMutableAssetManager() = 0;
 
 public:
 	virtual void StartUp() = 0;

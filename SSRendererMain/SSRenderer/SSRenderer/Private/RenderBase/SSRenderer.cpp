@@ -9,7 +9,7 @@
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/IMeshAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
@@ -25,6 +25,16 @@ SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice)
 
 SSRenderer::~SSRenderer()
 {
+}
+
+IAssetManager* SSRenderer::GetAssetManager() const
+{
+	return _AssetManager;
+}
+
+IAssetManagerMutable* SSRenderer::GetMutableAssetManager()
+{
+	return _AssetManager;
 }
 
 void SSRenderer::AddModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)

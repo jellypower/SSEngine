@@ -1,5 +1,9 @@
 ﻿#include "AssetManagerBase.h"
 
+#include "RenderAssetType/MaterialAsset.h"
+#include "RenderAssetType/MeshAsset.h"
+#include "RenderAssetType/ModelAsset.h"
+#include "RenderAssetType/ModelCombinationAsset.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
@@ -78,6 +82,28 @@ void AssetManagerBase::ReleaseAllAssets()
 		AssetMap.Clear();
 	}
 }
+
+IMaterialAsset* AssetManagerBase::CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+{
+	return DBG_NEW MaterialAsset(InAssetName, InAssetPath);
+}
+
+IMeshAssetMutable* AssetManagerBase::CreateEmptyMeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+{
+	return DBG_NEW MeshAsset(InAssetName, InAssetName);
+}
+
+IModelAssetMutable* AssetManagerBase::CreateEmptyModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+{
+	return DBG_NEW ModelAsset(InAssetName, InAssetPath);
+}
+
+IModelCombinationAssetMutable* AssetManagerBase::CreateEmptyModelCombinationAsset(SS::SHasherW InAssetName,
+	SS::SHasherW InAssetPath, int32 ReservedChildCnt)
+{
+	return DBG_NEW ModelCombinationAsset(InAssetName, InAssetPath, ReservedChildCnt);
+}
+
 
 SS::SHasherW AssetManagerBase::GenerateAssetName(const SS::StringW& fileName, const SS::StringW& nodeName, EAssetType InAssetType) const
 {

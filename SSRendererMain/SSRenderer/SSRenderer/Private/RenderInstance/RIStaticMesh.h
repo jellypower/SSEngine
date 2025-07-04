@@ -23,6 +23,6 @@ public:
 	XMMATRIX _WorldTransformMatrix;
 	XMMATRIX _WorldRotationMatrix;
 	SObjHashCode _GameObjectHashCode = nullptr;
-	ModelAsset* _ModelRef = nullptr;
+	IModelAsset* _ModelRef = nullptr;
 	GALRIMetadata* _MetaData = nullptr;
 };

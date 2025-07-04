@@ -9,9 +9,5 @@ class IAssetBase;
 class IAssetManager : public INoncopyable
 {
 public:
-	virtual void AddToAssetPool(IAssetBase* newAsset) = 0;
-	virtual void ReleaseAllAssets() = 0;
-
-	virtual SS::SHasherW GenerateAssetName(const SS::StringW& fileName, const SS::StringW& nodeName, EAssetType InAssetType) const = 0;
 	virtual IAssetBase* FindAssetByName(SS::SHasherW InModelAssetName, EAssetType InAssetType) const = 0;
 };

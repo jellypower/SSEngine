@@ -17,7 +17,7 @@
 #include "SRenderContent/Public/SRendererUtil.h"
 #include "SRenderContent/Public/Camera/SCameraComponent.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/MaterialAsset.h" // TODO: 辆加己 绝局扁
-#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
@@ -107,9 +107,10 @@ void SSEngine::CleanupEngine()
 
 void SSEngine::TEMP_CreateTEMPMaterial()
 {
-	IAssetManager* AssetManager = _Renderer->GetAssetManager();
-	MaterialAsset* NewMaterialAsset = DBG_NEW MaterialAsset(L"TEMP_Material", L"/TEMP_Material"); // TODO: 辆加己 绝局扁
+	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
 
+	
+	IMaterialAsset* NewMaterialAsset = AssetManager->CreateEmptyMaterialAsset(L"TEMP_Material", L"/TEMP_Material");
 	NewMaterialAsset->_PSName = L"TempVertexShader";
 
 	AssetManager->AddToAssetPool(NewMaterialAsset);
