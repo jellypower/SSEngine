@@ -3,7 +3,7 @@
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 
 
-DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(MeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice)
+DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice)
 {
 	_OwnerMeshAsset = ownerMeshAsset;
 	_OwnerRenderDevice = InOwnerRenderDevice;

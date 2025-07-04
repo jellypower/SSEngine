@@ -3,13 +3,10 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringA.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderAssetConverter/Private/SSFBXImporterUtils.h"
-#include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/ModelCombinationAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelAsset.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
+#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
@@ -102,7 +99,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset()
 	RootAssetPlacement.ParentIdx = INVALID_IDX;
 	RootAssetPlacement.PlacementName = L"root";
 	RootAssetPlacement.Transform = Transform::Identity;
-	newMdlcAsset->_childs.PushBack(RootAssetPlacement);
+	newMdlcAsset->AddNewChild(RootAssetPlacement);
 
 
 	for (int32 i = 0; i < rootChildCnt; i++)
@@ -110,8 +107,8 @@ void SSFBXImporter::ImportCurrentFileToModelAsset()
 		ImportCurrentFileToModelAsset_Recursion(rootNode->GetChild(i), MDLC_PLACEMENTREF_ROOT_IDX, newMdlcAsset);
 	}
 
-	ModelCombinationAssetManager* ModelCombinationAssetManager = _RendererToImportAsset->GetModelCombinationAssetManager();
-	ModelCombinationAssetManager->AddToAssetPool(newMdlcAsset);
+	IAssetManager* AssetManager = _RendererToImportAsset->GetAssetManager();
+	AssetManager->AddToAssetPool(newMdlcAsset);
 
 	// room.fbx/sketchup.001
 	// room.fbx / sketchup.001.mdl
@@ -121,9 +118,8 @@ void SSFBXImporter::ImportCurrentFileToModelAsset()
 void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, ModelCombinationAsset* MdlcAsset)
 {
 	// TODO: importer Skinning 적용 25/01/31
+	IAssetManager* AssetManager = _RendererToImportAsset->GetAssetManager();
 
-	MeshAssetManager* MeshAssetManager = _RendererToImportAsset->GetMeshAssetManager();
-	ModelAssetManager* ModelAssetManager = _RendererToImportAsset->GetModelAssetManager();
 
 	uint32 childCount = node->GetChildCount();
 
@@ -155,7 +151,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			if (bIsMeshAssetAlreadyImported == false)
 			{
 				NewMeshName =
-					MeshAssetManager->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), L".mesh");
+					AssetManager->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), EAssetType::Mesh);
 
 
 				//			if (fbxMesh->GetDeformerCount() == 0)
@@ -164,13 +160,13 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 				//			else
 				//				newMeshAsset = GenerateSkinnedGeometryFromFbxMesh(fbxMesh);
 
-				MeshAssetManager->AddToAssetPool(newMeshAsset);
+				AssetManager->AddToAssetPool(newMeshAsset);
 				SS::pair<::FbxMesh*, SS::SHasherW> NewPair = SS::MakePair(fbxMesh, NewMeshName);
 				_importedMeshNames.PushBack(NewPair);
 			}
 			else
 			{
-				newMeshAsset = (MeshAsset*)MeshAssetManager->FindAssetByName(NewMeshName);
+				newMeshAsset = (MeshAsset*)AssetManager->FindAssetByName(NewMeshName, EAssetType::Mesh);
 			}
 
 
@@ -178,12 +174,12 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 
 
 			SS::SHasherW NewModelAssetName = 
-				ModelAssetManager->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), L".mdlc");
+				AssetManager->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), EAssetType::Model);
 			// TODO: 25/03/04 테스트하기
 
 			ModelAsset* newModel = DBG_NEW ModelAsset(NewModelAssetName, _boundFilePath);
-			// Room.fbx 파일 열면 메모리 누수 생기는 문제 확인하기.
-			newModel->SetMesh(NewMeshName);
+			SS_ASSERT(newMeshAsset);
+			newModel->SetMesh(newMeshAsset);
 
 
 			SS::StringW tempAssetName;
@@ -208,7 +204,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 				//	modelMaterial->ChangeShader(SSShaderAssetManager::SSDefaultPbrSkinnedShaderName);
 				//}
 
-				newModel->SetMaterial(tempAssetName.C_Str(), i);
+				// newModel->SetMaterial(tempAssetName.C_Str(), i);
 
 			}
 			//if (matCnt == 0)
@@ -229,7 +225,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			}
 
 
-			ModelAssetManager->AddToAssetPool(newModel);
+			AssetManager->AddToAssetPool(newModel);
 			// PrintFbxNodeInfo(node);
 		}
 		else if (nodeAttribute == FbxNodeAttribute::eSkeleton)
@@ -248,8 +244,8 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 	NewAssetPlacementRef.ParentIdx = parentReferenceIdx;
 	int32 ThisAssetPlacementIdx = MdlcAsset->GetChildCnt();
 
-	MdlcAsset->_childs.PushBack(NewAssetPlacementRef);
-	AssetPlacementReference& ParentAssetPlacement = MdlcAsset->_childs[parentReferenceIdx];
+	MdlcAsset->AddNewChild(NewAssetPlacementRef);
+	AssetPlacementReference& ParentAssetPlacement = MdlcAsset->GetChildAtMutable(parentReferenceIdx);
 	ParentAssetPlacement.ChildIndices.PushBack(ThisAssetPlacementIdx);
 	for (int32 i = 0; i < childCount; i++)
 	{

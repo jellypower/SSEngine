@@ -1,8 +1,7 @@
 #include "SSFBXImporterUtils.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
-#include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
@@ -235,7 +234,7 @@ MeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh
 {
 	assert(fbxMesh != nullptr);
 
-	MeshAsset* NewMeshAsset = DBG_NEW MeshAsset(NewAssetName, InAssetPath);
+	MeshAsset* NewMeshAsset = DBG_NEW MeshAsset(NewAssetName, InAssetPath); // TODO: 종속성 없애기
 	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
 	NewMeshRawData->_MeshType = EMeshType::Rigid;
 

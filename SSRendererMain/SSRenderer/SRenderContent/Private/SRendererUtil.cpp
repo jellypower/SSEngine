@@ -5,20 +5,19 @@
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
-#include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/ModelCombinationAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 
 #include "SRenderContent/Public/RenderComponent/SStaticMeshRenderComponent.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/IMeshRawData.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelAsset.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
+#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 {
-	const ModelCombinationAssetManager* MdlcAssetManager = g_Renderer->GetModelCombinationAssetManager();
-	const ModelCombinationAsset* MdlcAsset = MdlcAssetManager->FindMdlcByName(MdlcAssetName);
+	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+	const ModelCombinationAsset* MdlcAsset = (ModelCombinationAsset*)AssetManager->FindAssetByName(MdlcAssetName, EAssetType::ModelCombination);
 	if (MdlcAsset == nullptr)
 	{
 		SS_ASSERT(false);
@@ -64,8 +63,8 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 
 SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 {
-	const ModelAssetManager* MdlAssetManager = g_Renderer->GetModelAssetManager();
-	const ModelAsset* lModelAsset = (ModelAsset*)MdlAssetManager->FindAssetByName(ModelAssetName);
+	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+	const ModelAsset* lModelAsset = (ModelAsset*)AssetManager->FindAssetByName(ModelAssetName, EAssetType::Model);
 	if (lModelAsset == nullptr)
 	{
 		SS_ASSERT(false);

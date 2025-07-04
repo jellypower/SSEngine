@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include "IMeshRawData.h"
+#include "MeshRawDataBase.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
 
 
-class MeshRawDataDefault : public IMeshRawData
+class MeshRawDataDefault : public MeshRawDataBase
 {
 public:
 	void* _vertexData = nullptr;

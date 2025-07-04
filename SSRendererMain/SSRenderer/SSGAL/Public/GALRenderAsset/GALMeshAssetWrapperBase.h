@@ -2,12 +2,13 @@
 #include "SSEngineDefault/Public/INoncopyable.h"
 
 class GALRenderDevice;
-class MeshAsset;
+class IMeshAsset;
+
 
 class GALMeshAssetWrapperBase : public INoncopyable
 {
 protected:
-	MeshAsset* _OwnerMeshAsset = nullptr;
+	IMeshAsset* _OwnerMeshAsset = nullptr;
 	GALRenderDevice* _OwnerRenderDevice = nullptr;
 };
 

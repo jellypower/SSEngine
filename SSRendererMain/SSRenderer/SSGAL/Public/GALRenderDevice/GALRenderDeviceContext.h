@@ -1,13 +1,13 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
-class MaterialAsset;
+class IMaterialAsset;
+class IMeshAsset;
 enum class EResourceStateType : uint8;
 class GALRenderTarget;
 class IRenderInstance;
 class GALResourceUpdater;
 class GALRenderDevice;
-class MeshAsset;
 
 class GALRenderDeviceContext : public INoncopyable
 {
@@ -19,8 +19,8 @@ public:
 	virtual void EndRender() = 0;
 
 
-	virtual bool GenerateMeshGALAsset(MeshAsset* InMeshAsset) = 0;
-	virtual bool GenerateMaterialGALAsset(MaterialAsset* InMaterialAsset) = 0;
+	virtual bool GenerateMeshGALAsset(IMeshAsset* InMeshAsset) = 0;
+	virtual bool GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset) = 0;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;

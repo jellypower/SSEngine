@@ -15,11 +15,10 @@
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 
 
-#include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
-
 #include "SRenderContent/Public/SRendererUtil.h"
 #include "SRenderContent/Public/Camera/SCameraComponent.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/MaterialAsset.h"
+#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
@@ -109,13 +108,13 @@ void SSEngine::CleanupEngine()
 
 void SSEngine::TEMP_CreateTEMPMaterial()
 {
-	MaterialAssetManager* MaterialAssetManager = _Renderer->GetMaterialAssetManager();
-	MaterialAsset* NewMaterialAsset = DBG_NEW MaterialAsset(L"TEMP_Material", L"/TEMP_Material");
+	IAssetManager* AssetManager = _Renderer->GetAssetManager();
+	MaterialAsset* NewMaterialAsset = DBG_NEW MaterialAsset(L"TEMP_Material", L"/TEMP_Material"); // TODO: 종속성 없애기
 
 	NewMaterialAsset->_PSName = L"TempVertexShader";
 	NewMaterialAsset->_VSName = L"TempPixelShader";
 
-	MaterialAssetManager->AddToAssetPool(NewMaterialAsset);
+	AssetManager->AddToAssetPool(NewMaterialAsset);
 }
 
 void SSEngine::TEMP_ProcessInput()

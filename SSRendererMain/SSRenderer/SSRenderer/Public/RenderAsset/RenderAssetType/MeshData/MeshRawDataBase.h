@@ -10,7 +10,7 @@ enum class EMeshType
 
 
 // 날것으로 쓰기 위한 
-struct IMeshRawData : public INoncopyable
+struct MeshRawDataBase : public INoncopyable
 {
 	EMeshType _MeshType = EMeshType::None;
 };

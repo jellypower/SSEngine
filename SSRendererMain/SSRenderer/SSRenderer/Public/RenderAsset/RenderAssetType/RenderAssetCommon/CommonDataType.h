@@ -6,15 +6,12 @@ enum class EAssetType : int32
 	None = 0,
 
 	Mesh,
-	Shader,
 	Material,
 	Model,
 	ModelCombination,
 	Texture,
 	Skeleton,
 	SkeletonAnim,
-
-	RootSignature,
 
 	Count
 };

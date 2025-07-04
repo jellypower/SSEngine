@@ -2,22 +2,16 @@
 
 
 #include "RenderWorld.h"
-#include "SSContentsBase/SGameObject.h"
 #include "SSContentsBase/SWorld.h"
+#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h" // TODO: Private 헤더파일 종속성 없애기
 
-#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
+#include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
-#include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/ModelCombinationAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MaterialAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/SSAssetBase.h"
 
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 
@@ -32,7 +26,7 @@ SSRenderer::~SSRenderer()
 {
 }
 
-void SSRenderer::AddModelInstanceReference(ModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)
+void SSRenderer::AddModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)
 {
 	NewModelAsset->AddAssetReference(Referencer);
 
@@ -42,14 +36,7 @@ void SSRenderer::AddModelInstanceReference(ModelAsset* NewModelAsset, const Asse
 	}
 
 	{
-		SS::SHasherW MeshAssetName = NewModelAsset->GetMeshAssetName();
-		if (MeshAssetName.IsEmpty())
-		{
-			SS_ASSERT(false);
-			return;
-		}
-
-		MeshAsset* MeshAssetToInstantiate = (MeshAsset*)_meshAssetManager->FindAssetByName(MeshAssetName);
+		IMeshAsset* MeshAssetToInstantiate = NewModelAsset->GetMeshAsset();
 		if (MeshAssetToInstantiate == nullptr)
 		{
 			SS_ASSERT(false);
@@ -63,7 +50,7 @@ void SSRenderer::AddModelInstanceReference(ModelAsset* NewModelAsset, const Asse
 	}
 }
 
-void SSRenderer::AddMeshInstanceReference(MeshAsset* NewMeshAsset, const AssetInstanceReferencer& Referencer)
+void SSRenderer::AddMeshInstanceReference(IMeshAsset* NewMeshAsset, const AssetInstanceReferencer& Referencer)
 {
 	NewMeshAsset->AddAssetReference(Referencer);
 
@@ -75,7 +62,7 @@ void SSRenderer::AddMeshInstanceReference(MeshAsset* NewMeshAsset, const AssetIn
 	_InstanceStateChangedMesh.PushBack(NewMeshAsset);
 }
 
-void SSRenderer::RemoveModelInstanceReference(ModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)
+void SSRenderer::RemoveModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)
 {
 	NewModelAsset->RemoveAssetReference(Referencer);
 
@@ -84,14 +71,8 @@ void SSRenderer::RemoveModelInstanceReference(ModelAsset* NewModelAsset, const A
 		return; // 언로드할게 없기 때문에 패스
 	}
 
-	SS::SHasherW MeshAssetName = NewModelAsset->GetMeshAssetName();
-	if (MeshAssetName.IsEmpty())
-	{
-		SS_ASSERT(false);
-		return;
-	}
 
-	MeshAsset* MeshAssetToInstantiate = (MeshAsset*)_meshAssetManager->FindAssetByName(MeshAssetName);
+	IMeshAsset* MeshAssetToInstantiate = NewModelAsset->GetMeshAsset();
 	if (MeshAssetToInstantiate == nullptr)
 	{
 		SS_ASSERT(false);
@@ -104,7 +85,7 @@ void SSRenderer::RemoveModelInstanceReference(ModelAsset* NewModelAsset, const A
 	RemoveMeshInstanceReference(MeshAssetToInstantiate, ModelReferencer);
 }
 
-void SSRenderer::RemoveMeshInstanceReference(MeshAsset* MeshAssetToRemove, const AssetInstanceReferencer& Referencer)
+void SSRenderer::RemoveMeshInstanceReference(IMeshAsset* MeshAssetToRemove, const AssetInstanceReferencer& Referencer)
 {
 	MeshAssetToRemove->RemoveAssetReference(Referencer);
 	if (MeshAssetToRemove->GetAssetInstanceReferenceCnt() > 0)
@@ -194,15 +175,15 @@ void SSRenderer::CleanUp()
 
 void SSRenderer::InstantiatePendingAssets(GALRenderDeviceContext* Executor)
 {
-	for (MeshAsset* MeshAssetItem : _InstanceStateChangedMesh)
+	for (IMeshAsset* MeshAssetItem : _InstanceStateChangedMesh)
 	{
 		if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->_GALMeshAsset == nullptr)
 		{
-			Executor->GenerateMeshGALAsset((MeshAsset*)MeshAssetItem);
+			Executor->GenerateMeshGALAsset(MeshAssetItem);
 		}
 		else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->_GALMeshAsset != nullptr)
 		{
-			((MeshAsset*)MeshAssetItem)->ReleaseGALData();
+			MeshAssetItem->ReleaseGALData();
 		}
 	}
 
@@ -228,15 +209,7 @@ void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera
 
 void SSRenderer::InitAssetManagers()
 {
-	_meshAssetManager = DBG_NEW MeshAssetManager(1000, 100);
-
-	_materialAssetManager = DBG_NEW MaterialAssetManager(1000, 1000);
-	_materialAssetManager->InstantiateAllMaterialAssets();
-
-
-	_ModelAssetManager = DBG_NEW ModelAssetManager(1000, 100);
-
-	_ModelCombAssetManager = DBG_NEW ModelCombinationAssetManager();
+	_AssetManager = DBG_NEW AssetManagerBase(1000, 10);
 }
 
 void SSRenderer::CleanupRenderer()
@@ -250,20 +223,7 @@ void SSRenderer::CleanupRenderer()
 
 void SSRenderer::CleanupAssetMnagers()
 {
-	_ModelCombAssetManager->ReleaseAllAssets();
-	delete _ModelCombAssetManager;
-	_ModelCombAssetManager = nullptr;
-
-	_ModelAssetManager->ReleaseAllAssets();
-	delete _ModelAssetManager;
-	_ModelAssetManager = nullptr;
-
-	_materialAssetManager->ReleaseAllMaterials();
-	delete _materialAssetManager;
-	_materialAssetManager = nullptr;
-
-	_meshAssetManager->ReleaseAllAssets();
-	delete _meshAssetManager;
-	_meshAssetManager = nullptr;
-
+	_AssetManager->ReleaseAllAssets();
+	delete _AssetManager;
+	_AssetManager = nullptr;
 }

@@ -15,11 +15,9 @@
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
-#include "SSRenderer/Public/RenderAsset/MaterialAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
@@ -119,7 +117,7 @@ bool DX12GALRenderDeviceContext::IsValid() const
 	return _CommandLists.GetSize() != 0;
 }
 
-bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(MeshAsset* InMeshAsset)
+bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAsset* InMeshAsset)
 {
 	if (InMeshAsset->_GALMeshAsset != nullptr)
 	{
@@ -136,7 +134,7 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(MeshAsset* InMeshAsset)
 	DX12GALMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALMeshAssetWrapper(InMeshAsset, OwnerDX12RenderDevice);
 
 
-	const IMeshRawData* MeshRawData = InMeshAsset->GetMeshRawData();
+	const MeshRawDataBase* MeshRawData = InMeshAsset->GetMeshRawData();
 	const MeshRawDataDefault* DefaultMeshRawData = nullptr;
 	switch (MeshRawData->_MeshType)
 	{
@@ -194,7 +192,7 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(MeshAsset* InMeshAsset)
 
 	{
 		
-		int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;;
+		int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
 		NewGALMeshAsset->_SubMeshCnt = SubMeshCnt;
 		int32 WholeIdxDataCnt = DefaultMeshRawData->_wholeIndexDataCnt;
 		const uint32* IndexData = DefaultMeshRawData->_indexData;
@@ -268,7 +266,7 @@ lb_fail:
 	return false;
 }
 
-bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(MaterialAsset* InMaterialAsset)
+bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset)
 {
 
 
@@ -340,7 +338,7 @@ void DX12GALRenderDeviceContext::Draw(IRenderInstance* InRenderInstance)
 }
 
 void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(
-	ModelAsset* InModelAsset,
+	IModelAsset* InModelAsset,
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
 	const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
@@ -349,24 +347,22 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(
 	IRenderer* Renderer = OwnerDevice->GetOwnerRenderer();
 	RootSignaturePool* lRootSignaturePool = OwnerDevice->GetRootSignaturePool();
 	DX12PSOPool* PSOPool = (DX12PSOPool*)OwnerDevice->GetPSOPool();
-	MeshAssetManager* MeshAssetManager = Renderer->GetMeshAssetManager();
-	MaterialAssetManager* MaterialAssetManager = Renderer->GetMaterialAssetManager();
-	SS::SHasherW MeshAssetName = InModelAsset->GetMeshAssetName();
-	int32 SubMeshCnt = InModelAsset->GetSubMeshCnt();
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentCmdList();
 	ID3D12DescriptorHeap* RenderInstanceDescHeap = (ID3D12DescriptorHeap*)DX12RenderInstanceMetaData->_DescriptorTableChunk.PageContent;
 
 
-	MeshAsset* lMeshAsset = (MeshAsset*)MeshAssetManager->FindAssetByName(MeshAssetName);
+	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
 	DX12GALMeshAssetWrapper* GALMeshAsset = (DX12GALMeshAssetWrapper*)lMeshAsset->_GALMeshAsset;
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
-	const IMeshRawData* MeshRawData = lMeshAsset->GetMeshRawData();
+	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
 	const MeshRawDataDefault* DefaultMeshRawData = nullptr;
+	int32 SubMeshCnt = 0;
 	switch (MeshRawData->_MeshType)
 	{
 	case EMeshType::Rigid:
 	case EMeshType::Skinned:
 		DefaultMeshRawData = (MeshRawDataDefault*)MeshRawData;
+		SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
 		break;
 
 	default:

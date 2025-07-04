@@ -33,9 +33,6 @@
     <ClInclude Include="SSRenderer\Public\RenderCommon\SSRendererInlineSettings.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderBase\SSRenderer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -45,25 +42,10 @@
     <ClInclude Include="SSRenderer\Public\RenderInstance\IRenderInstance.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\MeshAssetManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSEngineMain\SSEngine.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\VertexTypes\SSDefaultVertexTypes.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h">
+    <ClInclude Include="SSRenderer\Private\RenderAsset\RenderAssetType\MaterialAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h">
@@ -75,10 +57,10 @@
     <ClInclude Include="SSGAL\Public\GALRenderAsset\GALMeshAssetWrapperBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h">
+    <ClInclude Include="SSRenderer\Private\RenderAsset\RenderAssetType\ModelAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.h">
+    <ClInclude Include="SSRenderer\Private\RenderAsset\RenderAssetType\ModelCombinationAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h">
@@ -115,9 +97,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\ModelAssetManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk\core\arch\fbxalloc.h">
@@ -969,9 +948,6 @@
     <ClInclude Include="ExternLibs\FBXSDK\include\fbxsdk.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSContentsBase\SGameObjectConstructor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -987,13 +963,10 @@
     <ClInclude Include="SSContentsBase\SWorld.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderBase\RenderWorld.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SRenderContent\Public\SRendererUtil.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h">
+    <ClInclude Include="SSRenderer\Private\RenderAsset\AssetManagerBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSGAL\Public\ModuleEntry\GALInstanceFactory.h">
@@ -1110,6 +1083,42 @@
     <ClInclude Include="SRenderContent\Private\Camera\RenderCamera.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IAssetBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IMeshAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IModelAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshData\MeshDataDefault.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderBase\IRenderer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderBase\IRenderWorld.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Private\RenderBase\RenderWorld.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Private\RenderAsset\RenderAssetType\MeshAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Private\RenderBase\SSRenderer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSRenderer\Public\RenderAsset\IAssetManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1125,9 +1134,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\MeshAsset.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\SSAssetBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSEngineMain\SSEngine.cpp">
@@ -1293,6 +1299,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="SSRenderer\Public\RenderAsset\RenderAssetType\IMaterialAsset.h">
+      <Filter>헤더 파일</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Natvis\SSEngineDefault.natvis" />

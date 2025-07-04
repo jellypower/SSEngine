@@ -3,6 +3,7 @@
 #include "SSContentsBase/SGameObject.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelAsset.h"
 
 SObjHashCode RIStaticMesh::GetGameObjectID() const
 {
@@ -28,7 +29,7 @@ void RIStaticMesh::ReleaseGALMetaData()
 	}
 }
 
-ModelAsset* RIStaticMesh::GetModelAsset() const
+IModelAsset* RIStaticMesh::GetModelAsset() const
 {
 	return _ModelRef;
 }

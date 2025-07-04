@@ -470,13 +470,17 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSContentsBase\SGameObjectConstructor.h" />
     <ClInclude Include="SSContentsBase\SWorld.h" />
     <ClInclude Include="SSGAL\Public\SSGALInlineSettings.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\IAssetManager.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IAssetBase.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshData\IMeshRawData.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IMeshAsset.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IModelAsset.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h" />
+    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataBase.h" />
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshData\MeshDataDefault.h" />
     <ClInclude Include="SSRenderer\Public\RenderBase\IRenderer.h" />
     <ClInclude Include="SSRenderer\Public\RenderBase\IRenderWorld.h" />
     <ClInclude Include="SSRenderer\Public\SSRendererGlobalVariableSet.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\AssetManagerBase.h" />
+    <ClInclude Include="SSRenderer\Private\RenderAsset\AssetManagerBase.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\IRenderCamera.h" />
     <ClInclude Include="SSRenderer\Public\RenderInstance\IRIMesh.h" />
     <ClInclude Include="SSRenderer\Private\RenderBase\RenderWorld.h" />
@@ -490,8 +494,6 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSGAL\Private\DX12\GALWrapper\DX12RootSignatureWrapper.h" />
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h" />
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\PSOPool.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\ModelAssetManager.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\ModelCombinationAssetManager.h" />
     <ClInclude Include="SSGAL\Public\GALRenderAsset\GALMaterialAssetWrapperBase.h" />
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\PSOWrapper.h" />
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\RootSignatureWrapper.h" />
@@ -499,15 +501,12 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h" />
     <ClInclude Include="SSGAL\Public\GALRenderAsset\GALMeshAssetWrapperBase.h" />
     <ClInclude Include="SSGAL\Private\DX12\Utils\SSDX12Utils.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelAsset.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\ModelCombinationAsset.h" />
+    <ClInclude Include="SSRenderer\Private\RenderAsset\RenderAssetType\ModelAsset.h" />
+    <ClInclude Include="SSRenderer\Private\RenderAsset\RenderAssetType\ModelCombinationAsset.h" />
     <ClInclude Include="SSGAL\Private\PCommon\GALWrapper\RootSignaturePool.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MaterialAsset.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\MaterialAssetManager.h" />
+    <ClInclude Include="SSRenderer\Private\RenderAsset\RenderAssetType\MaterialAsset.h" />
     <ClInclude Include="SSEngineMain\SSEngine.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\SSAssetBase.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\RenderAssetType\MeshAsset.h" />
-    <ClInclude Include="SSRenderer\Public\RenderAsset\MeshAssetManager.h" />
+    <ClInclude Include="SSRenderer\Private\RenderAsset\RenderAssetType\MeshAsset.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SSBuildSettings.h" />
@@ -557,8 +556,6 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12PSOWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\DX12\GALWrapper\DX12RootSignatureWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\PSOPool.cpp" />
-    <ClCompile Include="SSRenderer\Private\RenderAsset\ModelAssetManager.cpp" />
-    <ClCompile Include="SSRenderer\Private\RenderAsset\ModelCombinationAssetManager.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\PSOWrapper.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\RootSignatureWrapper.cpp" />
     <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp" />
@@ -567,11 +564,8 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
     <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp" />
     <ClCompile Include="SSGAL\Private\PCommon\GALWrapper\RootSignaturePool.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\MaterialAsset.cpp" />
-    <ClCompile Include="SSRenderer\Private\RenderAsset\MaterialAssetManager.cpp" />
     <ClCompile Include="SSEngineMain\SSEngine.cpp" />
-    <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\SSAssetBase.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderAsset\RenderAssetType\MeshAsset.cpp" />
-    <ClCompile Include="SSRenderer\Private\RenderAsset\MeshAssetManager.cpp" />
     <ClCompile Include="SSRenderer\Private\RenderBase\SSRenderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SRenderContent\Private\RenderComponent\SStaticMeshRenderComponent.cpp" />
@@ -587,6 +581,7 @@ copy "$(SolutionDir)..\SObject\$(IntDir)PDB" "$(SolutionDir)$(IntDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="SSRenderer\Public\RenderAsset\RenderAssetType\IMaterialAsset.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Natvis\SSEngineDefault.natvis" />

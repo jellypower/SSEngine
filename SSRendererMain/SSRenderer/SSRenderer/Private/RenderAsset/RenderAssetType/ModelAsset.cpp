@@ -1,32 +1,112 @@
-﻿#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
+﻿#include "ModelAsset.h"
 
-ModelAsset::ModelAsset(SS::SHasherW inAssetName, SS::SHasherW inAssetPath)
-	: SSAssetBase(EAssetType::Model, inAssetName, inAssetPath)
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
+
+ModelAsset::ModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
+	_assetName = InAssetName;
+	_assetPath = InAssetPath;
 }
 
-ModelAsset::ModelAsset()
-	: SSAssetBase(EAssetType::Model)
+EAssetType ModelAsset::GetAssetType() const
 {
+	return EAssetType::Model;
 }
 
-void ModelAsset::SetMesh(SS::SHasherW inMeshAssetName)
+void ModelAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
 {
-	_meshAssetName = inMeshAssetName;
-}
-
-void ModelAsset::SetMaterial(SS::SHasherW inMaterialAssetName, int32 materialIdx)
-{
-	if (materialIdx > SUBMESH_COUNT_MAX)
+	for (int32 i = 0; i < _AssetInstanceReferencers.GetSize(); i++)
 	{
-		DEBUG_BREAK();
+		if (_AssetInstanceReferencers[i] == Referencer)
+		{
+			SS_ASSERT_MSG(false, L"Reference already exists.");
+			return;
+		}
+	}
+
+	_AssetInstanceReferencers.PushBack(Referencer);
+
+	// TODO: AssetCount가 0에서 올라오면 본인이 레퍼런스하고있는 에셋들에게 레프카운트 올려주기
+}
+
+void ModelAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerName)
+{
+	for (int32 i = 0; i < _AssetInstanceReferencers.GetSize(); i++)
+	{
+		if (_AssetInstanceReferencers[i] == ReferencerName)
+		{
+			_AssetInstanceReferencers.RemoveAtAndFillLast(i);
+			return;
+		}
+	}
+
+	SS_ASSERT_MSG(false, L"Reference does not exist.");
+
+	// TODO: AssetCount가 0으로 떨어지면 본인이 레퍼런스하고있는 에셋들에게 레프카운트 올려주기
+}
+
+int32 ModelAsset::GetSubMeshCnt() const
+{
+	if (_MeshAsset == nullptr)
+	{
+		return 0;
+	}
+
+	const MeshRawDataBase* MeshRawData = _MeshAsset->GetMeshRawData();
+	if (MeshRawData == nullptr)
+	{
+		return 0;
+	}
+
+	if (MeshRawData->_MeshType == EMeshType::Rigid)
+	{
+		MeshRawDataDefault* DefaultMeshRawData = (MeshRawDataDefault*)MeshRawData;
+		return DefaultMeshRawData->_subMeshCnt;
+	}
+	else
+	{
+		SS_ASSERT(false);
+		return 0;
+	}
+}
+
+void ModelAsset::SetMesh(IMeshAsset* InMeshAsset)
+{
+	_MeshAsset = InMeshAsset;
+}
+
+void ModelAsset::SetMaterial(IMaterialAsset* InMaterialAsset, int32 InMaterialIdx)
+{
+	if (InMaterialIdx >= SUBMESH_COUNT_MAX)
+	{
+		SS_ASSERT(false);
 		return;
 	}
 
-	if (_submeshCnt < materialIdx + 1)
+	if (_MeshAsset == nullptr)
 	{
-		_submeshCnt = materialIdx + 1;
+		SS_ASSERT(false);
+		return;
 	}
 
-	_materialAssetNames[materialIdx] = inMaterialAssetName;
+	const MeshRawDataBase* RawData = _MeshAsset->GetMeshRawData();
+
+
+	if (RawData->_MeshType == EMeshType::Rigid)
+	{
+		MeshRawDataDefault* DefaultRawData = (MeshRawDataDefault*)RawData;
+		if (DefaultRawData->_subMeshCnt <= InMaterialIdx)
+		{
+			SS_ASSERT(false);
+			return;
+		}
+
+		_MaterialAssets[InMaterialIdx] = InMaterialAsset;
+		return;
+	}
+
+	SS_ASSERT(false);
+	return;
 }

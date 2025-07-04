@@ -9,7 +9,7 @@ class DX12GALRenderDevice;
 class DX12GALMeshAssetWrapper : public GALMeshAssetWrapperBase
 {
 public:
-	DX12GALMeshAssetWrapper(MeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice);
+	DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice);
 	virtual ~DX12GALMeshAssetWrapper();
 
 public:

@@ -3,24 +3,19 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class IModelAsset;
+class IMeshAsset;
 class IRenderCamera;
 class GALRenderTarget;
 struct AssetInstanceReferencer;
-class ModelAsset;
-class MeshAsset;
 class RenderWorld;
 class GALRenderDeviceContext;
 class GALRenderDevice;
-class ModelCombinationAssetManager;
-class ModelAssetManager;
-class MaterialAssetManager;
-class MeshAssetManager;
 
 class SSRenderer : public IRenderer
 {
 private:
-	SS::PooledList<MeshAsset*> _InstanceStateChangedMesh;
-	SS::PooledList<MeshAsset*> _InstanceStateChangedMaterial;
+	SS::PooledList<IMeshAsset*> _InstanceStateChangedMesh;
 
 private:
 	IRenderCamera* _CurRenderCamera = nullptr;
@@ -40,11 +35,11 @@ public:
 	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 
 
-	void AddModelInstanceReference(ModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer);
-	void AddMeshInstanceReference(MeshAsset* NewMeshAsset, const AssetInstanceReferencer& Referencer);
+	void AddModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer);
+	void AddMeshInstanceReference(IMeshAsset* NewMeshAsset, const AssetInstanceReferencer& Referencer);
 
-	void RemoveModelInstanceReference(ModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer);
-	void RemoveMeshInstanceReference(MeshAsset* MeshAssetToRemove, const AssetInstanceReferencer& Referencer);
+	void RemoveModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer);
+	void RemoveMeshInstanceReference(IMeshAsset* MeshAssetToRemove, const AssetInstanceReferencer& Referencer);
 
 
 

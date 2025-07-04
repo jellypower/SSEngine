@@ -5,8 +5,8 @@
 
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
-#include "SSRenderer/Public/RenderAsset/ModelAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/SSAssetBase.h"
+#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCommon/CommonDataType.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
@@ -17,10 +17,10 @@ void SStaticMeshRenderComponent::ConstructRenderInstance()
 	RIStaticMesh* NewStaticMeshRI = DBG_NEW RIStaticMesh();
 	_RenderInstance = NewStaticMeshRI;
 
-	ModelAssetManager* ModelAssetManager = g_Renderer->GetModelAssetManager();
+	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 
 	SS_ASSERT(_ModelAssetName.IsEmpty() == false);
-	SSAssetBase* FoundModelRef = ModelAssetManager->FindAssetByName(_ModelAssetName);
+	IAssetBase* FoundModelRef = AssetManager->FindAssetByName(_ModelAssetName, EAssetType::Model);
 	if (FoundModelRef == nullptr || FoundModelRef->GetAssetType() != EAssetType::Model)
 	{
 		SS_ASSERT_MSG(false, L"Invalid Asset");

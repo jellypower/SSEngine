@@ -4,7 +4,9 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
-class ModelAsset;
+class IMaterialAsset;
+class IMeshAsset;
+class IModelAsset;
 class DX12GALMaterialAssetWrapper;
 class DX12GALRIMetadata_SM;
 class DX12GALMeshAssetWrapper;
@@ -23,8 +25,8 @@ public:
 	virtual void BeginRender() override;
 	virtual void EndRender() override;
 
-	virtual bool GenerateMeshGALAsset(MeshAsset* InMeshAsset) override;
-	virtual bool GenerateMaterialGALAsset(MaterialAsset* InMaterialAsset) override;
+	virtual bool GenerateMeshGALAsset(IMeshAsset* InMeshAsset) override;
+	virtual bool GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset) override;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
@@ -36,7 +38,7 @@ public:
 
 private:
 	void TEMP_DrawStaticMesh(
-		ModelAsset* InModelAsset,
+		IModelAsset* InModelAsset,
 		DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
 		const XMMATRIX& DrawMat,
 		const XMMATRIX& DrawRotMat);

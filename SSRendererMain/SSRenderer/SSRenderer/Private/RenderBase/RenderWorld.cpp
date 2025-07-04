@@ -3,8 +3,7 @@
 
 #include "SSRenderer.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
-#include "SSRenderer/Public/RenderAsset/MeshAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
@@ -26,7 +25,6 @@ bool RenderWorld::IsAnyInstanceRemainInWorld() const
 
 void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 {
-	MeshAssetManager* MeshAssetManager = _OwnerRenderer->GetMeshAssetManager();
 
 	SObjHashCode GameObjectHashCode = InRenderInstance->GetGameObjectID();
 	if (_RenderInstanceByHashCode.Find(GameObjectHashCode) != nullptr)

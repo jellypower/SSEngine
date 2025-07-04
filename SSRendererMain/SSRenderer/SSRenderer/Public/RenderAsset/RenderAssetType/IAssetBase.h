@@ -56,7 +56,6 @@ public:
 class IAssetBase : public INoncopyable
 {
 protected:
-	EAssetType _assetType = EAssetType::None;
 	SS::SHasherW _assetName;
 	SS::SHasherW _assetPath;
 
@@ -66,11 +65,12 @@ protected:
 public:
 	SS::SHasherW GetAssetName() const { return _assetName; }
 	SS::SHasherW GetAssetPath() const { return _assetPath; }
-	EAssetType GetAssetType() const { return _assetType; }
 	int32 GetAssetInstanceReferenceCnt() const { return _AssetInstanceReferencers.GetSize(); }
 
 
 public:
+	virtual EAssetType GetAssetType() const = 0;
+
 	virtual void AddAssetReference(const AssetInstanceReferencer& Referencer) = 0;
 	virtual void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) = 0;
 

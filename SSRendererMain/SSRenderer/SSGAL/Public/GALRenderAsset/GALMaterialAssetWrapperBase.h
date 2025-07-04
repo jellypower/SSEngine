@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/INoncopyable.h"
 
+class IMaterialAsset;
 class GALRenderDevice;
-class MaterialAsset;
 
 class GALMaterialAssetWrapperBase : public INoncopyable
 {
 protected:
-	MaterialAsset* _OwnerMaterialAsset = nullptr;
+	IMaterialAsset* _OwnerMaterialAsset = nullptr;
 	GALRenderDevice* _OwnerRenderDevice = nullptr;
 };

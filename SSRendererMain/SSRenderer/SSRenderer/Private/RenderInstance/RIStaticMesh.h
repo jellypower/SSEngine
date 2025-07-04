@@ -10,7 +10,7 @@ public:
 	virtual ERenderInstanceType GetRIType() const override;
 	virtual const GALRIMetadata* GetGALMetadata() const	override;
 	virtual void ReleaseGALMetaData() override;
-	virtual ModelAsset* GetModelAsset() const override;
+	virtual IModelAsset* GetModelAsset() const override;
 	virtual const XMMATRIX& GetWorldTransformMatrix() const override;
 	virtual const XMMATRIX& GetWorldRotationMatrix() const override;
 

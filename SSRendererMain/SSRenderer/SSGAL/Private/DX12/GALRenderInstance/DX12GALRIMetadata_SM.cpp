@@ -8,7 +8,7 @@
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ModelAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
