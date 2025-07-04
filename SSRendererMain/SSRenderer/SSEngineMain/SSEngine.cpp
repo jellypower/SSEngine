@@ -16,8 +16,8 @@
 
 #include "SRenderContent/Public/SRendererUtil.h"
 #include "SRenderContent/Public/Camera/SCameraComponent.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/MaterialAsset.h" // TODO: 종속성 없애기
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 

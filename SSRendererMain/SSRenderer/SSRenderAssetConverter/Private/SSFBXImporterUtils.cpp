@@ -1,8 +1,8 @@
 #include "SSFBXImporterUtils.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSVertexType.h"

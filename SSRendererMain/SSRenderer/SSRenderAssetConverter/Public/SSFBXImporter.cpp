@@ -3,10 +3,11 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringA.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderAssetConverter/Private/SSFBXImporterUtils.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
