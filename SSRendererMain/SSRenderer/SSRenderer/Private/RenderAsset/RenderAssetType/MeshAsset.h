@@ -1,5 +1,5 @@
 #pragma once
-#include "SSRenderer/Public/RenderAsset/Mutable/IMeshAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 
 struct MeshRawDataBase;
 class GALMeshAssetWrapperBase;

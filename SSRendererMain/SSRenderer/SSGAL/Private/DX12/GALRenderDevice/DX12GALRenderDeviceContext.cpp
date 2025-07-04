@@ -15,7 +15,7 @@
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/IMeshAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"

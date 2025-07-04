@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSRenderer/Public/RenderAsset/Mutable/IModelAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
 
