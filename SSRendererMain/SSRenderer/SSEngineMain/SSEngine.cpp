@@ -8,7 +8,6 @@
 #include "SSContentsBase/SWorld.h"
 #include "SSContentsBase/SGameObject.h"
 #include "SSContentsBase/SGameObjectConstructor.h"
-#include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
 
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
@@ -17,7 +16,7 @@
 
 #include "SRenderContent/Public/SRendererUtil.h"
 #include "SRenderContent/Public/Camera/SCameraComponent.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/MaterialAsset.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/MaterialAsset.h" // TODO: 辆加己 绝局扁
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
@@ -112,7 +111,6 @@ void SSEngine::TEMP_CreateTEMPMaterial()
 	MaterialAsset* NewMaterialAsset = DBG_NEW MaterialAsset(L"TEMP_Material", L"/TEMP_Material"); // TODO: 辆加己 绝局扁
 
 	NewMaterialAsset->_PSName = L"TempVertexShader";
-	NewMaterialAsset->_VSName = L"TempPixelShader";
 
 	AssetManager->AddToAssetPool(NewMaterialAsset);
 }

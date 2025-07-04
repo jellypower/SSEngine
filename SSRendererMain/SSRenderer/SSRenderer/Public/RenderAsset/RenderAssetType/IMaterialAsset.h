@@ -10,7 +10,6 @@ public:
 
 	// TEMP
 public:
-	SS::SHasherW _VSName; // TODO: ¾ø¾Ö±â
 	SS::SHasherW _PSName;
 	// ~TEMP
 

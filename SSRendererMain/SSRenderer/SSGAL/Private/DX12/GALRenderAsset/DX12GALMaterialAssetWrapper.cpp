@@ -19,7 +19,6 @@ DX12GALMaterialAssetWrapper::DX12GALMaterialAssetWrapper(IMaterialAsset* ownerMa
 
 
 	PipelineDesc desc;
-	desc.VSName = ownerMaterial->_VSName;
 	desc.PSName = ownerMaterial->_PSName;
 	desc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
 	desc.RootSignatureType = ERootSignatureType::SS_DEFAULT_PBR;
