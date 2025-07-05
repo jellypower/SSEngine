@@ -10,3 +10,5 @@ SSGAL_MODULE_NATIVE GALRenderDevice* CreateGALRenderDevice(
 	HWND InhWnd,
 	bool EnableDebugLayer,
 	bool EnableGPUBaseValidataion);
+
+typedef decltype(&CreateGALRenderDevice) FuncPtr_CreateGALRenderDevice;

@@ -6,30 +6,30 @@
 #include "framework.h"
 #include "Resource.h"
 
-#include <SSEngineDefault/Public/RawInput/RawInputUtils.h>
-#include <SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h>
-#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
-
-
 #include "ModuleEntryScriptRunner.h"
+
 #include "SSEngineMain/SSEngine.h"
 
+#include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
+#include "SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
+
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
 #define MAX_LOADSTRING 100
 
-// 전역 변수:
-HINSTANCE g_hInst;                                // 현재 인스턴스입니다.
+
+HINSTANCE g_hInst;
 HWND g_hWnd;
 RECT g_WndRect{ 0,0,1920,1080 };
-WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
-WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+WCHAR szTitle[MAX_LOADSTRING];       
+WCHAR szWindowClass[MAX_LOADSTRING]; 
 
 
 HRESULT					InitWindow(HINSTANCE, int, RECT);
@@ -37,6 +37,8 @@ LRESULT CALLBACK		WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK		About(HWND, UINT, WPARAM, LPARAM);
 
 void					AnalyzeCommandLineArgs();
+
+
 // HINSTANCE는 해당 어플리케이션에 해당하는 값. ("프로그램"에 대응, 똑같은 프로그램을 두 개 띄워도 HINSTANCE임)
 // HWND는 해당 어플리케이션의 하나의 "윈도우"에 해당하는 값 ("윈도우"에 대흥, 똑같은 프로그램을 두 개 띄우면 두 HWND는 다름)
 
@@ -124,13 +126,39 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	g_hInst = hInstance;
 
 
+	// Load Libraries
+	HINSTANCE hInstSSGAL;
+	HINSTANCE hInstSSRenderer;
+	FuncPtr_CreateGALRenderDevice pCreateGALRenderDevice = nullptr;
+	FuncPtr_CreateRender pCreateRenderer = nullptr;
+	{
+		hInstSSGAL = LoadLibrary(L"SSGAL.dll");
+		if (hInstSSGAL == nullptr)
+		{
+			hInstSSGAL = LoadLibrary(SSGAL_MODULEPATH);
+		}
 
-	GALRenderDevice* NewRenderDevice = CreateGALRenderDevice(
+		hInstSSRenderer = LoadLibrary(L"SSRenderer.dll");
+		if (hInstSSRenderer == nullptr)
+		{
+			hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
+		}
+
+		pCreateGALRenderDevice = (FuncPtr_CreateGALRenderDevice)GetProcAddress(hInstSSGAL, "CreateGALRenderDevice");
+		pCreateRenderer = (FuncPtr_CreateRender)GetProcAddress(hInstSSRenderer, "CreateRenderer");
+
+	}
+
+
+	GALRenderDevice* NewRenderDevice = pCreateGALRenderDevice(
 		g_hInst,
 		g_hWnd,
 		ENABLE_DEBUG_LAYER,
 		ENABLE_GPU_BASE_VALIDATIION);
-	g_Renderer = CreateRenderer(NewRenderDevice);
+
+	g_Renderer = pCreateRenderer(NewRenderDevice);
+
+
 	g_Engine = DBG_NEW SSEngine(g_Renderer);
 
 	g_Engine->InjectImportFilePath_TMP(FbxFilePathToLoad.C_Str());
@@ -181,14 +209,19 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	RunModuleExitScript();
 
-	// Resource Check
-	{
-#ifdef _DEBUG
-		SS_ASSERT(_CrtDumpMemoryLeaks() == false);
-		SS_ASSERT(_CrtCheckMemory());
-#endif
-		return (int)msg.wParam;
-	}
+
+	BOOL bSuccess = FreeLibrary(hInstSSRenderer);
+	if (bSuccess == 0) SS_INTERRUPT();
+	bSuccess = FreeLibrary(hInstSSGAL);
+	if (bSuccess == 0) SS_INTERRUPT();
+
+
+	// Resource Leak Check
+	if (_CrtDumpMemoryLeaks()) SS_INTERRUPT();
+	if (_CrtCheckMemory() == false) SS_INTERRUPT();
+
+
+	return (int)msg.wParam;
 }
 
 
