@@ -2,13 +2,13 @@
 
 
 #include "RenderWorld.h"
-#include "SSContentsBase/SWorld.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h" // TODO: Private 헤더파일 종속성 없애기
 
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
+#include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
@@ -37,10 +37,15 @@ IAssetManagerMutable* SSRenderer::GetMutableAssetManager()
 	return _AssetManager;
 }
 
+IRIMesh* SSRenderer::CreateRIStaticMesh()
+{
+	return DBG_NEW RIStaticMesh();
+}
+
 void SSRenderer::AddModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)
 {
 	NewModelAsset->AddAssetReference(Referencer);
-
+	
 	if (NewModelAsset->GetAssetInstanceReferenceCnt() > 1)
 	{
 		return; // 이미 에셋 로딩이 돼있을 것이기 때문에 패스

@@ -8,6 +8,7 @@
 
 #include <SSEngineDefault/Public/RawInput/RawInputUtils.h>
 #include <SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h>
+#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
 
 
 #include "ModuleEntryScriptRunner.h"
@@ -129,8 +130,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		g_hWnd,
 		ENABLE_DEBUG_LAYER,
 		ENABLE_GPU_BASE_VALIDATIION);
-	IRenderer* EngineRenderer = CreateRenderer(NewRenderDevice);
-	g_Engine = DBG_NEW SSEngine(EngineRenderer);
+	g_Renderer = CreateRenderer(NewRenderDevice);
+	g_Engine = DBG_NEW SSEngine(g_Renderer);
 
 	g_Engine->InjectImportFilePath_TMP(FbxFilePathToLoad.C_Str());
 	

@@ -1,3 +1,4 @@
+#define SSRENDERER_MODULE_EXPORT
 #include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
 
 #include "SSEngineDefault/Public/SSEngineDefault.h"

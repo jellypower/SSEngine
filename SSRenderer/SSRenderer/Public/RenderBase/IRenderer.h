@@ -3,6 +3,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+class IRIMesh;
 class IAssetManager;
 class IRenderWorld;
 class IRenderCamera;
@@ -23,6 +24,9 @@ public:
 	virtual IAssetManagerMutable* GetMutableAssetManager() = 0;
 
 public:
+	virtual IRIMesh* CreateRIStaticMesh() = 0;
+
+public:
 	virtual void StartUp() = 0;
 	virtual void PerFrame() = 0;
 	virtual void CleanUp() = 0;
@@ -30,4 +34,6 @@ public:
 	virtual IRenderWorld* CreateRenderWorld() = 0;
 
 	virtual void SetRenderCamera(IRenderCamera* InCamera) = 0;
+
+
 };

@@ -1,4 +1,5 @@
-﻿#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
+﻿#define SSGAL_MODULE_EXPORT
+#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 

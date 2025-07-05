@@ -1,5 +1,7 @@
 #include "ModuleEntryScriptRunner.h"
 
+#include <SSRenderer/Public/RenderBase/IRenderer.h>
+
 #include "SObject/Public/SObjectGlobalHashMap.h"
 #include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
 #include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
@@ -17,6 +19,8 @@ SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 IHasherPool* g_HasherPool = nullptr;
 FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
 SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
+
+IRenderer* g_Renderer = nullptr;
 
 
 void RunModuleEntryScript()

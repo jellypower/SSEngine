@@ -1,6 +1,5 @@
 ﻿#include "RIStaticMesh.h"
 
-#include "SSContentsBase/SGameObject.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelAsset.h"
@@ -63,4 +62,14 @@ void RIStaticMesh::SetWorldTransformMatrix(const XMMATRIX& InMatrix)
 void RIStaticMesh::SetWorldRotation(const Quaternion& InRotation)
 {
 	_WorldRotationMatrix = InRotation.AsMatrix();
+}
+
+void RIStaticMesh::SetGameObjectHashCodeXXX(SObjHashCode InHashCode)
+{
+	_GameObjectHashCode = InHashCode;
+}
+
+void RIStaticMesh::SetModelAsset(IModelAsset* InAsset)
+{
+	_ModelRef = InAsset;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class IModelAsset;
 class GALRIMetadata;
 enum class ERenderInstanceType : int32;
 class ModelAsset;
@@ -24,5 +25,8 @@ public:
 	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) = 0;
 	virtual void SetWorldTransformMatrix(const XMMATRIX& InMatrix) = 0;
 	virtual void SetWorldRotation(const Quaternion& InRotation) = 0;
+
+	virtual void SetGameObjectHashCodeXXX(SObjHashCode InHashCode) = 0;
+	virtual void SetModelAsset(IModelAsset* InAsset) = 0;
 };
 

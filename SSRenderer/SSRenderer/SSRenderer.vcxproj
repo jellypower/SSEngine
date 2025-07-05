@@ -121,7 +121,13 @@
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSRendererMain\$(IntDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -144,10 +150,59 @@
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSRendererMain\$(IntDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Private\ModuleEntry\SSRendererFactory.cpp" />
+    <ClCompile Include="Private\RenderAsset\AssetManagerBase.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\MaterialAsset.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\MeshAsset.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\ModelAsset.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp" />
+    <ClCompile Include="Private\RenderBase\RenderWorld.cpp" />
+    <ClCompile Include="Private\RenderBase\SSRenderer.cpp" />
+    <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BuildSettings.h" />
+    <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Private\RenderAsset\AssetManagerBase.h" />
+    <ClInclude Include="Private\RenderAsset\RenderAssetType\MaterialAsset.h" />
+    <ClInclude Include="Private\RenderAsset\RenderAssetType\MeshAsset.h" />
+    <ClInclude Include="Private\RenderAsset\RenderAssetType\ModelAsset.h" />
+    <ClInclude Include="Private\RenderAsset\RenderAssetType\ModelCombinationAsset.h" />
+    <ClInclude Include="Private\RenderBase\RenderWorld.h" />
+    <ClInclude Include="Private\RenderBase\SSRenderer.h" />
+    <ClInclude Include="Private\RenderInstance\RIStaticMesh.h" />
+    <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h" />
+    <ClInclude Include="Public\RenderAsset\IAssetManager.h" />
+    <ClInclude Include="Public\RenderAsset\Mutable\IAssetManagerMutable.h" />
+    <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IMeshAssetMutable.h" />
+    <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IModelAssetMutable.h" />
+    <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IModelCombinationAssetMutable.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\IAssetBase.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\IMaterialAsset.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\IMeshAsset.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelAsset.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshDataDefault.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataBase.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h" />
+    <ClInclude Include="Public\RenderBase\IRenderer.h" />
+    <ClInclude Include="Public\RenderBase\IRenderWorld.h" />
+    <ClInclude Include="Public\RenderCommon\SSRendererInlineSettings.h" />
+    <ClInclude Include="Public\RenderCommon\SSVertexType.h" />
+    <ClInclude Include="Public\RenderInstance\IRenderCamera.h" />
+    <ClInclude Include="Public\RenderInstance\IRenderInstance.h" />
+    <ClInclude Include="Public\RenderInstance\IRIMesh.h" />
+    <ClInclude Include="Public\SSRendererGlobalVariableSet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

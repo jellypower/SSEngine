@@ -1,16 +1,14 @@
 ﻿#include "SRenderContent/Public/SRendererUtil.h"
 
-
 #include "SSContentsBase/SGameObjectConstructor.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
-#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
-
 #include "SRenderContent/Public/RenderComponent/SStaticMeshRenderComponent.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelAsset.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
-#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 

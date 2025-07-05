@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.props" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -121,7 +122,15 @@
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+
+xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -144,12 +153,103 @@
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+
+xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
+    <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.cpp" />
+    <ClCompile Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMaterialAssetWrapper.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.cpp" />
+    <ClCompile Include="Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.cpp" />
+    <ClCompile Include="Private\DX12\GALWrapper\DX12GALShaderPool.cpp" />
+    <ClCompile Include="Private\DX12\GALWrapper\DX12GALShaderWrapper.cpp" />
+    <ClCompile Include="Private\DX12\GALWrapper\DX12PSOPool.cpp" />
+    <ClCompile Include="Private\DX12\GALWrapper\DX12PSOWrapper.cpp" />
+    <ClCompile Include="Private\DX12\GALWrapper\DX12RootSignaturePool.cpp" />
+    <ClCompile Include="Private\DX12\GALWrapper\DX12RootSignatureWrapper.cpp" />
+    <ClCompile Include="Private\DX12\ModuleEntry\GALInstanceFactory.cpp" />
+    <ClCompile Include="Private\DX12\Utils\SSDX12Utils.cpp" />
+    <ClCompile Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.cpp" />
+    <ClCompile Include="Private\PCommon\GALResourceUpdater\GALResourceUpdater.cpp" />
+    <ClCompile Include="Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp" />
+    <ClCompile Include="Private\PCommon\GALWrapper\PSOPool.cpp" />
+    <ClCompile Include="Private\PCommon\GALWrapper\PSOWrapper.cpp" />
+    <ClCompile Include="Private\PCommon\GALWrapper\RootSignaturePool.cpp" />
+    <ClCompile Include="Private\PCommon\GALWrapper\RootSignatureWrapper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BuildSettings.h" />
+    <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
+    <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
+    <ClInclude Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
+    <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALMaterialAssetWrapper.h" />
+    <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.h" />
+    <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.h" />
+    <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.h" />
+    <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.h" />
+    <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.h" />
+    <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.h" />
+    <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.h" />
+    <ClInclude Include="Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.h" />
+    <ClInclude Include="Private\DX12\GALWrapper\DX12GALShaderPool.h" />
+    <ClInclude Include="Private\DX12\GALWrapper\DX12GALShaderWrapper.h" />
+    <ClInclude Include="Private\DX12\GALWrapper\DX12PSOPool.h" />
+    <ClInclude Include="Private\DX12\GALWrapper\DX12PSOWrapper.h" />
+    <ClInclude Include="Private\DX12\GALWrapper\DX12RootSignaturePool.h" />
+    <ClInclude Include="Private\DX12\GALWrapper\DX12RootSignatureWrapper.h" />
+    <ClInclude Include="Private\DX12\Utils\SSDX12Utils.h" />
+    <ClInclude Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.h" />
+    <ClInclude Include="Private\PCommon\GALResourceUpdater\GALResourceUpdater.h" />
+    <ClInclude Include="Private\PCommon\GALWrapper\GALPCommonShaderPool.h" />
+    <ClInclude Include="Private\PCommon\GALWrapper\PSOPool.h" />
+    <ClInclude Include="Private\PCommon\GALWrapper\PSOWrapper.h" />
+    <ClInclude Include="Private\PCommon\GALWrapper\RootSignaturePool.h" />
+    <ClInclude Include="Private\PCommon\GALWrapper\RootSignatureWrapper.h" />
+    <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h" />
+    <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.h" />
+    <ClInclude Include="Public\GALRenderAsset\GALMaterialAssetWrapperBase.h" />
+    <ClInclude Include="Public\GALRenderAsset\GALMeshAssetWrapperBase.h" />
+    <ClInclude Include="Public\GALRenderDevice\GALRenderDevice.h" />
+    <ClInclude Include="Public\GALRenderDevice\GALRenderDeviceContext.h" />
+    <ClInclude Include="Public\GALRenderInstance\GALRIMetadata.h" />
+    <ClInclude Include="Public\GALRenderTarget\GALCPUReadableTexture.h" />
+    <ClInclude Include="Public\GALRenderTarget\GALRenderTarget.h" />
+    <ClInclude Include="Public\GALRenderTarget\GALRTCommonEnums.h" />
+    <ClInclude Include="Public\GALWrapper\GALShaderPool.h" />
+    <ClInclude Include="Public\GALWrapper\GALShaderWrapper.h" />
+    <ClInclude Include="Public\ModuleEntry\GALInstanceFactory.h" />
+    <ClInclude Include="Public\SSGALCommonEnums.h" />
+    <ClInclude Include="Public\SSGALInlineSettings.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.targets" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>이 프로젝트는 이 컴퓨터에 없는 NuGet 패키지를 참조합니다. 해당 패키지를 다운로드하려면 NuGet 패키지 복원을 사용하십시오. 자세한 내용은 http://go.microsoft.com/fwlink/?LinkID=322105를 참조하십시오. 누락된 파일은 {0}입니다.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.targets'))" />
+  </Target>
 </Project>

@@ -3,17 +3,16 @@
 #include "SSContentsBase/SGameObject.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
-#include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
-#include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
+
+#include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 void SStaticMeshRenderComponent::ConstructRenderInstance()
 {
-
-	RIStaticMesh* NewStaticMeshRI = DBG_NEW RIStaticMesh();
+	IRIMesh* NewStaticMeshRI = g_Renderer->CreateRIStaticMesh();
 	_RenderInstance = NewStaticMeshRI;
 
 	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
@@ -22,8 +21,8 @@ void SStaticMeshRenderComponent::ConstructRenderInstance()
 	IModelAsset* FoundModelRef = AssetManager->FindAssetByName<IModelAsset>(_ModelAssetName);
 
 	SGameObject* Parent = GetParent();
-	NewStaticMeshRI->_ModelRef = FoundModelRef;
-	NewStaticMeshRI->_GameObjectHashCode = Parent->GetHashCode();
+	NewStaticMeshRI->SetModelAsset(FoundModelRef);
+	NewStaticMeshRI->SetGameObjectHashCodeXXX(Parent->GetHashCode());
 }
 
 void SStaticMeshRenderComponent::DestructRenderInstance()

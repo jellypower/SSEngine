@@ -1,7 +1,10 @@
 ﻿#pragma once
+#include "SSGAL/Public/SSGALCommonEnums.h"
+
 #include "SObject/Public/SObjHashCode.h"
 
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
+
 
 class RIStaticMesh : public IRIMesh
 {
@@ -18,6 +21,8 @@ public:
 	virtual void SetWorldTransformMatrix(const XMMATRIX& InMatrix) override;
 	virtual void SetWorldRotation(const Quaternion& InRotation) override;
 
+	virtual void SetGameObjectHashCodeXXX(SObjHashCode InHashCode) override;
+	virtual void SetModelAsset(IModelAsset* InAsset) override;
 
 public:
 	XMMATRIX _WorldTransformMatrix;

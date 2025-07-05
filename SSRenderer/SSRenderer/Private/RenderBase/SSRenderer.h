@@ -34,6 +34,9 @@ public:
 	IAssetManagerMutable* GetMutableAssetManager() override;
 
 public:
+	virtual IRIMesh* CreateRIStaticMesh() override;
+
+public:
 	virtual void StartUp() override;
 	virtual void PerFrame() override;
 	virtual void CleanUp() override;
