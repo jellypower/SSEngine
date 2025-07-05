@@ -9,7 +9,7 @@ ModelCombinationAsset::ModelCombinationAsset(SS::SHasherW InAssetName, SS::SHash
 
 EAssetType ModelCombinationAsset::GetAssetType() const
 {
-	return EAssetType::ModelCombination;
+	return ThisAssetType;
 }
 
 void ModelCombinationAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)

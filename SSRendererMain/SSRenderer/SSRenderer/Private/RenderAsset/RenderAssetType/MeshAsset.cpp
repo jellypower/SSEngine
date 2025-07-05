@@ -11,7 +11,7 @@ MeshAsset::MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 
 EAssetType MeshAsset::GetAssetType() const
 {
-	return EAssetType::Mesh;
+	return ThisAssetType;
 }
 
 void MeshAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)

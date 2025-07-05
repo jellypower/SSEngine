@@ -6,8 +6,7 @@
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCommon/CommonDataType.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
@@ -20,16 +19,10 @@ void SStaticMeshRenderComponent::ConstructRenderInstance()
 	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 
 	SS_ASSERT(_ModelAssetName.IsEmpty() == false);
-	IAssetBase* FoundModelRef = AssetManager->FindAssetByName(_ModelAssetName, EAssetType::Model);
-	if (FoundModelRef == nullptr || FoundModelRef->GetAssetType() != EAssetType::Model)
-	{
-		SS_ASSERT_MSG(false, L"Invalid Asset");
-		return;
-	}
-
+	IModelAsset* FoundModelRef = AssetManager->FindAssetByName<IModelAsset>(_ModelAssetName);
 
 	SGameObject* Parent = GetParent();
-	NewStaticMeshRI->_ModelRef = (IModelAsset*)FoundModelRef;
+	NewStaticMeshRI->_ModelRef = FoundModelRef;
 	NewStaticMeshRI->_GameObjectHashCode = Parent->GetHashCode();
 }
 

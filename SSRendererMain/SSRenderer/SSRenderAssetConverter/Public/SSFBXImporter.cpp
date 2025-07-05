@@ -115,9 +115,6 @@ void SSFBXImporter::ImportCurrentFileToModelAsset()
 
 	AssetManager->AddToAssetPool(newMdlcAsset);
 
-	// room.fbx/sketchup.001
-	// room.fbx / sketchup.001.mdl
-	// room.fbx / book
 }
 
 void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset)
@@ -171,7 +168,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			}
 			else
 			{
-				newMeshAsset = (IMeshAsset*)AssetManager->FindAssetByName(NewMeshName, EAssetType::Mesh);
+				newMeshAsset = AssetManager->FindAssetByName<IMeshAsset>(NewMeshName);
 			}
 
 

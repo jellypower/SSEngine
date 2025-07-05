@@ -12,7 +12,7 @@ ModelAsset::ModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 
 EAssetType ModelAsset::GetAssetType() const
 {
-	return EAssetType::Model;
+	return ThisAssetType;
 }
 
 void ModelAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)

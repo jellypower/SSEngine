@@ -6,6 +6,9 @@ class GALMaterialAssetWrapperBase;
 class IMaterialAsset : public IAssetBase
 {
 public:
+	static const EAssetType ThisAssetType = EAssetType::Material;
+
+public:
 	GALMaterialAssetWrapperBase* _GALMaterial = nullptr;
 
 	// TEMP

@@ -8,7 +8,7 @@ MaterialAsset::MaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 
 EAssetType MaterialAsset::GetAssetType() const
 {
-	return EAssetType::Material;
+	return ThisAssetType;
 }
 
 void MaterialAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)

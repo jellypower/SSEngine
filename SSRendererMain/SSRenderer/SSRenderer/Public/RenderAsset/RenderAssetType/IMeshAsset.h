@@ -9,6 +9,9 @@ class GALMeshAssetWrapperBase;
 
 class IMeshAsset : public IAssetBase
 {
+public:
+	static const EAssetType ThisAssetType = EAssetType::Mesh;
+
 protected:
 	const MeshRawDataBase* _MeshRawData = nullptr;
 	GALMeshAssetWrapperBase* _GALMeshAsset = nullptr;

@@ -8,6 +8,9 @@ class IMeshAsset;
 
 class IModelAsset : public IAssetBase
 {
+public:
+	static const EAssetType ThisAssetType = EAssetType::Model;
+
 protected:
 	IMeshAsset* _MeshAsset = nullptr;
 	IMaterialAsset* _MaterialAssets[SUBMESH_COUNT_MAX] = { nullptr, };

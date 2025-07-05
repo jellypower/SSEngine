@@ -34,6 +34,9 @@ struct AssetPlacementReference
 
 class IModelCombinationAsset : public IAssetBase
 {
+public:
+	static const EAssetType ThisAssetType = EAssetType::ModelCombination;
+
 protected:
 	SS::PooledList<AssetPlacementReference> _childs;
 

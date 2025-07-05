@@ -17,7 +17,7 @@
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 {
 	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-	const IModelCombinationAsset* MdlcAsset = (IModelCombinationAsset*)AssetManager->FindAssetByName(MdlcAssetName, EAssetType::ModelCombination);
+	const IModelCombinationAsset* MdlcAsset = AssetManager->FindAssetByName<IModelCombinationAsset>(MdlcAssetName);
 	if (MdlcAsset == nullptr)
 	{
 		SS_ASSERT(false);
@@ -64,7 +64,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 {
 	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-	const IModelAsset* lModelAsset = (IModelAsset*)AssetManager->FindAssetByName(ModelAssetName, EAssetType::Model);
+	const IModelAsset* lModelAsset = AssetManager->FindAssetByName<IModelAsset>(ModelAssetName);
 	if (lModelAsset == nullptr)
 	{
 		SS_ASSERT(false);
