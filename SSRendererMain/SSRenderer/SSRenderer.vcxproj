@@ -434,15 +434,17 @@
     <ClInclude Include="SRenderContent\Public\Camera\SCameraComponent.h" />
     <ClInclude Include="SRenderContent\Public\SRendererUtil.h" />
     <ClInclude Include="SRenderContent\Public\RenderComponent\SRenderComponentBase.h" />
+    <ClInclude Include="SSFBXImporter\Public\ISSFBXImporter.h" />
+    <ClInclude Include="SSFBXImporter\Public\ModuleEntry\SSFBXImporterFactory.h" />
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h" />
-    <ClInclude Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.h" />
+    <ClInclude Include="SSFBXImporter\Private\SSFBXImporterUtils.h" />
     <ClInclude Include="SSEngineMain\SSEngine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SSBuildSettings.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SRenderContent\Public\RenderComponent\SStaticMeshRenderComponent.h" />
-    <ClInclude Include="SSRenderAssetConverter\Public\SSFBXImporter.h" />
+    <ClInclude Include="SSFBXImporter\Private\SSFBXImporter.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -455,11 +457,12 @@
     <ClCompile Include="SRenderContent\Private\Camera\SCameraComponent.cpp" />
     <ClCompile Include="SRenderContent\Private\SRendererUtil.cpp" />
     <ClCompile Include="SRenderContent\Private\RenderComponent\SRenderComponentBase.cpp" />
-    <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp" />
+    <ClCompile Include="SSFBXImporter\Private\ModuleEntry\SSFBXImporterFactory.cpp" />
+    <ClCompile Include="SSFBXImporter\Private\SSFBXImporterUtils.cpp" />
     <ClCompile Include="SSEngineMain\SSEngine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SRenderContent\Private\RenderComponent\SStaticMeshRenderComponent.cpp" />
-    <ClCompile Include="SSRenderAssetConverter\Public\SSFBXImporter.cpp" />
+    <ClCompile Include="SSFBXImporter\Private\SSFBXImporter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SSRenderer.rc" />

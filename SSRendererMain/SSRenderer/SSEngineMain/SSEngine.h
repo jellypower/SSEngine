@@ -3,8 +3,8 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
-#include "SSRenderAssetConverter/Public/SSFBXImporter.h"
 
+class ISSFBXImporter;
 class IRenderer;
 class SGameObject;
 class SCameraComponent;
@@ -47,5 +47,6 @@ private:
 private:
 	SS::HashMap<SS::SHasherW, SS::FixedStringW<PATH_LEN_MAX>> _hashMap_TMP;
 	SS::StringW _importFileName_TMP;
-	SSFBXImporter _fbxImporter_TMP;
+
+	ISSFBXImporter* _FbxImporter = nullptr;
 };

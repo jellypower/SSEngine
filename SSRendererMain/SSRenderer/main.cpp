@@ -128,9 +128,13 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	// Load Libraries
 	HINSTANCE hInstSSGAL;
-	HINSTANCE hInstSSRenderer;
 	FuncPtr_CreateGALRenderDevice pCreateGALRenderDevice = nullptr;
+	FuncPtr_SSGALModuleEntry pSSGALModuleEntry = nullptr;
+
+	HINSTANCE hInstSSRenderer;
 	FuncPtr_CreateRender pCreateRenderer = nullptr;
+	FuncPtr_SSRendererModuleEntry pSSRendererModuleEntry = nullptr;
+
 	{
 		hInstSSGAL = LoadLibrary(L"SSGAL.dll");
 		if (hInstSSGAL == nullptr)
@@ -144,18 +148,22 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 			hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
 		}
 
+		pSSGALModuleEntry = (FuncPtr_SSGALModuleEntry)GetProcAddress(hInstSSGAL, "SSGALModuleEntry");
 		pCreateGALRenderDevice = (FuncPtr_CreateGALRenderDevice)GetProcAddress(hInstSSGAL, "CreateGALRenderDevice");
-		pCreateRenderer = (FuncPtr_CreateRender)GetProcAddress(hInstSSRenderer, "CreateRenderer");
 
+		pSSRendererModuleEntry = (FuncPtr_SSRendererModuleEntry)GetProcAddress(hInstSSRenderer, "SSRendererModuleEntry");
+		pCreateRenderer = (FuncPtr_CreateRender)GetProcAddress(hInstSSRenderer, "CreateRenderer");
 	}
 
 
+	pSSGALModuleEntry(g_HasherPool);
 	GALRenderDevice* NewRenderDevice = pCreateGALRenderDevice(
 		g_hInst,
 		g_hWnd,
 		ENABLE_DEBUG_LAYER,
 		ENABLE_GPU_BASE_VALIDATIION);
 
+	pSSRendererModuleEntry(g_HasherPool);
 	g_Renderer = pCreateRenderer(NewRenderDevice);
 
 

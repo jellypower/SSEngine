@@ -33,10 +33,10 @@
     <ClInclude Include="SSEngineMain\SSEngine.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderAssetConverter\Public\SSFBXImporter.h">
+    <ClInclude Include="SSFBXImporter\Private\SSFBXImporter.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.h">
+    <ClInclude Include="SSFBXImporter\Private\SSFBXImporterUtils.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h">
@@ -921,6 +921,12 @@
     <ClInclude Include="SRenderContent\Private\Camera\RenderCamera.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SSFBXImporter\Public\ISSFBXImporter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSFBXImporter\Public\ModuleEntry\SSFBXImporterFactory.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -929,10 +935,10 @@
     <ClCompile Include="SSEngineMain\SSEngine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderAssetConverter\Public\SSFBXImporter.cpp">
+    <ClCompile Include="SSFBXImporter\Private\SSFBXImporter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSRenderAssetConverter\Private\SSFBXImporterUtils.cpp">
+    <ClCompile Include="SSFBXImporter\Private\SSFBXImporterUtils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp">
@@ -963,6 +969,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRenderContent\Private\Camera\RenderCamera.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSFBXImporter\Private\ModuleEntry\SSFBXImporterFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

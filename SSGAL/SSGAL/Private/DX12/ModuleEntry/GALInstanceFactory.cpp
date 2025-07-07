@@ -1,7 +1,11 @@
 ﻿#define SSGAL_MODULE_EXPORT
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
+#include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
+
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
+
+IHasherPool* g_HasherPool = nullptr;
 
 GALRenderDevice* CreateGALRenderDevice(
 	HINSTANCE InhInst,
@@ -20,4 +24,9 @@ GALRenderDevice* CreateGALRenderDevice(
 
 
 	return NewRenderDevice;
+}
+
+void SSGALModuleEntry(IHasherPool* InHasherPool)
+{
+	g_HasherPool = InHasherPool;
 }

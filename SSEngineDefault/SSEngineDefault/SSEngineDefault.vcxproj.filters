@@ -179,9 +179,6 @@
     <ClCompile Include="Private\PCommon\SHasher\HasherPoolBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\PCommon\SHasher\SHasherW.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>

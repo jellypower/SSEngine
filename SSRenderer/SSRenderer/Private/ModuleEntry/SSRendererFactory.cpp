@@ -1,6 +1,7 @@
 #define SSRENDERER_MODULE_EXPORT
 #include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
 
+#include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
 
@@ -11,7 +12,7 @@
 
 
 extern IRenderer* g_Renderer = nullptr;
-
+IHasherPool* g_HasherPool = nullptr;
 
 IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
 {
@@ -31,4 +32,9 @@ IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
 
 	g_Renderer = newRenderer;
 	return newRenderer;
+}
+
+void SSRendererModuleEntry(IHasherPool* InHasherPool)
+{
+	g_HasherPool = InHasherPool;
 }

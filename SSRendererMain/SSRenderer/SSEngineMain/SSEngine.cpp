@@ -16,6 +16,8 @@
 
 #include "SRenderContent/Public/SRendererUtil.h"
 #include "SRenderContent/Public/Camera/SCameraComponent.h"
+#include "SSFBXImporter/Public/ISSFBXImporter.h"
+#include "SSFBXImporter/Public/ModuleEntry/SSFBXImporterFactory.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
@@ -36,10 +38,14 @@ SSEngine::~SSEngine()
 void SSEngine::StartupEngine()
 {
 	_Renderer->StartUp();
-	
-	_fbxImporter_TMP.BindFbxSceneFile(_importFileName_TMP.C_Str());
-	_fbxImporter_TMP.SetRendererToImportAsset(_Renderer);
-	_fbxImporter_TMP.ImportCurrentFileToAssetManager();
+
+	SS::SHasherW HAsher = "ASDFASDF";
+
+	_FbxImporter = CreateSSFBXImporter();
+	_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager());
+	_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
+	_FbxImporter->ImportCurrentFileToAssetManager();
+
 
 	// TEMP
 	TEMP_CreateTEMPMaterial();
@@ -51,7 +57,8 @@ void SSEngine::StartupEngine()
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
 	{
-		SS::StringW BoundFileName = _fbxImporter_TMP.GetBoundFileName().C_Str();
+		
+		SS::StringW BoundFileName = _FbxImporter->GetBoundFileName().C_Str();
 		BoundFileName += ".mdlc";
 
 		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
@@ -98,7 +105,12 @@ void SSEngine::CleanupEngine()
 
 	DelSObject(_DefaultWorld);
 	_DefaultWorld = nullptr;
-	
+
+
+	_FbxImporter->ClearFbxSceneFile();
+	_FbxImporter->ClearRendererToImportAsset();
+	delete _FbxImporter;
+	_FbxImporter = nullptr;
 
 	_Renderer->CleanUp();
 	delete _Renderer;
