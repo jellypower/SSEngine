@@ -1,5 +1,6 @@
 #include "SSEngine.h"
 
+#include "ModuleEntryScriptRunner.h"
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
 
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
@@ -41,7 +42,7 @@ void SSEngine::StartupEngine()
 
 	SS::SHasherW HAsher = "ASDFASDF";
 
-	_FbxImporter = CreateSSFBXImporter();
+	_FbxImporter = g_fpCreateSSFBXImporter();
 	_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager());
 	_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
 	_FbxImporter->ImportCurrentFileToAssetManager();

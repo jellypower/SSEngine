@@ -1,7 +1,10 @@
 #pragma once
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
-#include "SSGAL/Public/SSGALInlineSettings.h"
 
+
+constexpr uint32 SUBMESH_COUNT_MAX = 8;
+constexpr uint32 VERTEX_UV_MAP_COUNT_MAX = 2;
+constexpr uint32 VERTEX_SKINNING_BONE_COUNT_MAX = 4;
 
 
 #pragma region AssetManager Settings

@@ -114,10 +114,11 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	LoadStringW(hInstance, IDC_SSRENDERER, szWindowClass, MAX_LOADSTRING);
 
 
+
+	// 1. ======================================================================
 	RunModuleEntryScript();
+	// ======================================================================
 
-
-	// 애플리케이션 초기화를 수행합니다:
 	if (FAILED(InitWindow(hInstance, nCmdShow, g_WndRect)))
 	{
 		__debugbreak();
@@ -125,46 +126,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	}
 	g_hInst = hInstance;
 
+	// 2. ======================================================================
+	RunModuleEntryScriptPostInitWindow(g_hInst, g_hWnd, ENABLE_DEBUG_LAYER, ENABLE_GPU_BASE_VALIDATIION);
+	// ======================================================================
 
-	// Load Libraries
-	HINSTANCE hInstSSGAL;
-	FuncPtr_CreateGALRenderDevice pCreateGALRenderDevice = nullptr;
-	FuncPtr_SSGALModuleEntry pSSGALModuleEntry = nullptr;
-
-	HINSTANCE hInstSSRenderer;
-	FuncPtr_CreateRender pCreateRenderer = nullptr;
-	FuncPtr_SSRendererModuleEntry pSSRendererModuleEntry = nullptr;
-
-	{
-		hInstSSGAL = LoadLibrary(L"SSGAL.dll");
-		if (hInstSSGAL == nullptr)
-		{
-			hInstSSGAL = LoadLibrary(SSGAL_MODULEPATH);
-		}
-
-		hInstSSRenderer = LoadLibrary(L"SSRenderer.dll");
-		if (hInstSSRenderer == nullptr)
-		{
-			hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
-		}
-
-		pSSGALModuleEntry = (FuncPtr_SSGALModuleEntry)GetProcAddress(hInstSSGAL, "SSGALModuleEntry");
-		pCreateGALRenderDevice = (FuncPtr_CreateGALRenderDevice)GetProcAddress(hInstSSGAL, "CreateGALRenderDevice");
-
-		pSSRendererModuleEntry = (FuncPtr_SSRendererModuleEntry)GetProcAddress(hInstSSRenderer, "SSRendererModuleEntry");
-		pCreateRenderer = (FuncPtr_CreateRender)GetProcAddress(hInstSSRenderer, "CreateRenderer");
-	}
-
-
-	pSSGALModuleEntry(g_HasherPool);
-	GALRenderDevice* NewRenderDevice = pCreateGALRenderDevice(
-		g_hInst,
-		g_hWnd,
-		ENABLE_DEBUG_LAYER,
-		ENABLE_GPU_BASE_VALIDATIION);
-
-	pSSRendererModuleEntry(g_HasherPool);
-	g_Renderer = pCreateRenderer(NewRenderDevice);
 
 
 	g_Engine = DBG_NEW SSEngine(g_Renderer);
@@ -217,11 +182,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	RunModuleExitScript();
 
-
-	BOOL bSuccess = FreeLibrary(hInstSSRenderer);
-	if (bSuccess == 0) SS_INTERRUPT();
-	bSuccess = FreeLibrary(hInstSSGAL);
-	if (bSuccess == 0) SS_INTERRUPT();
 
 
 	// Resource Leak Check

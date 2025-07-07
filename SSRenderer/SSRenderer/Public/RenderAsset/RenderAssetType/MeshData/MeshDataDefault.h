@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "MeshRawDataBase.h"
-#include "SSGAL/Public/SSGALInlineSettings.h"
+#include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
 class MeshRawDataDefault : public MeshRawDataBase

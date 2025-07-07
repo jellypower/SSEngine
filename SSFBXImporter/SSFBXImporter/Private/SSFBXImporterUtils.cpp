@@ -344,7 +344,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 		NewMeshRawData->_subMeshCnt = fbxMesh->GetNode()->GetMaterialCount();
 	else
 		NewMeshRawData->_subMeshCnt = 1;
-	assert(NewMeshRawData->_subMeshCnt < SUBMESH_COUNT_MAX);
+	SS_ASSERT(NewMeshRawData->_subMeshCnt < SUBMESH_COUNT_MAX);
 
 	FbxGeometryElementMaterial* fbxElementMaterial = fbxMesh->GetElementMaterial();
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "IAssetBase.h"
-#include "SSGAL/Public/SSGALInlineSettings.h"
+#include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
 class IMaterialAsset;

@@ -7,7 +7,7 @@ class IHasherPool;
 
 SSRENDERER_MODULE_NATIVE IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice);
 
-typedef decltype(&CreateRenderer) FuncPtr_CreateRender;
+typedef decltype(&CreateRenderer) FuncPtr_CreateRenderer;
 
 
 SSRENDERER_MODULE_NATIVE void SSRendererModuleEntry(IHasherPool* InHasherPool);

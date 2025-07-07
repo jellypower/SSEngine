@@ -14,6 +14,7 @@ class MaterialAsset;
 class MeshAsset;
 class SSAssetBase;
 
+
 class SSFBXImporter : public ISSFBXImporter
 {
 private:

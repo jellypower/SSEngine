@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <d3d12.h>
-
 #include "SSEngineDefault/Public/SSCommonUtil/AllocatedChunkHeader.h"
-#include "SSGAL/Public/SSGALInlineSettings.h"
+
+#include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
 
 class IRIMesh;
