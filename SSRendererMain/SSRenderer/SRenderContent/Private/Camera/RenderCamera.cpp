@@ -1,8 +1,8 @@
 ﻿#include "RenderCamera.h"
 
 #include "SRenderContent/Public/Camera/SCameraComponent.h"
-#include "SSContentsBase/SGameObject.h"
-#include "SSContentsBase/SWorld.h"
+#include "SSContentsBase/Public/SGameObject.h"
+#include "SSContentsBase/Public/SWorld.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 RenderCamera::RenderCamera(SCameraComponent* InOwnerCamera)

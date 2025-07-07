@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "SSContentsBase/SGameObjectConstructor.h"
 #include "SObject/Public/SObjectBase.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 

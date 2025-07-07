@@ -146,10 +146,10 @@
   <ItemGroup>
     <ClInclude Include="ModuleEntryScriptRunner.h" />
     <ClInclude Include="SRenderContent\Private\Camera\RenderCamera.h" />
-    <ClInclude Include="SSContentsBase\SComponentBase.h" />
-    <ClInclude Include="SSContentsBase\SGameObject.h" />
-    <ClInclude Include="SSContentsBase\SGameObjectConstructor.h" />
-    <ClInclude Include="SSContentsBase\SWorld.h" />
+    <ClInclude Include="SSContentsBase\Public\SComponentBase.h" />
+    <ClInclude Include="SSContentsBase\Public\SGameObject.h" />
+    <ClInclude Include="SSContentsBase\Public\SGameObjectConstructor.h" />
+    <ClInclude Include="SSContentsBase\Public\SWorld.h" />
     <ClInclude Include="SRenderContent\Public\Camera\SCameraComponent.h" />
     <ClInclude Include="SRenderContent\Public\SRendererUtil.h" />
     <ClInclude Include="SRenderContent\Public\RenderComponent\SRenderComponentBase.h" />
@@ -165,10 +165,10 @@
   <ItemGroup>
     <ClCompile Include="ModuleEntryScriptRunner.cpp" />
     <ClCompile Include="SRenderContent\Private\Camera\RenderCamera.cpp" />
-    <ClCompile Include="SSContentsBase\SComponentBase.cpp" />
-    <ClCompile Include="SSContentsBase\SGameObject.cpp" />
-    <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp" />
-    <ClCompile Include="SSContentsBase\SWorld.cpp" />
+    <ClCompile Include="SSContentsBase\Private\SComponentBase.cpp" />
+    <ClCompile Include="SSContentsBase\Private\SGameObject.cpp" />
+    <ClCompile Include="SSContentsBase\Private\SGameObjectConstructor.cpp" />
+    <ClCompile Include="SSContentsBase\Private\SWorld.cpp" />
     <ClCompile Include="SRenderContent\Private\Camera\SCameraComponent.cpp" />
     <ClCompile Include="SRenderContent\Private\SRendererUtil.cpp" />
     <ClCompile Include="SRenderContent\Private\RenderComponent\SRenderComponentBase.cpp" />

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSContentsBase/SComponentBase.h"
+#include "SSContentsBase/Public/SComponentBase.h"
 
 class IRenderCamera;
 class GALRenderTarget;

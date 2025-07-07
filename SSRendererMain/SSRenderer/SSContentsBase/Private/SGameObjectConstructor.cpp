@@ -1,9 +1,9 @@
-﻿#include "SSContentsBase/SGameObjectConstructor.h"
+﻿#include "SSContentsBase/Public/SGameObjectConstructor.h"
 
-#include "SSContentsBase/SComponentBase.h"
-#include "SSContentsBase/SGameObject.h"
+
+#include "SSContentsBase/Public/SComponentBase.h"
+#include "SSContentsBase/Public/SGameObject.h"
 #include "SObject/Public/SObjectGlobalHashMap.h"
-#include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
 #include "SObject/Public/ModuleEntry/SObjectFactory.h"
 
 

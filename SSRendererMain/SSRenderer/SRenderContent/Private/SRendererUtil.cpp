@@ -1,6 +1,6 @@
 ﻿#include "SRenderContent/Public/SRendererUtil.h"
 
-#include "SSContentsBase/SGameObjectConstructor.h"
+#include "SSContentsBase/Public/SGameObjectConstructor.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 

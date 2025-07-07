@@ -36,19 +36,19 @@
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSContentsBase\SGameObjectConstructor.h">
+    <ClInclude Include="SSContentsBase\Public\SGameObjectConstructor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSContentsBase\SGameObject.h">
+    <ClInclude Include="SSContentsBase\Public\SGameObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSContentsBase\SComponentBase.h">
+    <ClInclude Include="SSContentsBase\Public\SComponentBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SRenderContent\Public\RenderComponent\SRenderComponentBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSContentsBase\SWorld.h">
+    <ClInclude Include="SSContentsBase\Public\SWorld.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SRenderContent\Public\SRendererUtil.h">
@@ -74,19 +74,19 @@
     <ClCompile Include="SSEngineMain\SSEngine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSContentsBase\SGameObjectConstructor.cpp">
+    <ClCompile Include="SSContentsBase\Private\SGameObjectConstructor.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSContentsBase\SGameObject.cpp">
+    <ClCompile Include="SSContentsBase\Private\SGameObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSContentsBase\SComponentBase.cpp">
+    <ClCompile Include="SSContentsBase\Private\SComponentBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRenderContent\Private\RenderComponent\SRenderComponentBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSContentsBase\SWorld.cpp">
+    <ClCompile Include="SSContentsBase\Private\SWorld.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRenderContent\Private\SRendererUtil.cpp">

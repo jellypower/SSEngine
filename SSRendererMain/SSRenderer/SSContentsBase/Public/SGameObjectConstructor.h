@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSContentsBase/SGameObject.h"
+#include "SSContentsBase/Public/SGameObject.h"
 
 
 class SGameObjectConstructor

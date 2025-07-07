@@ -1,7 +1,8 @@
-﻿#include "SSContentsBase/SGameObject.h"
+﻿#include "SSContentsBase/Public/SGameObject.h"
 
-#include "SSContentsBase/SComponentBase.h"
-#include "SSContentsBase/SWorld.h"
+
+#include "SSContentsBase/Public/SComponentBase.h"
+#include "SSContentsBase/Public/SWorld.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
 bool SGameObject::IsRootInWorld() const

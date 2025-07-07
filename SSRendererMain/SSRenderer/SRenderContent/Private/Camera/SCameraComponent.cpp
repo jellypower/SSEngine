@@ -1,7 +1,7 @@
 ﻿#include "SRenderContent/Public/Camera/SCameraComponent.h"
 
 #include "RenderCamera.h"
-#include "SSContentsBase/SGameObject.h"
+#include "SSContentsBase/Public/SGameObject.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"

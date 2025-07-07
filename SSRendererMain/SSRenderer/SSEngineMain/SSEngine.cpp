@@ -6,9 +6,9 @@
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
 
-#include "SSContentsBase/SWorld.h"
-#include "SSContentsBase/SGameObject.h"
-#include "SSContentsBase/SGameObjectConstructor.h"
+#include "SSContentsBase/Public/SWorld.h"
+#include "SSContentsBase/Public/SGameObject.h"
+#include "SSContentsBase/Public/SGameObjectConstructor.h"
 
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
