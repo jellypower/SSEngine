@@ -36,34 +36,7 @@
     <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSContentsBase\Public\SGameObjectConstructor.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSContentsBase\Public\SGameObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSContentsBase\Public\SComponentBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SRenderContent\Public\RenderComponent\SRenderComponentBase.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSContentsBase\Public\SWorld.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SRenderContent\Public\SRendererUtil.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SRenderContent\Public\RenderComponent\SStaticMeshRenderComponent.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SRenderContent\Public\Camera\SCameraComponent.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleEntryScriptRunner.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SRenderContent\Private\Camera\RenderCamera.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -74,34 +47,7 @@
     <ClCompile Include="SSEngineMain\SSEngine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSContentsBase\Private\SGameObjectConstructor.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSContentsBase\Private\SGameObject.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSContentsBase\Private\SComponentBase.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SRenderContent\Private\RenderComponent\SRenderComponentBase.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSContentsBase\Private\SWorld.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SRenderContent\Private\SRendererUtil.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SRenderContent\Private\RenderComponent\SStaticMeshRenderComponent.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SRenderContent\Private\Camera\SCameraComponent.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleEntryScriptRunner.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SRenderContent\Private\Camera\RenderCamera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

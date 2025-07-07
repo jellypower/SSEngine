@@ -1,13 +1,6 @@
 #include "ModuleEntryScriptRunner.h"
 
-#include <SSGAL/Public/ModuleEntry/GALInstanceFactory.h>
-#include <SSRenderer/Public/ModuleEntry/SSRendererFactory.h>
-#include <SSRenderer/Public/RenderBase/IRenderer.h>
-
 #include "SSBuildSettings.h"
-#include "SObject/Public/SObjectGlobalHashMap.h"
-#include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
-#include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
 
 #include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "SSEngineDefault/Public/SSEngineInlineSettings.h"
@@ -15,6 +8,17 @@
 #include "SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h"
 #include "SSEngineDefault/Public/RawProfiler/FrameInfoProcessorBase.h"
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
+
+#include "SObject/Public/SObjectGlobalHashMap.h"
+#include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
+#include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
+
+#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
+
+#include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
+
+#include "SSContentsBase/Public/ModuleEntry/SSContentsBaseModuleEntry.h"
 
 
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
@@ -102,6 +106,13 @@ void RunModuleEntryScriptPostInitWindow(
 
 		SSFBXImporterModuleEntry(g_HasherPool, g_Renderer);
 	}
+
+
+	SSContentsBaseModuleEntry(
+		g_Renderer,
+		g_HasherPool,
+		g_FrameInfoProcessor,
+		g_RawInputProcessor);
 
 }
 

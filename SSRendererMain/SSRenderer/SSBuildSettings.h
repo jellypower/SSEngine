@@ -7,6 +7,8 @@
 #pragma comment(lib, "SObject.lib")
 
 
+#pragma comment(lib, "SSContentsBase.lib")
+
 
 #ifdef _DEBUG
 

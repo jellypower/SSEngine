@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,32 +21,32 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{ad66ad0e-2b82-4d7e-bf12-b84c5fde7d67}</ProjectGuid>
-    <RootNamespace>SSRenderer</RootNamespace>
+    <ProjectGuid>{5b181764-4038-4384-9a0c-6b163711d655}</ProjectGuid>
+    <RootNamespace>SSContentsBase</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -74,12 +74,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -88,36 +91,42 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(SolutionDir)..\SSContentsBase\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EnableUAC>false</EnableUAC>
+      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(SolutionDir)..\SSGAL\$(IntDir);$(SolutionDir)..\SSRenderer\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSRendererMain\$(IntDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -126,48 +135,57 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)ExternLibs\FBXSDK\include;$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(SolutionDir)..\SSContentsBase\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EnableUAC>false</EnableUAC>
+      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(SolutionDir)..\SSGAL\$(IntDir);$(SolutionDir)..\SSRenderer\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSRendererMain\$(IntDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ModuleEntryScriptRunner.h" />
-    <ClInclude Include="SSRenderer\Private\DX12\Renderer\DX12ConstantBufferPool.h" />
-    <ClInclude Include="SSEngineMain\SSEngine.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="SSBuildSettings.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="targetver.h" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Private\ContentBase\SComponentBase.cpp" />
+    <ClCompile Include="Private\ContentBase\SGameObject.cpp" />
+    <ClCompile Include="Private\ContentBase\SGameObjectConstructor.cpp" />
+    <ClCompile Include="Private\ContentBase\SWorld.cpp" />
+    <ClCompile Include="Private\ModuleEntry\SSContentsBaseModuleEntry.cpp" />
+    <ClCompile Include="Private\SRenderContent\Camera\RenderCamera.cpp" />
+    <ClCompile Include="Private\SRenderContent\Camera\SCameraComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderComponentBase.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SStaticMeshRenderComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\SRendererUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ModuleEntryScriptRunner.cpp" />
-    <ClCompile Include="SSEngineMain\SSEngine.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="SSRenderer.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="small.ico" />
-    <Image Include="SSRenderer.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="Natvis\SSEngineDefault.natvis" />
+    <ClInclude Include="BuildSettings.h" />
+    <ClInclude Include="Private\SRenderContent\Camera\RenderCamera.h" />
+    <ClInclude Include="Public\ContentBase\SComponentBase.h" />
+    <ClInclude Include="Public\ContentBase\SGameObject.h" />
+    <ClInclude Include="Public\ContentBase\SGameObjectConstructor.h" />
+    <ClInclude Include="Public\ContentBase\SWorld.h" />
+    <ClInclude Include="Public\ModuleEntry\SSContentsBaseModuleEntry.h" />
+    <ClInclude Include="Public\SRenderContent\Camera\SCameraComponent.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderComponentBase.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SStaticMeshRenderComponent.h" />
+    <ClInclude Include="Public\SRenderContent\SRendererUtil.h" />
+    <ClInclude Include="ModuleExportKeyword.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>
