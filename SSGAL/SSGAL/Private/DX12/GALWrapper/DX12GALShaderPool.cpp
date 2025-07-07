@@ -1,4 +1,7 @@
-﻿#include "DX12GALShaderPool.h"
+﻿#include "pch.h"
+
+
+#include "DX12GALShaderPool.h"
 
 #include "DX12GALShaderWrapper.h"
 

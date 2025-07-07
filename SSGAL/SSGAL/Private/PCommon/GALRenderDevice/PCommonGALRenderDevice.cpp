@@ -1,3 +1,6 @@
+#include "pch.h"
+
+
 #include "PCommonGALRenderDevice.h"
 
 void PCommonGALRenderDevice::BindRendererXXX(IRenderer* InOwnerRenderer)

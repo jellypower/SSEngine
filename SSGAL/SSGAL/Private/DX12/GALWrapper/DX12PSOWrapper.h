@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <d3dx12.h>
+// #include <d3dx12.h>
 
 #include "SSGAL/Private/PCommon/GALWrapper/PSOWrapper.h"
 
@@ -11,7 +11,7 @@ private:
 private:
 	ID3D12PipelineState* _PipelineState = nullptr;
 	
-
+	
 public:
 	DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwnerPSOPool);
 	virtual ~DX12PSOWrapper();

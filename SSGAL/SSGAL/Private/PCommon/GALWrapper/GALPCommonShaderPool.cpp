@@ -1,4 +1,7 @@
-﻿#include "GALPCommonShaderPool.h"
+﻿#include "pch.h"
+
+
+#include "GALPCommonShaderPool.h"
 
 #include "SSGAL/Private/DX12/GALWrapper/DX12GALShaderWrapper.h"
 #include "SSGAL/Public/GALWrapper/GALShaderWrapper.h"

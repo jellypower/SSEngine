@@ -1,4 +1,5 @@
-﻿#include <d3dx12.h>
+﻿#include "pch.h"
+
 
 #include "DX12GALResourceUpdater.h"
 

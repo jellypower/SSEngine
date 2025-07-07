@@ -1,6 +1,8 @@
-﻿#include "DX12GALShaderWrapper.h"
+﻿#include "pch.h"
 
-#include <d3dcompiler.h>
+
+#include "DX12GALShaderWrapper.h"
+
 
 DX12GALShaderWrapper::DX12GALShaderWrapper(const ShaderConstructDesc& InDesc, GALShaderPool* InOwnerPool)
 {

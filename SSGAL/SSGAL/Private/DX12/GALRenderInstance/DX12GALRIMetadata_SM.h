@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <d3d12.h>
+// #include <d3d12.h>
 #include "SSEngineDefault/Public/SSCommonUtil/AllocatedChunkHeader.h"
 
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"

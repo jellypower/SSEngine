@@ -1,4 +1,6 @@
-﻿#define SSGAL_MODULE_EXPORT
+﻿#include "pch.h"
+#define SSGAL_MODULE_EXPORT
+
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"

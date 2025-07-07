@@ -1,6 +1,6 @@
-﻿#include <d3d12.h>
-#include <d3dx12.h>
-#include <dxgi1_4.h>
+﻿#include "pch.h"
+
+
 
 #include "DX12GALSwapChainRenderTarget.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"

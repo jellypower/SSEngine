@@ -1,4 +1,7 @@
-﻿#include "PSOPool.h"
+﻿#include "pch.h"
+
+
+#include "PSOPool.h"
 
 
 constexpr int32 TEMP_PSOMAP_CAPACITY = 5000;

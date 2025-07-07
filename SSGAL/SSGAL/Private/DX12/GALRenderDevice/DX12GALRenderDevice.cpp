@@ -1,4 +1,6 @@
-﻿#include "DX12GALRenderDevice.h"
+﻿#include "pch.h"
+
+#include "DX12GALRenderDevice.h"
 
 #include "DX12GALRenderDeviceContext.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourceAllocator.h"

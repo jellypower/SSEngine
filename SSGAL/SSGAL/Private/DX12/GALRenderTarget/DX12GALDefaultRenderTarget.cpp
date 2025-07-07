@@ -1,4 +1,7 @@
-﻿#include "DX12GALDefaultRenderTarget.h"
+﻿#include "pch.h"
+
+
+#include "DX12GALDefaultRenderTarget.h"
 
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourcePage.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"

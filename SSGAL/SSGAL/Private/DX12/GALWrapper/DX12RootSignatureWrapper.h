@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <d3dx12.h>
+// #include <d3dx12.h>
 
 #include "SSGAL/Private/PCommon/GALWrapper/RootSignatureWrapper.h"
 

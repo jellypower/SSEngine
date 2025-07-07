@@ -23,7 +23,7 @@ public:
 	void AddToWorld(IRenderInstance* InRenderInstance) override;
 	void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove) override;
 
-
+	
 private:
 	IRenderer* _OwnerRenderer;
 	SS::HashMap<SObjHashCode, IRenderInstance*> _RenderInstanceByHashCode;

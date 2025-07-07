@@ -21,9 +21,6 @@
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -75,9 +72,6 @@
     <ClCompile Include="Private\DX12\ModuleEntry\GALInstanceFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\DX12\Utils\SSDX12Utils.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -93,10 +87,10 @@
     <ClCompile Include="Private\PCommon\GALWrapper\PSOWrapper.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\PCommon\GALWrapper\RootSignaturePool.cpp">
+    <ClCompile Include="Private\PCommon\GALWrapper\RootSignatureWrapper.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\PCommon\GALWrapper\RootSignatureWrapper.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -228,6 +222,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ModuleExportKeyword.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

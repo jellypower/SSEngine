@@ -1,7 +1,6 @@
-﻿#include "DX12ConstantBufferResourceAllocator.h"
+﻿#include "pch.h"
 
-#include <d3d12.h>
-#include <d3dx12.h>
+#include "DX12ConstantBufferResourceAllocator.h"
 
 #include "DX12ConstantBufferResourcePage.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"

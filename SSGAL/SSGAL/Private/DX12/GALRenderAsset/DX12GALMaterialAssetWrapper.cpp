@@ -1,4 +1,6 @@
-﻿#include "DX12GALMaterialAssetWrapper.h"
+﻿#include "pch.h"
+
+#include "DX12GALMaterialAssetWrapper.h"
 
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"

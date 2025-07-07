@@ -1,4 +1,7 @@
-﻿#include "DX12RootSignaturePool.h"
+﻿#include "pch.h"
+
+
+#include "DX12RootSignaturePool.h"
 
 #include "DX12RootSignatureWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"

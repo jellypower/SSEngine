@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <d3d12.h>
+// #include <d3d12.h>
 
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Private/PCommon/GALResourceUpdater/GALResourceUpdater.h"

@@ -1,4 +1,7 @@
-﻿#include "DX12GALRenderTargetBase.h"
+﻿#include "pch.h"
+
+
+#include "DX12GALRenderTargetBase.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
 

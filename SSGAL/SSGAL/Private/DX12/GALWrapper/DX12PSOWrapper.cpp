@@ -1,4 +1,7 @@
-﻿#include "DX12PSOWrapper.h"
+﻿#include "pch.h"
+
+
+#include "DX12PSOWrapper.h"
 
 #include "DX12GALShaderWrapper.h"
 #include "DX12RootSignaturePool.h"

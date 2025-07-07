@@ -1,4 +1,6 @@
-﻿#include "DX12DescriptorHeapCustomAllocator.h"
+﻿#include "pch.h"
+
+#include "DX12DescriptorHeapCustomAllocator.h"
 
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 

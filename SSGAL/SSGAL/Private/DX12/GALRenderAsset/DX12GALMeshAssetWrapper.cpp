@@ -1,3 +1,6 @@
+#include "pch.h"
+
+
 #include "DX12GALMeshAssetWrapper.h"
 
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"

@@ -1,3 +1,6 @@
+#include "pch.h"
+
+
 #include "RootSignatureWrapper.h"
 
 RootSignatureWrapper::RootSignatureWrapper(ERootSignatureType rootSignatureType, RootSignaturePool* InOwnerRootSignaturePool)

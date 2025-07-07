@@ -111,10 +111,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;SSGAL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,10 +140,10 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;SSGAL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -165,8 +165,8 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
-    <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.cpp" />
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMaterialAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.cpp" />
@@ -184,18 +184,17 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClCompile Include="Private\DX12\GALWrapper\DX12RootSignaturePool.cpp" />
     <ClCompile Include="Private\DX12\GALWrapper\DX12RootSignatureWrapper.cpp" />
     <ClCompile Include="Private\DX12\ModuleEntry\GALInstanceFactory.cpp" />
-    <ClCompile Include="Private\DX12\Utils\SSDX12Utils.cpp" />
     <ClCompile Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.cpp" />
     <ClCompile Include="Private\PCommon\GALResourceUpdater\GALResourceUpdater.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\PSOPool.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\PSOWrapper.cpp" />
-    <ClCompile Include="Private\PCommon\GALWrapper\RootSignaturePool.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\RootSignatureWrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />

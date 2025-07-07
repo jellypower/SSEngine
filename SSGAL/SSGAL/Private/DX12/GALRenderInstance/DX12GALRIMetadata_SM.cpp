@@ -1,6 +1,8 @@
-﻿#include "DX12GALRIMetadata_SM.h"
+﻿#include "pch.h"
 
-#include <d3dx12.h>
+
+#include "DX12GALRIMetadata_SM.h"
+
 
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourcePage.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12DescriptorHeapCustomAllocator.h"
