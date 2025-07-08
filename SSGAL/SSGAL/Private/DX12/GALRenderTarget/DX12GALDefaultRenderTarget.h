@@ -4,17 +4,6 @@
 class DX12GALRenderDevice;
 
 
-struct GALRenderTargetDesc
-{
-	int32 ResourceWidth;
-	int32 ResourceHeight;
-	BoundBox2f ScissorRectSize;
-	ViewportBox DrawBoxSize;
-	ERTColorFormat Format;
-
-};
-
-
 class DX12GALDefaultRenderTarget : public DX12GALRenderTargetBase
 {
 public:

@@ -1,7 +1,10 @@
 #include "MeshAsset.h"
 
 #include "SSGAL/Public/GALRenderAsset/GALMeshAssetWrapperBase.h"
+#include "SSRenderer/Private/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 MeshAsset::MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
@@ -25,25 +28,42 @@ void MeshAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
 		}
 	}
 
+	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
 	_AssetInstanceReferencers.PushBack(Referencer);
 
-	// TODO: RefCount가 0에서 올라올 때 해제
+	if (PrevReferencerCnt == 0)
+	{
+		SSRenderer* Renderer = (SSRenderer*)g_Renderer;
+		Renderer->AddGALStateChangedAsset(this);
+	}
 }
 
 void MeshAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerName)
 {
+	bool bReferencerEverRemoved = false;
+
 	for (int32 i = 0; i < _AssetInstanceReferencers.GetSize(); i++)
 	{
 		if (_AssetInstanceReferencers[i] == ReferencerName)
 		{
 			_AssetInstanceReferencers.RemoveAtAndFillLast(i);
-			return;
+			bReferencerEverRemoved = true;
+			break;
 		}
 	}
+	if (bReferencerEverRemoved == false)
+	{
+		SS_ASSERT_MSG(false, L"Reference does not exist.");
+		return;
+	}
 
-	SS_ASSERT_MSG(false, L"Reference does not exist.");
+	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
+	if (ReferencerCnt == 0)
+	{
+		SSRenderer* Renderer = (SSRenderer*)g_Renderer;
+		Renderer->AddGALStateChangedAsset(this);
+	}
 
-	// TODO: RefCount가 0으로 떨어질 때 해제
 }
 
 void MeshAsset::ReleaseSystemData()

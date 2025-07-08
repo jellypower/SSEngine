@@ -2,11 +2,12 @@
 
 
 #include "RenderWorld.h"
-#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h" // TODO: Private 헤더파일 종속성 없애기
 
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
+#include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
+
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
@@ -42,74 +43,21 @@ IRIMesh* SSRenderer::CreateRIStaticMesh()
 	return DBG_NEW RIStaticMesh();
 }
 
-void SSRenderer::AddModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)
+
+void SSRenderer::AddGALStateChangedAsset(IAssetBase* AssetToChange)
 {
-	NewModelAsset->AddAssetReference(Referencer);
-	
-	if (NewModelAsset->GetAssetInstanceReferenceCnt() > 1)
+	switch (AssetToChange->GetAssetType())
 	{
-		return; // 이미 에셋 로딩이 돼있을 것이기 때문에 패스
-	}
-
-	{
-		IMeshAsset* MeshAssetToInstantiate = NewModelAsset->GetMeshAsset();
-		if (MeshAssetToInstantiate == nullptr)
-		{
-			SS_ASSERT(false);
-			return;
-		}
-
-		AssetInstanceReferencer ModelReferencer;
-		ModelReferencer.Type = EAssetInstanceReferenceType::AssetName;
-		ModelReferencer.AssetName = NewModelAsset->GetAssetName();
-		AddMeshInstanceReference(MeshAssetToInstantiate, ModelReferencer);
-	}
-}
-
-void SSRenderer::AddMeshInstanceReference(IMeshAsset* NewMeshAsset, const AssetInstanceReferencer& Referencer)
-{
-	NewMeshAsset->AddAssetReference(Referencer);
-
-	if (NewMeshAsset->GetAssetInstanceReferenceCnt() > 1)
-	{
-		return; // 이미 에셋 로딩이 돼있을 것이기 때문에 패스
-	}
-
-	_InstanceStateChangedMesh.PushBack((IMeshAssetMutable*)NewMeshAsset);
-}
-
-void SSRenderer::RemoveModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer)
-{
-	NewModelAsset->RemoveAssetReference(Referencer);
-
-	if (NewModelAsset->GetAssetInstanceReferenceCnt() > 0)
-	{
-		return; // 언로드할게 없기 때문에 패스
-	}
-
-
-	IMeshAsset* MeshAssetToInstantiate = NewModelAsset->GetMeshAsset();
-	if (MeshAssetToInstantiate == nullptr)
-	{
+	case EAssetType::Mesh:
+		_GALStateChangedMeshAsset.PushBack((IMeshAssetMutable*)AssetToChange);
+		break;
+	case EAssetType::Texture:
+		SS_ASSERT_MSG(false, L"TODO: 구현하기");
+		break;
+	default:
 		SS_ASSERT(false);
-		return;
+		break;
 	}
-
-	AssetInstanceReferencer ModelReferencer;
-	ModelReferencer.Type = EAssetInstanceReferenceType::AssetName;
-	ModelReferencer.AssetName = NewModelAsset->GetAssetName();
-	RemoveMeshInstanceReference(MeshAssetToInstantiate, ModelReferencer);
-}
-
-void SSRenderer::RemoveMeshInstanceReference(IMeshAsset* MeshAssetToRemove, const AssetInstanceReferencer& Referencer)
-{
-	MeshAssetToRemove->RemoveAssetReference(Referencer);
-	if (MeshAssetToRemove->GetAssetInstanceReferenceCnt() > 0)
-	{
-		return; // 언로드할게 없기 때문에 패스
-	}
-
-	_InstanceStateChangedMesh.PushBack((IMeshAssetMutable*)MeshAssetToRemove);
 }
 
 IRenderWorld* SSRenderer::CreateRenderWorld()
@@ -170,7 +118,7 @@ void SSRenderer::PerFrame()
 
 	
 
-			InstantiatePendingAssets(_MainDeviceContext);
+			InstantiatePendingGALAssets(_MainDeviceContext);
 			DrawRenderWorld(_MainDeviceContext, _CurRenderCamera);
 
 			_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
@@ -189,9 +137,9 @@ void SSRenderer::CleanUp()
 	CleanupRenderer();
 }
 
-void SSRenderer::InstantiatePendingAssets(GALRenderDeviceContext* Executor)
+void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 {
-	for (IMeshAssetMutable* MeshAssetItem : _InstanceStateChangedMesh)
+	for (IMeshAssetMutable* MeshAssetItem : _GALStateChangedMeshAsset)
 	{
 		if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->GetGALMeshAsset() == nullptr)
 		{
@@ -203,7 +151,7 @@ void SSRenderer::InstantiatePendingAssets(GALRenderDeviceContext* Executor)
 		}
 	}
 
-	_InstanceStateChangedMesh.Clear();
+	_GALStateChangedMeshAsset.Clear();
 }
 
 void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera* InCamera)

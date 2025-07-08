@@ -26,25 +26,53 @@ void ModelAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
 		}
 	}
 
+	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
+
 	_AssetInstanceReferencers.PushBack(Referencer);
 
-	// TODO: AssetCount가 0에서 올라오면 본인이 레퍼런스하고있는 에셋들에게 레프카운트 올려주기
+	if (PrevReferencerCnt == 0)
+	{
+		AssetInstanceReferencer ThisReferencer;
+		ThisReferencer.Type = EAssetInstanceReferenceType::AssetName;
+		ThisReferencer.AssetName = GetAssetName();
+		_MeshAsset->AddAssetReference(ThisReferencer);
+		// TODO: Material 레프카운트 올려주기	
+	}
+
 }
 
 void ModelAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerName)
 {
+	bool bReferencerEverRemoved = false;
+
 	for (int32 i = 0; i < _AssetInstanceReferencers.GetSize(); i++)
 	{
 		if (_AssetInstanceReferencers[i] == ReferencerName)
 		{
 			_AssetInstanceReferencers.RemoveAtAndFillLast(i);
-			return;
+			bReferencerEverRemoved = true;
+			break;
 		}
 	}
 
-	SS_ASSERT_MSG(false, L"Reference does not exist.");
+	if (bReferencerEverRemoved == false)
+	{
+		SS_ASSERT_MSG(false, L"Reference does not exist.");
+		return;
+	}
 
-	// TODO: AssetCount가 0으로 떨어지면 본인이 레퍼런스하고있는 에셋들에게 레프카운트 올려주기
+	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
+	if (ReferencerCnt == 0)
+	{
+		AssetInstanceReferencer ThisReferencer;
+		ThisReferencer.Type = EAssetInstanceReferenceType::AssetName;
+		ThisReferencer.AssetName = GetAssetName();
+		_MeshAsset->RemoveAssetReference(ThisReferencer);
+
+		// TODO: AssetCount가 0으로 떨어지면 메테리얼 레퍼런스도 내려주기
+	}
+
+
 }
 
 int32 ModelAsset::GetSubMeshCnt() const

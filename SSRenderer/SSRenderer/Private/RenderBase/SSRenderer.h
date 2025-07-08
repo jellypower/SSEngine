@@ -19,7 +19,7 @@ class SSRenderer : public IRenderer
 private:
 	AssetManagerBase* _AssetManager = nullptr;
 
-	SS::PooledList<IMeshAssetMutable*> _InstanceStateChangedMesh;
+	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
 
 private:
 	IRenderCamera* _CurRenderCamera = nullptr;
@@ -45,19 +45,13 @@ public:
 	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 
 
-	void AddModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer);
-	void AddMeshInstanceReference(IMeshAsset* NewMeshAsset, const AssetInstanceReferencer& Referencer);
-
-	void RemoveModelInstanceReference(IModelAsset* NewModelAsset, const AssetInstanceReferencer& Referencer);
-	void RemoveMeshInstanceReference(IMeshAsset* MeshAssetToRemove, const AssetInstanceReferencer& Referencer);
-
-
+	void AddGALStateChangedAsset(IAssetBase* AssetToChange);
 
 
 
 
 private:
-	void InstantiatePendingAssets(GALRenderDeviceContext* Executor);
+	void InstantiatePendingGALAssets(GALRenderDeviceContext* Executor);
 	void DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera* InCamera);
 
 

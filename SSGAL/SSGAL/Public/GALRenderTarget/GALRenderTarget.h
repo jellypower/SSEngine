@@ -9,6 +9,16 @@ enum class ERenderTargetType : uint8;
 class GALRenderDevice;
 
 
+struct GALRenderTargetDesc
+{
+	int32 ResourceWidth;
+	int32 ResourceHeight;
+	BoundBox2f ScissorRectSize;
+	ViewportBox DrawBoxSize;
+	ERTColorFormat Format;
+};
+
+
 
 class GALRenderTarget : public INoncopyable
 {
