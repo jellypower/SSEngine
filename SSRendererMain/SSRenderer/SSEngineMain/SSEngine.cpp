@@ -63,7 +63,12 @@ void SSEngine::StartupEngine()
 		BoundFileName += ".mdlc";
 
 		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
+
 //		TEMP_MdlcObj = SRendererUtil::InstantiateModel(L"room.fbx/Plane.009.mdlc");
+//		TEMP_MdlcObj->SetScale(Vector4f(1000, 1000, 1000, 0));
+//		TEMP_MdlcObj->SetRotation(Quaternion());
+//		TEMP_MdlcObj->SetPosition(Vector4f::Zero);
+
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
 
 //		SGameObject* Parent = TEMP_MdlcObj->GetChild(0);

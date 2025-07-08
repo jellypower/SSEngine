@@ -168,7 +168,7 @@ void DX12GALSwapChainRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
 
-	constexpr float CLEAR_COLOR[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+	constexpr float CLEAR_COLOR[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	CmdList->ClearRenderTargetView(rtvHandle, CLEAR_COLOR, 0, nullptr);
 	CmdList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
