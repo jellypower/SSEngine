@@ -409,14 +409,13 @@ void DX12GALRenderDeviceContext::TEMP_DrawStaticMesh(
 	CurCommandList->SetGraphicsRootConstantBufferView(1, DX12RenderInstanceMetaData->_RenderEnvCBGPUMemAddr);
 
 
-	int32 IdxDataOffset = 0;
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
 
 		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
-		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0);
-		IdxDataOffset += CurIdxDataCnt;
+		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
+		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 	}
 
 	// TODO: 25/05/13
