@@ -394,17 +394,17 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 			uint32 idxDataStart = NewMeshRawData->_indexDataStartIndex[matIdx];
 			for (uint32 j = 1; j < PolygonVertexCount - 1; j++)
 			{
-				SS::pair<uint32, int32> CtrlPointIdx = PolygonVertexToCtrlPointMap[i][0];
+				SS::pair<uint32, int32> CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j + 1];
 				uint32 ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
-				NewMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 2] = ssVertexBufferIdx;
+				NewMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx]] = ssVertexBufferIdx;
 
 				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j];
 				ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
 				NewMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 1] = ssVertexBufferIdx;
 
-				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j + 1];
+				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][0];
 				ssVertexBufferIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
-				NewMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx]] = ssVertexBufferIdx;
+				NewMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 2] = ssVertexBufferIdx;
 
 				subMaterialIdxDataCounter[matIdx] += 3;
 			}
