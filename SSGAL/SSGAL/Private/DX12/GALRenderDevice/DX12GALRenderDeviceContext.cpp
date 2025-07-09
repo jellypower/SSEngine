@@ -473,21 +473,23 @@ void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMAT
 	}
 
 
-	const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(ERootSignatureType::SS_TEMP_ROOTSIGNATURE);
-	const DX12RootSignatureWrapper* lDX12RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignatureWrapper;
+	{
+		PipelineDesc NewPipelineDesc;
+		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
+		NewPipelineDesc.VSName = L"LambertShaderVS";
+		NewPipelineDesc.PSName = L"LambertShaderPS";
+		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
+		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
+
+		const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(NewPipelineDesc.RootSignatureType);
+		const DX12RootSignatureWrapper* lDX12RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignatureWrapper;
 
 
-	PipelineDesc NewPipelineDesc;
-	NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
-	NewPipelineDesc.VSName = L"LambertShaderVS";
-	NewPipelineDesc.PSName = L"LambertShaderPS";
-	NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
-	const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
+		CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
+		CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
+	}
 
-
-	CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
 	CurCommandList->SetDescriptorHeaps(1, &RenderInstanceDescHeap);
-	CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 
@@ -498,6 +500,8 @@ void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMAT
 		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
 
 		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->VPMatrix = _CameraVPTransform;
+		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->SunDirection = { 1,1,1,0 };
+		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->SunIntensity = { 1,1,1,0 };
 		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->ViewerPos = _CameraPosition;
 	}
 
@@ -505,13 +509,11 @@ void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMAT
 	CurCommandList->SetGraphicsRootConstantBufferView(1, DX12RenderInstanceMetaData->_RenderEnvCBGPUMemAddr);
 
 
-
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
 
 		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
-		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 	}
 }

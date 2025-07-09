@@ -10,7 +10,7 @@ struct PS_INPUT
 };
 
 
-float4 PS(PS_INPUT input) : SV_Target
+float2 PS(PS_INPUT input) : SV_Target
 {
     float4 color = float4(input.Normal, 1);
     return color;
