@@ -6,6 +6,7 @@
 #include "DX12GALShaderWrapper.h"
 #include "DX12RootSignaturePool.h"
 #include "DX12RootSignatureWrapper.h"
+#include "Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/PCommon/GALWrapper/PSOPool.h"
 #include "SSGAL/Public/GALWrapper/GALShaderPool.h"
@@ -52,8 +53,8 @@ const D3D12_INPUT_ELEMENT_DESC* DX12PSOWrapper::GetInputElementDesc(EInputLayout
 	}
 }
 
-DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwnerPSOPool)
-	: PSOWrapper(pipelineDesc, InOwnerPSOPool)
+DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOwnerPSOPool)
+	: PSOWrapper(InPipelineDesc, InOwnerPSOPool)
 {
 	DX12GALRenderDevice* GALDevice = (DX12GALRenderDevice*)InOwnerPSOPool->GetOwnerDevice();
 	ID3D12Device5* D3DDevice = GALDevice->GetD3DDevice();
@@ -61,7 +62,7 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwne
 	DX12RootSignaturePool* RootSignaturePool = (DX12RootSignaturePool*)GALDevice->GetRootSignaturePool();
 
 
-	const DX12RootSignatureWrapper* RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignaturePool->GetRootSignature(pipelineDesc.RootSignatureType);
+	const DX12RootSignatureWrapper* RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignaturePool->GetRootSignature(InPipelineDesc.RootSignatureType);
 	if (RootSignatureWrapper->IsValid() == false)
 	{
 		DEBUG_BREAK();
@@ -70,14 +71,14 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwne
 	ID3D12RootSignature* RootSignature = RootSignatureWrapper->GetRootSignatureInstantce();
 
 
-	const DX12GALShaderWrapper* VS = (DX12GALShaderWrapper*)ShaderPool->FindShader(pipelineDesc.VSName);
+	const DX12GALShaderWrapper* VS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.VSName);
 	if (VS == nullptr)
 	{
 		DEBUG_BREAK();
 		return;
 	}
 
-	const DX12GALShaderWrapper* PS = (DX12GALShaderWrapper*)ShaderPool->FindShader(pipelineDesc.PSName);
+	const DX12GALShaderWrapper* PS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.PSName);
 	if (PS == nullptr)
 	{
 		DEBUG_BREAK();
@@ -89,7 +90,7 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwne
 
 
 	uint32 inputElementCnt = 0;
-	const D3D12_INPUT_ELEMENT_DESC* inputElementDesc = GetInputElementDesc(pipelineDesc.LayoutType, inputElementCnt);
+	const D3D12_INPUT_ELEMENT_DESC* inputElementDesc = GetInputElementDesc(InPipelineDesc.LayoutType, inputElementCnt);
 	if (inputElementDesc == nullptr)
 	{
 		DEBUG_BREAK();
@@ -113,8 +114,8 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwne
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	psoDesc.RTVFormats[0] = DX12GALRenderTargetBase::ConvertColorFormat(InPipelineDesc.RTColorFormat);
+	psoDesc.DSVFormat = DX12GALRenderTargetBase::ConvertColorFormat(InPipelineDesc.DSColorFormat);
 	psoDesc.SampleDesc.Count = 1;
 
 

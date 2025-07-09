@@ -1,21 +1,22 @@
 ﻿#pragma once
+#include "GALRTCommonEnums.h"
+#include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSEngineDefault/Public/GeometryType.h"
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
 class GALRenderDeviceContext;
-enum class EResourceStateType : uint8;
-enum class ERTColorFormat : int32;
 enum class ERenderTargetType : uint8;
 class GALRenderDevice;
 
 
 struct GALRenderTargetDesc
 {
-	int32 ResourceWidth;
-	int32 ResourceHeight;
+	int32 ResourceWidth = 0;
+	int32 ResourceHeight = 0;
 	BoundBox2f ScissorRectSize;
 	ViewportBox DrawBoxSize;
-	ERTColorFormat Format;
+	ERTColorFormat Format = ERTColorFormat::None;
+	EResourceStateType InitialResourceState = EResourceStateType::None;
 };
 
 

@@ -91,6 +91,7 @@ void SSRenderer::StartUp()
 	RTDesc.DrawBoxSize.MinDepth = 0.f;
 	RTDesc.DrawBoxSize.MaxDepth = 1.f;
 	RTDesc.Format = ERTColorFormat::R32G32_SINT;
+	RTDesc.InitialResourceState = EResourceStateType::CopySrc;
 	_PixelPickerRenderTarget = _GALRenderDevice->CreateRenderTarget(RTDesc, L"PixelPickerRenderTarget");
 }
 
@@ -144,12 +145,20 @@ void SSRenderer::PerFrame()
 				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
 			}
 
-
-
+			/*
 			{
 				// TODO: PixelPickerRenderTarget 기능 구현하기
-				
+				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
+				_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget);
+
+				for (IRenderInstance* Item : _RenderInstancesToDraw)
+				{
+					_MainDeviceContext->DrawID(Item);
+				}
+
+				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 			}
+			*/
 
 		}
 		_MainDeviceContext->EndRender();

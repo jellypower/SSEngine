@@ -27,21 +27,6 @@ struct ObjectIDi64
     int MSB;
 }; // LittleEndian이기 떄문에 LSB가 먼저 나오는게 맞음
 
-cbuffer ModelBuffer : register(b0)
-{
-    matrix WMatrix;
-    matrix RotMatrix;
-    ObjectIDi64 Id;
-};
-
-cbuffer GlobalRenderParam : register(b1)
-{
-    matrix VPMatrix;
-    float4 SunDirection;
-    float4 SunIntensity;
-    float4 ViewerPos;
-};
-
 
 struct VS_INPUT
 {
@@ -62,6 +47,23 @@ struct PS_INPUT
     float3 WorldPos : TEXCOORD2;
 };
 
+
+
+
+cbuffer ModelBuffer : register(b0)
+{
+    matrix WMatrix;
+    matrix RotMatrix;
+    ObjectIDi64 Id;
+};
+
+cbuffer GlobalRenderParam : register(b1)
+{
+    matrix VPMatrix;
+    float4 SunDirection;
+    float4 SunIntensity;
+    float4 ViewerPos;
+};
 
 PS_INPUT Main(VS_INPUT input)
 {

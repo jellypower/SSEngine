@@ -47,13 +47,13 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 	RenderTargetTypeProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
 	hr = D3DDevice->CreateCommittedResource(
-			&RenderTargetTypeProp,
-			D3D12_HEAP_FLAG_NONE,
-			&RTVDesc,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			&ClearValue,
-			IID_PPV_ARGS(&_RenderTargetResource)
-		);
+		&RenderTargetTypeProp,
+		D3D12_HEAP_FLAG_NONE,
+		&RTVDesc,
+		ConvertResourceStates(Desc.InitialResourceState),
+		&ClearValue,
+		IID_PPV_ARGS(&_RenderTargetResource)
+	);
 	if (FAILED(hr))
 	{
 		SS_INTERRUPT();
@@ -144,6 +144,6 @@ void DX12GALDefaultRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* Cm
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
 
-	constexpr float CLEAR_COLOR[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	constexpr float CLEAR_COLOR[] = { 0.f, 0.f};
 	CmdList->ClearRenderTargetView(rtvHandle, CLEAR_COLOR, 0, nullptr);
 }

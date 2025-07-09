@@ -14,6 +14,11 @@ enum class ERenderTargetType : uint8
 // RenderTargetColorFormat
 enum class ERTColorFormat : int32
 {
+	None,
+
+	Unknown,
+
+	D32_FLOAT,
 	R32G32_SINT,
 	R8G8B8A8_UNORM
 };

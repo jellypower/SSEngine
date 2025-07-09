@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "RootSignatureWrapper.h"
+#include "Public/GALRenderTarget/GALRTCommonEnums.h"
 
 
 class PSOPool;
@@ -32,12 +33,14 @@ struct PipelineDesc
 {
 	SS::SHasherW		VSName;
 	SS::SHasherW		PSName;
-	EInputLayoutType	LayoutType;
-	ERootSignatureType	RootSignatureType;
+	EInputLayoutType	LayoutType = EInputLayoutType::NONE;
+	ERootSignatureType	RootSignatureType = ERootSignatureType::NONE;
+	ERTColorFormat		RTColorFormat = ERTColorFormat::None; // RenderTargetColorFormat
+	ERTColorFormat		DSColorFormat = ERTColorFormat::None; // DepthStancilColorFormat
 };
 
 bool operator==(const PipelineDesc& lhs, const PipelineDesc& rhs);
-int64 HashValue(const PipelineDesc& inValue);
+uint32 HashValue(const PipelineDesc& inValue);
 
 
 class PSOWrapper : public INoncopyable
@@ -47,7 +50,7 @@ private:
 	PipelineDesc _pipelineDesc;
 
 public:
-	PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwnerPSOPool);
+	PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOwnerPSOPool);
 	virtual ~PSOWrapper();
 
 	virtual bool IsValid() const = 0;

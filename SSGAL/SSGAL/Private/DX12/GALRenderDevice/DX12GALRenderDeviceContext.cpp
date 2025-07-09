@@ -401,6 +401,8 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
 		NewPipelineDesc.PSName = L"PS_TestDrawer";
 		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
+		NewPipelineDesc.RTColorFormat = ERTColorFormat::R8G8B8A8_UNORM;
+		NewPipelineDesc.DSColorFormat = ERTColorFormat::D32_FLOAT;
 		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
 
 		const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(NewPipelineDesc.RootSignatureType);
@@ -476,9 +478,11 @@ void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMAT
 	{
 		PipelineDesc NewPipelineDesc;
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
-		NewPipelineDesc.VSName = L"LambertShaderVS";
-		NewPipelineDesc.PSName = L"LambertShaderPS";
+		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
+		NewPipelineDesc.PSName = L"PS_IDDrawer";
 		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
+		NewPipelineDesc.RTColorFormat = ERTColorFormat::R32G32_SINT;
+		NewPipelineDesc.DSColorFormat = ERTColorFormat::Unknown;
 		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
 
 		const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(NewPipelineDesc.RootSignatureType);

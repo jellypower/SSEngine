@@ -24,23 +24,26 @@ bool operator==(const PipelineDesc& lhs, const PipelineDesc& rhs)
 
 }
 
-int64 HashValue(const PipelineDesc& inValue)
+uint32 HashValue(const PipelineDesc& inValue)
 {
-	int64 PSHashValue = HashValue(inValue.PSName.GetDirectValue());
-	int64 VSHashValue = HashValue(inValue.VSName.GetDirectValue());
+	uint32 PSHashValue = HashValue(inValue.PSName);
+	uint32 VSHashValue = HashValue(inValue.VSName);
 
 
-	int64 LayoutTypeHashValue = (int64)inValue.LayoutType;
-	int64 RootsignatureTypeHashValue = (int64)inValue.RootSignatureType;
+	uint32 LayoutTypeHashValue = (uint32)inValue.LayoutType;
+	uint32 RootsignatureTypeHashValue = (uint32)inValue.RootSignatureType;
+	uint32 ui32RTColorFormat = (uint32)inValue.RTColorFormat;
+	uint32 ui32DSColorFormat = (uint32)inValue.DSColorFormat;
 
-	int64 HashResult = (PSHashValue ^ VSHashValue) >> 1 + LayoutTypeHashValue + RootsignatureTypeHashValue;
+	int64 HashResult = (PSHashValue ^ VSHashValue) >> 1
+		+ LayoutTypeHashValue + RootsignatureTypeHashValue + ui32RTColorFormat + ui32DSColorFormat;
 
 	return HashResult;
 }
 
 
-PSOWrapper::PSOWrapper(const PipelineDesc& pipelineDesc, PSOPool* InOwnerPSOPool)
-	: _pipelineDesc(pipelineDesc), _OwnerPSOPool(InOwnerPSOPool)
+PSOWrapper::PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOwnerPSOPool)
+	: _pipelineDesc(InPipelineDesc), _OwnerPSOPool(InOwnerPSOPool)
 {
 }
 
