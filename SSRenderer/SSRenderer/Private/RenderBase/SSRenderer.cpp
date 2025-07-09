@@ -145,20 +145,21 @@ void SSRenderer::PerFrame()
 				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
 			}
 
-			/*
+			
 			{
 				// TODO: PixelPickerRenderTarget 기능 구현하기
 				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
 				_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget);
+				_MainDeviceContext->SetRenderTarget(_PixelPickerRenderTarget);
 
 				for (IRenderInstance* Item : _RenderInstancesToDraw)
 				{
 					_MainDeviceContext->DrawID(Item);
 				}
 
-				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
+				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 			}
-			*/
+			
 
 		}
 		_MainDeviceContext->EndRender();
