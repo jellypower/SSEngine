@@ -73,7 +73,7 @@ bool DX12GALShaderWrapper::CompileShaderInstance()
 		{
 			errorStr = (char*)errorBlob->GetBufferPointer();
 		}
-		SS_ASSERT_MSG("compile failed.");
+		SS_ASSERT_MSG(false, "compile failed.");
 		return false;
 	}
 

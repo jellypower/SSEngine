@@ -398,8 +398,8 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 	{
 		PipelineDesc NewPipelineDesc;
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
-		NewPipelineDesc.VSName = L"LambertShaderVS";
-		NewPipelineDesc.PSName = L"LambertShaderPS";
+		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
+		NewPipelineDesc.PSName = L"PS_TestDrawer";
 		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
 		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
 

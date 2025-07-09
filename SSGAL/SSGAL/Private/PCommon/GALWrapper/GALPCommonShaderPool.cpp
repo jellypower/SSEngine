@@ -34,6 +34,8 @@ void GALPCommonShaderPool::Initialize()
 			{L"TempPixelShader", L"Resource/Shader/tempShader.hlsl", "PSMain", EShaderType::PixelShader},
 			{L"LambertShaderVS", L"Resource/Shader/LambertShader.hlsl", "VS", EShaderType::VertexShader},
 			{L"LambertShaderPS", L"Resource/Shader/LambertShader.hlsl", "PS", EShaderType::PixelShader},
+			{L"VS_SMToDefaultPSInput", L"Resource/Shader/VS_SMToDefaultPSInput.hlsl", "Main", EShaderType::VertexShader},
+			{L"PS_TestDrawer", L"Resource/Shader/PS_TestDrawer.hlsl", "Main", EShaderType::PixelShader},
 		};
 
 		for (const ShaderConstructDesc& DescItem : DescSet)
