@@ -1,7 +1,16 @@
+
+
+struct ObjectIDi64
+{
+    int LSB; 
+    int MSB;
+}; // LittleEndian이기 떄문에 LSB가 먼저 나오는게 맞음
+
 cbuffer ModelBuffer : register(b0)
 {
     matrix WMatrix;
     matrix RotMatrix;
+    ObjectIDi64 Id;
 };
 
 cbuffer GlobalRenderParam : register(b1)
@@ -82,6 +91,17 @@ PS_INPUT VS(VS_INPUT input)
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-    float4 color = float4(input.Normal, 1);
+    float4 Colors[5] =
+    {
+        float4(1, 0, 0, 1),
+        float4(0, 1, 0, 1),
+        float4(0, 0, 1, 1),
+        float4(0, 0, 0, 1),
+        float4(1, 1, 1, 1)
+    };
+    int ColorIdx = Id.LSB % 5;
+
+    
+    float4 color = Colors[ColorIdx];
     return color;
 }

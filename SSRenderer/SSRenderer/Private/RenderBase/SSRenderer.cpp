@@ -18,7 +18,8 @@
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 
 
-SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice)
+SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice) :
+	_RenderInstancesToDraw(1000)
 {
 	_GALRenderDevice = InRenderDevice;
 	_MainDeviceContext = _GALRenderDevice->CreateRenderDeviceContext();
@@ -89,39 +90,67 @@ void SSRenderer::StartUp()
 	RTDesc.DrawBoxSize.WidthHeight = Vector2f(BUFFER_WIDTH, BUFFER_HEIGHT);
 	RTDesc.DrawBoxSize.MinDepth = 0.f;
 	RTDesc.DrawBoxSize.MaxDepth = 1.f;
-	RTDesc.Format = ERTColorFormat::R32_SINT;
+	RTDesc.Format = ERTColorFormat::R32G32_SINT;
 	_PixelPickerRenderTarget = _GALRenderDevice->CreateRenderTarget(RTDesc, L"PixelPickerRenderTarget");
 }
 
 void SSRenderer::PerFrame()
 {
+	// RenderTime
+	{
+		_RenderInstancesToDraw.Clear();
+		ScrapRenderInstsances(_RenderInstancesToDraw, _CurRenderCamera);
+	}
+
+
+
+	// GALTime
 	_GALRenderDevice->BeginRender();
 	{
 		_MainDeviceContext->BeginRender();
 		{
-			_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::RenderTarget);
-			_MainDeviceContext->ClearRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
-
-			XMMATRIX VPMatrix = _CurRenderCamera->GetVPMatrix();
-			VPMatrix = XMMatrixTranspose(VPMatrix);
-			_MainDeviceContext->SetCameraVPTransform(VPMatrix);
-			_MainDeviceContext->SetCameraPosition(_CurRenderCamera->GetCameraTransform().Position.SimdVec);
-
-			if (_CurRenderCamera->GetSpecificRenderTarget() == nullptr)
-			{
-				_MainDeviceContext->SetRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
-			}
-			else
-			{
-				_MainDeviceContext->SetRenderTarget(_CurRenderCamera->GetSpecificRenderTarget());
-			}
-
-	
-
 			InstantiatePendingGALAssets(_MainDeviceContext);
-			DrawRenderWorld(_MainDeviceContext, _CurRenderCamera);
 
-			_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
+
+			// Set Camera Setting
+			{
+				XMMATRIX VPMatrix = _CurRenderCamera->GetVPMatrix();
+				VPMatrix = XMMatrixTranspose(VPMatrix);
+				_MainDeviceContext->SetCameraVPTransform(VPMatrix);
+				_MainDeviceContext->SetCameraPosition(_CurRenderCamera->GetCameraTransform().Position.SimdVec);
+			}
+
+
+			// Default Render Target
+			{
+				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::RenderTarget);
+				_MainDeviceContext->ClearRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
+
+				if (_CurRenderCamera->GetSpecificRenderTarget() == nullptr)
+				{
+					_MainDeviceContext->SetRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
+				}
+				else
+				{
+					_MainDeviceContext->SetRenderTarget(_CurRenderCamera->GetSpecificRenderTarget());
+				}
+
+
+				for (IRenderInstance* Item : _RenderInstancesToDraw)
+				{
+					_MainDeviceContext->Draw(Item);
+				}
+
+				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
+			}
+
+
+
+			{
+				// TODO: PixelPickerRenderTarget 기능 구현하기
+				
+			}
+
 		}
 		_MainDeviceContext->EndRender();
 		_GALRenderDevice->ExecuteRenderContext(_MainDeviceContext);
@@ -154,7 +183,9 @@ void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 	_GALStateChangedMeshAsset.Clear();
 }
 
-void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera* InCamera)
+
+
+void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw, IRenderCamera* InCamera)
 {
 	RenderWorld* WorldToRender = (RenderWorld*)InCamera->GetIcludedRenderWorld();
 	if (WorldToRender == nullptr)
@@ -167,7 +198,7 @@ void SSRenderer::DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera
 	for (const SS::pair<SObjHashCode, IRenderInstance*>& InstancePairItem : RenderInstanceMap)
 	{
 		IRenderInstance* InstanceItem = InstancePairItem.second;
-		Executor->Draw(InstanceItem);
+		OutRenderInstancesToDraw.PushBack(InstanceItem);
 	}
 }
 

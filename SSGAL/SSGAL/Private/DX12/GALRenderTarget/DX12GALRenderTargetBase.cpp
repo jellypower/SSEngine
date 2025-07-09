@@ -21,7 +21,7 @@ DXGI_FORMAT DX12GALRenderTargetBase::ConvertColorFormat(ERTColorFormat Format)
 {
 	switch (Format)
 	{
-	case ERTColorFormat::R32_SINT: return DXGI_FORMAT_R32G32_SINT;
+	case ERTColorFormat::R32G32_SINT: return DXGI_FORMAT_R32G32_SINT;
 	case ERTColorFormat::R8G8B8A8_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
 

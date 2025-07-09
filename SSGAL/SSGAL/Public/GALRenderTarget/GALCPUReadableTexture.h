@@ -7,5 +7,5 @@ class GALCPUReadableTexture : INoncopyable
 {
 protected:
 	GALRenderDevice* _OwnerRenderDevice = nullptr;
-	Vector2i32 _ResourceWidthHeight;;
+	Vector2i32 _ResourceWidthHeight;
 };

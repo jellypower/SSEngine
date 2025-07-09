@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class IRenderInstance;
 class AssetManagerBase;
 class IMeshAsset;
 class IMeshAssetMutable;
@@ -18,6 +19,8 @@ class SSRenderer : public IRenderer
 {
 private:
 	AssetManagerBase* _AssetManager = nullptr;
+
+	SS::PooledList<IRenderInstance*> _RenderInstancesToDraw;
 
 	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
 
@@ -52,7 +55,8 @@ public:
 
 private:
 	void InstantiatePendingGALAssets(GALRenderDeviceContext* Executor);
-	void DrawRenderWorld(GALRenderDeviceContext* Executor, IRenderCamera* InCamera);
+
+	void ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw, IRenderCamera* InCamera);
 
 
 	void InitAssetManagers();

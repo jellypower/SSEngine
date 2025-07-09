@@ -77,7 +77,7 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 	{
 		SS_INTERRUPT();
 	}
-
+	_RTVDescriptorSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	
 	CD3DX12_CPU_DESCRIPTOR_HANDLE RTVDescHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart());
 	D3DDevice->CreateRenderTargetView(_RenderTargetResource, nullptr, RTVDescHandle);
@@ -115,8 +115,35 @@ void DX12GALDefaultRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDevic
 
 void DX12GALDefaultRenderTarget::SetRenderTarget(ID3D12GraphicsCommandList* CmdList)
 {
+	D3D12_VIEWPORT ViewportSize;
+
+
+	ViewportSize.TopLeftX = _ViewportBoxSize.LeftTop.X;
+	ViewportSize.TopLeftY = _ViewportBoxSize.LeftTop.Y;
+	ViewportSize.Width = _ViewportBoxSize.WidthHeight.X;
+	ViewportSize.Height = _ViewportBoxSize.WidthHeight.Y;
+	ViewportSize.MinDepth = _ViewportBoxSize.MinDepth;
+	ViewportSize.MaxDepth = _ViewportBoxSize.MaxDepth;
+
+	D3D12_RECT ScissorRectSize;
+	ScissorRectSize.left = _ScissorRectSize.Min.X;
+	ScissorRectSize.top = _ScissorRectSize.Min.Y;
+	ScissorRectSize.right = _ScissorRectSize.Max.X;
+	ScissorRectSize.bottom = _ScissorRectSize.Max.Y;
+
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
+
+
+	CmdList->RSSetViewports(1, &ViewportSize);
+	CmdList->RSSetScissorRects(1, &ScissorRectSize);
+	CmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 }
 
 void DX12GALDefaultRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList)
 {
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
+
+	constexpr float CLEAR_COLOR[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	CmdList->ClearRenderTargetView(rtvHandle, CLEAR_COLOR, 0, nullptr);
 }

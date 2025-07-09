@@ -4,6 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
+class IRIMesh;
 class IMaterialAsset;
 class IMeshAsset;
 class IModelAsset;
@@ -34,14 +35,14 @@ public:
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) override;
 
 	virtual void Draw(IRenderInstance* InRenderInstance) override;
+	virtual void DrawID(IRenderInstance* InRenderInstance) override;
 
 
 private:
-	void TEMP_DrawStaticMesh(
-		IModelAsset* InModelAsset,
-		DX12GALRIMetadata_SM* DX12RenderInstanceMetaData,
-		const XMMATRIX& DrawMat,
-		const XMMATRIX& DrawRotMat);
+	void DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
+
+
+	void DrawStaticMeshID(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 
 public:
 	ID3D12GraphicsCommandList* GetCurrentCmdList() const { return _CommandLists[_CurCommandListIdx]; }

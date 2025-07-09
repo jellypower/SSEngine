@@ -6,4 +6,5 @@ struct alignas(16) CBAModelBuffer
 {
     XMMATRIX WMatrix;
     XMMATRIX RotMatrix;
+    int64 ObjectID;
 };

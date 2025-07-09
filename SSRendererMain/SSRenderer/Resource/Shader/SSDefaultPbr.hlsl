@@ -12,6 +12,7 @@ cbuffer ModelBuffer : register(b0)
 {
     matrix WMatrix;
     matrix RotMatrix;
+    int ObjIDMSB, ObjIDLSB;
 };
 
 cbuffer RenderEnvParam : register(b1)

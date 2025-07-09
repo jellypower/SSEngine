@@ -23,6 +23,7 @@ private:
 
 	ID3D12Resource* _RenderTargetResource = nullptr;
 	ID3D12DescriptorHeap* _RenderTargetDescHeap = nullptr;
+	uint32 _RTVDescriptorSize = 0;
 
 	int32 _ResourceWidth;
 	int32 _ResourceHeight;
