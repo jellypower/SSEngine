@@ -146,8 +146,8 @@ void SSRenderer::PerFrame()
 			}
 
 			
+			// Pixel Picker RenderTarget
 			{
-				// TODO: PixelPickerRenderTarget 기능 구현하기
 				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
 				_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget);
 				_MainDeviceContext->SetRenderTarget(_PixelPickerRenderTarget);
