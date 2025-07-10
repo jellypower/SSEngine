@@ -4,6 +4,7 @@
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
+#include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALMeshAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRIMetadata_SM.h"
 
@@ -311,6 +312,60 @@ void DX12GALRenderDeviceContext::ClearRenderTarget(GALRenderTarget* InRenderTarg
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentCmdList();
 
 	DX12RenderTarget->ClearRenderTarget(CurCommandList);
+}
+
+void DX12GALRenderDeviceContext::CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc)
+{
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentCmdList();
+	DX12GALRenderDevice* OwnerDeviceDX12 = (DX12GALRenderDevice*)GetOwnerRenderDevice();
+	ID3D12Device5* D3DDevice = OwnerDeviceDX12->GetD3DDevice();
+
+
+	DX12GALCPUReadableTexture* DestReadableDX12 = (DX12GALCPUReadableTexture*)CopyDest;
+	ID3D12Resource* DestRes = DestReadableDX12->GetCurrentResource();
+
+
+	DX12GALRenderTargetBase* SrcRTDX12 = (DX12GALRenderTargetBase*)CopySrc;
+	ID3D12Resource* SrcRes = SrcRTDX12->GetCurrentResource();
+
+
+	UINT Rows = 0;
+	UINT64 RowSize = 0;
+	UINT64 TotalBytes = 0;
+	D3D12_RESOURCE_DESC SrcDesc = SrcRes->GetDesc();
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT SrcFootprint;
+	D3DDevice->GetCopyableFootprints(
+		&SrcDesc,
+		0,
+		1,
+		0,
+		&SrcFootprint,
+		&Rows,
+		&RowSize,
+		&TotalBytes
+	);
+
+
+	D3D12_BOX box;
+	box.front = 0;
+	box.back = 1;
+	box.left = 0;
+	box.right = DestReadableDX12->GetResourceWidthHeight().X;
+	box.top = 0;
+	box.bottom = DestReadableDX12->GetResourceWidthHeight().Y;
+
+	D3D12_TEXTURE_COPY_LOCATION	destLocation;
+	destLocation.PlacedFootprint = SrcFootprint;
+	destLocation.pResource = DestRes;
+	destLocation.SubresourceIndex = 0;
+	destLocation.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+
+	D3D12_TEXTURE_COPY_LOCATION	srcLocation;
+	srcLocation.pResource = SrcRes;
+	srcLocation.SubresourceIndex = 0;
+	srcLocation.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+
+	CurCommandList->CopyTextureRegion(&destLocation, box.left, box.top, 0, &srcLocation, &box);
 }
 
 void DX12GALRenderDeviceContext::Draw(IRenderInstance* InRenderInstance)

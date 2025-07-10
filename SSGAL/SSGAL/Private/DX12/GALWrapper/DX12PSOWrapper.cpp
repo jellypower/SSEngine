@@ -7,6 +7,7 @@
 #include "DX12RootSignaturePool.h"
 #include "DX12RootSignatureWrapper.h"
 #include "Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
+#include "Private/DX12/Utils/SSDX12Utils.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/PCommon/GALWrapper/PSOPool.h"
 #include "SSGAL/Public/GALWrapper/GALShaderPool.h"
@@ -114,8 +115,8 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DX12GALRenderTargetBase::ConvertColorFormat(InPipelineDesc.RTColorFormat);
-	psoDesc.DSVFormat = DX12GALRenderTargetBase::ConvertColorFormat(InPipelineDesc.DSColorFormat);
+	psoDesc.RTVFormats[0] = SS::DX12Util::ConvertColorFormat(InPipelineDesc.RTColorFormat);
+	psoDesc.DSVFormat = SS::DX12Util::ConvertColorFormat(InPipelineDesc.DSColorFormat);
 	psoDesc.SampleDesc.Count = 1;
 
 

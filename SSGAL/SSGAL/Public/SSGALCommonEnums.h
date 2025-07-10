@@ -5,7 +5,9 @@ enum class EResourceStateType : uint8
 {
 	None,
 
+	Common,
 	CopySrc,
+	CopyDest,
 	RenderTarget,
 	Present
 };

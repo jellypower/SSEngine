@@ -3,6 +3,8 @@
 
 
 #include "DX12GALSwapChainRenderTarget.h"
+
+#include "Private/DX12/Utils/SSDX12Utils.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
@@ -13,7 +15,7 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDevice* 
 	ID3D12Device5* D3DDevice = InRenderDevice->GetD3DDevice();
 	ID3D12CommandQueue* D3DCommandQueue = InRenderDevice->GetD3DCommandQueue();
 
-
+	// Create Descriptor
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 		rtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT;	// SwapChain Buffer 0	| SwapChain Buffer 1
@@ -30,17 +32,17 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDevice* 
 
 	RECT rect;
 	::GetClientRect(InhWnd, &rect);
-	uint32 WndWidth = rect.right - rect.left;
-	uint32 WndHeight = rect.bottom - rect.top;
-	uint32 BackBufferWidth = WndWidth;
-	uint32 BackBufferHeight = WndHeight;
+	_ResourceSize.X = rect.right - rect.left;
+	_ResourceSize.Y = rect.bottom - rect.top;
+	uint32 BackBufferWidth = _ResourceSize.X;
+	uint32 BackBufferHeight = _ResourceSize.Y;
 
-	_ViewportBoxSize.WidthHeight.X = WndWidth;
-	_ViewportBoxSize.WidthHeight.Y = WndHeight;
+	_ViewportBoxSize.WidthHeight.X = _ResourceSize.X;
+	_ViewportBoxSize.WidthHeight.Y = _ResourceSize.Y;
 	_ViewportBoxSize.MinDepth = 0.f;
 	_ViewportBoxSize.MaxDepth = 1.f;
 	_ScissorRectSize.Min = Vector2f::Zero;
-	_ScissorRectSize.Max = Vector2f(WndWidth, WndHeight);
+	_ScissorRectSize.Max = Vector2f(_ResourceSize.X, _ResourceSize.Y);
 
 
 	// Describe and create the swap chain.
@@ -179,8 +181,8 @@ void DX12GALSwapChainRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDev
 	ID3D12GraphicsCommandList* CurCmdList = ((DX12GALRenderDeviceContext*)InDeviceContext)->GetCurrentCmdList();
 	ID3D12Resource* CurRenderTarget = _DXRenderTargets[_CurRenderTargetIdx];
 
-	D3D12_RESOURCE_STATES FromD3DState = ConvertResourceStates(From);
-	D3D12_RESOURCE_STATES ToD3DState = ConvertResourceStates(To);
+	D3D12_RESOURCE_STATES FromD3DState = SS::DX12Util::ConvertResourceStates(From);
+	D3D12_RESOURCE_STATES ToD3DState = SS::DX12Util::ConvertResourceStates(To);
 
 
 	CD3DX12_RESOURCE_BARRIER Barrier = CD3DX12_RESOURCE_BARRIER::Transition(CurRenderTarget, FromD3DState, ToD3DState);
@@ -240,6 +242,17 @@ void DX12GALSwapChainRenderTarget::UpdateViewportSize(uint32 BackBufferWidth, ui
 	_ScissorRectSize.Max.Y = BackBufferHeight;
 }
 
+Vector2i32 DX12GALSwapChainRenderTarget::GetResourceSize() const
+{
+	return _ResourceSize;
+}
+
+int32 DX12GALSwapChainRenderTarget::GetResourceRowPitch() const
+{
+	SS_INTERRUPT(L"SwapChain의 Pitch를 얻어와야 할 이유가 없으며 DepthStencil과 RenderTarget중 필요로하는 Pitch가 모호합니다.");
+	return 0;
+}
+
 ERenderTargetType DX12GALSwapChainRenderTarget::GetRenderTargetType() const
 {
 	return ERenderTargetType::SwapChain;
@@ -248,6 +261,11 @@ ERenderTargetType DX12GALSwapChainRenderTarget::GetRenderTargetType() const
 ERTColorFormat DX12GALSwapChainRenderTarget::GetRTColorFormat() const
 {
 	return ERTColorFormat::R8G8B8A8_UNORM;
+}
+
+ID3D12Resource* DX12GALSwapChainRenderTarget::GetCurrentResource() const
+{
+	return _DXRenderTargets[_CurRenderTargetIdx];
 }
 
 void DX12GALSwapChainRenderTarget::CreateDSVDescHeap()

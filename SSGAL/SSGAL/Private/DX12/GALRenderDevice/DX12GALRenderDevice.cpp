@@ -3,6 +3,7 @@
 #include "DX12GALRenderDevice.h"
 
 #include "DX12GALRenderDeviceContext.h"
+#include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourceAllocator.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12DescriptorHeapCustomAllocator.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
@@ -297,6 +298,12 @@ GALRenderTarget* DX12GALRenderDevice::CreateRenderTarget(const GALRenderTargetDe
 {
 	DX12GALDefaultRenderTarget* NewRenderTarget = DBG_NEW DX12GALDefaultRenderTarget(this, Desc, ResourceName);
 	return NewRenderTarget;
+}
+
+GALCPUReadableTexture* DX12GALRenderDevice::CreateCPUReadableTexture(ERTColorFormat InColorFormat, Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName)
+{
+	DX12GALCPUReadableTexture* NewReadableTex = DBG_NEW DX12GALCPUReadableTexture(this, InColorFormat, InWidthHeight, Pitch, ResourceName);
+	return NewReadableTex;
 }
 
 

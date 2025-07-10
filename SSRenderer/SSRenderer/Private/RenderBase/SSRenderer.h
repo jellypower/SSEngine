@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class GALCPUReadableTexture;
 class IRenderInstance;
 class AssetManagerBase;
 class IMeshAsset;
@@ -27,6 +28,7 @@ private:
 private:
 	IRenderCamera* _CurRenderCamera = nullptr;
 	GALRenderTarget* _PixelPickerRenderTarget = nullptr;
+	GALCPUReadableTexture* _PixelPickerCPUReadableTex = nullptr;
 
 public:
 	SSRenderer(GALRenderDevice* InRenderDevice);

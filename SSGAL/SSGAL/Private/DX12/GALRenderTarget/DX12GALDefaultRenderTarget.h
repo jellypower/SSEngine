@@ -11,8 +11,12 @@ public:
 	virtual ~DX12GALDefaultRenderTarget();
 
 public:
+	virtual Vector2i32 GetResourceSize() const override;
+	virtual int32 GetResourceRowPitch() const override;
 	virtual ERenderTargetType GetRenderTargetType() const override;
 	virtual ERTColorFormat GetRTColorFormat() const override;
+
+	virtual ID3D12Resource* GetCurrentResource() const override;
 
 	virtual void ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To) override;
 	virtual void SetRenderTarget(ID3D12GraphicsCommandList* CmdList) override;
@@ -25,6 +29,6 @@ private:
 	ID3D12DescriptorHeap* _RenderTargetDescHeap = nullptr;
 	uint32 _RTVDescriptorSize = 0;
 
-	int32 _ResourceWidth;
-	int32 _ResourceHeight;
+	Vector2i32 _ResourceSize;
+	int32 _ResrouceRowPitch;
 };

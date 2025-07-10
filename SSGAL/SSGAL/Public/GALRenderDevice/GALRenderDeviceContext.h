@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class GALCPUReadableTexture;
 class IMeshAssetMutable;
 class IMaterialAsset;
 enum class EResourceStateType : uint8;
@@ -26,6 +27,8 @@ public:
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;
 	virtual void SetRenderTarget(GALRenderTarget* InRenderTarget) = 0;
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) = 0;
+
+	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) = 0;
 
 
 	virtual void Draw(IRenderInstance* InRenderInstance) = 0;

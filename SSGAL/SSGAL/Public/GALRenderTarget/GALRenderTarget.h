@@ -29,8 +29,11 @@ public:
 	int32 GetCurRenderTargetIdx() const { return _CurRenderTargetIdx; }
 
 public:
+	virtual Vector2i32 GetResourceSize() const = 0;
+	virtual int32 GetResourceRowPitch() const = 0;
 	virtual ERenderTargetType GetRenderTargetType() const = 0;
 	virtual ERTColorFormat GetRTColorFormat() const = 0;
+
 	virtual void ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To) = 0;
 
 

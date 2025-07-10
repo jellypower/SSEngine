@@ -2,7 +2,11 @@
 // #include <d3dx12.h>
 // #include <d3d12.h>
 
+#include "Public/GALRenderTarget/GALRTCommonEnums.h"
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
+
+enum class EResourceStateType : uint8;
+enum class ERTColorFormat : int32;
 
 namespace SS {
 	static inline constexpr D3D12_STATIC_SAMPLER_DESC GetDefaultSamplerDesc(uint32 RegisterIdx)
@@ -26,4 +30,10 @@ namespace SS {
 		return sampler;
 	}
 
+	namespace DX12Util
+	{
+		int32 GetColorFormatSizeInByte(ERTColorFormat Format);
+		DXGI_FORMAT ConvertColorFormat(ERTColorFormat Format);
+		D3D12_RESOURCE_STATES ConvertResourceStates(EResourceStateType Type);
+	}
 };

@@ -7,6 +7,7 @@
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
+#include "SSGAL/Public/GALRenderTarget/GALCPUReadableTexture.h"
 
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
@@ -93,6 +94,12 @@ void SSRenderer::StartUp()
 	RTDesc.Format = ERTColorFormat::R32G32_SINT;
 	RTDesc.InitialResourceState = EResourceStateType::CopySrc;
 	_PixelPickerRenderTarget = _GALRenderDevice->CreateRenderTarget(RTDesc, L"PixelPickerRenderTarget");
+	int32 Pitch = _PixelPickerRenderTarget->GetResourceRowPitch();
+	_PixelPickerCPUReadableTex = _GALRenderDevice->CreateCPUReadableTexture(
+		ERTColorFormat::R32G32_SINT,
+		Vector2i32(1024, 1024),
+		Pitch,
+		L"PixelPickerCPUReadableTex");
 }
 
 void SSRenderer::PerFrame()
@@ -108,6 +115,15 @@ void SSRenderer::PerFrame()
 	// GALTime
 	_GALRenderDevice->BeginRender();
 	{
+		// TEMP Read PixelPicker
+		{
+			_PixelPickerCPUReadableTex->BeginRead();
+
+			Vector2i32* Data = (Vector2i32*)_PixelPickerCPUReadableTex->GetDataAtRatio(.5f, .5f);
+
+			_PixelPickerCPUReadableTex->EndRead();
+		}
+
 		_MainDeviceContext->BeginRender();
 		{
 			InstantiatePendingGALAssets(_MainDeviceContext);
@@ -158,6 +174,8 @@ void SSRenderer::PerFrame()
 				}
 
 				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
+
+				_MainDeviceContext->CopyRenderTarget(_PixelPickerCPUReadableTex, _PixelPickerRenderTarget);
 			}
 			
 
@@ -170,6 +188,7 @@ void SSRenderer::PerFrame()
 
 void SSRenderer::CleanUp()
 {
+	delete _PixelPickerCPUReadableTex;
 	delete _PixelPickerRenderTarget;
 
 	CleanupAssetMnagers();

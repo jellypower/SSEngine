@@ -42,9 +42,6 @@
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -91,6 +88,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALCPUReadableTexture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\DX12\Utils\SSDX12Utils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -225,6 +228,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALCPUReadableTexture.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

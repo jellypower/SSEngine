@@ -17,8 +17,12 @@ public:
 	void UpdateViewportSize(uint32 BackBufferWidth, uint32 BackBufferHeight);
 
 public:
+	virtual Vector2i32 GetResourceSize() const override;
+	virtual int32 GetResourceRowPitch() const override;
 	virtual ERenderTargetType GetRenderTargetType() const override;
 	virtual ERTColorFormat GetRTColorFormat() const override;
+
+	virtual ID3D12Resource* GetCurrentResource() const override;
 
 	virtual void ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To) override;
 	virtual void SetRenderTarget(ID3D12GraphicsCommandList* CmdList) override;
@@ -29,6 +33,10 @@ private:
 	void RecreateDepthStencil(uint32 Width, uint32 Height);
 
 private:
+
+	Vector2i32 _ResourceSize;
+	int32 _ResourceRowPitch;
+
 	IDXGISwapChain3* _swapChain = nullptr;
 	uint32 _SwapChainFlags = 0;
 

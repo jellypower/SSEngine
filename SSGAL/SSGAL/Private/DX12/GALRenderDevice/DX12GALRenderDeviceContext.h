@@ -34,6 +34,8 @@ public:
 	virtual void SetRenderTarget(GALRenderTarget* InRenderTarget) override;
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) override;
 
+	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) override;
+
 	virtual void Draw(IRenderInstance* InRenderInstance) override;
 	virtual void DrawID(IRenderInstance* InRenderInstance) override;
 

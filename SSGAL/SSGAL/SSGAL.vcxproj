@@ -173,8 +173,8 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp" />
     <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.cpp" />
     <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALCPUReadableTexture.cpp" />
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.cpp" />
-    <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.cpp" />
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.cpp" />
     <ClCompile Include="Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.cpp" />
     <ClCompile Include="Private\DX12\GALWrapper\DX12GALShaderPool.cpp" />
@@ -184,6 +184,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClCompile Include="Private\DX12\GALWrapper\DX12RootSignaturePool.cpp" />
     <ClCompile Include="Private\DX12\GALWrapper\DX12RootSignatureWrapper.cpp" />
     <ClCompile Include="Private\DX12\ModuleEntry\GALInstanceFactory.cpp" />
+    <ClCompile Include="Private\DX12\Utils\SSDX12Utils.cpp" />
     <ClCompile Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.cpp" />
     <ClCompile Include="Private\PCommon\GALResourceUpdater\GALResourceUpdater.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp" />
@@ -203,6 +204,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.h" />
     <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.h" />
     <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.h" />
+    <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALCPUReadableTexture.h" />
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.h" />
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.h" />
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.h" />
