@@ -217,42 +217,6 @@ void SSEngine::TEMP_ProcessContents()
 		_Renderer->RequestPixelPicking(MousePos.X, MousePos.Y);
 	}
 
-	constexpr float OBJ_ROT_SPEED = 1;
-	if (SSInput::GetKey(EKeyCode::KEY_LEFT))
-	{
-		TEMP_MdlcYRot -= OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
-		TEMP_MdlcYRot = fmod(TEMP_MdlcYRot, XM_PI);
-		TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
-
-//		Vector4f MoveDelta = Vector4f::Right * SSFrameInfo::GetDeltaTime() * 10;
-//		TEMP_MdlcObj->SetPosition(TEMP_MdlcObj->GetTransform().Position + MoveDelta);
-	}
-
-	if (SSInput::GetKey(EKeyCode::KEY_RIGHT))
-	{
-		TEMP_MdlcYRot += OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
-		TEMP_MdlcYRot = fmod(TEMP_MdlcYRot, XM_PI);
-		TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
-
-//		Vector4f MoveDelta = Vector4f::Right * SSFrameInfo::GetDeltaTime() * -10;
-//		TEMP_MdlcObj->SetPosition(TEMP_MdlcObj->GetTransform().Position + MoveDelta);
-	}
-
-	if (SSInput::GetKey(EKeyCode::KEY_UP))
-	{
-		TEMP_MdlcXRot -= OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
-		TEMP_MdlcXRot = fmod(TEMP_MdlcXRot, XM_PI);
-		TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
-	}
-
-	if (SSInput::GetKey(EKeyCode::KEY_DOWN))
-	{
-		TEMP_MdlcXRot += OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
-		TEMP_MdlcXRot = fmod(TEMP_MdlcXRot, XM_PI);
-		TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
-	}
-
-
 	SObjHashCode ObjID = _Renderer->GetPixelPickedObjectID();
 
 	SObjectBase* PickedObj = ObjID.GetSObject();
@@ -261,6 +225,45 @@ void SSEngine::TEMP_ProcessContents()
 	if (PickedGameObj != TEMP_PixelPickedObject)
 	{
 		TEMP_PixelPickedObject = PickedGameObj;
+	}
+
+
+	if (TEMP_PixelPickedObject != nullptr)
+	{
+		constexpr float OBJ_ROT_SPEED = 1;
+		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
+		{
+			TEMP_MdlcYRot -= OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
+			TEMP_MdlcYRot = fmod(TEMP_MdlcYRot, XM_PI);
+			TEMP_PixelPickedObject->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+
+			//		Vector4f MoveDelta = Vector4f::Right * SSFrameInfo::GetDeltaTime() * 10;
+			//		TEMP_MdlcObj->SetPosition(TEMP_MdlcObj->GetTransform().Position + MoveDelta);
+		}
+
+		if (SSInput::GetKey(EKeyCode::KEY_RIGHT))
+		{
+			TEMP_MdlcYRot += OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
+			TEMP_MdlcYRot = fmod(TEMP_MdlcYRot, XM_PI);
+			TEMP_PixelPickedObject->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+
+			//		Vector4f MoveDelta = Vector4f::Right * SSFrameInfo::GetDeltaTime() * -10;
+			//		TEMP_MdlcObj->SetPosition(TEMP_MdlcObj->GetTransform().Position + MoveDelta);
+		}
+
+		if (SSInput::GetKey(EKeyCode::KEY_UP))
+		{
+			TEMP_MdlcXRot -= OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
+			TEMP_MdlcXRot = fmod(TEMP_MdlcXRot, XM_PI);
+			TEMP_PixelPickedObject->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+		}
+
+		if (SSInput::GetKey(EKeyCode::KEY_DOWN))
+		{
+			TEMP_MdlcXRot += OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
+			TEMP_MdlcXRot = fmod(TEMP_MdlcXRot, XM_PI);
+			TEMP_PixelPickedObject->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+		}
 	}
 }
 
