@@ -27,8 +27,12 @@ private:
 
 private:
 	IRenderCamera* _CurRenderCamera = nullptr;
+
+	bool _bPixelPickingReserved = false;
+	Vector2i32 _PixelPickingCoord;
 	GALRenderTarget* _PixelPickerRenderTarget = nullptr;
 	GALCPUReadableTexture* _PixelPickerCPUReadableTex = nullptr;
+	SObjHashCode _PickedObjectHash;
 
 public:
 	SSRenderer(GALRenderDevice* InRenderDevice);
@@ -39,15 +43,19 @@ public:
 	IAssetManagerMutable* GetMutableAssetManager() override;
 
 public:
+	virtual IRenderWorld* CreateRenderWorld() override;
 	virtual IRIMesh* CreateRIStaticMesh() override;
+	virtual SObjHashCode GetPixelPickedObjectID() const override;
+
+public:
+	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
+	virtual void RequestPixelPicking(int32 X, int32 Y) override;
 
 public:
 	virtual void StartUp() override;
 	virtual void PerFrame() override;
 	virtual void CleanUp() override;
 
-	virtual IRenderWorld* CreateRenderWorld() override;
-	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 
 
 	void AddGALStateChangedAsset(IAssetBase* AssetToChange);

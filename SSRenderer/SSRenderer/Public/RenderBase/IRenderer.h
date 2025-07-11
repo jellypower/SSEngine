@@ -1,5 +1,7 @@
 ﻿#pragma once
-#include <SSEngineDefault/Public/INoncopyable.h>
+#include "SSEngineDefault/Public/INoncopyable.h"
+
+#include "SObject/Public/SObjHashCode.h"
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
@@ -24,16 +26,20 @@ public:
 	virtual IAssetManagerMutable* GetMutableAssetManager() = 0;
 
 public:
+	virtual IRenderWorld* CreateRenderWorld() = 0;
 	virtual IRIMesh* CreateRIStaticMesh() = 0;
+	virtual SObjHashCode GetPixelPickedObjectID() const = 0;
+
+public:
+	virtual void SetRenderCamera(IRenderCamera* InCamera) = 0;
+	virtual void RequestPixelPicking(int32 X, int32 Y) = 0;
 
 public:
 	virtual void StartUp() = 0;
 	virtual void PerFrame() = 0;
 	virtual void CleanUp() = 0;
 
-	virtual IRenderWorld* CreateRenderWorld() = 0;
 
-	virtual void SetRenderCamera(IRenderCamera* InCamera) = 0;
 
 
 };

@@ -3,6 +3,8 @@
 
 #include "RenderWorld.h"
 
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
@@ -45,6 +47,11 @@ IRIMesh* SSRenderer::CreateRIStaticMesh()
 	return DBG_NEW RIStaticMesh();
 }
 
+SObjHashCode SSRenderer::GetPixelPickedObjectID() const
+{
+	return _PickedObjectHash;
+}
+
 
 void SSRenderer::AddGALStateChangedAsset(IAssetBase* AssetToChange)
 {
@@ -73,6 +80,13 @@ void SSRenderer::SetRenderCamera(IRenderCamera* InCamera)
 {
 	_CurRenderCamera = InCamera;
 }
+
+void SSRenderer::RequestPixelPicking(int32 X, int32 Y)
+{
+	_bPixelPickingReserved = true;
+	_PixelPickingCoord = Vector2i32(X, Y);
+}
+
 
 void SSRenderer::StartUp()
 {
@@ -116,12 +130,26 @@ void SSRenderer::PerFrame()
 	_GALRenderDevice->BeginRender();
 	{
 		// TEMP Read PixelPicker
+		if (_bPixelPickingReserved)
 		{
 			_PixelPickerCPUReadableTex->BeginRead();
 
-			Vector2i32* Data = (Vector2i32*)_PixelPickerCPUReadableTex->GetDataAtRatio(.5f, .5f);
+			Vector2ui32 WindowSize = SSFrameInfo::GetWindowSize();
+			
+			int64 ObjectNativeID = 0; 
+			int64* pObjectNativeID = (int64*)_PixelPickerCPUReadableTex->GetDataAtRatio(
+				(float)_PixelPickingCoord.X / WindowSize.X,
+				(float)_PixelPickingCoord.Y / WindowSize.Y);
+			if (pObjectNativeID != nullptr)
+			{
+				ObjectNativeID = *pObjectNativeID;
+			}
+			_PickedObjectHash = SObjHashCode(ObjectNativeID); // TODO: PixelPicking 마무리하기
+
 
 			_PixelPickerCPUReadableTex->EndRead();
+
+			_bPixelPickingReserved = false;
 		}
 
 		_MainDeviceContext->BeginRender();
@@ -177,8 +205,6 @@ void SSRenderer::PerFrame()
 
 				_MainDeviceContext->CopyRenderTarget(_PixelPickerCPUReadableTex, _PixelPickerRenderTarget);
 			}
-			
-
 		}
 		_MainDeviceContext->EndRender();
 		_GALRenderDevice->ExecuteRenderContext(_MainDeviceContext);

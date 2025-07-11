@@ -8,11 +8,12 @@
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 #include "SSRenderer/Private/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
-#include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
 
-extern IRenderer* g_Renderer = nullptr;
+IRenderer* g_Renderer = nullptr;
 IHasherPool* g_HasherPool = nullptr;
+FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
+
 
 IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
 {
@@ -34,7 +35,10 @@ IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
 	return newRenderer;
 }
 
-void SSRendererModuleEntry(IHasherPool* InHasherPool)
+void SSRendererModuleEntry(
+	IHasherPool* InHasherPool,
+	FrameInfoProcessorBase* InFrameInfoProcessor)
 {
 	g_HasherPool = InHasherPool;
+	g_FrameInfoProcessor = InFrameInfoProcessor;
 }

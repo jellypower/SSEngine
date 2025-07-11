@@ -40,6 +40,7 @@ public:
 		return Vector2f( (float)_mouseDelta.X / winSize.X, -(float)_mouseDelta.Y / winSize.Y );
 	}
 
+	inline Vector2i32 GetMousePos() const { return _mousePos; }
 
 
 	void ResetCurInputState();

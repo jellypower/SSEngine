@@ -101,7 +101,7 @@ void RunModuleEntryScriptPostInitWindow(
 			bEnableDebugLayer,
 			bEnableGPUBaseValidation);
 
-		SSRendererModuleEntry(g_HasherPool);
+		SSRendererModuleEntry(g_HasherPool, g_FrameInfoProcessor);
 		g_Renderer = CreateRenderer(NewRenderDevice);
 
 		SSFBXImporterModuleEntry(g_HasherPool, g_Renderer);

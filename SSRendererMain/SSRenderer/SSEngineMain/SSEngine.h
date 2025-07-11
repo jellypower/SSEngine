@@ -26,7 +26,7 @@ public:
 
 	void InjectImportFilePath_TMP(const utf16* inImportFilePath) { _importFileName_TMP = inImportFilePath; }
 	void TEMP_CreateTEMPMaterial();
-	void TEMP_ProcessInput();
+	void TEMP_ProcessContents();
 
 private:
 	SWorld* _DefaultWorld = nullptr;
@@ -34,6 +34,8 @@ private:
 private:
 	IRenderer* _Renderer = nullptr;
 
+
+	SGameObject* TEMP_PixelPickedObject = nullptr;
 
 	SGameObject* TEMP_MdlcObj = nullptr;
 	float TEMP_MdlcYRot = 0;

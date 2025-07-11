@@ -97,7 +97,7 @@ void SSEngine::StartupEngine()
 
 void SSEngine::EnginePerFrame()
 {
-	TEMP_ProcessInput();
+	TEMP_ProcessContents();
 	_DefaultWorld->ProcessTransformCommit();
 	_Renderer->PerFrame();
 }
@@ -134,7 +134,7 @@ void SSEngine::TEMP_CreateTEMPMaterial()
 	AssetManager->AddToAssetPool(NewMaterialAsset);
 }
 
-void SSEngine::TEMP_ProcessInput()
+void SSEngine::TEMP_ProcessContents()
 {
 	float DeltaTime = SSFrameInfo::GetDeltaTime();
 	SGameObject* CamGameObj = TEMP_Camera->GetParent();
@@ -211,6 +211,12 @@ void SSEngine::TEMP_ProcessInput()
 		CamGameObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_CamXRot, TEMP_CamYRot, 0, 0)));
 	}
 
+	if (SSInput::GetMouseDown(EMouseCode::MOUSE_LEFT))
+	{
+		Vector2i32 MousePos = SSInput::GetMousePos();
+		_Renderer->RequestPixelPicking(MousePos.X, MousePos.Y);
+	}
+
 	constexpr float OBJ_ROT_SPEED = 1;
 	if (SSInput::GetKey(EKeyCode::KEY_LEFT))
 	{
@@ -244,6 +250,17 @@ void SSEngine::TEMP_ProcessInput()
 		TEMP_MdlcXRot += OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
 		TEMP_MdlcXRot = fmod(TEMP_MdlcXRot, XM_PI);
 		TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+	}
+
+
+	SObjHashCode ObjID = _Renderer->GetPixelPickedObjectID();
+
+	SObjectBase* PickedObj = ObjID.GetSObject();
+	SGameObject* PickedGameObj = dynamic_cast<SGameObject*>(PickedObj);
+
+	if (PickedGameObj != TEMP_PixelPickedObject)
+	{
+		TEMP_PixelPickedObject = PickedGameObj;
 	}
 }
 

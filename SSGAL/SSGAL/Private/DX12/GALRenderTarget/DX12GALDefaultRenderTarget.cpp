@@ -178,6 +178,6 @@ void DX12GALDefaultRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* Cm
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
 
-	constexpr FLOAT CLEAR_COLOR[] = { 1.f, 1.f, 0.f, 0.f };
+	constexpr FLOAT CLEAR_COLOR[] = { 0.f, 0.f, 0.f, 0.f };
 	CmdList->ClearRenderTargetView(rtvHandle, CLEAR_COLOR, 0, nullptr);
 }
