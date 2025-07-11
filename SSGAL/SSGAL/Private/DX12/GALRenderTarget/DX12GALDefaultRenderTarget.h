@@ -29,6 +29,10 @@ private:
 	ID3D12DescriptorHeap* _RenderTargetDescHeap = nullptr;
 	uint32 _RTVDescriptorSize = 0;
 
+	uint32 _DSVDescriptorSize = 0;
+	ID3D12DescriptorHeap* _DSVHeap = nullptr;
+	ID3D12Resource* _DepthStencil = nullptr;
+
 	Vector2i32 _ResourceSize;
 	int32 _ResrouceRowPitch;
 };

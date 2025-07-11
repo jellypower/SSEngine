@@ -537,7 +537,7 @@ void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMAT
 		NewPipelineDesc.PSName = L"PS_IDDrawer";
 		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
 		NewPipelineDesc.RTColorFormat = ERTColorFormat::R32G32_SINT;
-		NewPipelineDesc.DSColorFormat = ERTColorFormat::Unknown;
+		NewPipelineDesc.DSColorFormat = ERTColorFormat::D32_FLOAT;
 		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
 
 		const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(NewPipelineDesc.RootSignatureType);
