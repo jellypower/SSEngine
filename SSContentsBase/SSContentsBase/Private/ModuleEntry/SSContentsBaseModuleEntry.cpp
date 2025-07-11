@@ -4,11 +4,11 @@
 IRenderer* g_Renderer = nullptr;
 
 IHasherPool* g_HasherPool = nullptr;
-FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
+IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
 
 
-void SSContentsBaseModuleEntry(IRenderer* InRenderer, IHasherPool* InHasherPool, FrameInfoProcessorBase* InFrameInfo,
+void SSContentsBaseModuleEntry(IRenderer* InRenderer, IHasherPool* InHasherPool, IFrameInfoProcessor* InFrameInfo,
 	SSRawInputProcessorBase* InRawInputProcessor)
 {
 	g_Renderer = InRenderer;

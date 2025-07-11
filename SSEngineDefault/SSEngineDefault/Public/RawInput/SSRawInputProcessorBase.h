@@ -3,7 +3,7 @@
 #include "SSEngineDefault/ModuleExportKeyword.h"
 
 #include "SSEngineDefault/Public/INoncopyable.h"
-#include "SSEngineDefault/Public/RawProfiler/FrameInfoProcessorBase.h"
+#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/SSNativeTypes.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 

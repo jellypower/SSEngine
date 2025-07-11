@@ -6,7 +6,7 @@
 #include "SSEngineDefault/Public/SSEngineInlineSettings.h"
 #include "SSEngineDefault/Public/SHasher/IHasherPool.h"
 #include "SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h"
-#include "SSEngineDefault/Public/RawProfiler/FrameInfoProcessorBase.h"
+#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 
 #include "SObject/Public/SObjectGlobalHashMap.h"
@@ -24,7 +24,7 @@
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 
 IHasherPool* g_HasherPool = nullptr;
-FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
+IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
 
 IRenderer* g_Renderer = nullptr;

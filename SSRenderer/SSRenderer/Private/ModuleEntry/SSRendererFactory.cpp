@@ -12,7 +12,7 @@
 
 IRenderer* g_Renderer = nullptr;
 IHasherPool* g_HasherPool = nullptr;
-FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
+IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 
 
 IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
@@ -37,7 +37,7 @@ IRenderer* CreateRenderer(GALRenderDevice* InRenderDevice)
 
 void SSRendererModuleEntry(
 	IHasherPool* InHasherPool,
-	FrameInfoProcessorBase* InFrameInfoProcessor)
+	IFrameInfoProcessor* InFrameInfoProcessor)
 {
 	g_HasherPool = InHasherPool;
 	g_FrameInfoProcessor = InFrameInfoProcessor;

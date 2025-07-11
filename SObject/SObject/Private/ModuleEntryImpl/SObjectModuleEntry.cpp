@@ -12,8 +12,6 @@
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 
 IHasherPool* g_HasherPool = nullptr;
-FrameInfoProcessorBase* g_FrameInfoProcessor = nullptr;
-SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
 
 SObjectGlobalHashMap* CreateSObjectGlobalHashMap()
 {

@@ -1,14 +1,11 @@
-#pragma once
-#include "SSEngineDefault/ModuleExportKeyword.h"
-
+﻿#pragma once
+#include "SSEngineDefault/Public/INoncopyable.h"
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 #include "SSEngineDefault/Public/SSVector.h"
-#include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 
-
-class SSENGINEDEFAULT_MODULE FrameInfoProcessorBase
+class IFrameInfoProcessor : public INoncopyable
 {
-private:
+protected:
 	uint64 _perfFrequency = 0;
 
 	uint64 _frameCount = 0;
@@ -40,8 +37,8 @@ public:
 
 
 public:
-	void BeginFrameXXX();
-	void PerFrameXXX();
-	void ProcessWindowResizeXXX(uint32 width, uint32 height);
+	virtual void BeginFrameXXX() = 0;
+	virtual void PerFrameXXX() = 0;
+	virtual void ProcessWindowResizeXXX(uint32 width, uint32 height) = 0;
 };
 

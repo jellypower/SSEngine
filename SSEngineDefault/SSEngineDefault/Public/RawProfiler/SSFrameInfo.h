@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "FrameInfoProcessorBase.h"
+#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/SSNativeTypes.h"
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 

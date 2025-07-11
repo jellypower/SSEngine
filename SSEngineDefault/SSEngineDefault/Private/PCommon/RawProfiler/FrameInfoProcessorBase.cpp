@@ -1,5 +1,4 @@
-#define SSENGINEDEFAULT_MODULE_EXPORT
-#include "SSEngineDefault/Public/RawProfiler/FrameInfoProcessorBase.h"
+#include "FrameInfoProcessorBase.h"
 
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 

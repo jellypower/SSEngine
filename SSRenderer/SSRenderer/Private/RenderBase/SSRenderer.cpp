@@ -126,7 +126,6 @@ void SSRenderer::PerFrame()
 
 
 
-	// GALTime
 	_GALRenderDevice->BeginRender();
 	{
 		// TEMP Read PixelPicker

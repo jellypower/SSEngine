@@ -168,6 +168,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\GeometryType.h" />
     <ClInclude Include="Public\GlobalVariableSet\GlobalVariableSet.h" />
     <ClInclude Include="Public\INoncopyable.h" />
+    <ClInclude Include="Public\RawProfiler\IFrameInfoProcessor.h" />
     <ClInclude Include="Public\RawProfiler\ProfilerUtils.h" />
     <ClInclude Include="Public\RawInput\SSInput.h" />
     <ClInclude Include="Public\RawProfiler\SSFrameInfo.h" />
@@ -195,7 +196,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SSDirectXMathCustom.h" />
     <ClInclude Include="Public\SSEngineDefault.h" />
     <ClInclude Include="Public\SSEngineInlineSettings.h" />
-    <ClInclude Include="Public\RawProfiler\FrameInfoProcessorBase.h" />
+    <ClInclude Include="Private\PCommon\RawProfiler\FrameInfoProcessorBase.h" />
     <ClInclude Include="Public\RawInput\SSRawInputProcessorBase.h" />
     <ClInclude Include="Public\SSNativeKeywords.h" />
     <ClInclude Include="Public\SSNativeTypes.h" />

@@ -3,9 +3,9 @@
 
 class IHasherPool;
 class SSRawInputProcessorBase;
-class FrameInfoProcessorBase;
+class IFrameInfoProcessor;
 
 
 extern IHasherPool* g_HasherPool;
-extern FrameInfoProcessorBase* g_FrameInfoProcessor;
+extern IFrameInfoProcessor* g_FrameInfoProcessor;
 extern SSRawInputProcessorBase* g_RawInputProcessor;

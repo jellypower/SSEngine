@@ -144,13 +144,16 @@
     <ClInclude Include="Public\SHasher\SHasherW.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RawProfiler\FrameInfoProcessorBase.h">
+    <ClInclude Include="Private\PCommon\RawProfiler\FrameInfoProcessorBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\RawInput\SSRawInputProcessorBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawProfiler\IFrameInfoProcessor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
