@@ -19,7 +19,9 @@
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 #include "SSFBXImporter/Public/ModuleEntry/SSFBXImporterFactory.h"
+
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
@@ -40,16 +42,11 @@ void SSEngine::StartupEngine()
 {
 	_Renderer->StartUp();
 
-	SS::SHasherW HAsher = "ASDFASDF";
 
 	_FbxImporter = g_fpCreateSSFBXImporter();
 	_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager());
 	_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
 	_FbxImporter->ImportCurrentFileToAssetManager();
-
-
-	// TEMP
-	TEMP_CreateTEMPMaterial();
 
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
@@ -93,6 +90,11 @@ void SSEngine::StartupEngine()
 		TEMP_Camera = CameraComp;
 		_Renderer->SetRenderCamera(CameraComp->GetRenderCamera());
 	}
+
+	// TEMP
+	{
+		TEMP_CreateAssets();
+	}
 }
 
 void SSEngine::EnginePerFrame()
@@ -104,6 +106,11 @@ void SSEngine::EnginePerFrame()
 
 void SSEngine::CleanupEngine()
 {
+	// TEMP
+	{
+		TEMP_CleanupAssets();
+	}
+
 	_DefaultWorld->DestroyAllObjectsInWorld();
 
 	bool IsAnyObjectReminInWorld = _DefaultWorld->IsAnyObjectRemainInWorld();
@@ -123,7 +130,7 @@ void SSEngine::CleanupEngine()
 	_Renderer = nullptr;
 }
 
-void SSEngine::TEMP_CreateTEMPMaterial()
+void SSEngine::TEMP_CreateAssets()
 {
 	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
 
@@ -132,6 +139,22 @@ void SSEngine::TEMP_CreateTEMPMaterial()
 	NewMaterialAsset->_PSName = L"TempVertexShader";
 
 	AssetManager->AddToAssetPool(NewMaterialAsset);
+
+
+	_TempTexture = AssetManager->CreateEmptyTextureAsset(L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds");
+	AssetManager->AddToAssetPool(_TempTexture);
+	AssetInstanceReferencer TestReference;
+	TestReference.Type = EAssetInstanceReferenceType::AssetName;
+	TestReference.AssetName = "__TEST_ASSET_NAME__";
+	_TempTexture->AddAssetReference(TestReference);
+}
+
+void SSEngine::TEMP_CleanupAssets()
+{
+	AssetInstanceReferencer TestReference;
+	TestReference.Type = EAssetInstanceReferenceType::AssetName;
+	TestReference.AssetName = "__TEST_ASSET_NAME__";
+	_TempTexture->RemoveAssetReference(TestReference);
 }
 
 void SSEngine::TEMP_ProcessContents()

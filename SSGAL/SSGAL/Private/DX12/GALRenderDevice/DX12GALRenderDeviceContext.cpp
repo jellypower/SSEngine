@@ -4,12 +4,15 @@
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
+#include <SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h>
+
+#include "Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
+#include "Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
 #include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
+
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALMeshAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRIMetadata_SM.h"
-
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
-
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOWrapper.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12RootSignaturePool.h"
@@ -18,9 +21,10 @@
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
+
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
-
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
@@ -267,6 +271,91 @@ lb_fail:
 	}
 
 	return false;
+}
+
+bool DX12GALRenderDeviceContext::GenerateTextureGALAsset(ITextureAssetMutable* InTextureAsset)
+{
+	if (InTextureAsset->GetGALTextureAsset() != nullptr)
+	{
+		return false;
+	}
+
+	DX12GALTextureAssetWrapper* NewTextureAsset = nullptr;
+	HRESULT hr = S_OK;
+
+	DX12GALResourceUpdater* DX12ResourceUpdater = (DX12GALResourceUpdater*)_ResourceUpdater;
+	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
+	SSCustomMemChunkAllocator* DescriptorTableAllocator = OwnerDX12RenderDevice->GetDescriptorTableAllocator();
+	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
+	ID3D12GraphicsCommandList* CurCommandList = _CommandLists[_CurCommandListIdx];
+
+	const utf16* TexturePath = InTextureAsset->GetAssetPath().C_Str();
+	const utf16* TextureName = InTextureAsset->GetAssetName().C_Str();
+
+
+	ID3D12Resource* pTexResource = nullptr;
+	D3D12_RESOURCE_DESC textureDesc = {};
+	std::unique_ptr<uint8_t[]> ddsData;
+	std::vector<D3D12_SUBRESOURCE_DATA> subresouceData;
+	if (FAILED(LoadDDSTextureFromFile(D3DDevice, TexturePath, &pTexResource, ddsData, subresouceData)))
+	{
+		DEBUG_BREAK();
+		if (pTexResource != nullptr)
+		{
+			pTexResource->Release();
+		}
+		return false;
+	}
+	textureDesc = pTexResource->GetDesc();
+
+	const D3D12_SUBRESOURCE_DATA* SrcData = subresouceData.data();
+	UINT NumSubResources = (UINT)subresouceData.size();
+	UINT64 uploadBufferSize = GetRequiredIntermediateSize(pTexResource, 0, NumSubResources);
+	
+	
+	hr = DX12ResourceUpdater->UpdateTexture(
+		CurCommandList,
+		pTexResource,
+		SrcData,
+		NumSubResources,
+		uploadBufferSize,
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+	if (FAILED(hr))
+	{
+		DEBUG_BREAK();
+		if (pTexResource != nullptr)
+		{
+			pTexResource->Release();
+		}
+		return false;
+	}
+	pTexResource->SetName(TextureName);
+
+	AllocatedChunkHeader SRVDescriptorChunk = DescriptorTableAllocator->AllocChunk(1, InTextureAsset->GetAssetName());
+	ID3D12DescriptorHeap* AllocatedDescHeap = (ID3D12DescriptorHeap*)SRVDescriptorChunk.PageContent;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE SRVHandle(
+		AllocatedDescHeap->GetCPUDescriptorHandleForHeapStart(),
+		SRVDescriptorChunk.ChunkOffset,
+		D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+	SRVDesc.Format = textureDesc.Format;
+	SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	SRVDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	SRVDesc.Texture2D.MipLevels = textureDesc.MipLevels;
+	D3DDevice->CreateShaderResourceView(pTexResource, &SRVDesc, SRVHandle);
+
+
+	NewTextureAsset = DBG_NEW DX12GALTextureAssetWrapper(InTextureAsset, OwnerDX12RenderDevice);
+	NewTextureAsset->_TexResource = pTexResource;
+	NewTextureAsset->_DescriptorTableChunk = SRVDescriptorChunk;
+	NewTextureAsset->_SRVHandle = SRVHandle;
+
+	InTextureAsset->InjectGALTextureAsset(NewTextureAsset);
+
+	return true;
 }
 
 bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset)

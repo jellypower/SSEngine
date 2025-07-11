@@ -14,6 +14,7 @@
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
@@ -61,7 +62,7 @@ void SSRenderer::AddGALStateChangedAsset(IAssetBase* AssetToChange)
 		_GALStateChangedMeshAsset.PushBack((IMeshAssetMutable*)AssetToChange);
 		break;
 	case EAssetType::Texture:
-		SS_ASSERT_MSG(false, L"TODO: 구현하기");
+		_GALStateChangedTextureAsset.PushBack((ITextureAssetMutable*)AssetToChange);
 		break;
 	default:
 		SS_ASSERT(false);
@@ -216,6 +217,14 @@ void SSRenderer::CleanUp()
 	delete _PixelPickerCPUReadableTex;
 	delete _PixelPickerRenderTarget;
 
+	_GALRenderDevice->BeginRender(); // WaitForFence
+	{
+		_MainDeviceContext->BeginRender();
+		InstantiatePendingGALAssets(_MainDeviceContext); // 잔여물이 남아있을 수도 있음
+		_MainDeviceContext->EndRender();
+	}
+	_GALRenderDevice->EndRender();
+
 	CleanupAssetMnagers();
 	CleanupRenderer();
 }
@@ -234,7 +243,20 @@ void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 		}
 	}
 
+	for (ITextureAssetMutable* TextureAssetItem : _GALStateChangedTextureAsset)
+	{
+		if (TextureAssetItem->GetAssetInstanceReferenceCnt() > 0 && TextureAssetItem->GetGALTextureAsset() == nullptr)
+		{
+			Executor->GenerateTextureGALAsset(TextureAssetItem);
+		}
+		else if (TextureAssetItem->GetAssetInstanceReferenceCnt() <= 0 && TextureAssetItem->GetGALTextureAsset() != nullptr)
+		{
+			TextureAssetItem->ReleaseGALData();
+		}
+	}
+
 	_GALStateChangedMeshAsset.Clear();
+	_GALStateChangedTextureAsset.Clear();
 }
 
 

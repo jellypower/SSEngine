@@ -166,10 +166,12 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Private\DX12\DX12CommonUtils\DDSTextureLoader12\DDSTextureLoader12.cpp" />
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMaterialAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp" />
     <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.cpp" />
     <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.cpp" />
@@ -196,11 +198,13 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Private\DX12\DX12CommonUtils\DDSTextureLoader12\DDSTextureLoader12.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALMaterialAssetWrapper.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.h" />
+    <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.h" />
     <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.h" />
     <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.h" />
     <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SM.h" />
@@ -227,6 +231,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.h" />
     <ClInclude Include="Public\GALRenderAsset\GALMaterialAssetWrapperBase.h" />
     <ClInclude Include="Public\GALRenderAsset\GALMeshAssetWrapperBase.h" />
+    <ClInclude Include="Public\GALRenderAsset\GALTextureAssetWrapperBase.h" />
     <ClInclude Include="Public\GALRenderDevice\GALRenderDevice.h" />
     <ClInclude Include="Public\GALRenderDevice\GALRenderDeviceContext.h" />
     <ClInclude Include="Public\GALRenderInstance\GALRIMetadata.h" />

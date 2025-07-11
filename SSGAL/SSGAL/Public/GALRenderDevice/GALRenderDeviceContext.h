@@ -3,6 +3,7 @@
 
 class GALCPUReadableTexture;
 class IMeshAssetMutable;
+class ITextureAssetMutable;
 class IMaterialAsset;
 enum class EResourceStateType : uint8;
 class GALRenderTarget;
@@ -21,6 +22,7 @@ public:
 
 
 	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) = 0;
+	virtual bool GenerateTextureGALAsset(ITextureAssetMutable* InTextureAsset) = 0;
 	virtual bool GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset) = 0;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 

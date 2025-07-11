@@ -4,6 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class ITextureAssetMutable;
 class ISSFBXImporter;
 class IRenderer;
 class SGameObject;
@@ -25,8 +26,10 @@ public:
 
 
 	void InjectImportFilePath_TMP(const utf16* inImportFilePath) { _importFileName_TMP = inImportFilePath; }
-	void TEMP_CreateTEMPMaterial();
+
 	void TEMP_ProcessContents();
+	void TEMP_CreateAssets();
+	void TEMP_CleanupAssets();
 
 private:
 	SWorld* _DefaultWorld = nullptr;
@@ -45,6 +48,9 @@ private:
 	float TEMP_CamXRot = 0;
 	float TEMP_CamYRot = 0;
 	float TEMP_Speed = 10.f;
+
+
+	ITextureAssetMutable* _TempTexture = nullptr;
 
 private:
 	SS::HashMap<SS::SHasherW, SS::FixedStringW<PATH_LEN_MAX>> _hashMap_TMP;

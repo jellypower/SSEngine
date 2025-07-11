@@ -96,6 +96,12 @@
     <ClCompile Include="Private\DX12\Utils\SSDX12Utils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\DX12\DX12CommonUtils\DDSTextureLoader12\DDSTextureLoader12.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h">
@@ -231,6 +237,15 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALCPUReadableTexture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DX12\DX12CommonUtils\DDSTextureLoader12\DDSTextureLoader12.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\GALRenderAsset\GALTextureAssetWrapperBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

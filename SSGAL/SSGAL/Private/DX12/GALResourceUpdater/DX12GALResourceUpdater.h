@@ -23,6 +23,15 @@ public:
 		D3D12_RESOURCE_STATES FromState,
 		D3D12_RESOURCE_STATES ToState);
 
+	HRESULT UpdateTexture(
+		ID3D12GraphicsCommandList* CommandList,
+		ID3D12Resource* Dest,
+		const D3D12_SUBRESOURCE_DATA* pSrcData,
+		int32 NumSubResource,
+		int32 UploadBufferSize,
+		D3D12_RESOURCE_STATES FromState,
+		D3D12_RESOURCE_STATES ToState);
+
 private:
 	ID3D12Resource* RentUpdateBuffer(int32& OutBufferStartOffset, int32 BufferSize);
 

@@ -111,6 +111,40 @@ HRESULT DX12GALResourceUpdater::UpdateBuffer(
 	return hr;
 }
 
+HRESULT DX12GALResourceUpdater::UpdateTexture(
+	ID3D12GraphicsCommandList* CommandList,
+	ID3D12Resource* Dest,
+	const D3D12_SUBRESOURCE_DATA* pSrcData,
+	int32 NumSubResource,
+	int32 UploadBufferSize,
+	D3D12_RESOURCE_STATES FromState,
+	D3D12_RESOURCE_STATES ToState)
+{
+
+	HRESULT hr = S_OK;
+	byte* pUploadBufferData = nullptr;
+	CD3DX12_RANGE writeRange(0, 0); // We do not intend to read from this resource on the CPU.
+
+	int32 RentBufferStartOffset = 0;
+	ID3D12Resource* UpdateResourceBuffer = RentUpdateBuffer(RentBufferStartOffset, UploadBufferSize);
+
+	CD3DX12_RESOURCE_BARRIER ResourceBarrierCommonToCopyDest = CD3DX12_RESOURCE_BARRIER::Transition(Dest, FromState, D3D12_RESOURCE_STATE_COPY_DEST);
+	CD3DX12_RESOURCE_BARRIER ResourceBarrierCopyDestToVertexBuffer = CD3DX12_RESOURCE_BARRIER::Transition(Dest, D3D12_RESOURCE_STATE_COPY_DEST, ToState);
+
+	CommandList->ResourceBarrier(1, &ResourceBarrierCommonToCopyDest);
+	uint64 UpdateSize = UpdateSubresources(CommandList, Dest, UpdateResourceBuffer, RentBufferStartOffset, 0, NumSubResource, pSrcData);
+	CommandList->ResourceBarrier(1, &ResourceBarrierCopyDestToVertexBuffer);
+
+
+	if (UpdateSize <= 0)
+	{
+		SS_ASSERT(false);
+		return S_FALSE;
+	}
+
+	return hr;
+}
+
 ID3D12Resource* DX12GALResourceUpdater::RentUpdateBuffer(int32& OutBufferStartOffset, int32 BufferSize)
 {
 	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)_AncestorOwnerRenderDevice)->GetD3DDevice();

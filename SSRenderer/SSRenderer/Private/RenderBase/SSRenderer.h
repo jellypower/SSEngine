@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class ITextureAssetMutable;
 class GALCPUReadableTexture;
 class IRenderInstance;
 class AssetManagerBase;
@@ -24,6 +25,7 @@ private:
 	SS::PooledList<IRenderInstance*> _RenderInstancesToDraw;
 
 	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
+	SS::PooledList<ITextureAssetMutable*> _GALStateChangedTextureAsset;
 
 private:
 	IRenderCamera* _CurRenderCamera = nullptr;
