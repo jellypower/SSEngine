@@ -256,36 +256,42 @@ void SSEngine::TEMP_ProcessContents()
 		constexpr float OBJ_ROT_SPEED = 1;
 		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
 		{
-			TEMP_MdlcYRot -= OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
-			TEMP_MdlcYRot = fmod(TEMP_MdlcYRot, XM_PI);
-			TEMP_PixelPickedObject->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
+			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
+			Vector4f UpVector = Parent->GetTransform().GetUp();
 
-			//		Vector4f MoveDelta = Vector4f::Right * SSFrameInfo::GetDeltaTime() * 10;
-			//		TEMP_MdlcObj->SetPosition(TEMP_MdlcObj->GetTransform().Position + MoveDelta);
+			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * 10);
+			TEMP_PixelPickedObject->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_RIGHT))
 		{
-			TEMP_MdlcYRot += OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
-			TEMP_MdlcYRot = fmod(TEMP_MdlcYRot, XM_PI);
-			TEMP_PixelPickedObject->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
+			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
+			Vector4f UpVector = Parent->GetTransform().GetUp();
 
-			//		Vector4f MoveDelta = Vector4f::Right * SSFrameInfo::GetDeltaTime() * -10;
-			//		TEMP_MdlcObj->SetPosition(TEMP_MdlcObj->GetTransform().Position + MoveDelta);
+			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * -10);
+			TEMP_PixelPickedObject->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_UP))
 		{
-			TEMP_MdlcXRot -= OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
-			TEMP_MdlcXRot = fmod(TEMP_MdlcXRot, XM_PI);
-			TEMP_PixelPickedObject->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
+			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
+			Vector4f RightVector = Parent->GetTransform().GetRight();
+
+			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * 10);
+			TEMP_PixelPickedObject->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_DOWN))
 		{
-			TEMP_MdlcXRot += OBJ_ROT_SPEED * SSFrameInfo::GetDeltaTime();
-			TEMP_MdlcXRot = fmod(TEMP_MdlcXRot, XM_PI);
-			TEMP_PixelPickedObject->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_MdlcXRot, TEMP_MdlcYRot, 0, 0)));
+			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
+			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
+			Vector4f RightVector = Parent->GetTransform().GetRight();
+
+			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -10);
+			TEMP_PixelPickedObject->SetRotation(CurRot);
 		}
 	}
 }

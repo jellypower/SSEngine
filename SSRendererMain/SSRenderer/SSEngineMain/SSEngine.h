@@ -41,8 +41,7 @@ private:
 	SGameObject* TEMP_PixelPickedObject = nullptr;
 
 	SGameObject* TEMP_MdlcObj = nullptr;
-	float TEMP_MdlcYRot = 0;
-	float TEMP_MdlcXRot = 0;
+	
 
 	SCameraComponent* TEMP_Camera = nullptr;
 	float TEMP_CamXRot = 0;
