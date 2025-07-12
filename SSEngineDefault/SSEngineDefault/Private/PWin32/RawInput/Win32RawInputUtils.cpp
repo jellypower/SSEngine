@@ -3,7 +3,7 @@
 
 #include "Win32SSRawInputProcessor.h"
 
-void Win32ProcessInputEvent(SSRawInputProcessorBase* InRawInputProcessor, HWND hWnd, UINT message,
+void Win32ProcessInputEvent(IRawInputProcessor* InRawInputProcessor, HWND hWnd, UINT message,
                                          WPARAM wParam, LPARAM lParam)
 {
 	Win32SSRawInputProcessor* Win32RawInputProcessor = (Win32SSRawInputProcessor*)InRawInputProcessor;

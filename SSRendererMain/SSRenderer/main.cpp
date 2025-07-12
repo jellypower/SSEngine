@@ -2,6 +2,7 @@
 #include <shellapi.h>
 #include <shobjidl.h>
 
+
 #include "SSBuildSettings.h"
 #include "framework.h"
 #include "Resource.h"
@@ -10,8 +11,9 @@
 
 #include "SSEngineMain/SSEngine.h"
 
+#include "SSEngineDefault/Public/RawInput/IRawInputProcessor.h"
+#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
-#include "SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
 

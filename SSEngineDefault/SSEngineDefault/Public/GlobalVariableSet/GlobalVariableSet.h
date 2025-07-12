@@ -2,10 +2,10 @@
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
 class IHasherPool;
-class SSRawInputProcessorBase;
+class IRawInputProcessor;
 class IFrameInfoProcessor;
 
 
 extern IHasherPool* g_HasherPool;
 extern IFrameInfoProcessor* g_FrameInfoProcessor;
-extern SSRawInputProcessorBase* g_RawInputProcessor;
+extern IRawInputProcessor* g_RawInputProcessor;

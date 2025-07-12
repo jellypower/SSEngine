@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "KeyCodeEnums.h"
-#include "SSRawInputProcessorBase.h"
+#include "IRawInputProcessor.h"
 #include "SSEngineDefault/Public/SSVector.h"
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 

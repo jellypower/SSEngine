@@ -161,6 +161,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\PCommon\SHasher\HasherPoolBase.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
+    <ClInclude Include="Public\RawInput\IRawInputProcessor.h" />
     <ClInclude Include="Public\RawInput\KeyCodeEnums.h" />
     <ClInclude Include="Public\RawInput\RawInputUtils.h" />
     <ClInclude Include="Public\ModuleEntry\SSEngineDefaultModuleEntry.h" />
@@ -197,7 +198,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SSEngineDefault.h" />
     <ClInclude Include="Public\SSEngineInlineSettings.h" />
     <ClInclude Include="Private\PCommon\RawProfiler\FrameInfoProcessorBase.h" />
-    <ClInclude Include="Public\RawInput\SSRawInputProcessorBase.h" />
+    <ClInclude Include="Private\PCommon\RawInput\SSRawInputProcessorBase.h" />
     <ClInclude Include="Public\SSNativeKeywords.h" />
     <ClInclude Include="Public\SSNativeTypes.h" />
     <ClInclude Include="Public\SSStaticMath.h" />
@@ -220,7 +221,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PWin32\DeviceQuery.cpp" />
     <ClCompile Include="Private\PWin32\StringUtilityFunctions.cpp" />
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSCustomMemAllocator.cpp" />
-    <ClCompile Include="Private\PCommon\Input\SSRawInputProcessorBase.cpp" />
+    <ClCompile Include="Private\PCommon\RawInput\SSRawInputProcessorBase.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestFunctions.cpp" />
   </ItemGroup>

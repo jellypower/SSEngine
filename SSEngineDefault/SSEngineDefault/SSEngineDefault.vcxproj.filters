@@ -147,13 +147,16 @@
     <ClInclude Include="Private\PCommon\RawProfiler\FrameInfoProcessorBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RawInput\SSRawInputProcessorBase.h">
+    <ClInclude Include="Private\PCommon\RawInput\SSRawInputProcessorBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\RawProfiler\IFrameInfoProcessor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawInput\IRawInputProcessor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -200,7 +203,7 @@
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSCustomMemAllocator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\PCommon\Input\SSRawInputProcessorBase.cpp">
+    <ClCompile Include="Private\PCommon\RawInput\SSRawInputProcessorBase.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.cpp">

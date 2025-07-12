@@ -5,10 +5,10 @@ class IRenderer;
 
 class IHasherPool;
 class IFrameInfoProcessor;
-class SSRawInputProcessorBase;
+class IRawInputProcessor;
 
 SSCONTENTBASE_MODULE_NATIVE void SSContentsBaseModuleEntry(
 	IRenderer* InRenderer,
 	IHasherPool* InHasherPool,
 	IFrameInfoProcessor* InFrameInfo,
-	SSRawInputProcessorBase* InRawInputProcessor);
+	IRawInputProcessor* InRawInputProcessor);

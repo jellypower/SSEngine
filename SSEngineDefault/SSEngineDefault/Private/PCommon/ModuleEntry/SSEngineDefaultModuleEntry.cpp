@@ -9,20 +9,20 @@
 
 IHasherPool* g_HasherPool = nullptr;
 IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
-SSRawInputProcessorBase* g_RawInputProcessor = nullptr;
+IRawInputProcessor* g_RawInputProcessor = nullptr;
 
 void SSEngineDefaultModuleEntry(
 	uint32 InHasherPoolCnt,
 	IHasherPool* InHasherPool,
 	IFrameInfoProcessor* InFrameInfo,
-	SSRawInputProcessorBase* InRawInputProcessor)
+	IRawInputProcessor* InRawInputProcessor)
 {
 	g_HasherPool = InHasherPool;
 	g_FrameInfoProcessor = InFrameInfo;
 	g_RawInputProcessor = InRawInputProcessor;
 }
 
-SSRawInputProcessorBase* CreateInputProcessor()
+IRawInputProcessor* CreateInputProcessor()
 {
 	Win32SSRawInputProcessor* InputProcessor = DBG_NEW Win32SSRawInputProcessor();
 	return InputProcessor;
