@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class IMaterialAssetMutable;
 class GALCPUReadableTexture;
 class IMeshAssetMutable;
 class ITextureAssetMutable;
@@ -23,7 +24,7 @@ public:
 
 	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) = 0;
 	virtual bool GenerateTextureGALAsset(ITextureAssetMutable* InTextureAsset) = 0;
-	virtual bool GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset) = 0;
+	virtual bool GenerateMaterialGALAsset(IMaterialAssetMutable* InMaterialAsset) = 0;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;

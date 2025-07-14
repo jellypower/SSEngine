@@ -4,11 +4,9 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
+class IMaterialAssetMutable;
 class IRIMesh;
-class IMaterialAsset;
-class IMeshAsset;
-class IModelAsset;
-class DX12GALMaterialAssetWrapper;
+class DX12GALDefaultPBRMaterialAsset;
 class DX12GALRIMetadata_SM;
 class DX12GALMeshAssetWrapper;
 class DX12GALResourceUpdater;
@@ -28,7 +26,7 @@ public:
 
 	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) override;
 	virtual bool GenerateTextureGALAsset(ITextureAssetMutable* InTextureAsset) override;
-	virtual bool GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset) override;
+	virtual bool GenerateMaterialGALAsset(IMaterialAssetMutable* InMaterialAsset) override;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;

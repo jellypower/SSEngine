@@ -15,8 +15,6 @@ class GALRenderDevice;
 class DX12GALRIMetadata_SM : public GALRIMetadata
 {
 public:
-	AllocatedChunkHeader _DescriptorTableChunk;
-
 	AllocatedChunkHeader _ModelCBChunk;
 	CBAModelBuffer* _ModelCBSysMemAddr;
 	D3D12_GPU_VIRTUAL_ADDRESS _ModelCBGPUMemAddr;
@@ -26,8 +24,6 @@ public:
 	D3D12_GPU_VIRTUAL_ADDRESS _RenderEnvCBGPUMemAddr;
 
 	int32 _SubMeshCntCache;
-	D3D12_CPU_DESCRIPTOR_HANDLE	_CPUDescriptorHandle[SUBMESH_COUNT_MAX];
-	D3D12_GPU_DESCRIPTOR_HANDLE	_GPUDescriptorHandle[SUBMESH_COUNT_MAX];
 
 private:
 	DX12GALRenderDevice* _OwnerRenderDevice;

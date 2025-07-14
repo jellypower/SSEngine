@@ -7,9 +7,8 @@ class ITextureAssetMutable;
 class GALCPUReadableTexture;
 class IRenderInstance;
 class AssetManagerBase;
-class IMeshAsset;
 class IMeshAssetMutable;
-class IModelAsset;
+class IMaterialAssetMutable;
 class IRenderCamera;
 class GALRenderTarget;
 struct AssetInstanceReferencer;
@@ -24,7 +23,7 @@ private:
 
 	SS::PooledList<IRenderInstance*> _RenderInstancesToDraw;
 
-	SS::PooledList<IMaterialAsset*> _GALStateChangedMaterialAsset;
+	SS::PooledList<IMaterialAssetMutable*> _GALStateChangedMaterialAsset;
 	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
 	SS::PooledList<ITextureAssetMutable*> _GALStateChangedTextureAsset;
 

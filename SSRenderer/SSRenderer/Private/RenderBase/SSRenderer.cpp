@@ -1,5 +1,7 @@
 #include "SSRenderer.h"
 
+#include <SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h>
+
 
 #include "RenderWorld.h"
 
@@ -13,6 +15,7 @@
 
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
@@ -63,6 +66,9 @@ void SSRenderer::AddGALStateChangedAsset(IAssetBase* AssetToChange)
 		break;
 	case EAssetType::Texture:
 		_GALStateChangedTextureAsset.PushBack((ITextureAssetMutable*)AssetToChange);
+		break;
+	case EAssetType::Material:
+		_GALStateChangedMaterialAsset.PushBack((IMaterialAssetMutable*)AssetToChange);
 		break;
 	default:
 		SS_ASSERT(false);
@@ -255,8 +261,25 @@ void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 		}
 	}
 
+	for (IMaterialAssetMutable* MaterialAssetItem : _GALStateChangedMaterialAsset)
+	{
+		if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0 && MaterialAssetItem->GetGALMaterialAsset() == nullptr)
+		{
+			Executor->GenerateMaterialGALAsset(MaterialAssetItem); // 레프 카운트가 0에서 올랐으면 생성
+		}
+		else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
+		{
+			MaterialAssetItem->ReleaseGALData(); // 레프 카운트가 0으로 떨어졌으면 파괴
+		}
+		else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
+		{
+			MaterialAssetItem->GetGALMaterialAsset()->SyncMtlParam(); // 레프 카운트가 그대로면 변경
+		}
+	}
+
 	_GALStateChangedMeshAsset.Clear();
 	_GALStateChangedTextureAsset.Clear();
+	_GALStateChangedMaterialAsset.Clear();
 }
 
 

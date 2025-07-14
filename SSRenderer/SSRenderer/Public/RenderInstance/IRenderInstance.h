@@ -28,5 +28,7 @@ public:
 
 	virtual void SetGameObjectHashCodeXXX(SObjHashCode InHashCode) = 0;
 	virtual void SetModelAsset(IModelAsset* InAsset) = 0;
+
+	// TODO: GetRenderWorld 코드 만들기
 };
 

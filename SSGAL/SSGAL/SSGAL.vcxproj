@@ -169,7 +169,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClCompile Include="Private\DX12\DX12CommonUtils\DDSTextureLoader12\DDSTextureLoader12.cpp" />
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
-    <ClCompile Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALMaterialAssetWrapper.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALDefaultPBRMaterialAsset.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp" />
@@ -202,7 +202,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
-    <ClInclude Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALMaterialAssetWrapper.h" />
+    <ClInclude Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALDefaultPBRMaterialAsset.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.h" />
     <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.h" />
@@ -227,6 +227,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClInclude Include="Private\PCommon\GALWrapper\PSOWrapper.h" />
     <ClInclude Include="Private\PCommon\GALWrapper\RootSignaturePool.h" />
     <ClInclude Include="Private\PCommon\GALWrapper\RootSignatureWrapper.h" />
+    <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBADefaultPbrMtlParam.h" />
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h" />
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.h" />
     <ClInclude Include="Public\GALRenderAsset\GALMaterialAssetWrapperBase.h" />

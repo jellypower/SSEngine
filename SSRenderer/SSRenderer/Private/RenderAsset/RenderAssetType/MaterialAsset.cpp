@@ -4,6 +4,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
 
 #include "SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
@@ -45,6 +46,9 @@ void MaterialAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
 		{
 			TexItem->AddAssetReference(ThisAssetReferencer);
 		}
+
+		SSRenderer* Renderer = (SSRenderer*)g_Renderer;
+		Renderer->AddGALStateChangedAsset(this);
 	}
 }
 
@@ -75,7 +79,11 @@ void MaterialAsset::RemoveAssetReference(const AssetInstanceReferencer& Referenc
 		{
 			TexItem->RemoveAssetReference(ThisAssetReferencer);
 		}
+
+		SSRenderer* Renderer = (SSRenderer*)g_Renderer;
+		Renderer->AddGALStateChangedAsset(this);
 	}
+
 }
 
 void MaterialAsset::ReleaseGALData()
@@ -91,7 +99,7 @@ void MaterialAsset::NotifyMtlDataModified()
 
 	if (bIsMaterialInstantiated) // 레퍼런스를 잡고있는 경우 메테리얼이 변경되면
 	{
-		for (ITextureAsset* TexItem : _ReferencingTextures) // 기존에 잡아놨던 레퍼런스를 전부 날린다.
+		for (ITextureAsset* TexItem : _ReferencingTextures) // 기존에 잡아놨던 텍스쳐 레퍼런스를 전부 날린다.
 		{
 			TexItem->RemoveAssetReference(ThisReferencer);
 		}
@@ -117,12 +125,19 @@ void MaterialAsset::NotifyMtlDataModified()
 
 	if (bIsMaterialInstantiated)
 	{
-		for (ITextureAsset* TexItem : _ReferencingTextures) // 새로운 레퍼런스들을 전부 추가한다.
+		for (ITextureAsset* TexItem : _ReferencingTextures) // 새로운 텍스쳐 레퍼런스들을 전부 추가한다.
 		{
 			if (TexItem != nullptr)
 			{
 				TexItem->AddAssetReference(ThisReferencer);
 			}
 		}
+	}
+
+
+	if (bIsMaterialInstantiated)
+	{
+		SSRenderer* Renderer = (SSRenderer*)g_Renderer; // GAL 상태를 변화하도록 유도한다.
+		Renderer->AddGALStateChangedAsset(this);
 	}
 }

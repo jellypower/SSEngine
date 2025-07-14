@@ -10,6 +10,7 @@ class DX12GALTextureAssetWrapper : public GALTextureAssetWrapperBase
 public:
 	DX12GALTextureAssetWrapper(ITextureAsset* OwnerAsset, DX12GALRenderDevice* InOwner);
 	virtual ~DX12GALTextureAssetWrapper();
+
 public:
 	ID3D12Resource* _TexResource = nullptr;
 	AllocatedChunkHeader _DescriptorTableChunk;

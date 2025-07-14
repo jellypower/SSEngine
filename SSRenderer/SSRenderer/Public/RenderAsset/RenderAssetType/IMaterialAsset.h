@@ -18,7 +18,7 @@ protected:
 
 public:
 	const MtlDataBase* GetMtlData() const { return _MtlData; }
-	const GALMaterialAssetWrapperBase* GetGALMaterialAsset() const { return _GALMaterialAsset; }
+	GALMaterialAssetWrapperBase* GetGALMaterialAsset() const { return _GALMaterialAsset; }
 
 	virtual void ReleaseGALData() = 0;
 };

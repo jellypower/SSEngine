@@ -5,9 +5,6 @@
 
 class AssetManagerBase : public IAssetManagerMutable
 {
-private:
-	static const char* GetAssetSuffix(EAssetType InAssetType);
-
 protected:
 	SS::HashMap<SS::SHasherW, IAssetBase*> _assetHashMap[(int32)EAssetType::Count];
 

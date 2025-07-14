@@ -24,7 +24,7 @@
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALMaterialAssetWrapper.cpp">
+    <ClCompile Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALDefaultPBRMaterialAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.cpp">
@@ -158,7 +158,7 @@
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALMaterialAssetWrapper.h">
+    <ClInclude Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALDefaultPBRMaterialAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.h">
@@ -246,6 +246,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBADefaultPbrMtlParam.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

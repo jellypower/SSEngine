@@ -1,15 +1,14 @@
 ﻿#include "pch.h"
 
+#include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
-#include <SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h>
-
-#include "Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
-#include "Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
-#include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
-
+#include "SSGAL/Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
+#include "SSGAL/Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
+#include "SSGAL/Private/DX12/GALRenderAsset/GALMaterialAssets/DX12GALDefaultPBRMaterialAsset.h"
+#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALMeshAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRIMetadata_SM.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
@@ -22,6 +21,8 @@
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
 
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
@@ -358,11 +359,30 @@ bool DX12GALRenderDeviceContext::GenerateTextureGALAsset(ITextureAssetMutable* I
 	return true;
 }
 
-bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAsset* InMaterialAsset)
+bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAssetMutable* InMaterialAsset)
 {
+	DX12GALRenderDevice* OwnerDevice = (DX12GALRenderDevice*)GetOwnerRenderDevice();
 
+	if (InMaterialAsset == nullptr)
+	{
+		return false;
+	}
 
-	SS_INTERRUPT();
+	const MtlDataBase* MtlData = InMaterialAsset->GetMtlData();
+
+	if (MtlData->_Type == EMaterialType::DefaultPBR)
+	{
+		GALMaterialAssetWrapperBase* GALMaterial = DBG_NEW DX12GALDefaultPBRMaterialAsset(InMaterialAsset, OwnerDevice);
+		InMaterialAsset->InjectGALMaterialAsset(GALMaterial);
+		return true;
+	}
+	else
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	
 	return false;
 }
 
@@ -516,7 +536,6 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 	RootSignaturePool* lRootSignaturePool = OwnerDevice->GetRootSignaturePool();
 	DX12PSOPool* PSOPool = (DX12PSOPool*)OwnerDevice->GetPSOPool();
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentCmdList();
-	ID3D12DescriptorHeap* RenderInstanceDescHeap = (ID3D12DescriptorHeap*)DX12RenderInstanceMetaData->_DescriptorTableChunk.PageContent;
 
 
 	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
@@ -538,7 +557,6 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		return;
 	}
 
-
 	{
 		PipelineDesc NewPipelineDesc;
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
@@ -557,7 +575,6 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
 	}
 
-	CurCommandList->SetDescriptorHeaps(1, &RenderInstanceDescHeap);
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 
@@ -596,7 +613,6 @@ void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMAT
 	RootSignaturePool* lRootSignaturePool = OwnerDevice->GetRootSignaturePool();
 	DX12PSOPool* PSOPool = (DX12PSOPool*)OwnerDevice->GetPSOPool();
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentCmdList();
-	ID3D12DescriptorHeap* RenderInstanceDescHeap = (ID3D12DescriptorHeap*)DX12RenderInstanceMetaData->_DescriptorTableChunk.PageContent;
 
 
 	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
@@ -637,7 +653,6 @@ void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMAT
 		CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
 	}
 
-	CurCommandList->SetDescriptorHeaps(1, &RenderInstanceDescHeap);
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 
