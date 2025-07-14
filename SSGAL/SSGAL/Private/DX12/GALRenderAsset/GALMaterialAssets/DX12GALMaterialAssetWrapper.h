@@ -11,6 +11,4 @@ public:
 	DX12GALMaterialAssetWrapper(IMaterialAsset* ownerMaterial, DX12GALRenderDevice* InOwnerRenderDevice);
 	virtual ~DX12GALMaterialAssetWrapper() override;
 
-private:
-	DX12PSOWrapper* _PSOWrapper = nullptr;
 };

@@ -139,7 +139,7 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAssetMutable* InMeshA
 	ID3D12GraphicsCommandList* CurCommandList = _CommandLists[_CurCommandListIdx];
 
 	DX12GALMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALMeshAssetWrapper(InMeshAsset, OwnerDX12RenderDevice);
-
+	
 
 	const MeshRawDataBase* MeshRawData = InMeshAsset->GetMeshRawData();
 	const MeshRawDataDefault* DefaultMeshRawData = nullptr;
@@ -535,7 +535,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 	default:
 		SS_ASSERT(false);
-		break;
+		return;
 	}
 
 
@@ -544,7 +544,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
 		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
 		NewPipelineDesc.PSName = L"PS_TestDrawer";
-		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
+		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_DEFAULT_PBR;
 		NewPipelineDesc.RTColorFormat = ERTColorFormat::R8G8B8A8_UNORM;
 		NewPipelineDesc.DSColorFormat = ERTColorFormat::D32_FLOAT;
 		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);

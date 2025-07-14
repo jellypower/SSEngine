@@ -11,6 +11,7 @@ struct CBAModelBuffer;
 class DX12GALRenderDevice;
 class GALRenderDevice;
 
+// GAL RenderInstance Metadata Static Mesh
 class DX12GALRIMetadata_SM : public GALRIMetadata
 {
 public:

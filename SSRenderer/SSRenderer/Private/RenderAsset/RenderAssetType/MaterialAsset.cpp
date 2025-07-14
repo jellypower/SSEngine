@@ -121,7 +121,7 @@ void MaterialAsset::NotifyMtlDataModified()
 		{
 			if (TexItem != nullptr)
 			{
-				TexItem->RemoveAssetReference(ThisReferencer);
+				TexItem->AddAssetReference(ThisReferencer);
 			}
 		}
 	}

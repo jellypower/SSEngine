@@ -8,7 +8,7 @@ enum class EMaterialType
 	DefaultPBR,
 };
 
-inline SS::SHasherW GetPSNameOfMatType(EMaterialType Type)
+inline SS::SHasherW GetPSNameOfMtlType(EMaterialType Type)
 {
 	if (Type == EMaterialType::DefaultPBR)
 	{

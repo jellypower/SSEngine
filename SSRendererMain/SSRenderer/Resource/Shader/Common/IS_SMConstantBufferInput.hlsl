@@ -17,3 +17,13 @@ cbuffer GlobalRenderParam : register(b1)
     float4 SunIntensity;
     float4 ViewerPos;
 };
+
+
+cbuffer MaterialParam : register(b2)
+{
+    float4 baseColorFactor;
+    float4 emissiveFactor;
+    float normalTextureScale;
+    float metallicFactor;
+    float roughnessFactor;
+};

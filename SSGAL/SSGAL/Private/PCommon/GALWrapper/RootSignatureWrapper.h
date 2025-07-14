@@ -9,17 +9,21 @@ enum class ERootSignatureType : int32
 
 	SS_TEMP_ROOTSIGNATURE,
 	SS_DEFAULT_PBR,
-	
+
 	COUNT
 };
+
 
 FORCEINLINE const utf16* ToUtf16Str(ERootSignatureType e)
 {
 	switch (e)
 	{
-	case ERootSignatureType::NONE:				return L"ERootSignatureType::NONE";
+	case ERootSignatureType::NONE: return L"ERootSignatureType::NONE";
+	case ERootSignatureType::SS_TEMP_ROOTSIGNATURE: return L"ERootSignatureType::SS_TEMP_ROOTSIGNATURE";
 	case ERootSignatureType::SS_DEFAULT_PBR:	return L"ERootSignatureType::SS_DEFAULT_PBR";
-	default:									return L"ERootSignatureType::unknown";
+	default:
+		SS_ASSERT(false);
+		return L"ERootSignatureType::unknown";
 	}
 }
 
