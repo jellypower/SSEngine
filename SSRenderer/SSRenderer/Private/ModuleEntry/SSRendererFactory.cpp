@@ -11,6 +11,7 @@
 
 
 IRenderer* g_Renderer = nullptr;
+
 IHasherPool* g_HasherPool = nullptr;
 IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 

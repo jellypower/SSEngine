@@ -3,6 +3,8 @@
 
 #include "PCommonGALRenderDevice.h"
 
+#include <SSRenderer/Public/RenderBase/IRenderer.h>
+
 void PCommonGALRenderDevice::BindRendererXXX(IRenderer* InOwnerRenderer)
 {
 	if (_OwnerRenderer != nullptr)
@@ -12,4 +14,5 @@ void PCommonGALRenderDevice::BindRendererXXX(IRenderer* InOwnerRenderer)
 	}
 
 	_OwnerRenderer = InOwnerRenderer;
+	_CachedCommonRenderAssetSet = InOwnerRenderer->GetCommonRenderAssetSet();
 }

@@ -19,9 +19,13 @@
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 
+
+#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
@@ -91,6 +95,9 @@ void SSEngine::StartupEngine()
 		TEMP_Camera = CameraComp;
 		_Renderer->SetRenderCamera(CameraComp->GetRenderCamera());
 	}
+
+	_Renderer->GetCommonRenderAssetSet()->CacheCommonRenderAssets();
+	_Renderer->GetCommonRenderAssetSet()->AddRefCachedAssets();
 }
 
 void SSEngine::EnginePerFrame()
@@ -117,6 +124,8 @@ void SSEngine::CleanupEngine()
 	delete _FbxImporter;
 	_FbxImporter = nullptr;
 
+	_Renderer->GetCommonRenderAssetSet()->ReleaseCachedAssets();
+
 	_Renderer->CleanUp();
 	delete _Renderer;
 	_Renderer = nullptr;
@@ -126,8 +135,35 @@ void SSEngine::TEMP_CreateAssets()
 {
 	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
 
-	_TempTexture = AssetManager->CreateEmptyTextureAsset(L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds");
-	AssetManager->AddToAssetPool(_TempTexture);
+	ITextureAssetMutable* TempTexture = AssetManager->CreateEmptyTextureAsset(L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds");
+	AssetManager->AddToAssetPool(TempTexture);
+
+	ITextureAssetMutable* BlackTex = AssetManager->CreateEmptyTextureAsset(L"BLACK.tex", L"Resource/Texture/BLACK.dds");
+	AssetManager->AddToAssetPool(BlackTex);
+	ITextureAssetMutable* EmptyTex = AssetManager->CreateEmptyTextureAsset(L"EMPTY.tex", L"Resource/Texture/EMPTY.dds");
+	AssetManager->AddToAssetPool(EmptyTex);
+	ITextureAssetMutable* EmptyNormalTex = AssetManager->CreateEmptyTextureAsset(L"EMPTYNORMAL.tex", L"Resource/Texture/EMPTYNORMAL.dds");
+	AssetManager->AddToAssetPool(EmptyNormalTex);
+	ITextureAssetMutable* WhiteTex = AssetManager->CreateEmptyTextureAsset(L"WHITE.tex", L"Resource/Texture/WHITE.dds");
+	AssetManager->AddToAssetPool(WhiteTex);
+
+
+	IMaterialAssetMutable* TempMtl = AssetManager->CreateEmptyMaterialAsset(L"EMPTY.mtl", "__EMPTY_PATH__");
+
+	MtlDataDefaultPBR* EmptyDefaultPBR = DBG_NEW MtlDataDefaultPBR();
+	EmptyDefaultPBR->_Type = EMaterialType::DefaultPBR;
+	EmptyDefaultPBR->_BaseColorScale = Vector4f::One;
+	EmptyDefaultPBR->_EmissiveScale = Vector4f::One;
+	EmptyDefaultPBR->_NormalTexScale = 1;
+	EmptyDefaultPBR->_Metallic = 0.5;
+	EmptyDefaultPBR->_Roughness = 0.5;
+	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = EmptyTex;
+	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] = EmptyNormalTex;
+	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Metallic] = WhiteTex;
+	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] = BlackTex;
+	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] = BlackTex;
+	TempMtl->InjectRawDataXXX(EmptyDefaultPBR);
+	AssetManager->AddToAssetPool(TempMtl);
 
 
 	IModelAssetMutable* ModelAsset = AssetManager->FindAssetByName<IModelAssetMutable>(L"frew worm monster.fbx/body.mdl");

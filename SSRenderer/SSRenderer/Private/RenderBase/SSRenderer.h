@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class CommonRenderAssetSet;
 class ITextureAssetMutable;
 class GALCPUReadableTexture;
 class IRenderInstance;
@@ -19,6 +20,7 @@ class GALRenderDevice;
 class SSRenderer : public IRenderer
 {
 private:
+	CommonRenderAssetSet* _CommonRenderAssetSet = nullptr;
 	AssetManagerBase* _AssetManager = nullptr;
 
 	SS::PooledList<IRenderInstance*> _RenderInstancesToDraw;
@@ -41,8 +43,11 @@ public:
 	virtual ~SSRenderer();
 
 public:
+	ICommonRenderAssetSet* GetCommonRenderAssetSet() const override;
+
 	IAssetManager* GetAssetManager() const override;
 	IAssetManagerMutable* GetMutableAssetManager() override;
+	
 
 public:
 	virtual IRenderWorld* CreateRenderWorld() override;
@@ -71,8 +76,6 @@ private:
 	void ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw, IRenderCamera* InCamera);
 
 
-	void InitAssetManagers();
-	void CleanupAssetMnagers();
 	void CleanupRenderer();
 };
 

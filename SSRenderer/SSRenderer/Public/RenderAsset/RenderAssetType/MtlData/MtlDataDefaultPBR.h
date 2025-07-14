@@ -18,9 +18,9 @@ enum class EDefaultPBRMatTexTypes : int32
 
 struct MtlDataDefaultPBR : public MtlDataBase
 {
-	Vector4f _BaseColor;
-	Vector4f _Emissive;
-	float _NormalTexScale = 0;
+	Vector4f _BaseColorScale;
+	Vector4f _EmissiveScale;
+	float _NormalTexScale = 1;
 	float _Metallic = 0;
 	float _Roughness = 0;
 	ITextureAsset* _Textures[(int32)EDefaultPBRMatTexTypes::Count] = { nullptr, };

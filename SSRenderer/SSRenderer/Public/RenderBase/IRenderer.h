@@ -5,6 +5,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+class ICommonRenderAssetSet;
 class IRIMesh;
 class IAssetManager;
 class IRenderWorld;
@@ -22,6 +23,8 @@ public:
 	GALRenderDevice* GetRenderDevice() const { return _GALRenderDevice; }
 
 public:
+	virtual ICommonRenderAssetSet* GetCommonRenderAssetSet() const = 0;
+
 	virtual IAssetManager* GetAssetManager() const = 0;
 	virtual IAssetManagerMutable* GetMutableAssetManager() = 0;
 

@@ -8,6 +8,7 @@
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 
 IHasherPool* g_HasherPool = nullptr;
+ICommonRenderAssetSet* g_RenderAssetSet = nullptr;
 
 GALRenderDevice* CreateGALRenderDevice(
 	HINSTANCE InhInst,

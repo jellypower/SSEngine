@@ -93,8 +93,8 @@ void DX12GALDefaultPBRMaterialAsset::SyncMtlParam()
 	int32 DescriptorIncrementalSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 
-	_MtlCBSysMemAddr->baseColorFactor = DefaultPbrMtlData->_BaseColor.SimdVec;
-	_MtlCBSysMemAddr->emissiveFactor = DefaultPbrMtlData->_Emissive.SimdVec;
+	_MtlCBSysMemAddr->baseColorFactor = DefaultPbrMtlData->_BaseColorScale.SimdVec;
+	_MtlCBSysMemAddr->emissiveFactor = DefaultPbrMtlData->_EmissiveScale.SimdVec;
 	_MtlCBSysMemAddr->normalTextureScale = DefaultPbrMtlData->_NormalTexScale;
 	_MtlCBSysMemAddr->metallicFactor = DefaultPbrMtlData->_Metallic;
 	_MtlCBSysMemAddr->roughnessFactor = DefaultPbrMtlData->_Roughness;

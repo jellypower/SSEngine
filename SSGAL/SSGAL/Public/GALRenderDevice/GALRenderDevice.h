@@ -7,6 +7,7 @@
 
 enum class ERTColorFormat : int32;
 class IRenderer;
+class ICommonRenderAssetSet;
 class GALShaderPool;
 struct GALRenderTargetDesc;
 class SSCustomMemChunkAllocator;
@@ -28,10 +29,12 @@ public:
 
 public:
 	IRenderer* GetOwnerRenderer() const { return _OwnerRenderer; }
+	ICommonRenderAssetSet* GetCommonRenderAssetSet() const { return _CachedCommonRenderAssetSet; }
 
 	GALShaderPool* GetShaderPool() const { return _ShaderPool; }
 	SSCustomMemChunkAllocator* GetConstantBufferResourceAllocator() const { return _ConstantBufferResourceAllocator; }
 	SSCustomMemChunkAllocator* GetDescriptorTableAllocator() const { return _DescriptorTableAllocator; }
+	SSCustomMemChunkAllocator* GetDescriptorTableAllocatorForTex() const { return _DescriptorTableAllocatorForTex; }
 
 	GALRenderTarget* GetDefaultViewportRenderTarget() const { return _DefaultViewportRenderTarget; }
 	uint64 GetCurFrameCnt() const { return _CurFrameCnt; }
@@ -56,10 +59,12 @@ protected:
 
 protected:
 	IRenderer* _OwnerRenderer = nullptr;
+	ICommonRenderAssetSet* _CachedCommonRenderAssetSet = nullptr;
 
 	GALShaderPool* _ShaderPool = nullptr;
 	SSCustomMemChunkAllocator* _ConstantBufferResourceAllocator = nullptr;
 	SSCustomMemChunkAllocator* _DescriptorTableAllocator = nullptr;
+	SSCustomMemChunkAllocator* _DescriptorTableAllocatorForTex = nullptr;
 
 
 	GALRenderTarget* _DefaultViewportRenderTarget = nullptr;

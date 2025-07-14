@@ -17,6 +17,6 @@ DX12GALTextureAssetWrapper::~DX12GALTextureAssetWrapper()
 {
 	_TexResource->Release();
 
-	SSCustomMemChunkAllocator* DescriptorTableAllocator = _OwnerRenderDevice->GetDescriptorTableAllocator();
-	DescriptorTableAllocator->ReleaseChunk(_DescriptorTableChunk);
+	SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
+	DescriptorTableAllocatorForTex->ReleaseChunk(_DescriptorTableChunk);
 }

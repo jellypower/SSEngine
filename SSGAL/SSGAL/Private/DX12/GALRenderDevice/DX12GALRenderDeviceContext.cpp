@@ -28,6 +28,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
+#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
@@ -286,7 +287,7 @@ bool DX12GALRenderDeviceContext::GenerateTextureGALAsset(ITextureAssetMutable* I
 
 	DX12GALResourceUpdater* DX12ResourceUpdater = (DX12GALResourceUpdater*)_ResourceUpdater;
 	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
-	SSCustomMemChunkAllocator* DescriptorTableAllocator = OwnerDX12RenderDevice->GetDescriptorTableAllocator();
+	SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = OwnerDX12RenderDevice->GetDescriptorTableAllocatorForTex();
 	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
 	ID3D12GraphicsCommandList* CurCommandList = _CommandLists[_CurCommandListIdx];
 
@@ -333,7 +334,7 @@ bool DX12GALRenderDeviceContext::GenerateTextureGALAsset(ITextureAssetMutable* I
 	}
 	pTexResource->SetName(TextureName);
 
-	AllocatedChunkHeader SRVDescriptorChunk = DescriptorTableAllocator->AllocChunk(1, InTextureAsset->GetAssetName());
+	AllocatedChunkHeader SRVDescriptorChunk = DescriptorTableAllocatorForTex->AllocChunk(1, InTextureAsset->GetAssetName());
 	ID3D12DescriptorHeap* AllocatedDescHeap = (ID3D12DescriptorHeap*)SRVDescriptorChunk.PageContent;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE SRVHandle(
 		AllocatedDescHeap->GetCPUDescriptorHandleForHeapStart(),
@@ -533,6 +534,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	PCommonGALRenderDevice* OwnerDevice = (PCommonGALRenderDevice*)GetOwnerRenderDevice();
+	ICommonRenderAssetSet* CommonRenderAssets = OwnerDevice->GetCommonRenderAssetSet();
 	RootSignaturePool* lRootSignaturePool = OwnerDevice->GetRootSignaturePool();
 	DX12PSOPool* PSOPool = (DX12PSOPool*)OwnerDevice->GetPSOPool();
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentCmdList();
@@ -612,6 +614,8 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		if (MtlAsset == nullptr || GALMaterial == nullptr)
 		{
 //			SS_ASSERT(false);
+
+			// TODO: Material으로 그리는 기능 추가
 		}
 		else
 		{

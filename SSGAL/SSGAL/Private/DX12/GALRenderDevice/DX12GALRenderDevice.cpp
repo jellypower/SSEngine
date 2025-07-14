@@ -169,8 +169,19 @@ lb_loop:
 		this,
 		DESCRIPTOR_HEAP_PAGE_SIZE,
 		1,
+		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 		L"DX12GALRenderDevice::_DescriptorTableAllocator");
 	_DescriptorTableAllocator->ReserveDefaultPage(2);
+
+
+	_DescriptorTableAllocatorForTex = DBG_NEW DX12DescriptorHeapCustomAllocator(
+		this,
+		DESCRIPTOR_HEAP_PAGE_SIZE,
+		1,
+		D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+		L"DX12GALRenderDevice::_DescriptorTableAllocator");
+	_DescriptorTableAllocatorForTex->ReserveDefaultPage(2);
+
 
 
 	constexpr int32 CONSTANTBUFFER_RESOURCE_PAGE_SIZE = GAL_RESOURCE_DEFAULT_ALIGNMENT_SIZE * 16; // 1MB
@@ -209,6 +220,9 @@ DX12GALRenderDevice::~DX12GALRenderDevice()
 
 	_ConstantBufferResourceAllocator->ReleaseDefaultPages();
 	delete _ConstantBufferResourceAllocator;
+
+	_DescriptorTableAllocatorForTex->ReleaseDefaultPages();
+	delete _DescriptorTableAllocatorForTex;
 
 	_DescriptorTableAllocator->ReleaseDefaultPages();
 	delete _DescriptorTableAllocator;

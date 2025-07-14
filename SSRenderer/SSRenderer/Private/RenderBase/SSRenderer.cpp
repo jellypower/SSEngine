@@ -1,12 +1,10 @@
 #include "SSRenderer.h"
 
-#include <SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h>
-
-
 #include "RenderWorld.h"
 
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
+#include "SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
@@ -14,6 +12,7 @@
 #include "SSGAL/Public/GALRenderTarget/GALCPUReadableTexture.h"
 
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
+#include "SSRenderer/Private/RenderAsset/CommonRenderAssetSet.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
@@ -30,10 +29,18 @@ SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice) :
 {
 	_GALRenderDevice = InRenderDevice;
 	_MainDeviceContext = _GALRenderDevice->CreateRenderDeviceContext();
+	_AssetManager = DBG_NEW AssetManagerBase(1000, 10);
+	_CommonRenderAssetSet = DBG_NEW CommonRenderAssetSet();
 }
 
 SSRenderer::~SSRenderer()
 {
+	delete _CommonRenderAssetSet;
+}
+
+ICommonRenderAssetSet* SSRenderer::GetCommonRenderAssetSet() const
+{
+	return _CommonRenderAssetSet;
 }
 
 IAssetManager* SSRenderer::GetAssetManager() const
@@ -97,9 +104,6 @@ void SSRenderer::RequestPixelPicking(int32 X, int32 Y)
 
 void SSRenderer::StartUp()
 {
-	InitAssetManagers();
-
-
 	constexpr int32 BUFFER_WIDTH = 1024;
 	constexpr int32 BUFFER_HEIGHT = 1024;
 
@@ -231,8 +235,16 @@ void SSRenderer::CleanUp()
 	}
 	_GALRenderDevice->EndRender();
 
-	CleanupAssetMnagers();
-	CleanupRenderer();
+
+	_AssetManager->ReleaseAllAssets();
+	delete _AssetManager;
+	_AssetManager = nullptr;
+
+	delete _MainDeviceContext;
+	_MainDeviceContext = nullptr;
+
+	delete _GALRenderDevice;
+	_GALRenderDevice = nullptr;
 }
 
 void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
@@ -299,25 +311,4 @@ void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRend
 		IRenderInstance* InstanceItem = InstancePairItem.second;
 		OutRenderInstancesToDraw.PushBack(InstanceItem);
 	}
-}
-
-void SSRenderer::InitAssetManagers()
-{
-	_AssetManager = DBG_NEW AssetManagerBase(1000, 10);
-}
-
-void SSRenderer::CleanupRenderer()
-{
-	delete _MainDeviceContext;
-	_MainDeviceContext = nullptr;
-
-	delete _GALRenderDevice;
-	_GALRenderDevice = nullptr;
-}
-
-void SSRenderer::CleanupAssetMnagers()
-{
-	_AssetManager->ReleaseAllAssets();
-	delete _AssetManager;
-	_AssetManager = nullptr;
 }

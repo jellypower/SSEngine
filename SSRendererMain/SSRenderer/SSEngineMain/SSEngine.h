@@ -48,7 +48,6 @@ private:
 	float TEMP_Speed = 10.f;
 
 
-	ITextureAssetMutable* _TempTexture = nullptr;
 
 private:
 	SS::HashMap<SS::SHasherW, SS::FixedStringW<PATH_LEN_MAX>> _hashMap_TMP;
