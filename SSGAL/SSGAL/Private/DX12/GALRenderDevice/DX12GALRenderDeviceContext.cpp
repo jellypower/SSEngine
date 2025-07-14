@@ -538,6 +538,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentCmdList();
 
 
+	// Scrap Mesh Asset
 	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
 	const DX12GALMeshAssetWrapper* GALMeshAsset = (const DX12GALMeshAssetWrapper*)lMeshAsset->GetGALMeshAsset();
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
@@ -556,6 +557,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		SS_ASSERT(false);
 		return;
 	}
+
 
 	{
 		PipelineDesc NewPipelineDesc;
@@ -596,11 +598,32 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
-		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
+		IMaterialAsset* MtlAsset = InModelAsset->GetMaterialAsset(i);
+		DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
+		if (MtlAsset != nullptr)
+		{
+			const MtlDataBase* MtlData = MtlAsset->GetMtlData();
+			if (MtlData->_Type == EMaterialType::DefaultPBR)
+			{
+				GALMaterial = (DX12GALDefaultPBRMaterialAsset*)MtlAsset->GetGALMaterialAsset();
+			}
+		}
 
+		if (MtlAsset == nullptr || GALMaterial == nullptr)
+		{
+//			SS_ASSERT(false);
+		}
+		else
+		{
+			CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2
+			CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // textures
+		}
+
+		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
 		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
-		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
+		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
+
 	}
 }
 

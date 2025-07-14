@@ -1,4 +1,4 @@
-#include "Common/IS_SMConstantBufferInput.hlsl"
+#include "include/CBSet/IS_DefaultPbrCBSet.hlsl"
 
 int2 Main(PS_INPUT_DEFAULT input) : SV_Target
 {

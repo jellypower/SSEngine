@@ -1,5 +1,6 @@
 // StaticMeshToDefaultPSInput
 #include "include/CBSet/IS_DefaultPbrCBSet.hlsl"
+#include "include/CBSet/IS_SKMDefaultPBRCBSet.hlsl"
 
 
 PS_INPUT_DEFAULT Main(VS_INPUT_DEFAULT input)

@@ -29,7 +29,6 @@ public:
 
 	void TEMP_ProcessContents();
 	void TEMP_CreateAssets();
-	void TEMP_CleanupAssets();
 
 private:
 	SWorld* _DefaultWorld = nullptr;

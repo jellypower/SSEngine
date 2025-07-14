@@ -18,7 +18,7 @@ protected:
 
 public:
 	IMeshAsset* GetMeshAsset() const { return _MeshAsset; }
-	IMaterialAsset* GetMaterialAssetName(int32 materialIdx) const { return _MaterialAssets[materialIdx]; }
+	IMaterialAsset* GetMaterialAsset(int32 materialIdx) const { return _MaterialAssets[materialIdx]; }
 
 	virtual int32 GetSubMeshCnt() const = 0;
 };

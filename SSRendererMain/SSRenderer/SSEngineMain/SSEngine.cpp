@@ -21,6 +21,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
@@ -46,6 +47,8 @@ void SSEngine::StartupEngine()
 	_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
 	_FbxImporter->ImportCurrentFileToAssetManager();
 
+	TEMP_CreateAssets();
+
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
 
@@ -57,9 +60,9 @@ void SSEngine::StartupEngine()
 		SS::StringW BoundFileName = _FbxImporter->GetBoundFileName().C_Str();
 		BoundFileName += ".mdlc";
 
-//		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
+		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
 
-		TEMP_MdlcObj = SRendererUtil::InstantiateModel(L"frew worm monster.fbx/body.mdl");
+//		TEMP_MdlcObj = SRendererUtil::InstantiateModel(L"frew worm monster.fbx/body.mdl");
 //		TEMP_MdlcObj->SetScale(Vector4f(1000, 1000, 1000, 0));
 //		TEMP_MdlcObj->SetRotation(Quaternion());
 //		TEMP_MdlcObj->SetPosition(Vector4f::Zero);
@@ -88,11 +91,6 @@ void SSEngine::StartupEngine()
 		TEMP_Camera = CameraComp;
 		_Renderer->SetRenderCamera(CameraComp->GetRenderCamera());
 	}
-
-	// TEMP
-	{
-		TEMP_CreateAssets();
-	}
 }
 
 void SSEngine::EnginePerFrame()
@@ -104,10 +102,6 @@ void SSEngine::EnginePerFrame()
 
 void SSEngine::CleanupEngine()
 {
-	// TEMP
-	{
-		TEMP_CleanupAssets();
-	}
 
 	_DefaultWorld->DestroyAllObjectsInWorld();
 
@@ -132,22 +126,12 @@ void SSEngine::TEMP_CreateAssets()
 {
 	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
 
-
-
 	_TempTexture = AssetManager->CreateEmptyTextureAsset(L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds");
 	AssetManager->AddToAssetPool(_TempTexture);
-	AssetInstanceReferencer TestReference;
-	TestReference.Type = EAssetInstanceReferenceType::AssetName;
-	TestReference.AssetName = "__TEST_ASSET_NAME__";
-	_TempTexture->AddAssetReference(TestReference);
-}
 
-void SSEngine::TEMP_CleanupAssets()
-{
-	AssetInstanceReferencer TestReference;
-	TestReference.Type = EAssetInstanceReferenceType::AssetName;
-	TestReference.AssetName = "__TEST_ASSET_NAME__";
-	_TempTexture->RemoveAssetReference(TestReference);
+
+	IModelAssetMutable* ModelAsset = AssetManager->FindAssetByName<IModelAssetMutable>(L"frew worm monster.fbx/body.mdl");
+	int a = 0;
 }
 
 void SSEngine::TEMP_ProcessContents()

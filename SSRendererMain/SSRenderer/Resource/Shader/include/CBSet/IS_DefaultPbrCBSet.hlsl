@@ -1,5 +1,5 @@
 // StaticMeshToDefaultPSInput
-#include "Common/IS_DefaultTypes.hlsl"
+#include "include/Types/IS_DefaultTypes.hlsl"
 
 
 
@@ -27,3 +27,9 @@ cbuffer MaterialParam : register(b2)
     float metallicFactor;
     float roughnessFactor;
 };
+
+Texture2D txBaseColor : register(t0);
+Texture2D<float3> txNormal : register(t1);
+Texture2D<float> txMetallic : register(t2);
+Texture2D txEmissive : register(t3);
+Texture2D<float> txOcclusion : register(t4);
