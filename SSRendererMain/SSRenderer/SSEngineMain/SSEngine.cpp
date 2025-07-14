@@ -18,11 +18,9 @@
 
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
-#include "SSFBXImporter/Public/ModuleEntry/SSFBXImporterFactory.h"
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
@@ -134,11 +132,6 @@ void SSEngine::TEMP_CreateAssets()
 {
 	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
 
-	
-	IMaterialAsset* NewMaterialAsset = AssetManager->CreateEmptyMaterialAsset(L"TEMP_Material", L"/TEMP_Material");
-	NewMaterialAsset->_PSName = L"TempVertexShader";
-
-	AssetManager->AddToAssetPool(NewMaterialAsset);
 
 
 	_TempTexture = AssetManager->CreateEmptyTextureAsset(L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds");

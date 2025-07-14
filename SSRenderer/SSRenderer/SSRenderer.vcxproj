@@ -186,6 +186,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h" />
     <ClInclude Include="Public\RenderAsset\IAssetManager.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\IAssetManagerMutable.h" />
+    <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IMaterialAssetMutable.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IMeshAssetMutable.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IModelAssetMutable.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IModelCombinationAssetMutable.h" />
@@ -196,8 +197,10 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\ITextureAsset.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataBase.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshDataDefault.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataBase.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataDefaultPBR.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h" />
     <ClInclude Include="Public\RenderBase\IRenderer.h" />
     <ClInclude Include="Public\RenderBase\IRenderWorld.h" />

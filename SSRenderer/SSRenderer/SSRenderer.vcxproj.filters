@@ -21,9 +21,6 @@
     <ClCompile Include="Private\ModuleEntry\SSRendererFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\RenderAsset\RenderAssetType\MaterialAsset.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MeshAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -46,6 +43,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\RenderAsset\RenderAssetType\TextureAsset.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\MaterialAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -116,9 +116,6 @@
     <ClInclude Include="Public\SSRendererGlobalVariableSet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\RenderAsset\RenderAssetType\MaterialAsset.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MeshAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -153,6 +150,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\RenderAsset\RenderAssetType\TextureAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataDefaultPBR.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IMaterialAssetMutable.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\RenderAsset\RenderAssetType\MaterialAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -24,6 +24,7 @@ private:
 
 	SS::PooledList<IRenderInstance*> _RenderInstancesToDraw;
 
+	SS::PooledList<IMaterialAsset*> _GALStateChangedMaterialAsset;
 	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
 	SS::PooledList<ITextureAssetMutable*> _GALStateChangedTextureAsset;
 

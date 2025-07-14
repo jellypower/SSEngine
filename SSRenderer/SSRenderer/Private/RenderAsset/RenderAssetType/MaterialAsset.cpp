@@ -1,9 +1,22 @@
-#include "MaterialAsset.h"
+ï»¿#include "MaterialAsset.h"
+
+#include "SSRenderer/Private/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
+
+#include "SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
 MaterialAsset::MaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
+}
+
+MaterialAsset::~MaterialAsset()
+{
+	SS_ASSERT(_MtlData != nullptr);
+	delete _MtlData;
 }
 
 EAssetType MaterialAsset::GetAssetType() const
@@ -22,23 +35,94 @@ void MaterialAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
 		}
 	}
 
+	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
 	_AssetInstanceReferencers.PushBack(Referencer);
 
-	// TODO: AssetCount°¡ 0¿¡¼­ ¿Ã¶ó¿À¸é º»ÀÎÀÌ ·¹ÆÛ·±½ºÇÏ°íÀÖ´Â ¿¡¼Âµé¿¡°Ô ·¹ÇÁÄ«¿îÆ® ¿Ã·ÁÁÖ±â
+	if (PrevReferencerCnt == 0)
+	{
+		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
+		for (ITextureAsset* TexItem : _ReferencingTextures)
+		{
+			TexItem->AddAssetReference(ThisAssetReferencer);
+		}
+	}
 }
 
 void MaterialAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerName)
 {
+	bool bReferencerEverRemoved = false;
+
 	for (int32 i = 0; i < _AssetInstanceReferencers.GetSize(); i++)
 	{
 		if (_AssetInstanceReferencers[i] == ReferencerName)
 		{
 			_AssetInstanceReferencers.RemoveAtAndFillLast(i);
-			return;
+			bReferencerEverRemoved = true;
+			break;
+		}
+	}
+	if (bReferencerEverRemoved == false)
+	{
+		SS_ASSERT_MSG(false, L"Reference does not exist.");
+		return;
+	}
+
+	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
+	if (ReferencerCnt == 0)
+	{
+		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
+		for (ITextureAsset* TexItem : _ReferencingTextures)
+		{
+			TexItem->RemoveAssetReference(ThisAssetReferencer);
+		}
+	}
+}
+
+void MaterialAsset::ReleaseGALData()
+{
+	delete _GALMaterialAsset;
+	_GALMaterialAsset = nullptr;
+}
+
+void MaterialAsset::NotifyMtlDataModified()
+{
+	bool bIsMaterialInstantiated = _AssetInstanceReferencers.GetSize() > 0;
+	AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
+
+	if (bIsMaterialInstantiated) // ë ˆí¼ëŸ°ìŠ¤ë¥¼ ìž¡ê³ ìžˆëŠ” ê²½ìš° ë©”í…Œë¦¬ì–¼ì´ ë³€ê²½ë˜ë©´
+	{
+		for (ITextureAsset* TexItem : _ReferencingTextures) // ê¸°ì¡´ì— ìž¡ì•„ë†¨ë˜ ë ˆí¼ëŸ°ìŠ¤ë¥¼ ì „ë¶€ ë‚ ë¦°ë‹¤.
+		{
+			TexItem->RemoveAssetReference(ThisReferencer);
 		}
 	}
 
-	SS_ASSERT_MSG(false, L"Reference does not exist.");
+	_ReferencingTextures.Clear();
+	if (_MtlData->_Type == EMaterialType::DefaultPBR)
+	{
+		const MtlDataDefaultPBR* PbrMtlData = (MtlDataDefaultPBR*)_MtlData;
 
-	// TODO: AssetCount°¡ 0À¸·Î ¶³¾îÁö¸é º»ÀÎÀÌ ·¹ÆÛ·±½ºÇÏ°íÀÖ´Â ¿¡¼Âµé¿¡°Ô ·¹ÇÁÄ«¿îÆ® ¿Ã·ÁÁÖ±â
+		for (ITextureAsset* TexItem : PbrMtlData->_Textures)
+		{
+			if (TexItem != nullptr)
+			{
+				_ReferencingTextures.PushBack(TexItem); // ReferencingTexture ë¥¼ ìž¬êµ¬ì¶•í•´ì¤€ë‹¤.
+			}
+		}
+	}
+	else
+	{
+		SS_ASSERT(false);
+	}
+
+	if (bIsMaterialInstantiated)
+	{
+		for (ITextureAsset* TexItem : _ReferencingTextures) // ìƒˆë¡œìš´ ë ˆí¼ëŸ°ìŠ¤ë“¤ì„ ì „ë¶€ ì¶”ê°€í•œë‹¤.
+		{
+			if (TexItem != nullptr)
+			{
+				TexItem->RemoveAssetReference(ThisReferencer);
+			}
+		}
+	}
 }

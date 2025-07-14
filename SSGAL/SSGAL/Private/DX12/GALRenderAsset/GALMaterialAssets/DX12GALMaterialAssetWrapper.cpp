@@ -2,10 +2,12 @@
 
 #include "DX12GALMaterialAssetWrapper.h"
 
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
+
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOWrapper.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 
 
 DX12GALMaterialAssetWrapper::DX12GALMaterialAssetWrapper(IMaterialAsset* ownerMaterial, DX12GALRenderDevice* InOwnerRenderDevice)
@@ -21,7 +23,9 @@ DX12GALMaterialAssetWrapper::DX12GALMaterialAssetWrapper(IMaterialAsset* ownerMa
 
 
 	PipelineDesc desc;
-	desc.PSName = ownerMaterial->_PSName;
+	const MtlDataBase* MtlData = ownerMaterial->GetMtlData();
+	EMaterialType MatType = MtlData->_Type;
+	desc.PSName = GetPSNameOfMatType(MatType);
 	desc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
 	desc.RootSignatureType = ERootSignatureType::SS_DEFAULT_PBR;
 	DX12PSOWrapper* PSOWrapper = (DX12PSOWrapper*)PSOPool->FindOrAddPSO(desc);

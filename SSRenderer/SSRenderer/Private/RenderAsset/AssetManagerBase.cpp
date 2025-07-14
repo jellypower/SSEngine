@@ -14,7 +14,7 @@ const char* AssetManagerBase::GetAssetSuffix(EAssetType InAssetType)
 	switch (InAssetType)
 	{
 	case EAssetType::Mesh: return ".mesh";
-	case EAssetType::Material: return ".mat";
+	case EAssetType::Material: return ".mtl";
 	case EAssetType::Model: return ".mdl";
 	case EAssetType::ModelCombination: return ".mdlc";
 	case EAssetType::Texture: return ".tex";
@@ -84,11 +84,6 @@ void AssetManagerBase::ReleaseAllAssets()
 	}
 }
 
-IMaterialAsset* AssetManagerBase::CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
-{
-	return DBG_NEW MaterialAsset(InAssetName, InAssetPath);
-}
-
 ITextureAssetMutable* AssetManagerBase::CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
 	return DBG_NEW TextureAsset(InAssetName, InAssetPath);
@@ -108,6 +103,11 @@ IModelCombinationAssetMutable* AssetManagerBase::CreateEmptyModelCombinationAsse
 	SS::SHasherW InAssetPath, int32 ReservedChildCnt)
 {
 	return DBG_NEW ModelCombinationAsset(InAssetName, InAssetPath, ReservedChildCnt);
+}
+
+IMaterialAssetMutable* AssetManagerBase::CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+{
+	return DBG_NEW MaterialAsset(InAssetName, InAssetPath);
 }
 
 

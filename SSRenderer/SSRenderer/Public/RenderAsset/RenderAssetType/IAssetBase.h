@@ -63,6 +63,14 @@ protected:
 
 
 public:
+	AssetInstanceReferencer MakeThisAssetReferencer()
+	{
+		AssetInstanceReferencer ThisAssetReferencer;
+		ThisAssetReferencer.Type = EAssetInstanceReferenceType::AssetName;
+		ThisAssetReferencer.AssetName = _assetName;
+		return ThisAssetReferencer;
+	}
+
 	SS::SHasherW GetAssetName() const { return _assetName; }
 	SS::SHasherW GetAssetPath() const { return _assetPath; }
 	int32 GetAssetInstanceReferenceCnt() const { return _AssetInstanceReferencers.GetSize(); }

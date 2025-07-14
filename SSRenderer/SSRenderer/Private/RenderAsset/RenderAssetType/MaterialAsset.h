@@ -1,15 +1,23 @@
-#pragma once
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
+﻿#pragma once
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 
-class GALMaterialAssetWrapperBase;
+class ITextureAsset;
 
-class MaterialAsset : public IMaterialAsset
+class MaterialAsset : public IMaterialAssetMutable
 {
+private:
+	SS::PooledList<ITextureAsset*, SS::InlineAllocator<8>> _ReferencingTextures;
+
 public:
 	MaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
+	virtual ~MaterialAsset();
 
 public:
-	virtual EAssetType GetAssetType() const override;
-	virtual void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
-	virtual void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
+	EAssetType GetAssetType() const override;
+	void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
+	void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
+	void ReleaseGALData() override;
+	void NotifyMtlDataModified() override;
+
+
 };
