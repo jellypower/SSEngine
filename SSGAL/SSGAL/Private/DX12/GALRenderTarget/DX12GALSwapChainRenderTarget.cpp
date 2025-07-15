@@ -94,6 +94,7 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDevice* 
 
 
 			D3DDevice->CreateRenderTargetView(Buffer, nullptr, rtvHandle);
+			_RTDescHandles.PushBack(rtvHandle);
 			_DXRenderTargets.PushBack(Buffer);
 			rtvHandle.Offset(1, _RTVDescriptorSize);
 		}
@@ -137,33 +138,6 @@ HRESULT DX12GALSwapChainRenderTarget::Present()
 	return hr;
 }
 
-void DX12GALSwapChainRenderTarget::SetRenderTarget(ID3D12GraphicsCommandList* CmdList)
-{
-	D3D12_VIEWPORT ViewportSize;
-
-	
-	ViewportSize.TopLeftX = _ViewportBoxSize.LeftTop.X;
-	ViewportSize.TopLeftY = _ViewportBoxSize.LeftTop.Y;
-	ViewportSize.Width = _ViewportBoxSize.WidthHeight.X;
-	ViewportSize.Height = _ViewportBoxSize.WidthHeight.Y;
-	ViewportSize.MinDepth = _ViewportBoxSize.MinDepth;
-	ViewportSize.MaxDepth = _ViewportBoxSize.MaxDepth;
-
-	D3D12_RECT ScissorRectSize;
-	ScissorRectSize.left =		_ScissorRectSize.Min.X;
-	ScissorRectSize.top =		_ScissorRectSize.Min.Y;
-	ScissorRectSize.right =		_ScissorRectSize.Max.X;
-	ScissorRectSize.bottom =	_ScissorRectSize.Max.Y;
-
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
-
-
-	CmdList->RSSetViewports(1, &ViewportSize);
-	CmdList->RSSetScissorRects(1, &ScissorRectSize);
-	CmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-}
 
 void DX12GALSwapChainRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList)
 {
@@ -222,13 +196,14 @@ void DX12GALSwapChainRenderTarget::UpdateViewportSize(uint32 BackBufferWidth, ui
 
 	_CurRenderTargetIdx = _swapChain->GetCurrentBackBufferIndex();
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart());
+	CD3DX12_CPU_DESCRIPTOR_HANDLE NewRTVHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart());
 	for (UINT n = 0; n < SWAP_CHAIN_FRAME_COUNT; n++)
 	{
 		ID3D12Resource* Buffer = nullptr;
 		_swapChain->GetBuffer(n, IID_PPV_ARGS(&Buffer));
-		D3DDevice->CreateRenderTargetView(Buffer, nullptr, rtvHandle);
-		rtvHandle.Offset(1, _RTVDescriptorSize);
+		D3DDevice->CreateRenderTargetView(Buffer, nullptr, NewRTVHandle);
+		_RTDescHandles.PushBack(NewRTVHandle);
+		NewRTVHandle.Offset(1, _RTVDescriptorSize);
 		_DXRenderTargets.PushBack(Buffer);
 	}
 
@@ -266,6 +241,11 @@ ERTColorFormat DX12GALSwapChainRenderTarget::GetRTColorFormat() const
 ID3D12Resource* DX12GALSwapChainRenderTarget::GetCurrentResource() const
 {
 	return _DXRenderTargets[_CurRenderTargetIdx];
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALSwapChainRenderTarget::GetCurrentDescHandle() const
+{
+	return _RTDescHandles[_CurRenderTargetIdx];
 }
 
 void DX12GALSwapChainRenderTarget::CreateDSVDescHeap()

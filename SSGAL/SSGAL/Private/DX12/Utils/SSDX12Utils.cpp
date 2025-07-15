@@ -39,6 +39,7 @@ D3D12_RESOURCE_STATES SS::DX12Util::ConvertResourceStates(EResourceStateType Typ
 	case EResourceStateType::CopyDest: return D3D12_RESOURCE_STATE_COPY_DEST;
 	case EResourceStateType::RenderTarget: return D3D12_RESOURCE_STATE_RENDER_TARGET;
 	case EResourceStateType::Present: return D3D12_RESOURCE_STATE_PRESENT;
+	case EResourceStateType::DepthWrite: return D3D12_RESOURCE_STATE_DEPTH_WRITE;
 	}
 
 	SS_INTERRUPT();

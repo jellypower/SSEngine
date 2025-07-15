@@ -30,7 +30,7 @@ public:
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
-	virtual void SetRenderTarget(GALRenderTarget* InRenderTarget) override;
+	virtual void SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets, GALRenderTarget* InDepthStencilView) override;
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) override;
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) override;

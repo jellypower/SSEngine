@@ -104,27 +104,43 @@ void SSRenderer::RequestPixelPicking(int32 X, int32 Y)
 
 void SSRenderer::StartUp()
 {
-	constexpr int32 BUFFER_WIDTH = 1024;
-	constexpr int32 BUFFER_HEIGHT = 1024;
 
-	GALRenderTargetDesc RTDesc;
-	RTDesc.ResourceWidth = BUFFER_WIDTH;
-	RTDesc.ResourceHeight = BUFFER_HEIGHT;
-	RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-	RTDesc.ScissorRectSize.Max = Vector2f(BUFFER_WIDTH, BUFFER_HEIGHT);
-	RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-	RTDesc.DrawBoxSize.WidthHeight = Vector2f(BUFFER_WIDTH, BUFFER_HEIGHT);
-	RTDesc.DrawBoxSize.MinDepth = 0.f;
-	RTDesc.DrawBoxSize.MaxDepth = 1.f;
-	RTDesc.Format = ERTColorFormat::R32G32_SINT;
-	RTDesc.InitialResourceState = EResourceStateType::CopySrc;
-	_PixelPickerRenderTarget = _GALRenderDevice->CreateRenderTarget(RTDesc, L"PixelPickerRenderTarget");
-	int32 Pitch = _PixelPickerRenderTarget->GetResourceRowPitch();
-	_PixelPickerCPUReadableTex = _GALRenderDevice->CreateCPUReadableTexture(
-		ERTColorFormat::R32G32_SINT,
-		Vector2i32(1024, 1024),
-		Pitch,
-		L"PixelPickerCPUReadableTex");
+	{
+		constexpr int32 BUFFER_WIDTH = 1024;
+		constexpr int32 BUFFER_HEIGHT = 1024;
+
+		GALRenderTargetDesc RTDesc;
+		RTDesc.ResourceWidth = BUFFER_WIDTH;
+		RTDesc.ResourceHeight = BUFFER_HEIGHT;
+		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		RTDesc.ScissorRectSize.Max = Vector2f(BUFFER_WIDTH, BUFFER_HEIGHT);
+		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		RTDesc.DrawBoxSize.WidthHeight = Vector2f(BUFFER_WIDTH, BUFFER_HEIGHT);
+		RTDesc.DrawBoxSize.MinDepth = 0.f;
+		RTDesc.DrawBoxSize.MaxDepth = 1.f;
+		RTDesc.Format = ERTColorFormat::R32G32_SINT;
+		RTDesc.InitialResourceState = EResourceStateType::CopySrc;
+		_PixelPickerRenderTarget = _GALRenderDevice->CreateRenderTarget(RTDesc, L"PixelPickerRenderTarget");
+		int32 Pitch = _PixelPickerRenderTarget->GetResourceRowPitch();
+		_PixelPickerCPUReadableTex = _GALRenderDevice->CreateCPUReadableTexture(
+			ERTColorFormat::R32G32_SINT,
+			Vector2i32(1024, 1024),
+			Pitch,
+			L"PixelPickerCPUReadableTex");
+	}
+
+	{
+		GALRenderTargetDesc DSVDesc;
+		GALRenderTarget* Viewport = _GALRenderDevice->GetDefaultViewportRenderTarget();
+		Vector2i32 Size = Viewport->GetResourceSize();
+		DSVDesc.ResourceWidth = Size.X;
+		DSVDesc.ResourceHeight = Size.Y;
+		DSVDesc.ScissorRectSize = Viewport->GetScissorRectSize();
+		DSVDesc.DrawBoxSize = Viewport->GetViewportBoxSize();
+		DSVDesc.Format = ERTColorFormat::D32_FLOAT;
+		DSVDesc.InitialResourceState = EResourceStateType::DepthWrite;
+		_DSVRenderTarget = _GALRenderDevice->CreateDepthStencilView(DSVDesc, L"Main_DSV");
+	}
 }
 
 void SSRenderer::PerFrame()
@@ -179,15 +195,24 @@ void SSRenderer::PerFrame()
 			// Default Render Target
 			{
 				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::RenderTarget);
+				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
+
+				_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget);
+				_MainDeviceContext->ClearRenderTarget(_DSVRenderTarget);
 				_MainDeviceContext->ClearRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
 
+
+				GALRenderTarget* RenderTargets[RT_NUM_MAX] = { nullptr, };
 				if (_CurRenderCamera->GetSpecificRenderTarget() == nullptr)
 				{
-					_MainDeviceContext->SetRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
+					RenderTargets[0] = _GALRenderDevice->GetDefaultViewportRenderTarget();
+					RenderTargets[1] = _PixelPickerRenderTarget;
+
+					_MainDeviceContext->SetRenderTarget(1, RenderTargets, _DSVRenderTarget);
 				}
 				else
 				{
-					_MainDeviceContext->SetRenderTarget(_CurRenderCamera->GetSpecificRenderTarget());
+					SS_INTERRUPT(L"TODO: 구현하기");
 				}
 
 
@@ -196,23 +221,13 @@ void SSRenderer::PerFrame()
 					_MainDeviceContext->Draw(Item);
 				}
 
+				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
 			}
 
 			
 			// Pixel Picker RenderTarget
 			{
-				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
-				_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget);
-				_MainDeviceContext->SetRenderTarget(_PixelPickerRenderTarget);
-
-				for (IRenderInstance* Item : _RenderInstancesToDraw)
-				{
-					_MainDeviceContext->DrawID(Item);
-				}
-
-				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
-
 				_MainDeviceContext->CopyRenderTarget(_PixelPickerCPUReadableTex, _PixelPickerRenderTarget);
 			}
 		}
@@ -224,8 +239,15 @@ void SSRenderer::PerFrame()
 
 void SSRenderer::CleanUp()
 {
+	delete _DSVRenderTarget;
+	_DSVRenderTarget = nullptr;
+
 	delete _PixelPickerCPUReadableTex;
+	_PixelPickerCPUReadableTex = nullptr;
+
 	delete _PixelPickerRenderTarget;
+	_PixelPickerRenderTarget = nullptr;
+
 
 	_GALRenderDevice->BeginRender(); // WaitForFence
 	{

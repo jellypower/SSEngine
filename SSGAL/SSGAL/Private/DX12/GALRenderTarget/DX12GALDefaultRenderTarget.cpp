@@ -84,71 +84,12 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 			}
 			_RTVDescriptorSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-			CD3DX12_CPU_DESCRIPTOR_HANDLE RTVDescHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart());
-			D3DDevice->CreateRenderTargetView(_RenderTargetResource, nullptr, RTVDescHandle);
+			_DescHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart());
+			D3DDevice->CreateRenderTargetView(_RenderTargetResource, nullptr, _DescHandle);
 		}
 	}
 
-	// Create DSV
-	{
-		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-		depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
-		depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-		depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
-
-		D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
-		depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
-		depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
-		depthOptimizedClearValue.DepthStencil.Stencil = 0;
-
-		CD3DX12_RESOURCE_DESC depthDesc(
-			D3D12_RESOURCE_DIMENSION_TEXTURE2D,
-			0,
-			_ResourceSize.X,
-			_ResourceSize.Y,
-			1,
-			1,
-			DXGI_FORMAT_R32_TYPELESS,
-			1,
-			0,
-			D3D12_TEXTURE_LAYOUT_UNKNOWN,
-			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-
-		CD3DX12_HEAP_PROPERTIES depthHeapTypeProp(D3D12_HEAP_TYPE_DEFAULT);
-
-		hr = D3DDevice->CreateCommittedResource(
-			&depthHeapTypeProp,
-			D3D12_HEAP_FLAG_NONE,
-			&depthDesc,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			&depthOptimizedClearValue,
-			IID_PPV_ARGS(&_DepthStencil));
-		if(FAILED(hr))
-		{
-			SS_INTERRUPT();
-		}
-		_DepthStencil->SetName(L"DX12GALDefaultRenderTarget::_DepthStencil");
-
-		// Create Descriptor
-		{
-			D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-			dsvHeapDesc.NumDescriptors = 1;	// Default Depth Buffer
-			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-			dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			if (FAILED(D3DDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&_DSVHeap))))
-			{
-				SS_INTERRUPT();
-			}
-
-			_DSVDescriptorSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-		}
-
-		CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
-		D3DDevice->CreateDepthStencilView(_DepthStencil, &depthStencilDesc, dsvHandle);
-	}
-
-
+	
 	// Getting Pitch
 	{
 		D3D12_RESOURCE_DESC Desc = _RenderTargetResource->GetDesc();
@@ -163,9 +104,6 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 
 DX12GALDefaultRenderTarget::~DX12GALDefaultRenderTarget()
 {
-	_DSVHeap->Release();
-	_DepthStencil->Release();
-
 	_RenderTargetResource->Release();
 	_RenderTargetDescHeap->Release();
 }
@@ -195,6 +133,11 @@ ID3D12Resource* DX12GALDefaultRenderTarget::GetCurrentResource() const
 	return _RenderTargetResource;
 }
 
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentDescHandle() const
+{
+	return _DescHandle; 
+}
+
 void DX12GALDefaultRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From,
                                                  EResourceStateType To)
 {
@@ -209,41 +152,10 @@ void DX12GALDefaultRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDevic
 	CurCmdList->ResourceBarrier(1, &Barrier);
 }
 
-void DX12GALDefaultRenderTarget::SetRenderTarget(ID3D12GraphicsCommandList* CmdList)
-{
-	D3D12_VIEWPORT ViewportSize;
-
-
-	ViewportSize.TopLeftX = _ViewportBoxSize.LeftTop.X;
-	ViewportSize.TopLeftY = _ViewportBoxSize.LeftTop.Y;
-	ViewportSize.Width = _ViewportBoxSize.WidthHeight.X;
-	ViewportSize.Height = _ViewportBoxSize.WidthHeight.Y;
-	ViewportSize.MinDepth = _ViewportBoxSize.MinDepth;
-	ViewportSize.MaxDepth = _ViewportBoxSize.MaxDepth;
-
-	D3D12_RECT ScissorRectSize;
-	ScissorRectSize.left = _ScissorRectSize.Min.X;
-	ScissorRectSize.top = _ScissorRectSize.Min.Y;
-	ScissorRectSize.right = _ScissorRectSize.Max.X;
-	ScissorRectSize.bottom = _ScissorRectSize.Max.Y;
-
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
-
-	CmdList->RSSetViewports(1, &ViewportSize);
-	CmdList->RSSetScissorRects(1, &ScissorRectSize);
-	CmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-}
-
 void DX12GALDefaultRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
 
 	constexpr FLOAT CLEAR_COLOR[] = { 0.f, 0.f, 0.f, 0.f };
 	CmdList->ClearRenderTargetView(rtvHandle, CLEAR_COLOR, 0, nullptr);
-
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
-	CmdList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }

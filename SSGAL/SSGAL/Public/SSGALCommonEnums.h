@@ -9,7 +9,8 @@ enum class EResourceStateType : uint8
 	CopySrc,
 	CopyDest,
 	RenderTarget,
-	Present
+	Present,
+	DepthWrite,
 };
 
 enum class ERenderInstanceType : int32

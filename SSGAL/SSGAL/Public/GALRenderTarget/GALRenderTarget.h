@@ -9,6 +9,7 @@ enum class ERenderTargetType : uint8;
 class GALRenderDevice;
 
 
+
 struct GALRenderTargetDesc
 {
 	int32 ResourceWidth = 0;

@@ -114,8 +114,11 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = SS::DX12Util::ConvertColorFormat(InPipelineDesc.RTColorFormat);
+	psoDesc.NumRenderTargets = InPipelineDesc.NumRenderTarget;
+	for (int32 i = 0; i < InPipelineDesc.NumRenderTarget; i++)
+	{
+		psoDesc.RTVFormats[i] = SS::DX12Util::ConvertColorFormat(InPipelineDesc.RTColorFormats[i]);
+	}
 	psoDesc.DSVFormat = SS::DX12Util::ConvertColorFormat(InPipelineDesc.DSColorFormat);
 	psoDesc.SampleDesc.Count = 1;
 

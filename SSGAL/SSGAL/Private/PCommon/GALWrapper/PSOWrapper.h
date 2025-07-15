@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "RootSignatureWrapper.h"
+#include "Public/SSGALInlineSettings.h"
 #include "Public/GALRenderTarget/GALRTCommonEnums.h"
 
 
@@ -28,15 +29,15 @@ enum class EBlendState : int32
 	SS_DEFAULT_BLEND_STATE = 1,
 };
 
-
 struct PipelineDesc
 {
 	SS::SHasherW		VSName;
 	SS::SHasherW		PSName;
 	EInputLayoutType	LayoutType = EInputLayoutType::NONE;
 	ERootSignatureType	RootSignatureType = ERootSignatureType::NONE;
-	ERTColorFormat		RTColorFormat = ERTColorFormat::None; // RenderTargetColorFormat
 	ERTColorFormat		DSColorFormat = ERTColorFormat::None; // DepthStancilColorFormat
+	int32				NumRenderTarget = 0;
+	ERTColorFormat		RTColorFormats[RT_NUM_MAX] = { ERTColorFormat::None, }; // RenderTargetColorFormat
 };
 
 bool operator==(const PipelineDesc& lhs, const PipelineDesc& rhs);

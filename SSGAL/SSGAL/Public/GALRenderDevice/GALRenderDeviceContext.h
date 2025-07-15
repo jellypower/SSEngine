@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+struct BoundBox2f;
+struct ViewportBox;
 class IMaterialAssetMutable;
 class GALCPUReadableTexture;
 class IMeshAssetMutable;
@@ -27,8 +29,9 @@ public:
 	virtual bool GenerateMaterialGALAsset(IMaterialAssetMutable* InMaterialAsset) = 0;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 
+
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;
-	virtual void SetRenderTarget(GALRenderTarget* InRenderTarget) = 0;
+	virtual void SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets, GALRenderTarget* InDepthStencilView) = 0;
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) = 0;
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) = 0;

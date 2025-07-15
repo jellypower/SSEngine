@@ -4,6 +4,7 @@
 
 #include "DX12GALRenderDeviceContext.h"
 #include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
+#include "Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourceAllocator.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12DescriptorHeapCustomAllocator.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
@@ -312,6 +313,12 @@ GALRenderTarget* DX12GALRenderDevice::CreateRenderTarget(const GALRenderTargetDe
 {
 	DX12GALDefaultRenderTarget* NewRenderTarget = DBG_NEW DX12GALDefaultRenderTarget(this, Desc, ResourceName);
 	return NewRenderTarget;
+}
+
+GALRenderTarget* DX12GALRenderDevice::CreateDepthStencilView(const GALRenderTargetDesc& Desc, const utf16* ResourceName)
+{
+	DX12GALDSVRenderTarget* NewDSV = DBG_NEW DX12GALDSVRenderTarget(this, Desc, ResourceName);
+	return NewDSV;
 }
 
 GALCPUReadableTexture* DX12GALRenderDevice::CreateCPUReadableTexture(ERTColorFormat InColorFormat, Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName)

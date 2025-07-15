@@ -23,9 +23,9 @@ public:
 	virtual ERTColorFormat GetRTColorFormat() const override;
 
 	virtual ID3D12Resource* GetCurrentResource() const override;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentDescHandle() const override;
 
 	virtual void ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To) override;
-	virtual void SetRenderTarget(ID3D12GraphicsCommandList* CmdList) override;
 	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList) override;
 
 private:
@@ -45,6 +45,7 @@ private:
 	ID3D12Resource* _DepthStencil = nullptr;
 
 	SS::PooledList<ID3D12Resource*, SS::InlineAllocator<SWAP_CHAIN_FRAME_COUNT>> _DXRenderTargets;
+	SS::PooledList<CD3DX12_CPU_DESCRIPTOR_HANDLE, SS::InlineAllocator<SWAP_CHAIN_FRAME_COUNT>> _RTDescHandles;
 	ID3D12DescriptorHeap* _RTVDescHeap = nullptr;
 	uint32 _RTVDescriptorSize = 0;
 };

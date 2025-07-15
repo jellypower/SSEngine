@@ -28,6 +28,7 @@ public:
 
 	virtual GALRenderDeviceContext* CreateRenderDeviceContext() override;
 	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) override;
+	virtual GALRenderTarget* CreateDepthStencilView(const GALRenderTargetDesc& Desc, const utf16* ResourceName) override;
 	virtual GALCPUReadableTexture* CreateCPUReadableTexture(ERTColorFormat InColorFormat, Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName = nullptr) override;
 
 	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) override;

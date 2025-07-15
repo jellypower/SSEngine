@@ -5,6 +5,8 @@
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
+#include "Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
+#include "Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "Private/PCommon/GALPrivateGlobals.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
@@ -409,12 +411,67 @@ void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget
 	InRenderTarget->ResourceBarrier(this, From, To);
 }
 
-void DX12GALRenderDeviceContext::SetRenderTarget(GALRenderTarget* InRenderTarget)
+
+void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets,
+                                                 GALRenderTarget* InDepthStencilView)
 {
-	DX12GALRenderTargetBase* DX12RenderTarget = (DX12GALRenderTargetBase*)InRenderTarget;
+	if (NumRenderTargets > RT_NUM_MAX)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	if (InDepthStencilView != nullptr && InDepthStencilView->GetRenderTargetType() != ERenderTargetType::DepthStencil)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentCmdList();
 
-	DX12RenderTarget->SetRenderTarget(CurCommandList);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE RTVDescHandles[RT_NUM_MAX];
+	D3D12_VIEWPORT Viewports[RT_NUM_MAX];
+	D3D12_RECT Rects[RT_NUM_MAX];
+	for (int i = 0; i < NumRenderTargets; i++)
+	{
+		DX12GALRenderTargetBase* RTItem = (DX12GALRenderTargetBase*)InRenderTargets[i];
+		RTVDescHandles[i] = RTItem->GetCurrentDescHandle();
+
+		const ViewportBox& VB = RTItem->GetViewportBoxSize();
+		const BoundBox2f& SR = RTItem->GetScissorRectSize();
+
+		D3D12_VIEWPORT ViewportSize;
+		ViewportSize.TopLeftX = VB.LeftTop.X;
+		ViewportSize.TopLeftY = VB.LeftTop.Y;
+		ViewportSize.Width = VB.WidthHeight.X;
+		ViewportSize.Height = VB.WidthHeight.Y;
+		ViewportSize.MinDepth = VB.MinDepth;
+		ViewportSize.MaxDepth = VB.MaxDepth;
+
+		D3D12_RECT ScissorRectSize;
+		ScissorRectSize.left = SR.Min.X;
+		ScissorRectSize.top = SR.Min.Y;
+		ScissorRectSize.right = SR.Max.X;
+		ScissorRectSize.bottom = SR.Max.Y;
+
+		Viewports[i] = ViewportSize;
+		Rects[i] = ScissorRectSize;
+	}
+
+	CurCommandList->RSSetScissorRects(NumRenderTargets, Rects);
+	CurCommandList->RSSetViewports(NumRenderTargets, Viewports);
+
+	if (InDepthStencilView == nullptr)
+	{
+		CurCommandList->OMSetRenderTargets(NumRenderTargets, RTVDescHandles, FALSE, nullptr);
+	}
+	else
+	{
+		DX12GALDSVRenderTarget* DX12DSV = (DX12GALDSVRenderTarget*)InDepthStencilView;
+		D3D12_CPU_DESCRIPTOR_HANDLE DSVDescHandle = DX12DSV->GetCurrentDescHandle();
+		CurCommandList->OMSetRenderTargets(NumRenderTargets, RTVDescHandles, FALSE, &DSVDescHandle);
+	}
 }
 
 void DX12GALRenderDeviceContext::ClearRenderTarget(GALRenderTarget* InRenderTarget)
@@ -568,7 +625,8 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
 		NewPipelineDesc.PSName = L"PS_TestDrawer";
 		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_DEFAULT_PBR;
-		NewPipelineDesc.RTColorFormat = ERTColorFormat::R8G8B8A8_UNORM;
+		NewPipelineDesc.NumRenderTarget = 1;
+		NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R8G8B8A8_UNORM;
 		NewPipelineDesc.DSColorFormat = ERTColorFormat::D32_FLOAT;
 		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
 
@@ -668,7 +726,8 @@ void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMAT
 		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
 		NewPipelineDesc.PSName = L"PS_IDDrawer";
 		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
-		NewPipelineDesc.RTColorFormat = ERTColorFormat::R32G32_SINT;
+		NewPipelineDesc.NumRenderTarget = 1;
+		NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R32G32_SINT;
 		NewPipelineDesc.DSColorFormat = ERTColorFormat::D32_FLOAT;
 		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
 
