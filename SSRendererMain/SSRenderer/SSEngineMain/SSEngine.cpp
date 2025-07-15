@@ -135,9 +135,6 @@ void SSEngine::TEMP_CreateAssets()
 {
 	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
 
-	ITextureAssetMutable* TempTexture = AssetManager->CreateEmptyTextureAsset(L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds");
-	AssetManager->AddToAssetPool(TempTexture);
-
 	ITextureAssetMutable* BlackTex = AssetManager->CreateEmptyTextureAsset(L"BLACK.tex", L"Resource/Texture/BLACK.dds");
 	AssetManager->AddToAssetPool(BlackTex);
 	ITextureAssetMutable* EmptyTex = AssetManager->CreateEmptyTextureAsset(L"EMPTY.tex", L"Resource/Texture/EMPTY.dds");
@@ -147,9 +144,7 @@ void SSEngine::TEMP_CreateAssets()
 	ITextureAssetMutable* WhiteTex = AssetManager->CreateEmptyTextureAsset(L"WHITE.tex", L"Resource/Texture/WHITE.dds");
 	AssetManager->AddToAssetPool(WhiteTex);
 
-
 	IMaterialAssetMutable* TempMtl = AssetManager->CreateEmptyMaterialAsset(L"EMPTY.mtl", "__EMPTY_PATH__");
-
 	MtlDataDefaultPBR* EmptyDefaultPBR = DBG_NEW MtlDataDefaultPBR();
 	EmptyDefaultPBR->_Type = EMaterialType::DefaultPBR;
 	EmptyDefaultPBR->_BaseColorScale = Vector4f::One;
@@ -164,10 +159,6 @@ void SSEngine::TEMP_CreateAssets()
 	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] = BlackTex;
 	TempMtl->InjectRawDataXXX(EmptyDefaultPBR);
 	AssetManager->AddToAssetPool(TempMtl);
-
-
-	IModelAssetMutable* ModelAsset = AssetManager->FindAssetByName<IModelAssetMutable>(L"frew worm monster.fbx/body.mdl");
-	int a = 0;
 }
 
 void SSEngine::TEMP_ProcessContents()

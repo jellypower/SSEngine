@@ -5,6 +5,7 @@
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
+#include "Private/PCommon/GALPrivateGlobals.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/GALMaterialAssets/DX12GALDefaultPBRMaterialAsset.h"
@@ -613,21 +614,20 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 		if (MtlAsset == nullptr || GALMaterial == nullptr)
 		{
-//			SS_ASSERT(false);
+			const IMaterialAsset* EmptyMtl = g_CommonRenderAssetSet->GetEmptyPBRMaterial();
+			GALMaterial = (DX12GALDefaultPBRMaterialAsset* )EmptyMtl->GetGALMaterialAsset();
 
-			// TODO: Material으로 그리는 기능 추가
 		}
-		else
-		{
-			CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2
-			CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // textures
-		}
+
+		CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2
+		CurCommandList->SetDescriptorHeaps(1, &GALMaterial->_MtlTexSRVDescHeap);
+		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // textures
+
 
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
 		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
-
 	}
 }
 

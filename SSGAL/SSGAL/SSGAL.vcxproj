@@ -187,6 +187,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClCompile Include="Private\DX12\GALWrapper\DX12RootSignatureWrapper.cpp" />
     <ClCompile Include="Private\DX12\ModuleEntry\GALInstanceFactory.cpp" />
     <ClCompile Include="Private\DX12\Utils\SSDX12Utils.cpp" />
+    <ClCompile Include="Private\PCommon\GALPrivateGlobals.cpp" />
     <ClCompile Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.cpp" />
     <ClCompile Include="Private\PCommon\GALResourceUpdater\GALResourceUpdater.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp" />
@@ -220,6 +221,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSRendererMain\$(IntDir)D3D12\*" /ysd
     <ClInclude Include="Private\DX12\GALWrapper\DX12RootSignaturePool.h" />
     <ClInclude Include="Private\DX12\GALWrapper\DX12RootSignatureWrapper.h" />
     <ClInclude Include="Private\DX12\Utils\SSDX12Utils.h" />
+    <ClInclude Include="Private\PCommon\GALPrivateGlobals.h" />
     <ClInclude Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.h" />
     <ClInclude Include="Private\PCommon\GALResourceUpdater\GALResourceUpdater.h" />
     <ClInclude Include="Private\PCommon\GALWrapper\GALPCommonShaderPool.h" />
