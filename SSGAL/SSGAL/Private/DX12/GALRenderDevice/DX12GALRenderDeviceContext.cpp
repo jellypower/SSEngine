@@ -415,7 +415,7 @@ void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget
 void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets,
                                                  GALRenderTarget* InDepthStencilView)
 {
-	if (NumRenderTargets > RT_NUM_MAX)
+	if (NumRenderTargets > RT_NUM_MAX || NumRenderTargets <= 0)
 	{
 		SS_ASSERT(false);
 		return;
@@ -433,8 +433,7 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 	_BoundDSV[_CurCommandListIdx] = InDepthStencilView;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE RTVDescHandles[RT_NUM_MAX];
-	D3D12_VIEWPORT Viewports[RT_NUM_MAX];
-	D3D12_RECT Rects[RT_NUM_MAX];
+
 	for (int i = 0; i < NumRenderTargets; i++)
 	{
 		DX12GALRenderTargetBase* RTItem = (DX12GALRenderTargetBase*)InRenderTargets[i];
@@ -442,6 +441,21 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 
 		const ViewportBox& VB = RTItem->GetViewportBoxSize();
 		const BoundBox2f& SR = RTItem->GetScissorRectSize();
+
+		_BoundRenderTargets[_CurCommandListIdx][i] = RTItem;
+	}
+
+
+	{
+		DX12GALRenderTargetBase* MajorRT = (DX12GALRenderTargetBase*)InRenderTargets[0];
+		const ViewportBox& VB = MajorRT->GetViewportBoxSize();
+		const BoundBox2f& SR = MajorRT->GetScissorRectSize();
+
+		D3D12_RECT ScissorRectSize;
+		ScissorRectSize.left = SR.Min.X;
+		ScissorRectSize.top = SR.Min.Y;
+		ScissorRectSize.right = SR.Max.X;
+		ScissorRectSize.bottom = SR.Max.Y;
 
 		D3D12_VIEWPORT ViewportSize;
 		ViewportSize.TopLeftX = VB.LeftTop.X;
@@ -451,20 +465,9 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 		ViewportSize.MinDepth = VB.MinDepth;
 		ViewportSize.MaxDepth = VB.MaxDepth;
 
-		D3D12_RECT ScissorRectSize;
-		ScissorRectSize.left = SR.Min.X;
-		ScissorRectSize.top = SR.Min.Y;
-		ScissorRectSize.right = SR.Max.X;
-		ScissorRectSize.bottom = SR.Max.Y;
-
-		Viewports[i] = ViewportSize;
-		Rects[i] = ScissorRectSize;
-
-		_BoundRenderTargets[_CurCommandListIdx][i] = RTItem;
+		CurCommandList->RSSetScissorRects(1, &ScissorRectSize);
+		CurCommandList->RSSetViewports(1, &ViewportSize);
 	}
-
-	CurCommandList->RSSetScissorRects(NumRenderTargets, Rects);
-	CurCommandList->RSSetViewports(NumRenderTargets, Viewports);
 
 	if (InDepthStencilView == nullptr)
 	{
