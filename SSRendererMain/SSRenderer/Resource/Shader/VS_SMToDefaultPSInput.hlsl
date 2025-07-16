@@ -8,7 +8,7 @@ PS_INPUT_DEFAULT Main(VS_INPUT_DEFAULT input)
     
     output.Pos = mul(input.Pos, WMatrix);
     output.Pos = mul(output.Pos, VPMatrix);
-    output.Normal = input.Normal;
+    output.Normal = mul(input.Normal, RotMatrix);
     output.Tangent = mul(input.Tangent, RotMatrix);
 
     output.UV0 = input.UV0;
