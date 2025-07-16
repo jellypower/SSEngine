@@ -10,15 +10,15 @@ class IRenderer;
 class SGameObject;
 class SCameraComponent;
 class SWorld;
-class SSEngine;
+class SSEditor;
 
-extern SSEngine* g_Engine;
+extern SSEditor* g_Editor;
 
-class SSEngine
+class SSEditor
 {
 public:
-	SSEngine(IRenderer* EngineRenderer);
-	~SSEngine();
+	SSEditor(IRenderer* EngineRenderer);
+	~SSEditor();
 
 	void StartupEngine();
 	void EnginePerFrame();

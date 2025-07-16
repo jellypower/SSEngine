@@ -1,4 +1,4 @@
-#include "SSEngine.h"
+#include "SSEditor.h"
 
 #include "ModuleEntryScriptRunner.h"
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
@@ -29,19 +29,19 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
-SSEngine* g_Engine = nullptr;
+SSEditor* g_Editor = nullptr;
 
-SSEngine::SSEngine(IRenderer* EngineRenderer) :
+SSEditor::SSEditor(IRenderer* EngineRenderer) :
 	_hashMap_TMP(200)
 {
 	_Renderer = EngineRenderer;
 }
 
-SSEngine::~SSEngine()
+SSEditor::~SSEditor()
 {
 }
 
-void SSEngine::StartupEngine()
+void SSEditor::StartupEngine()
 {
 	_Renderer->StartUp();
 
@@ -100,14 +100,14 @@ void SSEngine::StartupEngine()
 	_Renderer->GetCommonRenderAssetSet()->AddRefCachedAssets();
 }
 
-void SSEngine::EnginePerFrame()
+void SSEditor::EnginePerFrame()
 {
 	TEMP_ProcessContents();
 	_DefaultWorld->ProcessTransformCommit();
 	_Renderer->PerFrame();
 }
 
-void SSEngine::CleanupEngine()
+void SSEditor::CleanupEngine()
 {
 
 	_DefaultWorld->DestroyAllObjectsInWorld();
@@ -131,7 +131,7 @@ void SSEngine::CleanupEngine()
 	_Renderer = nullptr;
 }
 
-void SSEngine::TEMP_CreateAssets()
+void SSEditor::TEMP_CreateAssets()
 {
 	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
 
@@ -161,7 +161,7 @@ void SSEngine::TEMP_CreateAssets()
 	AssetManager->AddToAssetPool(TempMtl);
 }
 
-void SSEngine::TEMP_ProcessContents()
+void SSEditor::TEMP_ProcessContents()
 {
 	float DeltaTime = SSFrameInfo::GetDeltaTime();
 	SGameObject* CamGameObj = TEMP_Camera->GetParent();

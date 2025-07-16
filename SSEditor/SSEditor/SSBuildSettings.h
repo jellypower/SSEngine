@@ -2,13 +2,13 @@
 #include <Windows.h>
 
 
-// SSEngine
+// SSEditor
 #pragma comment(lib, "SSEngineDefault.lib")
 #pragma comment(lib, "SObject.lib")
 
-
 #pragma comment(lib, "SSContentsBase.lib")
 
+#pragma comment(lib, "SSImgui.lib")
 
 #ifdef _DEBUG
 

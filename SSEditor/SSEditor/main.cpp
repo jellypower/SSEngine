@@ -14,7 +14,7 @@
 
 #include "ModuleEntryScriptRunner.h"
 
-#include "SSEngineMain/SSEngine.h"
+#include "SSEngineMain/SSEditor.h"
 
 #include "SSEngineDefault/Public/RawInput/IRawInputProcessor.h"
 #include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
@@ -139,9 +139,9 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 
 
-	g_Engine = DBG_NEW SSEngine(g_Renderer);
+	g_Editor = DBG_NEW SSEditor(g_Renderer);
 
-	g_Engine->InjectImportFilePath_TMP(FbxFilePathToLoad.C_Str());
+	g_Editor->InjectImportFilePath_TMP(FbxFilePathToLoad.C_Str());
 	
 
 	
@@ -163,7 +163,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	}
 
 
-	g_Engine->StartupEngine();
+	g_Editor->StartupEngine();
 	while (WM_QUIT != msg.message)
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -174,16 +174,16 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		else
 		{
 			g_FrameInfoProcessor->PerFrameXXX();
-			g_Engine->EnginePerFrame();
+			g_Editor->EnginePerFrame();
 			g_RawInputProcessor->ProcessInputEndOfFrame();
 		}
 	}
-	g_Engine->CleanupEngine();
+	g_Editor->CleanupEngine();
 
 	// End Of Loop
 	{
-		delete g_Engine;
-		g_Engine = nullptr;
+		delete g_Editor;
+		g_Editor = nullptr;
 	}
 
 
