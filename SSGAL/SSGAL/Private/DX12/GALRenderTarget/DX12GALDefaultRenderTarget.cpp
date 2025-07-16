@@ -141,7 +141,7 @@ CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentDescHandle()
 void DX12GALDefaultRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From,
                                                  EResourceStateType To)
 {
-	ID3D12GraphicsCommandList* CurCmdList = ((DX12GALRenderDeviceContext*)InDeviceContext)->GetCurrentCmdList();
+	ID3D12GraphicsCommandList* CurCmdList = ((DX12GALRenderDeviceContext*)InDeviceContext)->GetCurrentDrawWorkerCmdList();
 	ID3D12Resource* CurRenderTarget = _RenderTargetResource;
 
 	D3D12_RESOURCE_STATES FromD3DState = SS::DX12Util::ConvertResourceStates(From);

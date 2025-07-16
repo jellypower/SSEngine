@@ -5,6 +5,9 @@
 #include "Public/GALRenderTarget/GALRTCommonEnums.h"
 
 
+class GALRenderTarget;
+enum class EMaterialType;
+enum class EMeshType;
 class PSOPool;
 
 enum class EInputLayoutType : int32
@@ -57,3 +60,12 @@ public:
 	virtual bool IsValid() const = 0;
 	const PipelineDesc& GetPipelineDesc() const { return _pipelineDesc; }
 };
+
+
+
+PipelineDesc ConstructPSODescToDrawMesh(
+	EMeshType InMeshType,
+	EMaterialType InMtlType, 
+	int32 NumRenderTarget,
+	GALRenderTarget* const* InRenderTargets,
+	GALRenderTarget* InDSV);

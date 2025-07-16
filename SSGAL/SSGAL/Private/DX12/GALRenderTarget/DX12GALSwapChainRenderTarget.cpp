@@ -99,15 +99,10 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDevice* 
 			rtvHandle.Offset(1, _RTVDescriptorSize);
 		}
 	}
-
-	CreateDSVDescHeap();
-	RecreateDepthStencil(BackBufferWidth, BackBufferHeight);
 }
 
 DX12GALSwapChainRenderTarget::~DX12GALSwapChainRenderTarget()
 {
-	_DSVHeap->Release();
-	_DepthStencil->Release();
 	_swapChain->Release();
 	_RTVDescHeap->Release();
 
@@ -133,7 +128,7 @@ HRESULT DX12GALSwapChainRenderTarget::Present()
 		uiPresentFlags = DXGI_PRESENT_ALLOW_TEARING;
 	}
 
-	HRESULT hr = _swapChain->Present(uiSyncInterval, uiPresentFlags); // 여기서 병목이 생긴다. 계속 쓰레드가 날아감.
+	HRESULT hr = _swapChain->Present(uiSyncInterval, uiPresentFlags);
 	_CurRenderTargetIdx = _swapChain->GetCurrentBackBufferIndex();
 	return hr;
 }
@@ -142,17 +137,15 @@ HRESULT DX12GALSwapChainRenderTarget::Present()
 void DX12GALSwapChainRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
 
 	constexpr float CLEAR_COLOR[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	CmdList->ClearRenderTargetView(rtvHandle, CLEAR_COLOR, 0, nullptr);
-	CmdList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 
 void DX12GALSwapChainRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To)
 {
-	ID3D12GraphicsCommandList* CurCmdList = ((DX12GALRenderDeviceContext*)InDeviceContext)->GetCurrentCmdList();
+	ID3D12GraphicsCommandList* CurCmdList = ((DX12GALRenderDeviceContext*)InDeviceContext)->GetCurrentDrawWorkerCmdList();
 	ID3D12Resource* CurRenderTarget = _DXRenderTargets[_CurRenderTargetIdx];
 
 	D3D12_RESOURCE_STATES FromD3DState = SS::DX12Util::ConvertResourceStates(From);
@@ -207,7 +200,6 @@ void DX12GALSwapChainRenderTarget::UpdateViewportSize(uint32 BackBufferWidth, ui
 		_DXRenderTargets.PushBack(Buffer);
 	}
 
-	RecreateDepthStencil(BackBufferWidth, BackBufferHeight);
 
 	_ViewportBoxSize.WidthHeight.X = BackBufferWidth;
 	_ViewportBoxSize.WidthHeight.Y = BackBufferHeight;
@@ -248,72 +240,3 @@ CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALSwapChainRenderTarget::GetCurrentDescHandle
 	return _RTDescHandles[_CurRenderTargetIdx];
 }
 
-void DX12GALSwapChainRenderTarget::CreateDSVDescHeap()
-{
-	HRESULT hr = S_OK;
-	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice)->GetD3DDevice();
-
-	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-	dsvHeapDesc.NumDescriptors = 1;	// Default Depth Buffer
-	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	if (FAILED(D3DDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&_DSVHeap))))
-	{
-		SS_INTERRUPT();
-	}
-
-	_DSVDescriptorSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-}
-
-void DX12GALSwapChainRenderTarget::RecreateDepthStencil(uint32 Width, uint32 Height)
-{
-	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice)->GetD3DDevice();
-
-	if (_DepthStencil != nullptr)
-	{
-		_DepthStencil->Release();
-		_DepthStencil = nullptr;
-	}
-
-
-	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-	depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
-
-	D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
-	depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
-	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
-	depthOptimizedClearValue.DepthStencil.Stencil = 0;
-
-	CD3DX12_RESOURCE_DESC depthDesc(
-		D3D12_RESOURCE_DIMENSION_TEXTURE2D,
-		0,
-		Width,
-		Height,
-		1,
-		1,
-		DXGI_FORMAT_R32_TYPELESS,
-		1,
-		0,
-		D3D12_TEXTURE_LAYOUT_UNKNOWN,
-		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-
-	CD3DX12_HEAP_PROPERTIES depthHeapTypeProp(D3D12_HEAP_TYPE_DEFAULT);
-
-	if (FAILED(D3DDevice->CreateCommittedResource(
-		&depthHeapTypeProp,
-		D3D12_HEAP_FLAG_NONE,
-		&depthDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		&depthOptimizedClearValue,
-		IID_PPV_ARGS(&_DepthStencil)
-	)))
-	{
-		SS_INTERRUPT();
-	}
-	_DepthStencil->SetName(L"CD3D12Renderer::_DepthStencil");
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
-	D3DDevice->CreateDepthStencilView(_DepthStencil, &depthStencilDesc, dsvHandle);
-}

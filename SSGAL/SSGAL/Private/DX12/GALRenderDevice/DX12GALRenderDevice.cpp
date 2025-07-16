@@ -274,7 +274,7 @@ void DX12GALRenderDevice::ExecuteRenderContext(GALRenderDeviceContext* DeviceCon
 
 	// 필요한 데이터 뽑아오기
 	DX12GALRenderDeviceContext* DX12DeviceContext = (DX12GALRenderDeviceContext*)DeviceContext;
-	const SS::PooledList<ID3D12GraphicsCommandList*>& CommandLists = DX12DeviceContext->GetCommandLists();
+	const SS::PooledList<ID3D12GraphicsCommandList*>& CommandLists = DX12DeviceContext->GetDrawWorkerCommandLists();
 	int32 Size = CommandLists.GetSize();
 	ID3D12CommandList* const* Lists = (ID3D12CommandList* const*)CommandLists.GetData();
 

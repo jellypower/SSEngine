@@ -105,17 +105,18 @@ void SSRenderer::RequestPixelPicking(int32 X, int32 Y)
 void SSRenderer::StartUp()
 {
 
+	GALRenderTarget* SwapChainBuffer= _GALRenderDevice->GetDefaultViewportRenderTarget();
+	Vector2i32 SwapChainBufferSize = SwapChainBuffer->GetResourceSize();
+
 	{
-		constexpr int32 BUFFER_WIDTH = 1024;
-		constexpr int32 BUFFER_HEIGHT = 1024;
 
 		GALRenderTargetDesc RTDesc;
-		RTDesc.ResourceWidth = BUFFER_WIDTH;
-		RTDesc.ResourceHeight = BUFFER_HEIGHT;
+		RTDesc.ResourceWidth = SwapChainBufferSize.X;
+		RTDesc.ResourceHeight = SwapChainBufferSize.Y;
 		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-		RTDesc.ScissorRectSize.Max = Vector2f(BUFFER_WIDTH, BUFFER_HEIGHT);
+		RTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
 		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-		RTDesc.DrawBoxSize.WidthHeight = Vector2f(BUFFER_WIDTH, BUFFER_HEIGHT);
+		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
 		RTDesc.DrawBoxSize.MinDepth = 0.f;
 		RTDesc.DrawBoxSize.MaxDepth = 1.f;
 		RTDesc.Format = ERTColorFormat::R32G32_SINT;
@@ -124,19 +125,17 @@ void SSRenderer::StartUp()
 		int32 Pitch = _PixelPickerRenderTarget->GetResourceRowPitch();
 		_PixelPickerCPUReadableTex = _GALRenderDevice->CreateCPUReadableTexture(
 			ERTColorFormat::R32G32_SINT,
-			Vector2i32(1024, 1024),
+			Vector2i32(SwapChainBufferSize.X, SwapChainBufferSize.Y),
 			Pitch,
 			L"PixelPickerCPUReadableTex");
 	}
 
 	{
 		GALRenderTargetDesc DSVDesc;
-		GALRenderTarget* Viewport = _GALRenderDevice->GetDefaultViewportRenderTarget();
-		Vector2i32 Size = Viewport->GetResourceSize();
-		DSVDesc.ResourceWidth = Size.X;
-		DSVDesc.ResourceHeight = Size.Y;
-		DSVDesc.ScissorRectSize = Viewport->GetScissorRectSize();
-		DSVDesc.DrawBoxSize = Viewport->GetViewportBoxSize();
+		DSVDesc.ResourceWidth = SwapChainBufferSize.X;
+		DSVDesc.ResourceHeight = SwapChainBufferSize.Y;
+		DSVDesc.ScissorRectSize = SwapChainBuffer->GetScissorRectSize();
+		DSVDesc.DrawBoxSize = SwapChainBuffer->GetViewportBoxSize();
 		DSVDesc.Format = ERTColorFormat::D32_FLOAT;
 		DSVDesc.InitialResourceState = EResourceStateType::DepthWrite;
 		_DSVRenderTarget = _GALRenderDevice->CreateDepthStencilView(DSVDesc, L"Main_DSV");
@@ -208,7 +207,7 @@ void SSRenderer::PerFrame()
 					RenderTargets[0] = _GALRenderDevice->GetDefaultViewportRenderTarget();
 					RenderTargets[1] = _PixelPickerRenderTarget;
 
-					_MainDeviceContext->SetRenderTarget(1, RenderTargets, _DSVRenderTarget);
+					_MainDeviceContext->SetRenderTarget(2, RenderTargets, _DSVRenderTarget);
 				}
 				else
 				{

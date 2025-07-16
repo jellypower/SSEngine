@@ -46,19 +46,27 @@ private:
 	void DrawStaticMeshID(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 
 public:
-	ID3D12GraphicsCommandList* GetCurrentCmdList() const { return _CommandLists[_CurCommandListIdx]; }
-	const SS::PooledList<ID3D12GraphicsCommandList*>& GetCommandLists() const { return _CommandLists; }
+	ID3D12GraphicsCommandList* GetCurrentDrawWorkerCmdList() const { return _DrawWorkerCommandLists[_CurCommandListIdx]; }
+	const SS::PooledList<ID3D12GraphicsCommandList*>& GetDrawWorkerCommandLists() const { return _DrawWorkerCommandLists; }
 
 protected:
 	virtual void ResetRenderState() override;
+
+protected:
+	int32 GetThisFrameBoundRenderTargetCnt() const { return _BoundRenderTargetCnt[_CurCommandListIdx]; }
+	GALRenderTarget* const* GetThisFrameBoundRenderTargets() const { return _BoundRenderTargets[_CurCommandListIdx]; }
+	GALRenderTarget* GetThisFrameBoundDSV() const { return _BoundDSV[_CurCommandListIdx]; }
 
 private:
 	void ResetCommandList();
 
 
 private:
-	SS::PooledList<ID3D12CommandAllocator*> _CommandAllocators;
-	SS::PooledList <ID3D12GraphicsCommandList*> _CommandLists;
+	SS::PooledList<ID3D12CommandAllocator*> _CommandAllocators; // TODO: SWAP_CHAIN_FRAME_COUNT 개수만큼 만들기
+	SS::PooledList <ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT 개수만큼 만들기
 	int32 _CurCommandListIdx = 0;
 
+	int32 _BoundRenderTargetCnt[SWAP_CHAIN_FRAME_COUNT] = { 0, };
+	GALRenderTarget* _BoundRenderTargets[SWAP_CHAIN_FRAME_COUNT][RT_NUM_MAX] = {nullptr,};
+	GALRenderTarget* _BoundDSV[SWAP_CHAIN_FRAME_COUNT] = { nullptr, };
 };

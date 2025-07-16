@@ -1,9 +1,12 @@
 #include "include/CBSet/IS_DefaultPbrCBSet.hlsl"
 #include "include/Func/IS_PbrLight.hlsl"
+#include "include/Types/IS_DeferredShading.hlsl"
 
 
-float4 Main(PS_INPUT_DEFAULT input) : SV_Target
+MRT_Deferred Main(PS_INPUT_DEFAULT input)
 {
+    MRT_Deferred Output;
+    
     float4 baseColor = baseColorFactor * txBaseColor.Sample(samLinear, input.UV0);
     float metallic = metallicFactor * txMetallic.Sample(samLinear, input.UV0);
     float roughness = roughnessFactor;
@@ -44,6 +47,7 @@ float4 Main(PS_INPUT_DEFAULT input) : SV_Target
     float3 BRDF = k_d * lambert + cookTorrence;
     colorAccum += BRDF * NdotL * SunIntensity;
     
-    float4 color = float4(colorAccum, baseColor.a);
-    return color;
+    Output.Color = float4(colorAccum, baseColor.a);
+    Output.Id = int2(Id.LSB, Id.MSB);
+    return Output;
 }
