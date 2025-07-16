@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="SS::StringHashMapA&lt;*&gt;">
+    <DisplayString>{{ capacity={_poolCapacity} }}</DisplayString>
+    <Expand>
+      <Item Name="[collisionLimit]">_collisionLimit</Item>
+      <Item Name="[seed]">_seed</Item>
+      <Synthetic Name="data">
+        <Expand>
+          <ArrayItems>
+            <Size>_poolCapacity</Size>
+            <ValuePointer>_dataPool</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+      <Synthetic Name="strPool">
+        <Expand>
+          <ArrayItems>
+            <Size>_poolCapacity</Size>
+            <ValuePointer>_strPool</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+
+  
+  
+  
+
+  <Type Name="SS::PooledLinkedList&lt;*&gt;">
+    
+    <DisplayString>{{ capacity={_capacity}}}</DisplayString>
+    <Expand>
+
+      <Item Name="[size]">_size</Item>
+      <Synthetic Name="data">
+        <Expand>
+          <CustomListItems MaxItemsPerView="100">
+            <Variable Name="NodeIdx" InitialValue="_firstValidItemIdx" />
+            <Variable Name="LLIST_INVALID_TAIL_IDX" InitialValue="-2" />
+            <Size>_size</Size>
+            <Loop>
+              <If Condition="NodeIdx == LLIST_INVALID_TAIL_IDX">
+                <Break Condition ="NodeIdx == LLIST_INVALID_TAIL_IDX"/>
+              </If>
+              <Item>(_pool + NodeIdx)->_data</Item>
+              <Exec>NodeIdx = (_pool + NodeIdx)->_next</Exec>
+            </Loop>
+          </CustomListItems>
+        </Expand>
+      </Synthetic>
+
+      <Item Name="[capacity]">_capacity</Item>
+      <Synthetic Name="pool">
+        <Expand>
+          <ArrayItems>
+            <Size>_capacity</Size>
+            <ValuePointer>_pool</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+      
+      <Item Name="[usableAddressTopIdx]">_usableAddressTopIdx</Item>
+      <Synthetic Name="usablePtrStack">
+        <Expand>
+          <ArrayItems>
+            <Size>_capacity</Size>
+            <ValuePointer>_usableAddressStack</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+      
+    </Expand>
+  </Type>
+  
+  
+  
+
+  <Type Name="SS::FixedList&lt;*&gt;">
+    <DisplayString>{{ size={_size} }}</DisplayString>
+    <Expand>
+      <Synthetic Name="data">
+        <Expand>
+          <ArrayItems>
+            <Size>_size</Size>
+            <ValuePointer>_data</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+
+  <Type Name="SS::StringW">
+    <Intrinsic Name="InlineData" Expression="(utf16*)_stringPool._allocator._inlineData"/>
+    <DisplayString>{{ strLen={ _stringPool._size } }}</DisplayString>
+    <Expand>
+      <Item Name="str" Condition="_stringPool._allocator._data != nullptr">_stringPool._allocator._data</Item>
+      <Item Name="str" Condition="_stringPool._allocator._data == nullptr">InlineData()</Item>
+    </Expand>
+  </Type>
+
+  <!-- InlineAllocator -->
+  <Type Name="SS::PooledList&lt;*&gt;" Priority="High">
+    <Intrinsic Name="InlineData" Expression="($T1*)_allocator._inlineData"/>
+
+    <DisplayString>{{ size={ _size } }}</DisplayString>
+    
+    <Expand>
+      <Item Name="size">_size</Item>
+      <Item Name="capacity">_allocator._capacity</Item>
+      <Synthetic Name="data">
+        <Expand>
+          <ArrayItems>
+            <Size>_size</Size>
+            <ValuePointer Condition="_allocator._data != nullptr">_allocator._data</ValuePointer>
+            <ValuePointer Condition="_allocator._data == nullptr">InlineData()</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+
+  <!-- HeapAllocator -->
+  <Type Name="SS::PooledList&lt;*&gt;" Priority="MediumHigh">
+    <DisplayString>{{ capacity={ _allocator._capacity} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]">_size</Item>
+      <Synthetic Name="data">
+        <Expand>
+          <ArrayItems>
+            <Size>_size</Size>
+            <ValuePointer>_allocator._data</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+
+
+  <Type Name="SS::HashMap&lt;*,*&gt;">
+    <DisplayString>{{Count = { _cnt }}}</DisplayString>
+    <Expand>
+      <CustomListItems MaxItemsPerView="100">
+        <Variable Name="iBucket" InitialValue="0" />
+        <Variable Name="pBucket" InitialValue="(_bucketHeadList._allocator._data + iBucket)->_next"/>
+
+        <Size>_cnt</Size>
+        
+        <Loop>
+          <If Condition="pBucket == nullptr">
+            <Exec>iBucket++</Exec>
+            <Break Condition ="iBucket >= _bucketHeadList._size"/>
+            
+            <Exec>pBucket = _bucketHeadList._allocator._data[iBucket]._next</Exec>
+          </If>
+
+          <Item>pBucket->_pair</Item>
+          <Exec>pBucket = pBucket->_next</Exec>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="SS::SHasherW">
+    <DisplayString>{{HashX = { _hashX }}}</DisplayString>
+    <Expand>
+      <CustomListItems MaxItemsPerView="1">
+        <Variable Name="iNodeStepCnt" InitialValue="_CurNodeCnt"/>
+        <Variable Name="pHashPoolNode" InitialValue="*(g_HasherPool->_HasherBucket + _HashedValue % g_HasherPool->_HasherBucketCnt)"/>
+
+        <Loop>
+
+          <If Condition="_HashedValue == 0">
+            <Break/>
+          </If>
+          
+          <Exec>iNodeStepCnt--</Exec>
+          <If Condition="iNodeStepCnt == -1">
+            <Item Name ="Str">pHashPoolNode->_str</Item>
+            <Break/>
+          </If>
+          <Exec>pHashPoolNode = pHashPoolNode->_next</Exec>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
+
+
+  <Type Name="SS::StringW">
+    <Intrinsic Name="InlineData" Expression="(utf16*)_stringPool._allocator._inlineData"/>
+    <DisplayString>{{ strLen={ _stringPool._size } }}</DisplayString>
+    <Expand>
+      <Item Name="str" Condition="_stringPool._allocator._data != nullptr">_stringPool._allocator._data</Item>
+      <Item Name="str" Condition="_stringPool._allocator._data == nullptr">InlineData()</Item>
+    </Expand>
+  </Type>
+
+  
+  
+  
+  <Type Name="SObjectBase">
+    <DisplayString>{{ObjectName = { _ObjectName }}}</DisplayString>
+    <Expand>
+        <Item Name="ObjectName">_ObjectName</Item>
+        <Item Name="HashCode">_HashCode</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="SGameObject">
+    <DisplayString>{{ObjectName = { _ObjectName }}}</DisplayString>
+    <Expand>
+      <Item Name="ObjectName">_ObjectName</Item>
+      <Item Name="HashCode">_HashCode</Item>
+      <Item Name="IsHierarchyInitialized">_IsHierarchyInitialized</Item>
+      <Item Name="Parent">_Parent</Item>
+      <Item Name="Children">_Children</Item>
+      <Item Name="Components">_Components</Item>
+      <Item Name="Transform">_transform</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

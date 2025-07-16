@@ -48,6 +48,9 @@
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MaterialAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\RenderAsset\CommonRenderAssetSet.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h">
@@ -162,6 +165,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MaterialAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\RenderAsset\CommonRenderAssetSet.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderBase\ICommonRenderAssetSet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

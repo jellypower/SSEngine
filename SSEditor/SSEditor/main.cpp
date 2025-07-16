@@ -118,7 +118,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	// 전역 문자열을 초기화합니다.
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadStringW(hInstance, IDC_SSRENDERER, szWindowClass, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_SSEDITOR, szWindowClass, MAX_LOADSTRING);
 
 
 
@@ -146,7 +146,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	
 
-	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_SSRENDERER));
+	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_SSEDITOR));
 
 
 	MSG msg = { 0 };
@@ -212,10 +212,10 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, RECT WindowSize)
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SSRENDERER));
+	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SSEDITOR));
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_SSRENDERER); // Win32로 창 만들어서 등록
+	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_SSEDITOR); // Win32로 창 만들어서 등록
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
