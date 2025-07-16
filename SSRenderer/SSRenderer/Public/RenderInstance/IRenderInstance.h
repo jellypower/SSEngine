@@ -5,6 +5,7 @@ class IModelAsset;
 class GALRIMetadata;
 enum class ERenderInstanceType : int32;
 class ModelAsset;
+class IRenderWorld;
 
 
 
@@ -27,7 +28,9 @@ public:
 	virtual void SetWorldRotation(const Quaternion& InRotation) = 0;
 
 	virtual void SetGameObjectHashCodeXXX(SObjHashCode InHashCode) = 0;
-	virtual void SetModelAsset(IModelAsset* InAsset) = 0;
+
+	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) = 0;
+	virtual IRenderWorld* GetIncludedRenderWorld() const = 0;
 
 	// TODO: GetRenderWorld 코드 만들기
 };

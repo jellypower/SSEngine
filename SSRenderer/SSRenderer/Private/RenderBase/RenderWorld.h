@@ -13,6 +13,7 @@ class RenderWorld : public IRenderWorld
 {
 public:
 	RenderWorld();
+	~RenderWorld();
 	void InitializeRenderWorld(IRenderer* OwnerRenderer);
 
 public:

@@ -24,10 +24,14 @@ public:
 	virtual void SetGameObjectHashCodeXXX(SObjHashCode InHashCode) override;
 	virtual void SetModelAsset(IModelAsset* InAsset) override;
 
-public:
+	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) override;
+	virtual IRenderWorld* GetIncludedRenderWorld() const override;
+
+private:
 	XMMATRIX _WorldTransformMatrix;
 	XMMATRIX _WorldRotationMatrix;
 	SObjHashCode _GameObjectHashCode = nullptr;
 	IModelAsset* _ModelRef = nullptr;
 	GALRIMetadata* _MetaData = nullptr;
+	IRenderWorld* _IncludedRenderWorld = nullptr;
 };

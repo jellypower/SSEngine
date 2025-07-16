@@ -14,6 +14,11 @@ RenderWorld::RenderWorld() :
 
 }
 
+RenderWorld::~RenderWorld()
+{
+	SS_ASSERT(IsAnyInstanceRemainInWorld() == false);
+}
+
 void RenderWorld::InitializeRenderWorld(IRenderer* OwnerRenderer)
 {
 	_OwnerRenderer = OwnerRenderer;
@@ -24,7 +29,7 @@ bool RenderWorld::IsAnyInstanceRemainInWorld() const
 	return _RenderInstanceByHashCode.GetCnt() != 0;
 }
 
-void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
+void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance) // TODO: RenderInstance에게 본인이 속한 RenderWorld 설정해주는 기능 만들기
 {
 	SObjHashCode GameObjectHashCode = InRenderInstance->GetGameObjectID();
 	if (_RenderInstanceByHashCode.Find(GameObjectHashCode) != nullptr)
@@ -34,6 +39,7 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 	}
 
 	_RenderInstanceByHashCode.Add(GameObjectHashCode, InRenderInstance);
+	InRenderInstance->SetIncludedRenderWorldXXX(this);
 
 
 	switch (InRenderInstance->GetRIType())
@@ -70,6 +76,9 @@ void RenderWorld::RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove)
 		return;
 	}
 
+	_RenderInstanceByHashCode.Remove(RenderInstanceIDToRemove);
+	RenderInstanceToRemove->SetIncludedRenderWorldXXX(nullptr);
+
 
 	switch (RenderInstanceToRemove->GetRIType())
 	{
@@ -83,9 +92,13 @@ void RenderWorld::RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove)
 
 		IModelAsset* ModelAsset = RIMeshToRemove->GetModelAsset();
 		ModelAsset->RemoveAssetReference(AssetReferencer);
-
-		_RenderInstanceByHashCode.Remove(RenderInstanceIDToRemove);
 	}
 	break;
+
+	default:
+	{
+		SS_ASSERT(false);
+		break;
+	}
 	}
 }

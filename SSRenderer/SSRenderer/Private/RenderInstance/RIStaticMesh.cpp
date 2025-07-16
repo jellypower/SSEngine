@@ -73,3 +73,14 @@ void RIStaticMesh::SetModelAsset(IModelAsset* InAsset)
 {
 	_ModelRef = InAsset;
 }
+
+void RIStaticMesh::SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld)
+{
+	SS_ASSERT(InRenderWorld == nullptr || _IncludedRenderWorld == nullptr);
+	_IncludedRenderWorld = InRenderWorld;
+}
+
+IRenderWorld* RIStaticMesh::GetIncludedRenderWorld() const
+{
+	return _IncludedRenderWorld;
+}
