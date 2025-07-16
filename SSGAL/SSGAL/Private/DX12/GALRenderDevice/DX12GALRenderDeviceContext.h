@@ -4,6 +4,8 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
+class DX12GALRWMetaData;
+class IRenderWorld;
 class IMaterialAssetMutable;
 class IRIMesh;
 class DX12GALDefaultPBRMaterialAsset;
@@ -28,6 +30,8 @@ public:
 	virtual bool GenerateTextureGALAsset(ITextureAssetMutable* InTextureAsset) override;
 	virtual bool GenerateMaterialGALAsset(IMaterialAssetMutable* InMaterialAsset) override;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
+
+	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
 	virtual void SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets, GALRenderTarget* InDepthStencilView) override;
@@ -67,4 +71,6 @@ private:
 	int32 _BoundRenderTargetCnt[SWAP_CHAIN_FRAME_COUNT] = { 0, };
 	GALRenderTarget* _BoundRenderTargets[SWAP_CHAIN_FRAME_COUNT][RT_NUM_MAX] = {nullptr,};
 	GALRenderTarget* _BoundDSV[SWAP_CHAIN_FRAME_COUNT] = { nullptr, };
+
+	DX12GALRWMetaData* _CurRenderWorldGALData = nullptr;
 };

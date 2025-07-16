@@ -10,7 +10,7 @@ RenderCamera::RenderCamera(SCameraComponent* InOwnerCamera)
 	_OwnerCamera = InOwnerCamera;
 }
 
-const IRenderWorld* RenderCamera::GetIcludedRenderWorld() const
+IRenderWorld* RenderCamera::GetIcludedRenderWorld() const
 {
 	SGameObject* Parent = _OwnerCamera->GetParent();
 	SWorld* World = Parent->GetIncludedWorldRef();

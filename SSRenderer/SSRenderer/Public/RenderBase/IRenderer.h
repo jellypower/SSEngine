@@ -29,7 +29,7 @@ public:
 	virtual IAssetManagerMutable* GetMutableAssetManager() = 0;
 
 public:
-	virtual IRenderWorld* CreateRenderWorld() = 0;
+	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) = 0;
 	virtual IRIMesh* CreateRIStaticMesh() = 0;
 	virtual SObjHashCode GetPixelPickedObjectID() const = 0;
 

@@ -1,22 +1,27 @@
 ﻿#include "RenderWorld.h"
 
+#include "SSGAL/Public/SSGALCommonEnums.h"
+#include "SSGAL/Public/GALRenderInstance/GALRWMetaData.h"
 
 #include "SSRenderer.h"
-#include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
-RenderWorld::RenderWorld() :
+
+RenderWorld::RenderWorld(const utf16* InWorldName) :
 	_RenderInstanceByHashCode(RENDERWORLD_HASHMAP_SIZE, RENDERWORLD_BUCKET_CAPACITY)
 {
-
+	_RenderWorldName = InWorldName;
 }
 
 RenderWorld::~RenderWorld()
 {
 	SS_ASSERT(IsAnyInstanceRemainInWorld() == false);
+
+	delete _GALMetadata;
+	_GALMetadata = nullptr;
 }
 
 void RenderWorld::InitializeRenderWorld(IRenderer* OwnerRenderer)
@@ -27,6 +32,11 @@ void RenderWorld::InitializeRenderWorld(IRenderer* OwnerRenderer)
 bool RenderWorld::IsAnyInstanceRemainInWorld() const
 {
 	return _RenderInstanceByHashCode.GetCnt() != 0;
+}
+
+SS::SHasherW RenderWorld::GetWorldName() const
+{
+	return _RenderWorldName;
 }
 
 void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance) // TODO: RenderInstance에게 본인이 속한 RenderWorld 설정해주는 기능 만들기
@@ -101,4 +111,14 @@ void RenderWorld::RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove)
 		break;
 	}
 	}
+}
+
+GALRWMetaData* RenderWorld::GetGALMetadata() const
+{
+	return _GALMetadata;
+}
+
+void RenderWorld::InjectGALMetadataXXX(GALRWMetaData* InMetadata)
+{
+	_GALMetadata = InMetadata;
 }

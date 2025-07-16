@@ -12,20 +12,28 @@ constexpr int32 RENDERWORLD_BUCKET_CAPACITY = 1024;
 class RenderWorld : public IRenderWorld
 {
 public:
-	RenderWorld();
+	RenderWorld(const utf16* InWorldName);
 	~RenderWorld();
 	void InitializeRenderWorld(IRenderer* OwnerRenderer);
 
 public:
 	const SS::HashMap<SObjHashCode, IRenderInstance*>& GetRenderInstanceMap() const { return _RenderInstanceByHashCode; }
 
-	bool IsAnyInstanceRemainInWorld() const override;
+	virtual bool IsAnyInstanceRemainInWorld() const override;
+	virtual SS::SHasherW GetWorldName() const override;
 	
 	void AddToWorld(IRenderInstance* InRenderInstance) override;
 	void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove) override;
 
-	
+	virtual GALRWMetaData* GetGALMetadata() const override;
+	virtual void InjectGALMetadataXXX(GALRWMetaData* InMetadata) override;
+
+
 private:
-	IRenderer* _OwnerRenderer;
+	SS::SHasherW _RenderWorldName;
+
+	GALRWMetaData* _GALMetadata = nullptr;
+
+	IRenderer* _OwnerRenderer = nullptr;
 	SS::HashMap<SObjHashCode, IRenderInstance*> _RenderInstanceByHashCode;
 };

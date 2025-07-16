@@ -12,7 +12,7 @@ public:
 	RenderCamera(SCameraComponent* InOwnerCamera);
 
 
-	virtual const IRenderWorld* GetIcludedRenderWorld() const override;
+	virtual IRenderWorld* GetIcludedRenderWorld() const override;
 	virtual GALRenderTarget* GetSpecificRenderTarget() const override;
 	virtual const XMMATRIX& GetVPMatrix() const override;
 	virtual const Transform& GetCameraTransform() const override;

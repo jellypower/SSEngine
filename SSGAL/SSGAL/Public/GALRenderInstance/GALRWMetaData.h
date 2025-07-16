@@ -3,7 +3,7 @@
 
 class IRenderWorld;
 
-class GALRenderWorldMetaData : public INoncopyable
+class GALRWMetaData : public INoncopyable
 {
 protected:
 	IRenderWorld* _OwnerRenderWorld = nullptr;

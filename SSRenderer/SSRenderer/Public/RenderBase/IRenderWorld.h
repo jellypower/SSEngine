@@ -2,12 +2,17 @@
 #include "SObject/Public/SObjHashCode.h"
 
 class IRenderInstance;
+class GALRWMetaData;
 
 class IRenderWorld : public INoncopyable
 {
 public:
 	virtual bool IsAnyInstanceRemainInWorld() const = 0;
+	virtual SS::SHasherW GetWorldName() const = 0;
 
 	virtual void AddToWorld(IRenderInstance* InRenderInstance) = 0;
 	virtual void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove) = 0;
+
+	virtual GALRWMetaData* GetGALMetadata() const = 0;
+	virtual void InjectGALMetadataXXX(GALRWMetaData* InMetadata) = 0;
 };

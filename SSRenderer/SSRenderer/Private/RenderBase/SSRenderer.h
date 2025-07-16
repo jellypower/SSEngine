@@ -51,7 +51,7 @@ public:
 	
 
 public:
-	virtual IRenderWorld* CreateRenderWorld() override;
+	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) override;
 	virtual IRIMesh* CreateRIStaticMesh() override;
 	virtual SObjHashCode GetPixelPickedObjectID() const override;
 

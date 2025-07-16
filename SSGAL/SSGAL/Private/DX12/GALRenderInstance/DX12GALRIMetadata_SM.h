@@ -19,10 +19,6 @@ public:
 	CBAModelBuffer* _ModelCBSysMemAddr;
 	D3D12_GPU_VIRTUAL_ADDRESS _ModelCBGPUMemAddr;
 
-	AllocatedChunkHeader _RenderEnvCBChunk;
-	CBARenderEnvParam* _RenderEnvCBSysMemAddr;
-	D3D12_GPU_VIRTUAL_ADDRESS _RenderEnvCBGPUMemAddr;
-
 	int32 _SubMeshCntCache;
 
 private:

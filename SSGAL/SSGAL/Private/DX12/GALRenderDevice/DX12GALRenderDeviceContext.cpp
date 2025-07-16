@@ -5,6 +5,9 @@
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
+#include <SSRenderer/Public/RenderBase/IRenderWorld.h>
+
+#include "Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
 #include "Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
 #include "Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "Private/PCommon/GALPrivateGlobals.h"
@@ -33,6 +36,7 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
+#include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 
@@ -405,8 +409,26 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 	}
 }
 
+void DX12GALRenderDeviceContext::SetRenderCamera(IRenderCamera* InCamera)
+{
+	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
+
+	IRenderWorld* CurRenderWorld = InCamera->GetIcludedRenderWorld();
+	_CurRenderWorldGALData = (DX12GALRWMetaData*)CurRenderWorld->GetGALMetadata();
+	if (_CurRenderWorldGALData == nullptr)
+	{
+		_CurRenderWorldGALData = DBG_NEW DX12GALRWMetaData(OwnerDX12RenderDevice, CurRenderWorld);
+		CurRenderWorld->InjectGALMetadataXXX(_CurRenderWorldGALData);
+	}
+
+	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->VPMatrix = XMMatrixTranspose(InCamera->GetVPMatrix());
+	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunDirection = { 1, 1, 1, 0 };
+	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunIntensity = { 1, 1, 1, 0 };
+	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->ViewerPos = InCamera->GetCameraTransform().Position.SimdVec;
+}
+
 void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From,
-	EResourceStateType To)
+                                                 EResourceStateType To)
 {
 	InRenderTarget->ResourceBarrier(this, From, To);
 }
@@ -627,14 +649,10 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
 		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
 
-		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->VPMatrix = _CameraVPTransform;
-		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->SunDirection = { 1,1,1,0 };
-		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->SunIntensity = { 1,1,1,0 };
-		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->ViewerPos = _CameraPosition;
 	}
 
 	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
-	CurCommandList->SetGraphicsRootConstantBufferView(1, DX12RenderInstanceMetaData->_RenderEnvCBGPUMemAddr);
+	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
 
 
 	for (int32 i = 0; i < SubMeshCnt; i++)
@@ -659,7 +677,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 		CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2
 		CurCommandList->SetDescriptorHeaps(1, &GALMaterial->_MtlTexSRVDescHeap);
-		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // textures
+		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // bind textures
 
 
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
@@ -673,6 +691,8 @@ void DX12GALRenderDeviceContext::ResetRenderState()
 {
 	_ResourceUpdater->ResetUpdateBuffer();
 	ResetCommandList();
+
+	_CurRenderWorldGALData = nullptr;
 }
 
 void DX12GALRenderDeviceContext::ResetCommandList()

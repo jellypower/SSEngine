@@ -31,7 +31,5 @@ public:
 
 	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) = 0;
 	virtual IRenderWorld* GetIncludedRenderWorld() const = 0;
-
-	// TODO: GetRenderWorld 코드 만들기
 };
 

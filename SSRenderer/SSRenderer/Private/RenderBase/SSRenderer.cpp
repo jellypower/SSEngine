@@ -83,9 +83,11 @@ void SSRenderer::AddGALStateChangedAsset(IAssetBase* AssetToChange)
 	}
 }
 
-IRenderWorld* SSRenderer::CreateRenderWorld()
+IRenderWorld* SSRenderer::CreateRenderWorld(const utf16* InWorldName)
 {
-	RenderWorld* NewRenderWorld = DBG_NEW RenderWorld();
+	if (InWorldName == nullptr) InWorldName = L"EMPTY_WorldName";
+	
+	RenderWorld* NewRenderWorld = DBG_NEW RenderWorld(InWorldName);
 	NewRenderWorld->InitializeRenderWorld(this);
 	return NewRenderWorld;
 }
@@ -184,10 +186,7 @@ void SSRenderer::PerFrame()
 
 			// Set Camera Setting
 			{
-				XMMATRIX VPMatrix = _CurRenderCamera->GetVPMatrix();
-				VPMatrix = XMMatrixTranspose(VPMatrix);
-				_MainDeviceContext->SetCameraVPTransform(VPMatrix);
-				_MainDeviceContext->SetCameraPosition(_CurRenderCamera->GetCameraTransform().Position.SimdVec);
+				_MainDeviceContext->SetRenderCamera(_CurRenderCamera);
 			}
 
 

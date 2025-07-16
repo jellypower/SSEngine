@@ -10,7 +10,7 @@ cbuffer ModelBuffer : register(b0)
     ObjectIDi64 Id;
 };
 
-cbuffer GlobalRenderParam : register(b1)
+cbuffer RenderEnvParam : register(b1)
 {
     matrix VPMatrix;
     float4 SunDirection;

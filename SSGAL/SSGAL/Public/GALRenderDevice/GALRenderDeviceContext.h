@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class IRenderCamera;
 struct BoundBox2f;
 struct ViewportBox;
 class IMaterialAssetMutable;
@@ -29,6 +30,7 @@ public:
 	virtual bool GenerateMaterialGALAsset(IMaterialAssetMutable* InMaterialAsset) = 0;
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 
+	virtual void SetRenderCamera(IRenderCamera* InCamera) = 0;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;
 	virtual void SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets, GALRenderTarget* InDepthStencilView) = 0;
@@ -42,15 +44,8 @@ public:
 protected:
 	virtual void ResetRenderState() = 0;
 
-public:
-	void SetCameraVPTransform(const XMMATRIX& InTransform) { _CameraVPTransform = InTransform; }
-	void SetCameraPosition(const XMVECTOR& InPos) { _CameraPosition = InPos; }
-
 
 protected:
 	GALRenderDevice* _OwnerRenderDevice = nullptr;
 	GALResourceUpdater* _ResourceUpdater = nullptr;
-
-	XMMATRIX _CameraVPTransform;
-	XMVECTOR _CameraPosition;
 };

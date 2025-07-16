@@ -108,7 +108,7 @@
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALDSVRenderTarget.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRenderWorldMetaData.cpp">
+    <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRWMetaData.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -266,10 +266,10 @@
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALDSVRenderTarget.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\GALRenderInstance\GALRenderWorldMetaData.h">
+    <ClInclude Include="Public\GALRenderInstance\GALRWMetaData.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRenderWorldMetaData.h">
+    <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRWMetaData.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
