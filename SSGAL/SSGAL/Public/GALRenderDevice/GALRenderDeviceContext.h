@@ -38,7 +38,6 @@ public:
 
 
 	virtual void Draw(IRenderInstance* InRenderInstance) = 0;
-	virtual void DrawID(IRenderInstance* InRenderInstance) = 0;
 
 protected:
 	virtual void ResetRenderState() = 0;

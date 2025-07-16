@@ -568,31 +568,6 @@ void DX12GALRenderDeviceContext::Draw(IRenderInstance* InRenderInstance)
 	}
 }
 
-void DX12GALRenderDeviceContext::DrawID(IRenderInstance* InRenderInstance) // TODO: 없애기
-{
-	if (InRenderInstance->GetGALMetadata() == nullptr)
-	{
-		GenerateRenderInstanceMetadata(InRenderInstance);
-	}
-
-	XMMATRIX ObjTransformMat = InRenderInstance->GetWorldTransformMatrix();
-	XMMATRIX ObjRotMat = InRenderInstance->GetWorldRotationMatrix();
-
-
-	switch (InRenderInstance->GetRIType())
-	{
-	case ERenderInstanceType::StaticMesh:
-	{
-		DrawStaticMeshID((IRIMesh*)InRenderInstance, ObjTransformMat, ObjRotMat);
-	}
-	break;
-
-	default:
-		SS_INTERRUPT();
-		return;
-	}
-}
-
 void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat)
 {
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
@@ -691,84 +666,6 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
-	}
-}
-
-void DX12GALRenderDeviceContext::DrawStaticMeshID(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat) // TODO: 없애기
-{
-	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
-
-	PCommonGALRenderDevice* OwnerDevice = (PCommonGALRenderDevice*)GetOwnerRenderDevice();
-	RootSignaturePool* lRootSignaturePool = OwnerDevice->GetRootSignaturePool();
-	DX12PSOPool* PSOPool = (DX12PSOPool*)OwnerDevice->GetPSOPool();
-	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
-
-
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
-	const DX12GALMeshAssetWrapper* GALMeshAsset = (const DX12GALMeshAssetWrapper*)lMeshAsset->GetGALMeshAsset();
-	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
-	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
-	const MeshRawDataDefault* DefaultMeshRawData = nullptr;
-	int32 SubMeshCnt = 0;
-	switch (MeshRawData->_MeshType)
-	{
-	case EMeshType::Rigid:
-	case EMeshType::Skinned:
-		DefaultMeshRawData = (MeshRawDataDefault*)MeshRawData;
-		SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
-		break;
-
-	default:
-		SS_ASSERT(false);
-		break;
-	}
-
-
-	{
-		PipelineDesc NewPipelineDesc;
-		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
-		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
-		NewPipelineDesc.PSName = L"PS_IDDrawer";
-		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_TEMP_ROOTSIGNATURE;
-		NewPipelineDesc.NumRenderTarget = 1;
-		NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R32G32_SINT;
-		NewPipelineDesc.DSColorFormat = ERTColorFormat::D32_FLOAT;
-		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
-
-		const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(NewPipelineDesc.RootSignatureType);
-		const DX12RootSignatureWrapper* lDX12RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignatureWrapper;
-
-
-		CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
-		CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
-	}
-
-	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
-
-
-	{
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(DrawMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
-
-		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->VPMatrix = _CameraVPTransform;
-		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->SunDirection = { 1,1,1,0 };
-		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->SunIntensity = { 1,1,1,0 };
-		DX12RenderInstanceMetaData->_RenderEnvCBSysMemAddr->ViewerPos = _CameraPosition;
-	}
-
-	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
-	CurCommandList->SetGraphicsRootConstantBufferView(1, DX12RenderInstanceMetaData->_RenderEnvCBGPUMemAddr);
-
-
-	for (int32 i = 0; i < SubMeshCnt; i++)
-	{
-		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-
-		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
-		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 	}
 }
 

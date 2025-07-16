@@ -169,7 +169,7 @@ void SSRenderer::PerFrame()
 			{
 				ObjectNativeID = *pObjectNativeID;
 			}
-			_PickedObjectHash = SObjHashCode(ObjectNativeID); // TODO: PixelPicking 마무리하기
+			_PickedObjectHash = SObjHashCode(ObjectNativeID);
 
 
 			_PixelPickerCPUReadableTex->EndRead();
