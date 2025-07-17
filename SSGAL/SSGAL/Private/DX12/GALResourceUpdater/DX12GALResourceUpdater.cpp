@@ -28,7 +28,7 @@ DX12GALResourceUpdater::DX12GALResourceUpdater(DX12GALRenderDevice* InRenderDevi
 			&UploadHeapTypeProp,
 			D3D12_HEAP_FLAG_NONE,
 			&ResourceDesc,
-			D3D12_RESOURCE_STATE_COMMON,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
 			IID_PPV_ARGS(&NewUpdateBuffer));
 		NewUpdateBuffer->SetName(L"ResourceUpdater");
@@ -188,7 +188,7 @@ ID3D12Resource* DX12GALResourceUpdater::RentUpdateBuffer(int32& OutBufferStartOf
 				&UploadHeapTypeProp,
 				D3D12_HEAP_FLAG_NONE,
 				&ResourceDesc,
-				D3D12_RESOURCE_STATE_COMMON,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
 				nullptr,
 				IID_PPV_ARGS(&NewUpdateBuffer));
 			NewUpdateBuffer->SetName(L"ResourceUpdater");
@@ -230,7 +230,7 @@ ID3D12Resource* DX12GALResourceUpdater::RentUpdateBuffer(int32& OutBufferStartOf
 			&UploadHeapTypeProp,
 			D3D12_HEAP_FLAG_NONE,
 			&ResourceDesc,
-			D3D12_RESOURCE_STATE_COMMON,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
 			IID_PPV_ARGS(&NewUpdateBuffer));
 		NewUpdateBuffer->SetName(L"ResourceUpdater");
