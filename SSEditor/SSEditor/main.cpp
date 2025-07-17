@@ -7,8 +7,7 @@
 #include <shellapi.h>
 #include <shobjidl.h>
 
-
-
+#include "imgui/imgui.h"
 
 #include "SSBuildSettings.h"
 
@@ -33,7 +32,6 @@
 
 
 HINSTANCE g_hInst;
-HWND g_hWnd;
 RECT g_WndRect{ 0,0,1920,1080 };
 WCHAR szTitle[MAX_LOADSTRING];       
 WCHAR szWindowClass[MAX_LOADSTRING]; 
@@ -262,7 +260,11 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, RECT WindowSize)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-
+	// ================================= IMGUI =================================
+	extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+		return true;
+	// ================================= ~IMGUI =================================
 
 	switch (message)
 	{

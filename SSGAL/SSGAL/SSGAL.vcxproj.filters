@@ -111,6 +111,9 @@
     <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRWMetaData.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\DX12\ModuleEntry\ExtractD3DDeviceInfo.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h">
@@ -270,6 +273,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRWMetaData.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\ModuleEntry\ExtractD3DDeviceInfo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

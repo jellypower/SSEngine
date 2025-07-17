@@ -29,7 +29,7 @@ IRawInputProcessor* g_RawInputProcessor = nullptr;
 
 IRenderer* g_Renderer = nullptr;
 
-
+HWND g_hWnd = NULL;
 
 HINSTANCE g_hInstSSGAL = nullptr;
 HINSTANCE g_hInstSSRenderer = nullptr;

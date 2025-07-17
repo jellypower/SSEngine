@@ -232,6 +232,8 @@ void SSRenderer::PerFrame()
 		_MainDeviceContext->EndRender();
 		_GALRenderDevice->ExecuteRenderContext(_MainDeviceContext);
 	}
+
+	Before_GALRenderDevice_EndRender();
 	_GALRenderDevice->EndRender();
 }
 
@@ -265,6 +267,11 @@ void SSRenderer::CleanUp()
 
 	delete _GALRenderDevice;
 	_GALRenderDevice = nullptr;
+}
+
+void SSRenderer::ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* InCallback)())
+{
+	_OneTimeCallback_BeforeGALRenderDeviceEndRender.PushBack(InCallback);
 }
 
 void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
@@ -331,4 +338,14 @@ void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRend
 		IRenderInstance* InstanceItem = InstancePairItem.second;
 		OutRenderInstancesToDraw.PushBack(InstanceItem);
 	}
+}
+
+void SSRenderer::Before_GALRenderDevice_EndRender()
+{
+	for (void (*CallbackItem)() : _OneTimeCallback_BeforeGALRenderDeviceEndRender)
+	{
+		CallbackItem();
+	}
+
+	_OneTimeCallback_BeforeGALRenderDeviceEndRender.Clear();
 }

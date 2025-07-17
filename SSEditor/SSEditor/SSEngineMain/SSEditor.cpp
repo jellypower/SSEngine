@@ -1,10 +1,12 @@
 #include "SSEditor.h"
 
+#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
+
 #include "ModuleEntryScriptRunner.h"
+#include "SSImGUIInitializer.h"
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
 
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
-#include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
 
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
@@ -24,9 +26,11 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
+
+
+#include "imgui/backends/imgui_impl_dx12.h"
 
 
 SSEditor* g_Editor = nullptr;
@@ -35,16 +39,24 @@ SSEditor::SSEditor(IRenderer* EngineRenderer) :
 	_hashMap_TMP(200)
 {
 	_Renderer = EngineRenderer;
+
+	if (g_ImGuiInitializer != nullptr)
+	{
+		SS_INTERRUPT();
+	}
+	g_ImGuiInitializer = DBG_NEW SSImGUIInitializer;
 }
 
 SSEditor::~SSEditor()
 {
+	delete g_ImGuiInitializer;
 }
 
 void SSEditor::StartupEngine()
 {
 	_Renderer->StartUp();
-
+	g_ImGuiInitializer->StartupImGui(_Renderer);
+	
 
 	_FbxImporter = g_fpCreateSSFBXImporter();
 	_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager());
@@ -102,8 +114,13 @@ void SSEditor::StartupEngine()
 
 void SSEditor::EnginePerFrame()
 {
+	Run_g_ImGuiInitializer__OnBeginFrameImGui();
+
 	TEMP_ProcessContents();
 	_DefaultWorld->ProcessTransformCommit();
+
+	_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
+	
 	_Renderer->PerFrame();
 }
 
@@ -125,6 +142,10 @@ void SSEditor::CleanupEngine()
 	_FbxImporter = nullptr;
 
 	_Renderer->GetCommonRenderAssetSet()->ReleaseCachedAssets();
+
+	g_ImGuiInitializer->CleanUpImGui();
+	delete g_ImGuiInitializer;
+	g_ImGuiInitializer = nullptr;
 
 	_Renderer->CleanUp();
 	delete _Renderer;
@@ -299,4 +320,3 @@ void SSEditor::TEMP_ProcessContents()
 		}
 	}
 }
-

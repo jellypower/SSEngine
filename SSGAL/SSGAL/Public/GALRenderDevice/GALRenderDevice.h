@@ -24,10 +24,6 @@ enum class ERenderDevicePlatnform : uint8
 class GALRenderDevice : public INoncopyable
 {
 public:
-	virtual void BeginRender() = 0;
-	virtual void EndRender() = 0;
-
-public:
 	IRenderer* GetOwnerRenderer() const { return _OwnerRenderer; }
 	ICommonRenderAssetSet* GetCommonRenderAssetSet() const { return _CachedCommonRenderAssetSet; }
 
@@ -41,10 +37,11 @@ public:
 
 	virtual ERenderDevicePlatnform GetRenderDevicePlatform() const = 0;
 
-
 public:
-	virtual void BindRendererXXX(IRenderer* InOwnerRenderer) = 0;
+	virtual void BeginRender() = 0;
+	virtual void EndRender() = 0;
 
+	virtual void BindRendererXXX(IRenderer* InOwnerRenderer) = 0;
 
 	virtual GALRenderDeviceContext* CreateRenderDeviceContext() = 0;
 	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) = 0;

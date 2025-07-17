@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -137,12 +137,14 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SSBuildSettings.h" />
     <ClInclude Include="SSEngineMain\SSEditor.h" />
+    <ClInclude Include="SSEngineMain\SSImGUIInitializer.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModuleEntryScriptRunner.cpp" />
     <ClCompile Include="SSEngineMain\SSEditor.cpp" />
+    <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SSEditor.rc" />

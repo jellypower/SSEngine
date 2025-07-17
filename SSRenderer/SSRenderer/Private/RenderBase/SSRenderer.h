@@ -29,6 +29,8 @@ private:
 	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
 	SS::PooledList<ITextureAssetMutable*> _GALStateChangedTextureAsset;
 
+	SS::PooledList<void(*)()> _OneTimeCallback_BeforeGALRenderDeviceEndRender;
+
 private:
 	IRenderCamera* _CurRenderCamera = nullptr;
 
@@ -64,8 +66,10 @@ public:
 	virtual void PerFrame() override;
 	virtual void CleanUp() override;
 
+public:
+	void ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* InCallback)()) override;
 
-
+public:
 	void AddGALStateChangedAsset(IAssetBase* AssetToChange);
 
 
@@ -76,7 +80,6 @@ private:
 
 	void ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw, IRenderCamera* InCamera);
 
-
-	void CleanupRenderer();
+	void Before_GALRenderDevice_EndRender();
 };
 

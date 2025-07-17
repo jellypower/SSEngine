@@ -4,6 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class SSImGUIInitializer;
 class ITextureAssetMutable;
 class ISSFBXImporter;
 class IRenderer;
@@ -30,6 +31,7 @@ public:
 	void TEMP_ProcessContents();
 	void TEMP_CreateAssets();
 
+
 private:
 	SWorld* _DefaultWorld = nullptr;
 
@@ -54,4 +56,5 @@ private:
 	SS::StringW _importFileName_TMP;
 
 	ISSFBXImporter* _FbxImporter = nullptr;
+
 };

@@ -5,6 +5,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+class IRenderer;
 class ICommonRenderAssetSet;
 class IRIMesh;
 class IAssetManager;
@@ -12,6 +13,8 @@ class IRenderWorld;
 class IRenderCamera;
 class GALRenderDevice;
 class GALRenderDeviceContext;
+
+
 
 class IRenderer : public INoncopyable
 {
@@ -24,7 +27,6 @@ public:
 
 public:
 	virtual ICommonRenderAssetSet* GetCommonRenderAssetSet() const = 0;
-
 	virtual IAssetManager* GetAssetManager() const = 0;
 	virtual IAssetManagerMutable* GetMutableAssetManager() = 0;
 
@@ -38,11 +40,11 @@ public:
 	virtual void RequestPixelPicking(int32 X, int32 Y) = 0;
 
 public:
-	virtual void StartUp() = 0;
-	virtual void PerFrame() = 0;
-	virtual void CleanUp() = 0;
+	virtual void StartUp() = 0; // 엔진 처음 시작할 때 1번
+	virtual void PerFrame() = 0; // 매 프레임
+	virtual void CleanUp() = 0; // 엔진 제거할 때 1번
 
-
-
+public:
+	virtual void ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void (*InCallback)()) = 0;
 
 };
