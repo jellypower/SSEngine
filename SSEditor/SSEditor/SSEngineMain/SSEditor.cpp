@@ -120,7 +120,6 @@ void SSEditor::EnginePerFrame()
 	_DefaultWorld->ProcessTransformCommit();
 
 	_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
-	
 	_Renderer->PerFrame();
 }
 
@@ -190,20 +189,24 @@ void SSEditor::TEMP_ProcessContents()
 	Vector4f Right = CamGameObj->GetTransform().GetRight();
 	Vector4f Up = CamGameObj->GetTransform().GetUp();
 
-	float WheelDelta = SSInput::GetMouseWheelDelta();
-	if (WheelDelta > 0.01 || WheelDelta < -0.01)
+	if (SSInput::GetMouse(EMouseCode::MOUSE_RIGHT))
 	{
-		TEMP_Speed += (WheelDelta * 0.005);
+		float WheelDelta = SSInput::GetMouseWheelDelta();
+		if (WheelDelta > 0.01 || WheelDelta < -0.01)
+		{
+			TEMP_Speed += (WheelDelta * 0.005);
 
-		if (TEMP_Speed < 0.2)
-		{
-			TEMP_Speed = 0.2;
-		}
-		if (TEMP_Speed  > 10.f)
-		{
-			TEMP_Speed = 10.f;
+			if (TEMP_Speed < 0.2)
+			{
+				TEMP_Speed = 0.2;
+			}
+			if (TEMP_Speed > 10.f)
+			{
+				TEMP_Speed = 10.f;
+			}
 		}
 	}
+
 
 
 	if (SSInput::GetKey(EKeyCode::KEY_S))
