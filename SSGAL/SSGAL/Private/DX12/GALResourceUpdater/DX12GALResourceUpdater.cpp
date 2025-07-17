@@ -150,6 +150,11 @@ ID3D12Resource* DX12GALResourceUpdater::RentUpdateBuffer(int32& OutBufferStartOf
 	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)_AncestorOwnerRenderDevice)->GetD3DDevice();
 	HRESULT hr;
 
+	constexpr int32 BUFFERCOPY_ALIGN_SIZE = 512; // 몇몇 디바이스에선 512바이트 단위로 얼라인 돼있어야 텍스쳐 카피가 가능함
+	int32 Buffer512Unit = BufferSize / BUFFERCOPY_ALIGN_SIZE + (BufferSize % BUFFERCOPY_ALIGN_SIZE == 0 ? 0 : 1);
+
+	BufferSize = Buffer512Unit * BUFFERCOPY_ALIGN_SIZE;
+
 	if (BufferSize > GAL_DEFAULT_RESOURCEUPDATE_TARGET_SIZE_MAX) // DefaultUploadPage를 잘라써서 쓰지 못하는 경우
 	{
 		int32 NeededPageCnt = BufferSize / LARGE_UPLOADBUFFER_SIZE_MIN
