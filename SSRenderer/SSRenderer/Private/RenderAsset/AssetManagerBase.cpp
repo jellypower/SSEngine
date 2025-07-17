@@ -149,3 +149,8 @@ IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InModelAssetName, EAs
 	
 	return FoundModelAsset;
 }
+
+const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetManagerBase::GetAssetMap(EAssetType InAssetType) const
+{
+	return _assetHashMap[(int32)InAssetType];
+}

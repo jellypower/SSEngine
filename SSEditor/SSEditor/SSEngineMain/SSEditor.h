@@ -28,8 +28,10 @@ public:
 
 	void InjectImportFilePath_TMP(const utf16* inImportFilePath) { _importFileName_TMP = inImportFilePath; }
 
-	void TEMP_ProcessContents();
 	void TEMP_CreateAssets();
+
+	void TEMP_ProcessContents();
+	void TEMP_ProcessImGUI();
 
 
 private:

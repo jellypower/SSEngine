@@ -17,6 +17,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
+#include "SSEngineDefault/Public/SSContainer/SSString/StringUtilityFunctions.h"
 
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
@@ -30,7 +31,6 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
-#include "imgui/backends/imgui_impl_dx12.h"
 
 
 SSEditor* g_Editor = nullptr;
@@ -117,6 +117,7 @@ void SSEditor::EnginePerFrame()
 	Run_g_ImGuiInitializer__OnBeginFrameImGui();
 
 	TEMP_ProcessContents();
+	TEMP_ProcessImGUI();
 	_DefaultWorld->ProcessTransformCommit();
 
 	_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
@@ -322,4 +323,53 @@ void SSEditor::TEMP_ProcessContents()
 			TEMP_PixelPickedObject->SetRotation(CurRot);
 		}
 	}
+}
+
+void SSEditor::TEMP_ProcessImGUI()
+{
+	ImGui::Begin("Texture List");
+	{
+		IAssetManager* AssetManager = _Renderer->GetAssetManager();
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
+
+		if (ImGui::BeginTable("Textures", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+		{
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Texture Name");
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Texture Path");
+
+			for (const SS::pair<SS::SHasherW, IAssetBase*>& TexturePairItem : TextureList)
+			{
+				IAssetBase* TextureItem = TexturePairItem.second;
+				ImGui::TableNextColumn();
+
+				uint32 AssetStrLen = 0;
+				const utf16* AssetCstr = nullptr;
+
+				{
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 Converter[BUFFER_SIZE];
+					AssetCstr = TextureItem->GetAssetName().C_Str(&AssetStrLen);
+					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+					ImGui::Text(Converter);
+				}
+
+				{
+					ImGui::TableNextColumn();
+
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 Converter[BUFFER_SIZE];
+					AssetCstr = TextureItem->GetAssetPath().C_Str(&AssetStrLen);
+					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+					ImGui::Text(Converter);
+				}
+			}
+
+			ImGui::EndTable();
+		}
+	}
+	ImGui::End();
 }

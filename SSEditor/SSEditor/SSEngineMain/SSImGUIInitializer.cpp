@@ -126,7 +126,6 @@ void SSImGUIInitializer::OnBeginFrameImGui()
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	ImGui::ShowDemoWindow(); // Show demo window! :)
 }
 
 void SSImGUIInitializer::OnEndFrameImGui()
