@@ -114,10 +114,11 @@ void SSEditor::StartupEngine()
 
 void SSEditor::EnginePerFrame()
 {
-	Run_g_ImGuiInitializer__OnBeginFrameImGui();
-
 	TEMP_ProcessContents();
+
+	Run_g_ImGuiInitializer__OnBeginFrameImGui();
 	TEMP_ProcessImGUI();
+
 	_DefaultWorld->ProcessTransformCommit();
 
 	_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
@@ -332,12 +333,14 @@ void SSEditor::TEMP_ProcessImGUI()
 		IAssetManager* AssetManager = _Renderer->GetAssetManager();
 		const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
 
-		if (ImGui::BeginTable("Textures", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+		if (ImGui::BeginTable("Textures", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
 		{
 			ImGui::TableNextColumn();
 			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Texture Name");
 			ImGui::TableNextColumn();
 			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Texture Path");
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
 
 			for (const SS::pair<SS::SHasherW, IAssetBase*>& TexturePairItem : TextureList)
 			{
@@ -366,10 +369,29 @@ void SSEditor::TEMP_ProcessImGUI()
 
 					ImGui::Text(Converter);
 				}
+
+				{
+					ImGui::TableNextColumn();
+
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 StrBuffer[BUFFER_SIZE];
+
+					int32 RefCnt = TextureItem->GetAssetInstanceReferenceCnt();
+					_itoa(RefCnt, StrBuffer, 10);
+					ImGui::Text(StrBuffer);
+				}
 			}
 
 			ImGui::EndTable();
 		}
+
+		ImGui::Begin("Frame Info");
+		{
+			ImGui::Text("Elapsed time: %f", SSFrameInfo::GetElapsedTime());
+			ImGui::Text("Delta time: %f", SSFrameInfo::GetDeltaTime());
+			ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
+		}
+		ImGui::End();
 	}
 	ImGui::End();
 }

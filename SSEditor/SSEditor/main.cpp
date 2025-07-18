@@ -121,6 +121,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 
 	// 1. ======================================================================
+	RunLoadLibraries();
 	RunModuleEntryScript();
 	// ======================================================================
 
@@ -187,14 +188,16 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	RunModuleExitScript();
 
-
-
 	// Resource Leak Check
 	if (_CrtDumpMemoryLeaks()) SS_INTERRUPT();
 	if (_CrtCheckMemory() == false) SS_INTERRUPT();
 
-
+	RunUnloadLibraries(); 
 	return (int)msg.wParam;
+
+	// _CrtDumpMemoryLeaks 함수는 내가 직접 호출하지 않아도 exe가 종료될 때 알아서 호출된다.
+	// 그런데 메모리 Leak이 있는데 위에서 RunUnloadLibraries을 통해 모듈을 언로드 해줬기 때문에
+	// exe가 종료될 때 호출되는 _CrtDumpMemoryLeaks함수는 크래시를 낼 수 있다.
 }
 
 

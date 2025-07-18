@@ -12,12 +12,14 @@ extern HWND g_hWnd;
 
 extern FuncPtr_CreateSSFBXImporter g_fpCreateSSFBXImporter;
 
-
+void RunLoadLibraries();
 void RunModuleEntryScript();
-
 void RunModuleEntryScriptPostInitWindow(
 	HINSTANCE hInst,
 	HWND hWnd,
 	bool bEnableDebugLayer,
 	bool bEnableGPUBaseValidation);
+
+
 void RunModuleExitScript();
+void RunUnloadLibraries();

@@ -37,6 +37,27 @@ HINSTANCE g_hInstSSFBXImporter = nullptr;
 
 FuncPtr_CreateSSFBXImporter g_fpCreateSSFBXImporter = nullptr;
 
+void RunLoadLibraries()
+{
+	g_hInstSSGAL = LoadLibrary(L"SSGAL.dll");
+	if (g_hInstSSGAL == nullptr)
+	{
+		g_hInstSSGAL = LoadLibrary(SSGAL_MODULEPATH);
+	}
+
+	g_hInstSSRenderer = LoadLibrary(L"SSRenderer.dll");
+	if (g_hInstSSRenderer == nullptr)
+	{
+		g_hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
+	}
+
+	g_hInstSSFBXImporter = LoadLibrary(L"SSFBXImporter.dll");
+	if (g_hInstSSFBXImporter == nullptr)
+	{
+		g_hInstSSFBXImporter = LoadLibrary(SSFBXIMPORTER_MODULEPATH);
+	}
+}
+
 void RunModuleEntryScript()
 {
 	g_HasherPool = CreateHasherPool(SHASHER_DEFAULT_POOL_SIZE);
@@ -65,24 +86,6 @@ void RunModuleEntryScriptPostInitWindow(
 {
 	// Create Renderer
 	{
-		g_hInstSSGAL = LoadLibrary(L"SSGAL.dll");
-		if (g_hInstSSGAL == nullptr)
-		{
-			g_hInstSSGAL = LoadLibrary(SSGAL_MODULEPATH);
-		}
-
-		g_hInstSSRenderer = LoadLibrary(L"SSRenderer.dll");
-		if (g_hInstSSRenderer == nullptr)
-		{
-			g_hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
-		}
-
-		g_hInstSSFBXImporter = LoadLibrary(L"SSFBXImporter.dll");
-		if (g_hInstSSFBXImporter == nullptr)
-		{
-			g_hInstSSFBXImporter = LoadLibrary(SSFBXIMPORTER_MODULEPATH);
-		}
-
 		FuncPtr_SSGALModuleEntry SSGALModuleEntry = (FuncPtr_SSGALModuleEntry)GetProcAddress(g_hInstSSGAL, "SSGALModuleEntry");
 		FuncPtr_CreateGALRenderDevice CreateGALRenderDevice = (FuncPtr_CreateGALRenderDevice)GetProcAddress(g_hInstSSGAL, "CreateGALRenderDevice");
 
@@ -119,22 +122,6 @@ void RunModuleEntryScriptPostInitWindow(
 void RunModuleExitScript()
 {
 	// Cleanup Renderer
-	{
-		// "g_Renderer" will be released by "SSEngine"
-		g_fpCreateSSFBXImporter = nullptr;
-
-		BOOL bSuccess = FreeLibrary(g_hInstSSFBXImporter);
-		if (bSuccess == false) SS_INTERRUPT();
-		bSuccess = FreeLibrary(g_hInstSSRenderer);
-		if (bSuccess == false) SS_INTERRUPT();
-		bSuccess = FreeLibrary(g_hInstSSGAL);
-		if (bSuccess == false) SS_INTERRUPT();
-
-		g_hInstSSFBXImporter = nullptr;
-		g_hInstSSRenderer = nullptr;
-		g_hInstSSGAL = nullptr;
-	}
-
 	delete g_ObjectHashMap;
 	g_ObjectHashMap = nullptr;
 	delete g_RawInputProcessor;
@@ -143,4 +130,21 @@ void RunModuleExitScript()
 	g_FrameInfoProcessor = nullptr;
 	delete g_HasherPool;
 	g_HasherPool = nullptr;
+}
+
+void RunUnloadLibraries()
+{
+	// "g_Renderer" will be released by "SSEngine"
+	g_fpCreateSSFBXImporter = nullptr;
+
+	BOOL bSuccess = FreeLibrary(g_hInstSSFBXImporter);
+	if (bSuccess == false) SS_INTERRUPT();
+	bSuccess = FreeLibrary(g_hInstSSRenderer);
+	if (bSuccess == false) SS_INTERRUPT();
+	bSuccess = FreeLibrary(g_hInstSSGAL);
+	if (bSuccess == false) SS_INTERRUPT();
+
+	g_hInstSSFBXImporter = nullptr;
+	g_hInstSSRenderer = nullptr;
+	g_hInstSSGAL = nullptr;
 }
