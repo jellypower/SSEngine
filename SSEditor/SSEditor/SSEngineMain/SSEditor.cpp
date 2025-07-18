@@ -384,14 +384,190 @@ void SSEditor::TEMP_ProcessImGUI()
 
 			ImGui::EndTable();
 		}
+	}
+	ImGui::End();
 
-		ImGui::Begin("Frame Info");
+	ImGui::Begin("Mesh List");
+	{
+		IAssetManager* AssetManager = _Renderer->GetAssetManager();
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshList = AssetManager->GetAssetMap(EAssetType::Mesh);
+
+		if (ImGui::BeginTable("Meshes", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
 		{
-			ImGui::Text("Elapsed time: %f", SSFrameInfo::GetElapsedTime());
-			ImGui::Text("Delta time: %f", SSFrameInfo::GetDeltaTime());
-			ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Name");
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Path");
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
+
+			for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshItemPair : MeshList)
+			{
+				IAssetBase* MeshItem = MeshItemPair.second;
+				ImGui::TableNextColumn();
+
+				uint32 AssetStrLen = 0;
+				const utf16* AssetCstr = nullptr;
+
+				{
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 Converter[BUFFER_SIZE];
+					AssetCstr = MeshItem->GetAssetName().C_Str(&AssetStrLen);
+					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+					ImGui::Text(Converter);
+				}
+
+				{
+					ImGui::TableNextColumn();
+
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 Converter[BUFFER_SIZE];
+					AssetCstr = MeshItem->GetAssetPath().C_Str(&AssetStrLen);
+					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+					ImGui::Text(Converter);
+				}
+
+				{
+					ImGui::TableNextColumn();
+
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 StrBuffer[BUFFER_SIZE];
+
+					int32 RefCnt = MeshItem->GetAssetInstanceReferenceCnt();
+					_itoa(RefCnt, StrBuffer, 10);
+					ImGui::Text(StrBuffer);
+				}
+			}
+			ImGui::EndTable();
 		}
-		ImGui::End();
+	}
+	ImGui::End();
+
+
+	ImGui::Begin("Mtl List");
+	{
+		IAssetManager* AssetManager = _Renderer->GetAssetManager();
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MtlList = AssetManager->GetAssetMap(EAssetType::Material);
+
+		if (ImGui::BeginTable("Materials", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+		{
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Material Name");
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Material Path");
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
+
+			for (const SS::pair<SS::SHasherW, IAssetBase*>& MaterialItemPair : MtlList)
+			{
+				IAssetBase* MtlItem = MaterialItemPair.second;
+				ImGui::TableNextColumn();
+
+				uint32 AssetStrLen = 0;
+				const utf16* AssetCstr = nullptr;
+
+				{
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 Converter[BUFFER_SIZE];
+					AssetCstr = MtlItem->GetAssetName().C_Str(&AssetStrLen);
+					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+					ImGui::Text(Converter);
+				}
+
+				{
+					ImGui::TableNextColumn();
+
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 Converter[BUFFER_SIZE];
+					AssetCstr = MtlItem->GetAssetPath().C_Str(&AssetStrLen);
+					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+					ImGui::Text(Converter);
+				}
+
+				{
+					ImGui::TableNextColumn();
+
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 StrBuffer[BUFFER_SIZE];
+
+					int32 RefCnt = MtlItem->GetAssetInstanceReferenceCnt();
+					_itoa(RefCnt, StrBuffer, 10);
+					ImGui::Text(StrBuffer);
+				}
+			}
+			ImGui::EndTable();
+		}
+	}
+	ImGui::End();
+
+	ImGui::Begin("Model List");
+	{
+		IAssetManager* AssetManager = _Renderer->GetAssetManager();
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& ModelList = AssetManager->GetAssetMap(EAssetType::Model);
+
+		if (ImGui::BeginTable("Models", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+		{
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Model Name");
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Model Path");
+			ImGui::TableNextColumn();
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
+
+			for (const SS::pair<SS::SHasherW, IAssetBase*>& ModelItemPair : ModelList)
+			{
+				IAssetBase* Model = ModelItemPair.second;
+				ImGui::TableNextColumn();
+
+				uint32 AssetStrLen = 0;
+				const utf16* AssetCstr = nullptr;
+
+				{
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 Converter[BUFFER_SIZE];
+					AssetCstr = Model->GetAssetName().C_Str(&AssetStrLen);
+					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+					ImGui::Text(Converter);
+				}
+
+				{
+					ImGui::TableNextColumn();
+
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 Converter[BUFFER_SIZE];
+					AssetCstr = Model->GetAssetPath().C_Str(&AssetStrLen);
+					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+					ImGui::Text(Converter);
+				}
+
+				{
+					ImGui::TableNextColumn();
+
+					constexpr int32 BUFFER_SIZE = 256;
+					utf8 StrBuffer[BUFFER_SIZE];
+
+					int32 RefCnt = Model->GetAssetInstanceReferenceCnt();
+					_itoa(RefCnt, StrBuffer, 10);
+					ImGui::Text(StrBuffer);
+				}
+			}
+			ImGui::EndTable();
+		}
+	}
+	ImGui::End();
+
+
+	ImGui::Begin("Frame Info");
+	{
+		ImGui::Text("Elapsed time: %f", SSFrameInfo::GetElapsedTime());
+		ImGui::Text("Delta time: %f", SSFrameInfo::GetDeltaTime());
+		ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
 	}
 	ImGui::End();
 }
