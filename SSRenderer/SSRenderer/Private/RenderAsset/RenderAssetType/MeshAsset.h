@@ -13,6 +13,7 @@ public:
 
 public:
 	EAssetType GetAssetType() const override;
+	int32 GetSubMeshCnt() const override;
 
 	void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
 	void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;

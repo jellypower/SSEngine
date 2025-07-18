@@ -27,6 +27,8 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
@@ -328,11 +330,15 @@ void SSEditor::TEMP_ProcessContents()
 
 void SSEditor::TEMP_ProcessImGUI()
 {
+	IAssetManager* AssetManager = _Renderer->GetAssetManager();
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshList = AssetManager->GetAssetMap(EAssetType::Mesh);
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& MtlList = AssetManager->GetAssetMap(EAssetType::Material);
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& ModelList = AssetManager->GetAssetMap(EAssetType::Model);
+
+
 	ImGui::Begin("Texture List");
 	{
-		IAssetManager* AssetManager = _Renderer->GetAssetManager();
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
-
 		if (ImGui::BeginTable("Textures", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
 		{
 			ImGui::TableNextColumn();
@@ -389,9 +395,6 @@ void SSEditor::TEMP_ProcessImGUI()
 
 	ImGui::Begin("Mesh List");
 	{
-		IAssetManager* AssetManager = _Renderer->GetAssetManager();
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshList = AssetManager->GetAssetMap(EAssetType::Mesh);
-
 		if (ImGui::BeginTable("Meshes", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
 		{
 			ImGui::TableNextColumn();
@@ -448,8 +451,6 @@ void SSEditor::TEMP_ProcessImGUI()
 
 	ImGui::Begin("Mtl List");
 	{
-		IAssetManager* AssetManager = _Renderer->GetAssetManager();
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& MtlList = AssetManager->GetAssetMap(EAssetType::Material);
 
 		if (ImGui::BeginTable("Materials", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
 		{
@@ -506,59 +507,142 @@ void SSEditor::TEMP_ProcessImGUI()
 
 	ImGui::Begin("Model List");
 	{
-		IAssetManager* AssetManager = _Renderer->GetAssetManager();
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& ModelList = AssetManager->GetAssetMap(EAssetType::Model);
-
-		if (ImGui::BeginTable("Models", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+		for (const SS::pair<SS::SHasherW, IAssetBase*>& ModelItemPair : ModelList)
 		{
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Model Name");
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Model Path");
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
+			IModelAssetMutable* ModelItem = (IModelAssetMutable* )ModelItemPair.second;
+			uint32 ModelNameStrLen = 0;
+			const utf16* ModelNameCStr = ModelItem->GetAssetName().C_Str(&ModelNameStrLen);
 
-			for (const SS::pair<SS::SHasherW, IAssetBase*>& ModelItemPair : ModelList)
+			uint32 ModelPathStrLen = 0;
+			const utf16* ModelPathCStr = ModelItem->GetAssetPath().C_Str(&ModelPathStrLen);
+
+			constexpr int32 BUFFER_SIZE = 256;
+			utf8 u8ModelName[BUFFER_SIZE];
+			UTF16StrToUtf8Str(ModelNameCStr, ModelNameStrLen, u8ModelName, BUFFER_SIZE);
+
+			utf8 u8ModelPath[BUFFER_SIZE];
+			UTF16StrToUtf8Str(ModelPathCStr, ModelPathStrLen, u8ModelPath, BUFFER_SIZE);
+
+			if (ImGui::CollapsingHeader(u8ModelName))
 			{
-				IAssetBase* Model = ModelItemPair.second;
-				ImGui::TableNextColumn();
-
-				uint32 AssetStrLen = 0;
-				const utf16* AssetCstr = nullptr;
-
+				ImGui::PushID(u8ModelName);
 				{
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 Converter[BUFFER_SIZE];
-					AssetCstr = Model->GetAssetName().C_Str(&AssetStrLen);
-					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+					// Model Path
+					ImGui::Text("Model Path: %s", u8ModelPath);
+					ImGui::Spacing();
 
-					ImGui::Text(Converter);
+					// Mesh Editing
+					{
+						IMeshAsset* SelectedMesh = ModelItem->GetMeshAsset();
+						SS::SHasherW SelectedMeshName = SelectedMesh->GetAssetName();
+
+						uint32 MeshAssetNameStrLen = 0;
+						const utf16* u16SelectedMeshAssetName = SelectedMeshName.C_Str(&MeshAssetNameStrLen);
+
+						utf8 u8MeshName[BUFFER_SIZE];
+						UTF16StrToUtf8Str(u16SelectedMeshAssetName, MeshAssetNameStrLen, u8MeshName, BUFFER_SIZE);
+						if (ImGui::BeginCombo("Mesh", u8MeshName))
+						{
+							for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshItemInListPair : MeshList)
+							{
+								IMeshAsset* MeshItemInList = (IMeshAsset*)MeshItemInListPair.second;
+								SS::SHasherW MeshItemInListName = MeshItemInList->GetAssetName();
+
+								uint32 MeshItemInListNameStrLen = 0;
+								const utf16* u16MeshItemInListName = MeshItemInListName.C_Str(&MeshItemInListNameStrLen);
+
+								UTF16StrToUtf8Str(u16MeshItemInListName, MeshItemInListNameStrLen, u8MeshName, BUFFER_SIZE);
+
+								bool bIsSelectedItem = SelectedMeshName == MeshItemInListName;
+								bool bSelectNewItem = ImGui::Selectable(u8MeshName, bIsSelectedItem);
+
+								if (bSelectNewItem)
+								{
+									ModelItem->SetMesh(MeshItemInList);
+								}
+
+								if (bIsSelectedItem)
+								{
+									ImGui::SetItemDefaultFocus();
+								}
+							}
+
+							ImGui::EndCombo();
+						}
+					}
+
+
+					ImGui::Spacing();
+
+					// Material Editing
+					for (int MtlIdx = 0; MtlIdx < ModelItem->GetSubMeshCnt(); MtlIdx++)
+					{
+						uint32 MtlAssetNameStrLen = 0;
+						const utf16* MtlAssetName = nullptr;
+
+						IMaterialAsset* SelectedMaterial = ModelItem->GetMaterialAsset(MtlIdx);
+						SS::SHasherW SelectedMtlName;
+						if (SelectedMaterial != nullptr)
+						{
+							SelectedMtlName = SelectedMaterial->GetAssetName();
+
+							MtlAssetNameStrLen = 0;
+							MtlAssetName = SelectedMtlName.C_Str(&MtlAssetNameStrLen);
+						}
+						else
+						{
+							MtlAssetName = L"EMPTY";
+							MtlAssetNameStrLen = wcslen(MtlAssetName);
+						}
+
+						utf8 u8MtlName[BUFFER_SIZE];
+						UTF16StrToUtf8Str(MtlAssetName, MtlAssetNameStrLen, u8MtlName, BUFFER_SIZE);
+
+						char MtlHeader[50] = "Material_";
+						_itoa(MtlIdx, MtlHeader + 9, 10);
+
+
+						if (ImGui::BeginCombo(MtlHeader, u8MtlName))
+						{
+							for (const SS::pair<SS::SHasherW, IAssetBase*>& MtlItemPair : MtlList)
+							{
+								IAssetBase* MaterialItemInList = MtlItemPair.second;
+								SS::SHasherW MtlItemInListName = MaterialItemInList->GetAssetName();
+
+								uint32 MtlStrLen = 0;
+								const utf16* u16MtlStr = MtlItemInListName.C_Str(&MtlStrLen);
+
+								UTF16StrToUtf8Str(u16MtlStr, MtlStrLen, u8MtlName, BUFFER_SIZE);
+
+								bool bIsSelectedItem = SelectedMtlName == MtlItemInListName;
+								bool bSelectNewItem = ImGui::Selectable(u8MtlName, bIsSelectedItem);
+
+								if (bSelectNewItem)
+								{
+									if (EAssetType::Material == MaterialItemInList->GetAssetType())
+									{
+										ModelItem->SetMaterial((IMaterialAsset*)MaterialItemInList, MtlIdx);
+									}
+									else
+									{
+										SS_ASSERT(false);
+									}
+								}
+
+								if (bIsSelectedItem)
+								{
+									ImGui::SetItemDefaultFocus();
+								}
+							}
+							ImGui::EndCombo();
+						}
+					}
 				}
-
-				{
-					ImGui::TableNextColumn();
-
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 Converter[BUFFER_SIZE];
-					AssetCstr = Model->GetAssetPath().C_Str(&AssetStrLen);
-					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
-
-					ImGui::Text(Converter);
-				}
-
-				{
-					ImGui::TableNextColumn();
-
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 StrBuffer[BUFFER_SIZE];
-
-					int32 RefCnt = Model->GetAssetInstanceReferenceCnt();
-					_itoa(RefCnt, StrBuffer, 10);
-					ImGui::Text(StrBuffer);
-				}
+				ImGui::PopID();
 			}
-			ImGui::EndTable();
+
 		}
+
 	}
 	ImGui::End();
 

@@ -1,5 +1,6 @@
 ﻿#include "ModelAsset.h"
 
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
@@ -27,16 +28,22 @@ void ModelAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
 	}
 
 	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
-
 	_AssetInstanceReferencers.PushBack(Referencer);
 
 	if (PrevReferencerCnt == 0)
 	{
-		AssetInstanceReferencer ThisReferencer;
-		ThisReferencer.Type = EAssetInstanceReferenceType::AssetName;
-		ThisReferencer.AssetName = GetAssetName();
+		AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
 		_MeshAsset->AddAssetReference(ThisReferencer);
-		// TODO: Material 레프카운트 올려주기	
+
+		int32 SubMeshCnt = GetSubMeshCnt();
+		for (int32 i = 0; i < SubMeshCnt; i++)
+		{
+			IMaterialAsset* MtlItem = _MaterialAssets[i]; // TODO: MtlItem이 nullptr이 되지 않고 EmptyMaterial을 넣어주도록 수정하기
+			if (MtlItem != nullptr)
+			{
+				MtlItem->AddAssetReference(ThisReferencer);
+			}
+		}
 	}
 
 }
@@ -64,12 +71,18 @@ void ModelAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerN
 	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
 	if (ReferencerCnt == 0)
 	{
-		AssetInstanceReferencer ThisReferencer;
-		ThisReferencer.Type = EAssetInstanceReferenceType::AssetName;
-		ThisReferencer.AssetName = GetAssetName();
+		AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
 		_MeshAsset->RemoveAssetReference(ThisReferencer);
 
-		// TODO: AssetCount가 0으로 떨어지면 메테리얼 레퍼런스도 내려주기
+		int32 SubMeshCnt = GetSubMeshCnt();
+		for (int32 i = 0; i < SubMeshCnt; i++)
+		{
+			IMaterialAsset* MtlItem = _MaterialAssets[i]; // TODO: MtlItem이 nullptr이 되지 않고 EmptyMaterial을 넣어주도록 수정하기
+			if (MtlItem != nullptr)
+			{
+				MtlItem->RemoveAssetReference(ThisReferencer);
+			}
+		}
 	}
 
 
@@ -82,26 +95,30 @@ int32 ModelAsset::GetSubMeshCnt() const
 		return 0;
 	}
 
-	const MeshRawDataBase* MeshRawData = _MeshAsset->GetMeshRawData();
-	if (MeshRawData == nullptr)
-	{
-		return 0;
-	}
-
-	if (MeshRawData->_MeshType == EMeshType::Rigid)
-	{
-		MeshRawDataDefault* DefaultMeshRawData = (MeshRawDataDefault*)MeshRawData;
-		return DefaultMeshRawData->_subMeshCnt;
-	}
-	else
-	{
-		SS_ASSERT(false);
-		return 0;
-	}
+	return _MeshAsset->GetSubMeshCnt();
 }
 
 void ModelAsset::SetMesh(IMeshAsset* InMeshAsset)
 {
+	if (GetAssetInstanceReferenceCnt() > 0)
+	{
+		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
+
+		int32 PrevSubMeshCnt = _MeshAsset->GetSubMeshCnt();
+		int32 NewSubMeshCnt = InMeshAsset->GetSubMeshCnt();
+		for (int32 i = NewSubMeshCnt; i < PrevSubMeshCnt; i++)
+		{
+			if (_MaterialAssets[i] != nullptr) // TODO: MtlItem이 nullptr이 되지 않고 EmptyMaterial을 넣어주도록 수정하기
+			{
+				_MaterialAssets[i]->RemoveAssetReference(ThisAssetReferencer);
+				_MaterialAssets[i] = nullptr; // 서브메시의 개수가 줄어들면 줄어든 만큼 메테리얼 레퍼런스를 날려줘야 함.
+			}
+		}
+
+		_MeshAsset->RemoveAssetReference(ThisAssetReferencer);
+		InMeshAsset->AddAssetReference(ThisAssetReferencer);
+	}
+
 	_MeshAsset = InMeshAsset;
 }
 
@@ -113,28 +130,25 @@ void ModelAsset::SetMaterial(IMaterialAsset* InMaterialAsset, int32 InMaterialId
 		return;
 	}
 
-	if (_MeshAsset == nullptr)
+	int32 SubMeshCnt = GetSubMeshCnt();
+	if (SubMeshCnt <= InMaterialIdx)
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	const MeshRawDataBase* RawData = _MeshAsset->GetMeshRawData();
-
-
-	if (RawData->_MeshType == EMeshType::Rigid)
+	if (GetAssetInstanceReferenceCnt() > 0)
 	{
-		MeshRawDataDefault* DefaultRawData = (MeshRawDataDefault*)RawData;
-		if (DefaultRawData->_subMeshCnt <= InMaterialIdx)
+		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
+
+		IMaterialAsset* PrevMaterial = _MaterialAssets[InMaterialIdx];
+		if (PrevMaterial != nullptr)
 		{
-			SS_ASSERT(false);
-			return;
+			PrevMaterial->RemoveAssetReference(ThisAssetReferencer);
 		}
 
-		_MaterialAssets[InMaterialIdx] = InMaterialAsset;
-		return;
+		InMaterialAsset->AddAssetReference(ThisAssetReferencer);
 	}
 
-	SS_ASSERT(false);
-	return;
+	_MaterialAssets[InMaterialIdx] = InMaterialAsset;
 }

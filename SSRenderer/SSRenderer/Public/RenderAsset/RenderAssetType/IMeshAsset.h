@@ -21,6 +21,9 @@ public:
 	const MeshRawDataBase* GetMeshRawData() const { return _MeshRawData; }
 	const GALMeshAssetWrapperBase* GetGALMeshAsset() const { return _GALMeshAsset; }
 
+public:
+	virtual int32 GetSubMeshCnt() const = 0;
+
 	virtual void ReleaseSystemData() = 0;
 	virtual void ReleaseGALData() = 0;
 };

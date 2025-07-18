@@ -3,6 +3,7 @@
 #include "SSGAL/Public/GALRenderAsset/GALMeshAssetWrapperBase.h"
 #include "SSRenderer/Private/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
@@ -15,6 +16,20 @@ MeshAsset::MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 EAssetType MeshAsset::GetAssetType() const
 {
 	return ThisAssetType;
+}
+
+int32 MeshAsset::GetSubMeshCnt() const
+{
+	if (_MeshRawData->_MeshType == EMeshType::Rigid)
+	{
+		MeshRawDataDefault* DefaultMeshRawData = (MeshRawDataDefault*)_MeshRawData;
+		return DefaultMeshRawData->_subMeshCnt;
+	}
+	else
+	{
+		SS_ASSERT(false);
+		return 0;
+	}
 }
 
 void MeshAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
