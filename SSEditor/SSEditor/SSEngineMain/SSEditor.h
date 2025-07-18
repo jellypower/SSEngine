@@ -4,6 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+enum class EAssetType;
 class SSImGUIInitializer;
 class ITextureAssetMutable;
 class ISSFBXImporter;
@@ -31,8 +32,23 @@ public:
 	void TEMP_CreateAssets();
 
 	void TEMP_ProcessContents();
-	void TEMP_ProcessImGUI();
 
+
+#pragma region IMGUI
+private:
+	EAssetType _ImGUI_SelectedAssetManager_Type;
+
+
+private:
+	void ProcessImGUI();
+
+	void ImGUI_AssetManagerWindow();
+	void ImGUI_AssetManagerWindow_Texture();
+	void ImGUI_AssetManager_Mesh();
+	void ImGUI_AssetManager_Material();
+	void ImGUI_AssetManager_Model();
+
+#pragma endregion
 
 private:
 	SWorld* _DefaultWorld = nullptr;

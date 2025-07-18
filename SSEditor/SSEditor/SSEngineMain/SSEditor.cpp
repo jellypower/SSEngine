@@ -58,6 +58,7 @@ void SSEditor::StartupEngine()
 {
 	_Renderer->StartUp();
 	g_ImGuiInitializer->StartupImGui(_Renderer);
+	_ImGUI_SelectedAssetManager_Type = EAssetType::Texture;
 	
 
 	_FbxImporter = g_fpCreateSSFBXImporter();
@@ -119,7 +120,7 @@ void SSEditor::EnginePerFrame()
 	TEMP_ProcessContents();
 
 	Run_g_ImGuiInitializer__OnBeginFrameImGui();
-	TEMP_ProcessImGUI();
+	ProcessImGUI();
 
 	_DefaultWorld->ProcessTransformCommit();
 
@@ -328,7 +329,12 @@ void SSEditor::TEMP_ProcessContents()
 	}
 }
 
-void SSEditor::TEMP_ProcessImGUI()
+void SSEditor::ProcessImGUI()
+{
+	ImGUI_AssetManagerWindow();
+}
+
+void SSEditor::ImGUI_AssetManagerWindow()
 {
 	IAssetManager* AssetManager = _Renderer->GetAssetManager();
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
@@ -336,313 +342,38 @@ void SSEditor::TEMP_ProcessImGUI()
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& MtlList = AssetManager->GetAssetMap(EAssetType::Material);
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& ModelList = AssetManager->GetAssetMap(EAssetType::Model);
 
-
-	ImGui::Begin("Texture List");
+	ImGui::Begin("Asset Editor");
 	{
-		if (ImGui::BeginTable("Textures", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+		ImGui::BeginTabBar("AssetManager_Tabbar");
+
+		if (ImGui::TabItemButton("Texture"))
 		{
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Texture Name");
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Texture Path");
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
-
-			for (const SS::pair<SS::SHasherW, IAssetBase*>& TexturePairItem : TextureList)
-			{
-				IAssetBase* TextureItem = TexturePairItem.second;
-				ImGui::TableNextColumn();
-
-				uint32 AssetStrLen = 0;
-				const utf16* AssetCstr = nullptr;
-
-				{
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 Converter[BUFFER_SIZE];
-					AssetCstr = TextureItem->GetAssetName().C_Str(&AssetStrLen);
-					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
-
-					ImGui::Text(Converter);
-				}
-
-				{
-					ImGui::TableNextColumn();
-
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 Converter[BUFFER_SIZE];
-					AssetCstr = TextureItem->GetAssetPath().C_Str(&AssetStrLen);
-					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
-
-					ImGui::Text(Converter);
-				}
-
-				{
-					ImGui::TableNextColumn();
-
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 StrBuffer[BUFFER_SIZE];
-
-					int32 RefCnt = TextureItem->GetAssetInstanceReferenceCnt();
-					_itoa(RefCnt, StrBuffer, 10);
-					ImGui::Text(StrBuffer);
-				}
-			}
-
-			ImGui::EndTable();
+			_ImGUI_SelectedAssetManager_Type = EAssetType::Texture;
 		}
-	}
-	ImGui::End();
-
-	ImGui::Begin("Mesh List");
-	{
-		if (ImGui::BeginTable("Meshes", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+		else if (ImGui::TabItemButton("Mesh"))
 		{
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Name");
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Path");
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
-
-			for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshItemPair : MeshList)
-			{
-				IAssetBase* MeshItem = MeshItemPair.second;
-				ImGui::TableNextColumn();
-
-				uint32 AssetStrLen = 0;
-				const utf16* AssetCstr = nullptr;
-
-				{
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 Converter[BUFFER_SIZE];
-					AssetCstr = MeshItem->GetAssetName().C_Str(&AssetStrLen);
-					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
-
-					ImGui::Text(Converter);
-				}
-
-				{
-					ImGui::TableNextColumn();
-
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 Converter[BUFFER_SIZE];
-					AssetCstr = MeshItem->GetAssetPath().C_Str(&AssetStrLen);
-					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
-
-					ImGui::Text(Converter);
-				}
-
-				{
-					ImGui::TableNextColumn();
-
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 StrBuffer[BUFFER_SIZE];
-
-					int32 RefCnt = MeshItem->GetAssetInstanceReferenceCnt();
-					_itoa(RefCnt, StrBuffer, 10);
-					ImGui::Text(StrBuffer);
-				}
-			}
-			ImGui::EndTable();
+			_ImGUI_SelectedAssetManager_Type = EAssetType::Mesh;
 		}
-	}
-	ImGui::End();
-
-
-	ImGui::Begin("Mtl List");
-	{
-
-		if (ImGui::BeginTable("Materials", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+		else if (ImGui::TabItemButton("Material"))
 		{
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Material Name");
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Material Path");
-			ImGui::TableNextColumn();
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
-
-			for (const SS::pair<SS::SHasherW, IAssetBase*>& MaterialItemPair : MtlList)
-			{
-				IAssetBase* MtlItem = MaterialItemPair.second;
-				ImGui::TableNextColumn();
-
-				uint32 AssetStrLen = 0;
-				const utf16* AssetCstr = nullptr;
-
-				{
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 Converter[BUFFER_SIZE];
-					AssetCstr = MtlItem->GetAssetName().C_Str(&AssetStrLen);
-					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
-
-					ImGui::Text(Converter);
-				}
-
-				{
-					ImGui::TableNextColumn();
-
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 Converter[BUFFER_SIZE];
-					AssetCstr = MtlItem->GetAssetPath().C_Str(&AssetStrLen);
-					UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
-
-					ImGui::Text(Converter);
-				}
-
-				{
-					ImGui::TableNextColumn();
-
-					constexpr int32 BUFFER_SIZE = 256;
-					utf8 StrBuffer[BUFFER_SIZE];
-
-					int32 RefCnt = MtlItem->GetAssetInstanceReferenceCnt();
-					_itoa(RefCnt, StrBuffer, 10);
-					ImGui::Text(StrBuffer);
-				}
-			}
-			ImGui::EndTable();
+			_ImGUI_SelectedAssetManager_Type = EAssetType::Material;
 		}
-	}
-	ImGui::End();
-
-	ImGui::Begin("Model List");
-	{
-		for (const SS::pair<SS::SHasherW, IAssetBase*>& ModelItemPair : ModelList)
+		else if (ImGui::TabItemButton("Model"))
 		{
-			IModelAssetMutable* ModelItem = (IModelAssetMutable* )ModelItemPair.second;
-			uint32 ModelNameStrLen = 0;
-			const utf16* ModelNameCStr = ModelItem->GetAssetName().C_Str(&ModelNameStrLen);
-
-			uint32 ModelPathStrLen = 0;
-			const utf16* ModelPathCStr = ModelItem->GetAssetPath().C_Str(&ModelPathStrLen);
-
-			constexpr int32 BUFFER_SIZE = 256;
-			utf8 u8ModelName[BUFFER_SIZE];
-			UTF16StrToUtf8Str(ModelNameCStr, ModelNameStrLen, u8ModelName, BUFFER_SIZE);
-
-			utf8 u8ModelPath[BUFFER_SIZE];
-			UTF16StrToUtf8Str(ModelPathCStr, ModelPathStrLen, u8ModelPath, BUFFER_SIZE);
-
-			if (ImGui::CollapsingHeader(u8ModelName))
-			{
-				ImGui::PushID(u8ModelName);
-				{
-					// Model Path
-					ImGui::Text("Model Path: %s", u8ModelPath);
-					ImGui::Spacing();
-
-					// Mesh Editing
-					{
-						IMeshAsset* SelectedMesh = ModelItem->GetMeshAsset();
-						SS::SHasherW SelectedMeshName = SelectedMesh->GetAssetName();
-
-						uint32 MeshAssetNameStrLen = 0;
-						const utf16* u16SelectedMeshAssetName = SelectedMeshName.C_Str(&MeshAssetNameStrLen);
-
-						utf8 u8MeshName[BUFFER_SIZE];
-						UTF16StrToUtf8Str(u16SelectedMeshAssetName, MeshAssetNameStrLen, u8MeshName, BUFFER_SIZE);
-						if (ImGui::BeginCombo("Mesh", u8MeshName))
-						{
-							for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshItemInListPair : MeshList)
-							{
-								IMeshAsset* MeshItemInList = (IMeshAsset*)MeshItemInListPair.second;
-								SS::SHasherW MeshItemInListName = MeshItemInList->GetAssetName();
-
-								uint32 MeshItemInListNameStrLen = 0;
-								const utf16* u16MeshItemInListName = MeshItemInListName.C_Str(&MeshItemInListNameStrLen);
-
-								UTF16StrToUtf8Str(u16MeshItemInListName, MeshItemInListNameStrLen, u8MeshName, BUFFER_SIZE);
-
-								bool bIsSelectedItem = SelectedMeshName == MeshItemInListName;
-								bool bSelectNewItem = ImGui::Selectable(u8MeshName, bIsSelectedItem);
-
-								if (bSelectNewItem)
-								{
-									ModelItem->SetMesh(MeshItemInList);
-								}
-
-								if (bIsSelectedItem)
-								{
-									ImGui::SetItemDefaultFocus();
-								}
-							}
-
-							ImGui::EndCombo();
-						}
-					}
-
-
-					ImGui::Spacing();
-
-					// Material Editing
-					for (int MtlIdx = 0; MtlIdx < ModelItem->GetSubMeshCnt(); MtlIdx++)
-					{
-						uint32 MtlAssetNameStrLen = 0;
-						const utf16* MtlAssetName = nullptr;
-
-						IMaterialAsset* SelectedMaterial = ModelItem->GetMaterialAsset(MtlIdx);
-						SS::SHasherW SelectedMtlName;
-						if (SelectedMaterial != nullptr)
-						{
-							SelectedMtlName = SelectedMaterial->GetAssetName();
-
-							MtlAssetNameStrLen = 0;
-							MtlAssetName = SelectedMtlName.C_Str(&MtlAssetNameStrLen);
-						}
-						else
-						{
-							MtlAssetName = L"EMPTY";
-							MtlAssetNameStrLen = wcslen(MtlAssetName);
-						}
-
-						utf8 u8MtlName[BUFFER_SIZE];
-						UTF16StrToUtf8Str(MtlAssetName, MtlAssetNameStrLen, u8MtlName, BUFFER_SIZE);
-
-						char MtlHeader[50] = "Material_";
-						_itoa(MtlIdx, MtlHeader + 9, 10);
-
-
-						if (ImGui::BeginCombo(MtlHeader, u8MtlName))
-						{
-							for (const SS::pair<SS::SHasherW, IAssetBase*>& MtlItemPair : MtlList)
-							{
-								IAssetBase* MaterialItemInList = MtlItemPair.second;
-								SS::SHasherW MtlItemInListName = MaterialItemInList->GetAssetName();
-
-								uint32 MtlStrLen = 0;
-								const utf16* u16MtlStr = MtlItemInListName.C_Str(&MtlStrLen);
-
-								UTF16StrToUtf8Str(u16MtlStr, MtlStrLen, u8MtlName, BUFFER_SIZE);
-
-								bool bIsSelectedItem = SelectedMtlName == MtlItemInListName;
-								bool bSelectNewItem = ImGui::Selectable(u8MtlName, bIsSelectedItem);
-
-								if (bSelectNewItem)
-								{
-									if (EAssetType::Material == MaterialItemInList->GetAssetType())
-									{
-										ModelItem->SetMaterial((IMaterialAsset*)MaterialItemInList, MtlIdx);
-									}
-									else
-									{
-										SS_ASSERT(false);
-									}
-								}
-
-								if (bIsSelectedItem)
-								{
-									ImGui::SetItemDefaultFocus();
-								}
-							}
-							ImGui::EndCombo();
-						}
-					}
-				}
-				ImGui::PopID();
-			}
-
+			_ImGUI_SelectedAssetManager_Type = EAssetType::Model;
 		}
+		ImGui::EndTabBar();
 
+		switch (_ImGUI_SelectedAssetManager_Type)
+		{
+		case EAssetType::Texture: ImGUI_AssetManagerWindow_Texture(); break;
+		case EAssetType::Mesh: ImGUI_AssetManager_Mesh(); break;
+		case EAssetType::Material: ImGUI_AssetManager_Material(); break;
+		case EAssetType::Model: ImGUI_AssetManager_Model(); break;
+		default:
+			SS_ASSERT(false);
+			break;
+		}
 	}
 	ImGui::End();
 
@@ -654,4 +385,323 @@ void SSEditor::TEMP_ProcessImGUI()
 		ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
 	}
 	ImGui::End();
+}
+
+void SSEditor::ImGUI_AssetManagerWindow_Texture()
+{
+	IAssetManager* AssetManager = _Renderer->GetAssetManager();
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
+
+	if (ImGui::BeginTable("Textures", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+	{
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Texture Name");
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Texture Path");
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
+
+		for (const SS::pair<SS::SHasherW, IAssetBase*>& TexturePairItem : TextureList)
+		{
+			IAssetBase* TextureItem = TexturePairItem.second;
+			ImGui::TableNextColumn();
+
+			uint32 AssetStrLen = 0;
+			const utf16* AssetCstr = nullptr;
+
+			{
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 Converter[BUFFER_SIZE];
+				AssetCstr = TextureItem->GetAssetName().C_Str(&AssetStrLen);
+				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+				ImGui::Text(Converter);
+			}
+
+			{
+				ImGui::TableNextColumn();
+
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 Converter[BUFFER_SIZE];
+				AssetCstr = TextureItem->GetAssetPath().C_Str(&AssetStrLen);
+				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+				ImGui::Text(Converter);
+			}
+
+			{
+				ImGui::TableNextColumn();
+
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 StrBuffer[BUFFER_SIZE];
+
+				int32 RefCnt = TextureItem->GetAssetInstanceReferenceCnt();
+				_itoa(RefCnt, StrBuffer, 10);
+				ImGui::Text(StrBuffer);
+			}
+		}
+
+		ImGui::EndTable();
+	}
+}
+void SSEditor::ImGUI_AssetManager_Mesh()
+{
+	IAssetManager* AssetManager = _Renderer->GetAssetManager();
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshList = AssetManager->GetAssetMap(EAssetType::Mesh);
+
+	if (ImGui::BeginTable("Meshes", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+	{
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Name");
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Path");
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
+
+		for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshItemPair : MeshList)
+		{
+			IAssetBase* MeshItem = MeshItemPair.second;
+			ImGui::TableNextColumn();
+
+			uint32 AssetStrLen = 0;
+			const utf16* AssetCstr = nullptr;
+
+			{
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 Converter[BUFFER_SIZE];
+				AssetCstr = MeshItem->GetAssetName().C_Str(&AssetStrLen);
+				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+				ImGui::Text(Converter);
+			}
+
+			{
+				ImGui::TableNextColumn();
+
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 Converter[BUFFER_SIZE];
+				AssetCstr = MeshItem->GetAssetPath().C_Str(&AssetStrLen);
+				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+				ImGui::Text(Converter);
+			}
+
+			{
+				ImGui::TableNextColumn();
+
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 StrBuffer[BUFFER_SIZE];
+
+				int32 RefCnt = MeshItem->GetAssetInstanceReferenceCnt();
+				_itoa(RefCnt, StrBuffer, 10);
+				ImGui::Text(StrBuffer);
+			}
+		}
+		ImGui::EndTable();
+	}
+}
+
+void SSEditor::ImGUI_AssetManager_Material()
+{
+	IAssetManager* AssetManager = _Renderer->GetAssetManager();
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& MtlList = AssetManager->GetAssetMap(EAssetType::Material);
+
+	if (ImGui::BeginTable("Materials", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+	{
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Material Name");
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Material Path");
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
+
+		for (const SS::pair<SS::SHasherW, IAssetBase*>& MaterialItemPair : MtlList)
+		{
+			IAssetBase* MtlItem = MaterialItemPair.second;
+			ImGui::TableNextColumn();
+
+			uint32 AssetStrLen = 0;
+			const utf16* AssetCstr = nullptr;
+
+			{
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 Converter[BUFFER_SIZE];
+				AssetCstr = MtlItem->GetAssetName().C_Str(&AssetStrLen);
+				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+				ImGui::Text(Converter);
+			}
+
+			{
+				ImGui::TableNextColumn();
+
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 Converter[BUFFER_SIZE];
+				AssetCstr = MtlItem->GetAssetPath().C_Str(&AssetStrLen);
+				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+				ImGui::Text(Converter);
+			}
+
+			{
+				ImGui::TableNextColumn();
+
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 StrBuffer[BUFFER_SIZE];
+
+				int32 RefCnt = MtlItem->GetAssetInstanceReferenceCnt();
+				_itoa(RefCnt, StrBuffer, 10);
+				ImGui::Text(StrBuffer);
+			}
+		}
+		ImGui::EndTable();
+	}
+}
+
+void SSEditor::ImGUI_AssetManager_Model()
+{
+	IAssetManager* AssetManager = _Renderer->GetAssetManager();
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshList = AssetManager->GetAssetMap(EAssetType::Mesh);
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& MtlList = AssetManager->GetAssetMap(EAssetType::Material);
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& ModelList = AssetManager->GetAssetMap(EAssetType::Model);
+
+	for (const SS::pair<SS::SHasherW, IAssetBase*>& ModelItemPair : ModelList)
+	{
+		IModelAssetMutable* ModelItem = (IModelAssetMutable*)ModelItemPair.second;
+		uint32 ModelNameStrLen = 0;
+		const utf16* ModelNameCStr = ModelItem->GetAssetName().C_Str(&ModelNameStrLen);
+
+		uint32 ModelPathStrLen = 0;
+		const utf16* ModelPathCStr = ModelItem->GetAssetPath().C_Str(&ModelPathStrLen);
+
+		constexpr int32 BUFFER_SIZE = 256;
+		utf8 u8ModelName[BUFFER_SIZE];
+		UTF16StrToUtf8Str(ModelNameCStr, ModelNameStrLen, u8ModelName, BUFFER_SIZE);
+
+		utf8 u8ModelPath[BUFFER_SIZE];
+		UTF16StrToUtf8Str(ModelPathCStr, ModelPathStrLen, u8ModelPath, BUFFER_SIZE);
+
+		if (ImGui::CollapsingHeader(u8ModelName))
+		{
+			ImGui::PushID(u8ModelName);
+			{
+				// Model Path
+				ImGui::Text("Model Path: %s", u8ModelPath);
+				ImGui::Dummy(ImVec2(1, 10));
+
+				// Mesh Editing
+				ImGui::Text("Mesh");
+				{
+					IMeshAsset* SelectedMesh = ModelItem->GetMeshAsset();
+					SS::SHasherW SelectedMeshName = SelectedMesh->GetAssetName();
+
+					uint32 MeshAssetNameStrLen = 0;
+					const utf16* u16SelectedMeshAssetName = SelectedMeshName.C_Str(&MeshAssetNameStrLen);
+
+					utf8 u8MeshName[BUFFER_SIZE];
+					UTF16StrToUtf8Str(u16SelectedMeshAssetName, MeshAssetNameStrLen, u8MeshName, BUFFER_SIZE);
+					if (ImGui::BeginCombo("Mesh", u8MeshName))
+					{
+						for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshItemInListPair : MeshList)
+						{
+							IMeshAsset* MeshItemInList = (IMeshAsset*)MeshItemInListPair.second;
+							SS::SHasherW MeshItemInListName = MeshItemInList->GetAssetName();
+
+							uint32 MeshItemInListNameStrLen = 0;
+							const utf16* u16MeshItemInListName = MeshItemInListName.C_Str(&MeshItemInListNameStrLen);
+
+							UTF16StrToUtf8Str(u16MeshItemInListName, MeshItemInListNameStrLen, u8MeshName, BUFFER_SIZE);
+
+							bool bIsSelectedItem = SelectedMeshName == MeshItemInListName;
+							bool bSelectNewItem = ImGui::Selectable(u8MeshName, bIsSelectedItem);
+
+							if (bSelectNewItem)
+							{
+								ModelItem->SetMesh(MeshItemInList);
+							}
+
+							if (bIsSelectedItem)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+
+						ImGui::EndCombo();
+					}
+				}
+
+
+				ImGui::Dummy(ImVec2(1, 10));
+				ImGui::Text("Material");
+
+				// Material Editing
+				for (int MtlIdx = 0; MtlIdx < ModelItem->GetSubMeshCnt(); MtlIdx++)
+				{
+					uint32 MtlAssetNameStrLen = 0;
+					const utf16* MtlAssetName = nullptr;
+
+					IMaterialAsset* SelectedMaterial = ModelItem->GetMaterialAsset(MtlIdx);
+					SS::SHasherW SelectedMtlName;
+					if (SelectedMaterial != nullptr)
+					{
+						SelectedMtlName = SelectedMaterial->GetAssetName();
+
+						MtlAssetNameStrLen = 0;
+						MtlAssetName = SelectedMtlName.C_Str(&MtlAssetNameStrLen);
+					}
+					else
+					{
+						MtlAssetName = L"EMPTY";
+						MtlAssetNameStrLen = wcslen(MtlAssetName);
+					}
+
+					utf8 u8MtlName[BUFFER_SIZE];
+					UTF16StrToUtf8Str(MtlAssetName, MtlAssetNameStrLen, u8MtlName, BUFFER_SIZE);
+
+					char MtlHeader[50] = "Material_";
+					_itoa(MtlIdx, MtlHeader + 9, 10);
+
+
+					if (ImGui::BeginCombo(MtlHeader, u8MtlName))
+					{
+						for (const SS::pair<SS::SHasherW, IAssetBase*>& MtlItemPair : MtlList)
+						{
+							IAssetBase* MaterialItemInList = MtlItemPair.second;
+							SS::SHasherW MtlItemInListName = MaterialItemInList->GetAssetName();
+
+							uint32 MtlStrLen = 0;
+							const utf16* u16MtlStr = MtlItemInListName.C_Str(&MtlStrLen);
+
+							UTF16StrToUtf8Str(u16MtlStr, MtlStrLen, u8MtlName, BUFFER_SIZE);
+
+							bool bIsSelectedItem = SelectedMtlName == MtlItemInListName;
+							bool bSelectNewItem = ImGui::Selectable(u8MtlName, bIsSelectedItem);
+
+							if (bSelectNewItem)
+							{
+								if (EAssetType::Material == MaterialItemInList->GetAssetType())
+								{
+									ModelItem->SetMaterial((IMaterialAsset*)MaterialItemInList, MtlIdx);
+								}
+								else
+								{
+									SS_ASSERT(false);
+								}
+							}
+
+							if (bIsSelectedItem)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+				}
+			}
+			ImGui::PopID();
+		}
+
+	}
+
 }
