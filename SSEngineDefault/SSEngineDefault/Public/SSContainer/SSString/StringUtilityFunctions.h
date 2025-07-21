@@ -25,4 +25,4 @@ SSENGINEDEFAULT_MODULE void LowerStr(const char* inStr, char* outStr);
 SSENGINEDEFAULT_MODULE void LowerStr(const utf16* inStr, utf16* outStr);
 SSENGINEDEFAULT_MODULE void LowerStr(SS::StringW& InStr);
 
-SSENGINEDEFAULT_MODULE void ExtractFileNameFromPath(SS::StringW& OutStr, const utf16* inFilePath);
+SSENGINEDEFAULT_MODULE void ExtractFileNameFromPath(SS::StringW& OutStr, const utf16* inFilePath, bool bIncludeSuffix = false);

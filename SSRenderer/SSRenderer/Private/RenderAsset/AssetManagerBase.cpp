@@ -123,7 +123,7 @@ SS::SHasherW AssetManagerBase::GenerateAssetName(const SS::StringW& fileName, co
 		SS::StringW SuffixNoStr = IntToString(suffixNo++);
 		newAssetName += SuffixNoStr;
 
-		newAssetName += L".mdl"; // TODO: 에셋 이름 생성부분이 뭔가 수정이 필요해보임
+		newAssetName += GetAssetSuffix(InAssetType);
 
 		FoundAsset = FindAssetByName(newAssetName.C_Str(), InAssetType);
 

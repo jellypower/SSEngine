@@ -27,6 +27,7 @@ private:
 	SS::PooledList<SS::pair<::FbxMesh*, SS::SHasherW>> _importedMeshNames;
 
 	IAssetManagerMutable* _AssetManagerToImportAsset = nullptr;
+	ICommonRenderAssetSet* _CommonRenderAssetSetToImport = nullptr;
 
 public:
 	SSFBXImporter();
@@ -39,7 +40,7 @@ public:
 	virtual bool BindFbxSceneFile(const utf16* inFilePath) override;
 	virtual void ClearFbxSceneFile() override;
 
-	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager) override;
+	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* inCommonRenderAssetSet = nullptr) override;
 	virtual void ClearRendererToImportAsset() override;
 
 	virtual void ImportCurrentFileToAssetManager() override;

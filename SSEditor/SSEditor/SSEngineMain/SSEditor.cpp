@@ -60,13 +60,14 @@ void SSEditor::StartupEngine()
 	g_ImGuiInitializer->StartupImGui(_Renderer);
 	_ImGUI_SelectedAssetManager_Type = EAssetType::Texture;
 	
+	TEMP_CreateAssets(); // CommonAssetSet을 초기화
 
-	_FbxImporter = g_fpCreateSSFBXImporter();
-	_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager());
-	_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
-	_FbxImporter->ImportCurrentFileToAssetManager();
-
-	TEMP_CreateAssets();
+	{
+		_FbxImporter = g_fpCreateSSFBXImporter();
+		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
+		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
+		_FbxImporter->ImportCurrentFileToAssetManager();
+	}
 
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
@@ -111,7 +112,6 @@ void SSEditor::StartupEngine()
 		_Renderer->SetRenderCamera(CameraComp->GetRenderCamera());
 	}
 
-	_Renderer->GetCommonRenderAssetSet()->CacheCommonRenderAssets();
 	_Renderer->GetCommonRenderAssetSet()->AddRefCachedAssets();
 }
 
@@ -184,6 +184,8 @@ void SSEditor::TEMP_CreateAssets()
 	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] = BlackTex;
 	TempMtl->InjectRawDataXXX(EmptyDefaultPBR);
 	AssetManager->AddToAssetPool(TempMtl);
+
+	_Renderer->GetCommonRenderAssetSet()->CacheCommonRenderAssets();
 }
 
 void SSEditor::TEMP_ProcessContents()

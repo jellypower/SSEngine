@@ -2,12 +2,25 @@
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSFBXImporterUtils.h"
+
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelCombinationAsset.h"
-
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
+#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
+
+
+namespace SSFbxName
+{
+	constexpr char BumpMap[] = "bump_map";
+	constexpr char MetalnessMap[] = "metalness_map";
+	constexpr char Metalness[] = "metalness";
+	constexpr char EmissiveColor[] = "EmissiveColor";
+}
+	
 
 
 SSFBXImporter::SSFBXImporter()
@@ -70,26 +83,165 @@ void SSFBXImporter::ClearFbxSceneFile()
 	_boundFilePath = SS::SHasherW::GetEmpty();
 }
 
-void SSFBXImporter::BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager)
+void SSFBXImporter::BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet)
 {
 	_AssetManagerToImportAsset = InAssetMnanager;
+	_CommonRenderAssetSetToImport = InCommonRenderAssetSet;
 }
 
 void SSFBXImporter::ClearRendererToImportAsset()
 {
 	_AssetManagerToImportAsset = nullptr;
+	_CommonRenderAssetSetToImport = nullptr;
 }
 
 
 void SSFBXImporter::ImportCurrentFileToAssetManager()
 {
+	ImportCurrentFileToMaterialAsset();
 	ImportCurrentFileToModelAsset();
 }
 
 void SSFBXImporter::ImportCurrentFileToMaterialAsset()
 {
-	SS::StringW outAssetName;
-	const int32 matCnt = _currentScene->GetMaterialCount();
+	const uint32 MtlCnt = _currentScene->GetMaterialCount();
+
+	SS::StringW wsBoundFileName = _boundFileName.C_Str();
+	SS::StringW OriginalMtlNodeName;
+
+	SS::StringW TextureAssetPath;
+	SS::StringW TextureAssetName;
+
+
+
+
+	for (uint32 i = 0; i < MtlCnt; i++)
+	{
+		const FbxSurfaceMaterial* material = _currentScene->GetMaterial(i);
+
+		OriginalMtlNodeName = material->GetNameOnly().Buffer();
+		SS::SHasherW MtlAssetName = _AssetManagerToImportAsset->GenerateAssetName(wsBoundFileName, OriginalMtlNodeName, EAssetType::Material);
+		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(MtlAssetName, _boundFileName);
+		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();
+
+		FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+		if (prop.IsValid())
+		{
+			const int texCnt = prop.GetSrcObjectCount();
+			if (texCnt != 0)
+			{
+				const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
+				TextureAssetPath = fbxTexture->GetFileName();
+				ExtractFileNameFromPath(TextureAssetName, TextureAssetPath.C_Str());
+				ITextureAsset* TexAssetToBind = _AssetManagerToImportAsset->FindAssetByName<ITextureAsset>(TextureAssetName.C_Str());
+
+				if (TexAssetToBind != nullptr)
+				{
+					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = TexAssetToBind;
+				}
+				else
+				{
+					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] =
+						_CommonRenderAssetSetToImport->GetTexEMPTY();
+				}
+			}
+		}
+
+		prop = material->FindProperty(SSFbxName::BumpMap, false);
+		if (prop.IsValid() == false)
+		{
+			prop = material->FindProperty(FbxSurfaceMaterial::sNormalMap);
+		}
+		if (prop.IsValid())
+		{
+			const int texCnt = prop.GetSrcObjectCount();
+			if (texCnt != 0)
+			{
+				const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
+				TextureAssetPath = fbxTexture->GetFileName();
+				ExtractFileNameFromPath(TextureAssetName, TextureAssetPath.C_Str());
+				ITextureAsset* TexAssetToBind = _AssetManagerToImportAsset->FindAssetByName<ITextureAsset>(TextureAssetName.C_Str());
+
+				if (TexAssetToBind != nullptr)
+				{
+					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] = TexAssetToBind;
+				}
+				else
+				{
+					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] =
+						_CommonRenderAssetSetToImport->GetTexEMPTY();
+				}
+			}
+		}
+
+
+
+		prop = material->FindProperty(FbxSurfaceMaterial::sEmissive);
+		if (prop.IsValid())
+		{
+			const int texCnt = prop.GetSrcObjectCount();
+			if (texCnt != 0)
+			{
+				const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
+				TextureAssetPath = fbxTexture->GetFileName();
+				ExtractFileNameFromPath(TextureAssetName, TextureAssetPath.C_Str());
+				ITextureAsset* TexAssetToBind = _AssetManagerToImportAsset->FindAssetByName<ITextureAsset>(TextureAssetName.C_Str());
+
+				if (TexAssetToBind != nullptr)
+				{
+					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] = TexAssetToBind;
+				}
+				else
+				{
+					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] =
+						_CommonRenderAssetSetToImport->GetTexEMPTY();
+				}
+			}
+		}
+
+
+		prop = material->FindProperty(FbxSurfaceMaterial::sDiffuseFactor);
+		if (prop.IsValid())
+		{
+			FbxDouble3 diffuseFactor = prop.Get<FbxDouble3>();
+			NewDefaultPBRMtlData->_BaseColorScale = Vector4f(diffuseFactor[0], diffuseFactor[1], diffuseFactor[2], 1);
+		}
+
+
+		prop = material->FindProperty(FbxSurfaceMaterial::sEmissiveFactor);
+		if (prop.IsValid())
+		{
+			FbxDouble emissive = prop.Get<FbxDouble>();
+			NewDefaultPBRMtlData->_EmissiveScale = Vector4f(emissive, emissive, emissive, 1);
+		}
+
+		for (prop = material->GetFirstProperty(); prop.IsValid(); prop = material->GetNextProperty(prop))
+		{
+
+			if (strcmp(prop.GetNameAsCStr(), SSFbxName::BumpMap) == 0)
+			{
+				const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
+				TextureAssetPath = fbxTexture->GetFileName();
+				ExtractFileNameFromPath(TextureAssetName, TextureAssetPath.C_Str());
+				ITextureAsset* TexAssetToBind = _AssetManagerToImportAsset->FindAssetByName<ITextureAsset>(TextureAssetName.C_Str());
+
+				if (TexAssetToBind != nullptr)
+				{
+					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = TexAssetToBind;
+				}
+				else
+				{
+					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] =
+						_CommonRenderAssetSetToImport->GetTexEMPTY();
+				}
+			}
+
+		}
+
+
+		NewMtlAsset->InjectRawDataXXX(NewDefaultPBRMtlData);
+		_AssetManagerToImportAsset->AddToAssetPool(NewMtlAsset);
+	}
 }
 
 void SSFBXImporter::ImportCurrentFileToModelAsset()
@@ -184,11 +336,8 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			}
 
 
-
-
 			SS::SHasherW NewModelAssetName = 
 				_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), EAssetType::Model);
-			// TODO: 25/03/04 테스트하기
 
 			
 			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(NewModelAssetName, _boundFileName);

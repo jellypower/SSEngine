@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class ICommonRenderAssetSet;
 class IAssetManagerMutable;
 
 class ISSFBXImporter : public INoncopyable
@@ -13,7 +14,7 @@ public:
 	virtual bool BindFbxSceneFile(const utf16* inFilePath) = 0;
 	virtual void ClearFbxSceneFile() = 0;
 
-	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager) = 0;
+	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet) = 0;
 	virtual void ClearRendererToImportAsset() = 0;
 
 	virtual void ImportCurrentFileToAssetManager() = 0;
