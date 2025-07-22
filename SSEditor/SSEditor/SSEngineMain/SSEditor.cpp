@@ -186,6 +186,33 @@ void SSEditor::TEMP_CreateAssets()
 	AssetManager->AddToAssetPool(TempMtl);
 
 	_Renderer->GetCommonRenderAssetSet()->CacheCommonRenderAssets();
+
+
+	// Texture List 구성하기
+	{
+		const SS::pair<const utf16*, const utf16*> TextureAssetList[]
+			= {
+				{L"rp_nathan_animated_003_dif.tex", L"Resource/Texture/rp_nathan_animated_003_dif.dds"},
+
+				{L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds"},
+				{L"Worm_reflection.tex", L"Resource/Texture/Worm_reflection.dds"},
+				{L"Worm_Bump.tex", L"Resource/Texture/Worm_Bump.dds"},
+
+				{L"Teeth_SSS_Color.tex", L"Resource/Texture/Teeth_SSS_Color.dds"},
+				{L"Teeth_reflection.tex", L"Resource/Texture/Teeth_reflection.dds"},
+				{L"Teeth_Bump.tex", L"Resource/Texture/Teeth_Bump.dds"},
+		};
+
+		for (int32 i=0;i<_countof(TextureAssetList);i++)
+		{
+			const utf16* NameCStr = TextureAssetList[i].first;
+			const utf16* PathCStr = TextureAssetList[i].second;
+
+			ITextureAssetMutable* NewTex = AssetManager->CreateEmptyTextureAsset(NameCStr, PathCStr);
+			AssetManager->AddToAssetPool(NewTex);
+		}
+
+	}
 }
 
 void SSEditor::TEMP_ProcessContents()
