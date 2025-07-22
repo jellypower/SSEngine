@@ -7,6 +7,7 @@
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 
+class IMaterialAsset;
 class IModelCombinationAssetMutable;
 class IRenderer;
 struct AssetPlacementReference;
@@ -51,8 +52,11 @@ private:
 
 	void ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset);
 
+	void ImportCurrentFileToAnimAsset();
+
 	void PrintFbxNodeInfo(FbxNode* node);
 
-	void ImportCurrentFileToAnimAsset();
+private:
+	SS::HashMap<uint64, IMaterialAsset*> _FbxUniqueIDToMtlAsset;
 
 };

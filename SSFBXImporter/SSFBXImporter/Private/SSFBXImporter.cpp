@@ -23,7 +23,8 @@ namespace SSFbxName
 	
 
 
-SSFBXImporter::SSFBXImporter()
+SSFBXImporter::SSFBXImporter() :
+	_FbxUniqueIDToMtlAsset(1000, 100)
 {
 	_FBXManager = ::FbxManager::Create();
 	_FBXImporter = ::FbxImporter::Create(_FBXManager, "");
@@ -47,6 +48,8 @@ SS::SHasherW SSFBXImporter::GetBoundFileName() const
 
 bool SSFBXImporter::BindFbxSceneFile(const utf16* inFilePath)
 {
+	_FbxUniqueIDToMtlAsset.Clear();
+
 	uint64 pathLen = wcslen(inFilePath);
 	char inFilePathMultiByte[PATH_LEN_MAX];
 	int32 writtenBytes = UTF16StrToCharStr(inFilePath, pathLen, inFilePathMultiByte, PATH_LEN_MAX);
@@ -125,7 +128,15 @@ void SSFBXImporter::ImportCurrentFileToMaterialAsset()
 		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(MtlAssetName, _boundFileName);
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();
 
-		FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+
+		// ====================================================== Diffuse ====================================================== 
+		FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuseFactor);
+		if (prop.IsValid())
+		{
+			FbxDouble3 diffuseFactor = prop.Get<FbxDouble3>();
+			NewDefaultPBRMtlData->_BaseColorScale = Vector4f(diffuseFactor[0], diffuseFactor[1], diffuseFactor[2], 1);
+		}
+		prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
 		if (prop.IsValid())
 		{
 			const int texCnt = prop.GetSrcObjectCount();
@@ -140,19 +151,17 @@ void SSFBXImporter::ImportCurrentFileToMaterialAsset()
 				{
 					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = TexAssetToBind;
 				}
-				else
-				{
-					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] =
-						_CommonRenderAssetSetToImport->GetTexEMPTY();
-				}
 			}
 		}
-
-		prop = material->FindProperty(SSFbxName::BumpMap, false);
-		if (prop.IsValid() == false)
+		if (NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] == nullptr)
 		{
-			prop = material->FindProperty(FbxSurfaceMaterial::sNormalMap);
+			NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] =
+				_CommonRenderAssetSetToImport->GetTexEMPTY();
 		}
+
+
+		// ====================================================== Normal ====================================================== 
+		prop = material->FindProperty(FbxSurfaceMaterial::sNormalMap);
 		if (prop.IsValid())
 		{
 			const int texCnt = prop.GetSrcObjectCount();
@@ -167,16 +176,22 @@ void SSFBXImporter::ImportCurrentFileToMaterialAsset()
 				{
 					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] = TexAssetToBind;
 				}
-				else
-				{
-					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] =
-						_CommonRenderAssetSetToImport->GetTexEMPTY();
-				}
 			}
+		}
+		if (NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] == nullptr)
+		{
+			NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] =
+				_CommonRenderAssetSetToImport->GetTexEMPTYNORMAL();
 		}
 
 
-
+		// ====================================================== Emissive ====================================================== 
+		prop = material->FindProperty(FbxSurfaceMaterial::sEmissiveFactor);
+		if (prop.IsValid())
+		{
+			FbxDouble emissive = prop.Get<FbxDouble>();
+			NewDefaultPBRMtlData->_EmissiveScale = Vector4f(emissive, emissive, emissive, 1);
+		}
 		prop = material->FindProperty(FbxSurfaceMaterial::sEmissive);
 		if (prop.IsValid())
 		{
@@ -192,56 +207,29 @@ void SSFBXImporter::ImportCurrentFileToMaterialAsset()
 				{
 					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] = TexAssetToBind;
 				}
-				else
-				{
-					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] =
-						_CommonRenderAssetSetToImport->GetTexEMPTY();
-				}
 			}
 		}
-
-
-		prop = material->FindProperty(FbxSurfaceMaterial::sDiffuseFactor);
-		if (prop.IsValid())
+		if (NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] == nullptr)
 		{
-			FbxDouble3 diffuseFactor = prop.Get<FbxDouble3>();
-			NewDefaultPBRMtlData->_BaseColorScale = Vector4f(diffuseFactor[0], diffuseFactor[1], diffuseFactor[2], 1);
+			NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] =
+				_CommonRenderAssetSetToImport->GetTexBLACK();
 		}
 
 
-		prop = material->FindProperty(FbxSurfaceMaterial::sEmissiveFactor);
-		if (prop.IsValid())
-		{
-			FbxDouble emissive = prop.Get<FbxDouble>();
-			NewDefaultPBRMtlData->_EmissiveScale = Vector4f(emissive, emissive, emissive, 1);
-		}
-
-		for (prop = material->GetFirstProperty(); prop.IsValid(); prop = material->GetNextProperty(prop))
-		{
-
-			if (strcmp(prop.GetNameAsCStr(), SSFbxName::BumpMap) == 0)
-			{
-				const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
-				TextureAssetPath = fbxTexture->GetFileName();
-				ExtractFileNameFromPath(TextureAssetName, TextureAssetPath.C_Str());
-				ITextureAsset* TexAssetToBind = _AssetManagerToImportAsset->FindAssetByName<ITextureAsset>(TextureAssetName.C_Str());
-
-				if (TexAssetToBind != nullptr)
-				{
-					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = TexAssetToBind;
-				}
-				else
-				{
-					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] =
-						_CommonRenderAssetSetToImport->GetTexEMPTY();
-				}
-			}
-
-		}
+		// ====================================================== Etc Textures ======================================================
+		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Metallic] =
+			_CommonRenderAssetSetToImport->GetTexWHITE();
+		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] =
+			_CommonRenderAssetSetToImport->GetTexBLACK();
 
 
+		// ====================================================== Add to pool ======================================================
 		NewMtlAsset->InjectRawDataXXX(NewDefaultPBRMtlData);
 		_AssetManagerToImportAsset->AddToAssetPool(NewMtlAsset);
+		NewMtlAsset->NotifyMtlDataModified();
+
+		uint64 FbxUniqueID = material->GetUniqueID();
+		_FbxUniqueIDToMtlAsset.Add(FbxUniqueID, NewMtlAsset);
 	}
 }
 
@@ -349,35 +337,30 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			SS::StringW tempAssetName;
 			char outAssetID[10];
 			const int32 matCnt = node->GetMaterialCount();
-			for (int32 i = 0; i < matCnt; i++) {
+			for (int32 i = 0; i < matCnt; i++) 
+			{
 
 				FbxSurfaceMaterial* material = node->GetMaterial(i);
-				_i64toa_s(material->GetUniqueID(), outAssetID, 10, 10);
-				tempAssetName = material->GetNameOnly().Buffer();
-				tempAssetName += "_";
-				tempAssetName += outAssetID;
+				uint64 MtlFbxUniqueID = material->GetUniqueID();
 
-
-				//SSMaterialAsset* modelMaterial = SSMaterialAssetManager::FindAssetWithName(assetName);
-				//if (modelMaterial == nullptr)
-				//{
-				//	modelMaterial = SSMaterialAssetManager::GetEmptyAsset();
-				//}
-				//else if (newMeshAsset->GetMeshType() == EMeshType::Skinned)
-				//{
-				//	modelMaterial->ChangeShader(SSShaderAssetManager::SSDefaultPbrSkinnedShaderName);
-				//}
-
-				// newModel->SetMaterial(tempAssetName.C_Str(), i);
-
+				IMaterialAsset** ppFoundMtl = _FbxUniqueIDToMtlAsset.Find(MtlFbxUniqueID);
+				if (ppFoundMtl == nullptr)
+				{
+					SS_ASSERT(false);
+					newModel->SetMaterial(_CommonRenderAssetSetToImport->GetEmptyPBRMaterial(), i);
+				}
+				else
+				{
+					newModel->SetMaterial(*ppFoundMtl, i);
+				}
 			}
-			//if (matCnt == 0)
-			//{
-			//	MeshAssetManager->CreateTempMaterialAsset()
-			//	newModel->SetMaterial(materiala::GetEmptyAsset(), 0);
-			//}
 
-			// model combination asset creation
+			if (matCnt == 0)
+			{
+				newModel->SetMaterial(_CommonRenderAssetSetToImport->GetEmptyPBRMaterial(), 0);
+			}
+
+
 			NewAssetPlacementRef.AssetName = NewModelAssetName;
 			if (tempAssetName.GetStrLen() == 0)
 			{
@@ -387,7 +370,6 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			{
 				NewAssetPlacementRef.PlacementName = tempAssetName.C_Str();
 			}
-
 
 			_AssetManagerToImportAsset->AddToAssetPool(newModel);
 			// PrintFbxNodeInfo(node);

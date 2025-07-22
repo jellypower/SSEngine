@@ -110,11 +110,21 @@ void MaterialAsset::NotifyMtlDataModified()
 	{
 		const MtlDataDefaultPBR* PbrMtlData = (MtlDataDefaultPBR*)_MtlData;
 
-		for (ITextureAsset* TexItem : PbrMtlData->_Textures)
+		for (ITextureAsset* NewReferencingTex : PbrMtlData->_Textures)
 		{
-			if (TexItem != nullptr)
+			bool bAlreadyReferencing = false;
+			for (ITextureAsset* ReferencingTextureItem : _ReferencingTextures)
 			{
-				_ReferencingTextures.PushBack(TexItem); // ReferencingTexture 를 재구축해준다.
+				if (NewReferencingTex == ReferencingTextureItem)
+				{
+					bAlreadyReferencing = true;
+					break;
+				}
+			}
+
+			if (bAlreadyReferencing == false && NewReferencingTex != nullptr)
+			{
+				_ReferencingTextures.PushBack(NewReferencingTex); // ReferencingTexture 를 재구축해준다.
 			}
 		}
 	}
