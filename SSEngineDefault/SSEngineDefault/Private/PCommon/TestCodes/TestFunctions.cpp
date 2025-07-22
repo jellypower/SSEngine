@@ -600,6 +600,11 @@ void StringTest()
 	TestStr2 = "h h h h h";
 	SS_ASSERT(TestStr1 == TestStr2);
 
+	TestStr1 = "안녕하세요";
+	TestStr1.Replace(L"세요", L"시와요");
+	TestStr2 = "안녕하시와요";
+	SS_ASSERT(TestStr1 == TestStr2);
+
 
 	TestStr1 = L"너는 나를 존중해야 한다. 나는 발롱도르 5개와 수많은 개인 트로피를 들어올렸으며 "
 		L"2016 유로에서 포르투갈을 이끌고라니 우승을 차지했고라니 동시에 A매치 역대 최다 득점자이다. "
