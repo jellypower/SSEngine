@@ -74,14 +74,34 @@ void ModelAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerN
 		AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
 		_MeshAsset->RemoveAssetReference(ThisReferencer);
 
+
+		SS::PooledList<IMaterialAsset*, SS::InlineAllocator<SUBMESH_COUNT_MAX>> ReferencingMaterialSet;
+
 		int32 SubMeshCnt = GetSubMeshCnt();
 		for (int32 i = 0; i < SubMeshCnt; i++)
 		{
-			IMaterialAsset* MtlItem = _MaterialAssets[i]; // TODO: MtlItem이 nullptr이 되지 않고 EmptyMaterial을 넣어주도록 수정하기
-			if (MtlItem != nullptr)
+			IMaterialAsset* MtlItem = _MaterialAssets[i];
+
+			bool bIsItemAlreadyInSet = false;
+			for (IMaterialAsset* ItemAlreadyInSet : ReferencingMaterialSet)
 			{
-				MtlItem->RemoveAssetReference(ThisReferencer);
+				if (ItemAlreadyInSet == MtlItem)
+				{
+					bIsItemAlreadyInSet = true;
+					break;
+				}
 			}
+
+			if (bIsItemAlreadyInSet == false)
+			{
+				ReferencingMaterialSet.PushBack(MtlItem);
+			}
+		}
+
+
+		for (IMaterialAsset* ReferencingMtlItem : ReferencingMaterialSet)
+		{
+			ReferencingMtlItem->RemoveAssetReference(ThisReferencer);
 		}
 	}
 
@@ -142,12 +162,46 @@ void ModelAsset::SetMaterial(IMaterialAsset* InMaterialAsset, int32 InMaterialId
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
 
 		IMaterialAsset* PrevMaterial = _MaterialAssets[InMaterialIdx];
+		_MaterialAssets[InMaterialIdx] = nullptr;
+
 		if (PrevMaterial != nullptr)
 		{
-			PrevMaterial->RemoveAssetReference(ThisAssetReferencer);
+			bool bShouldPrevMtlRefRelease = true;
+
+			for (int32 i=0;i<SubMeshCnt;i++)
+			{
+				if (_MaterialAssets[i] == PrevMaterial)
+				{
+					bShouldPrevMtlRefRelease = false;
+					break;
+				}
+			}
+
+			if (bShouldPrevMtlRefRelease)
+			{
+				PrevMaterial->RemoveAssetReference(ThisAssetReferencer);
+			}
 		}
 
-		InMaterialAsset->AddAssetReference(ThisAssetReferencer);
+		if (InMaterialAsset != nullptr)
+		{
+			bool bShouldNewMtlAddRef = true;
+
+			for (int32 i=0;i<SubMeshCnt;i++)
+			{
+				if (_MaterialAssets[i] == InMaterialAsset)
+				{
+					bShouldNewMtlAddRef = false;
+					break;
+				}
+			}
+
+			if (bShouldNewMtlAddRef)
+			{
+				InMaterialAsset->AddAssetReference(ThisAssetReferencer);
+			}
+		}
+
 	}
 
 	_MaterialAssets[InMaterialIdx] = InMaterialAsset;

@@ -115,9 +115,9 @@ void MaterialAsset::NotifyMtlDataModified()
 			bool bAlreadyReferencing = false;
 			for (ITextureAsset* ReferencingTextureItem : _ReferencingTextures)
 			{
-				if (NewReferencingTex == ReferencingTextureItem)
+				if (NewReferencingTex == ReferencingTextureItem) 
 				{
-					bAlreadyReferencing = true;
+					bAlreadyReferencing = true; // 새로 포함하려는 텍스쳐가 이미 ReferencingTexture에 포함돼있으면 한 번 더 포함시키지 않는다.
 					break;
 				}
 			}
