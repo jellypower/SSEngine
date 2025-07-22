@@ -233,43 +233,50 @@ namespace SS {
 					i++;
 				}
 			}
-			else
+			else // 교체하려는 단어의 길이가 더 짧은경우
 			{
-				int32 ReplaceCnt = 0;
 				int32 RollingHash = OriginalStrHash;
-				int32 i = 0;
-				int32 StrCpyOffset = 0;
+				int32 CpyDstOffset = 0;
+				int32 CpySrcOffset = 0;
 				
-				while (StrCpyOffset < OriginalStrLen)
+				while (CpySrcOffset <= OriginalStrLen - ReplacedLen)
 				{
 					if (RollingHash == ReplacedHash &&
-						wcsncmp(CStr + i, Replaced, ReplacedLen) == 0)
+						wcsncmp(CStr + CpySrcOffset, Replaced, ReplacedLen) == 0)
 					{
 						for (int32 j = 0; j < ToReplaceLen; j++)
 						{
-							_stringPool[i + j] = ToReplace[j];
+							_stringPool[CpyDstOffset + j] = ToReplace[j];
 						}
 
-						i += ToReplaceLen;
-						StrCpyOffset += ReplacedLen;
+						CpyDstOffset += ToReplaceLen;
+						CpySrcOffset += ReplacedLen;
 
 						RollingHash = 0;
-						for (int32 j = StrCpyOffset; j < StrCpyOffset + ReplacedLen; j++)
+						for (int32 j = CpySrcOffset; j < CpySrcOffset + ReplacedLen; j++)
 						{
 							RollingHash += int32(*(CStr + j));
 						}
 						continue;
 					}
 
-					_stringPool[i] = _stringPool[StrCpyOffset];
+					_stringPool[CpyDstOffset] = _stringPool[CpySrcOffset];
 
-					RollingHash -= int32(*(CStr + StrCpyOffset));
-					RollingHash += int32(*(CStr + StrCpyOffset + ReplacedLen));
-					StrCpyOffset++;
-					i++;
-
-					SS_ASSERT(false); // 점검하기
+					RollingHash -= int32(*(CStr + CpySrcOffset));
+					RollingHash += int32(*(CStr + CpySrcOffset + ReplacedLen));
+					CpySrcOffset++;
+					CpyDstOffset++;
 				}
+
+				for (int32 i = CpySrcOffset; i < OriginalStrLen; i++)
+				{
+					_stringPool[CpyDstOffset] = _stringPool[i];
+					CpyDstOffset++;
+				}
+
+				int32 NewStrLen = CpyDstOffset;
+				_stringPool.Resize(NewStrLen + 1);
+				_stringPool[NewStrLen] = L'\0';
 			}
 		}
 	};

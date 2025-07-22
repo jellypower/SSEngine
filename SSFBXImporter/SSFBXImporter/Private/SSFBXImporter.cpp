@@ -64,6 +64,7 @@ bool SSFBXImporter::BindFbxSceneFile(const utf16* inFilePath)
 	_boundFilePath = inFilePath;
 	SS::StringW FileNameStr;
 	ExtractFileNameFromPath(FileNameStr, _boundFilePath.C_Str());
+	FileNameStr.Replace(L" ", L"");
 	_boundFileName = FileNameStr.C_Str();
 
 
