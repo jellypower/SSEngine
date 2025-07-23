@@ -5,12 +5,10 @@
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
-#include <SSRenderer/Public/RenderBase/IRenderWorld.h>
 
-#include "Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
-#include "Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
-#include "Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
-#include "Private/PCommon/GALPrivateGlobals.h"
+#include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
+#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
+#include "SSGAL/Private/PCommon/GALPrivateGlobals.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/GALMaterialAssets/DX12GALDefaultPBRMaterialAsset.h"
@@ -35,9 +33,11 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
+
 
 
 DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 InitialCommandListCnt)
@@ -676,8 +676,8 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		}
 
 		CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2
-		CurCommandList->SetDescriptorHeaps(1, &GALMaterial->_MtlTexSRVDescHeap);
-		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // bind textures
+		CurCommandList->SetDescriptorHeaps(1, &GALMaterial->_MtlTexSRVDescHeap); // 메테리얼 디스크립터 힙 바인딩
+		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // 메테리얼 디스크립터 테이블 바인딩
 
 
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);

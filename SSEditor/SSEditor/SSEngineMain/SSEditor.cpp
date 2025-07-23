@@ -211,7 +211,6 @@ void SSEditor::TEMP_CreateAssets()
 			ITextureAssetMutable* NewTex = AssetManager->CreateEmptyTextureAsset(NameCStr, PathCStr);
 			AssetManager->AddToAssetPool(NewTex);
 		}
-
 	}
 }
 

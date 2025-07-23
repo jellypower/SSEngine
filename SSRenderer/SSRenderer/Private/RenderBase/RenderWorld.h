@@ -3,17 +3,21 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 
+class IRenderLight;
 class IRenderer;
 class IRenderInstance;
 
 constexpr int32 RENDERWORLD_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 RENDERWORLD_BUCKET_CAPACITY = 1024;
 
+constexpr int32 RENDERLIGHT_HASHMAP_SIZE = 100;
+constexpr int32 RENDERLIHGT_BUCKET_CAPACITY = 10;
+
 class RenderWorld : public IRenderWorld
 {
 public:
 	RenderWorld(const utf16* InWorldName);
-	~RenderWorld();
+	virtual ~RenderWorld();
 	void InitializeRenderWorld(IRenderer* OwnerRenderer);
 
 public:
@@ -23,6 +27,7 @@ public:
 	virtual SS::SHasherW GetWorldName() const override;
 	
 	void AddToWorld(IRenderInstance* InRenderInstance) override;
+
 	void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove) override;
 
 	virtual GALRWMetaData* GetGALMetadata() const override;
@@ -36,4 +41,5 @@ private:
 
 	IRenderer* _OwnerRenderer = nullptr;
 	SS::HashMap<SObjHashCode, IRenderInstance*> _RenderInstanceByHashCode;
+	SS::HashMap<SObjHashCode, IRenderLight*> _RenderCameraByHashCode;
 };

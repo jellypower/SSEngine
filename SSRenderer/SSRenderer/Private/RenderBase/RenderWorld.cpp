@@ -11,7 +11,8 @@
 
 
 RenderWorld::RenderWorld(const utf16* InWorldName) :
-	_RenderInstanceByHashCode(RENDERWORLD_HASHMAP_SIZE, RENDERWORLD_BUCKET_CAPACITY)
+	_RenderInstanceByHashCode(RENDERWORLD_HASHMAP_SIZE, RENDERWORLD_BUCKET_CAPACITY),
+	_RenderCameraByHashCode(RENDERLIGHT_HASHMAP_SIZE, RENDERLIHGT_BUCKET_CAPACITY)
 {
 	_RenderWorldName = InWorldName;
 }
