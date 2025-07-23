@@ -66,9 +66,9 @@ IRenderCamera* SSRenderer::CreateRenderCamera()
 	return DBG_NEW RenderCamera();
 }
 
-IRenderLight* SSRenderer::CreateRenderLight()
+IRenderLightDirectional* SSRenderer::CreateDirectionalLight(const RenderLightDirectionalDesc& InDesc)
 {
-	return DBG_NEW RenderLightDirectional();
+	return DBG_NEW RenderLightDirectional(InDesc);
 }
 
 SObjHashCode SSRenderer::GetPixelPickedObjectID() const
@@ -150,24 +150,6 @@ void SSRenderer::StartUp()
 			Vector2i32(SwapChainBufferSize.X, SwapChainBufferSize.Y),
 			Pitch,
 			L"PixelPickerCPUReadableTex");
-	}
-
-	{
-		constexpr int32 SHADOWMAP_RT_RESOLUTION_X = 1024;
-		constexpr int32 SHADOWMAP_RT_RESOLUTION_Y = 1024;
-
-		GALRenderTargetDesc ShadowMapRTDesc;
-		ShadowMapRTDesc.ResourceWidth = SHADOWMAP_RT_RESOLUTION_X;
-		ShadowMapRTDesc.ResourceHeight = SHADOWMAP_RT_RESOLUTION_Y;
-		ShadowMapRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-		ShadowMapRTDesc.ScissorRectSize.Max = Vector2f(SHADOWMAP_RT_RESOLUTION_X, SHADOWMAP_RT_RESOLUTION_Y);
-		ShadowMapRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-		ShadowMapRTDesc.DrawBoxSize.WidthHeight = Vector2f(SHADOWMAP_RT_RESOLUTION_X, SHADOWMAP_RT_RESOLUTION_Y);
-		ShadowMapRTDesc.DrawBoxSize.MinDepth = 0.f;
-		ShadowMapRTDesc.DrawBoxSize.MaxDepth = 1.f;
-		ShadowMapRTDesc.Format = ERTColorFormat::D32_FLOAT;
-		ShadowMapRTDesc.InitialResourceState = EResourceStateType::DepthWrite;
-		_ShadowMapRenderTarget = _GALRenderDevice->CreateDepthStencilView(ShadowMapRTDesc, L"ShadowMapRenderTarget");
 	}
 
 	{
@@ -271,9 +253,6 @@ void SSRenderer::CleanUp()
 {
 	delete _DSVRenderTarget;
 	_DSVRenderTarget = nullptr;
-
-	delete _ShadowMapRenderTarget;
-	_ShadowMapRenderTarget = nullptr;
 
 	delete _PixelPickerCPUReadableTex;
 	_PixelPickerCPUReadableTex = nullptr;

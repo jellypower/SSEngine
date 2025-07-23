@@ -5,6 +5,8 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+struct RenderLightDirectionalDesc;
+class IRenderLightDirectional;
 class IRenderLight;
 class IRenderer;
 class ICommonRenderAssetSet;
@@ -35,7 +37,8 @@ public:
 	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) = 0;
 	virtual IRIMesh* CreateRIStaticMesh() = 0;
 	virtual IRenderCamera* CreateRenderCamera() = 0;
-	virtual IRenderLight* CreateRenderLight() = 0;
+
+	virtual IRenderLightDirectional* CreateDirectionalLight(const RenderLightDirectionalDesc& InDesc) = 0;
 
 public:
 	virtual SObjHashCode GetPixelPickedObjectID() const = 0;

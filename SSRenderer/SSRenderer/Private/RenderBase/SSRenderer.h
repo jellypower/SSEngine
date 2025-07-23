@@ -39,7 +39,6 @@ private:
 	Vector2i32 _PixelPickingCoord;
 	GALRenderTarget* _DSVRenderTarget = nullptr;
 	GALRenderTarget* _PixelPickerRenderTarget = nullptr;
-	GALRenderTarget* _ShadowMapRenderTarget = nullptr;
 	GALCPUReadableTexture* _PixelPickerCPUReadableTex = nullptr;
 	SObjHashCode _PickedObjectHash;
 
@@ -57,7 +56,8 @@ public:
 	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) override;
 	virtual IRIMesh* CreateRIStaticMesh() override;
 	virtual IRenderCamera* CreateRenderCamera() override;
-	virtual IRenderLight* CreateRenderLight() override;
+
+	virtual IRenderLightDirectional* CreateDirectionalLight(const RenderLightDirectionalDesc& InDesc) override;
 
 public:
 	virtual SObjHashCode GetPixelPickedObjectID() const override;

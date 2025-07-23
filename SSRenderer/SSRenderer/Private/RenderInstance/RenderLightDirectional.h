@@ -24,31 +24,29 @@ public:
 
 	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) override;
 	virtual IRenderWorld* GetIncludedRenderWorld() const override;
-
 	// ~IRenderInstance
+
+
+	// IRenderLight
 	ELightType GetLightType() const override;
 	virtual bool IsShadowMapEnabled() const override;
 
-	void SetEnableShadowMap(bool bEnable) override;
+	virtual void SetEnableShadowMap(bool bEnable) override;
 
-	XMMATRIX CalcShadowMapVPMatrix() const override;
+	virtual const RenderLightDirectionalDesc& GetDirectionalLightDesc() override;
+	virtual XMVECTOR CalcShadowMapVPMatrix() const override;
 
-	void InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover) override;
-	GALRenderTarget* GetShadowMap() const override;
-	void ReleaseShadowMap() override;
-	// IRenderLight
-
-
-
+	virtual void InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover) override;
+	virtual GALRenderTarget* GetShadowMap() const override;
+	virtual void ReleaseShadowMap() override;
 	// ~IRenderLight
 
 
 private:
-	XMMATRIX _WorldTransformMatrix;
 	XMMATRIX _WorldRotationMatrix;
 	SObjHashCode _GameObjectHashCode = nullptr;
-	IModelAsset* _ModelRef = nullptr;
 	IRenderWorld* _IncludedRenderWorld = nullptr;
 
 	RenderLightDirectionalDesc _Desc;
+	GALRenderTarget* _ShadowMap = nullptr;
 };

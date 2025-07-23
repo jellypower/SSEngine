@@ -3,7 +3,6 @@
 
 struct RenderLightDirectionalDesc
 {
-	ELightType Type;
 	bool bEnableShadowMap;
 	Vector2f ShadowMapSize;
 };
@@ -11,7 +10,8 @@ struct RenderLightDirectionalDesc
 class IRenderLightDirectional : public IRenderLight
 {
 public:
-	virtual XMMATRIX CalcShadowMapVPMatrix() const = 0;
+	virtual const RenderLightDirectionalDesc& GetDirectionalLightDesc() = 0;
+	virtual XMVECTOR CalcShadowMapVPMatrix() const = 0;
 
 	virtual void InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover) = 0;
 	virtual GALRenderTarget* GetShadowMap() const = 0; // Cascade 지원되게 만들기

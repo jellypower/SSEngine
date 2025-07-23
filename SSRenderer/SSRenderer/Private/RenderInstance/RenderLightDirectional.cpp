@@ -1,6 +1,7 @@
 ﻿#include "RenderLightDirectional.h"
 
-#include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
+#include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
+
 
 RenderLightDirectional::RenderLightDirectional(const RenderLightDirectionalDesc& InDesc)
 {
@@ -24,7 +25,7 @@ ERenderInstanceType RenderLightDirectional::GetRIType() const
 
 const XMMATRIX& RenderLightDirectional::GetWorldTransformMatrix() const
 {
-	return _WorldTransformMatrix;
+	return XMMatrixIdentity();
 }
 
 const XMMATRIX& RenderLightDirectional::GetWorldRotationMatrix() const
@@ -34,7 +35,7 @@ const XMMATRIX& RenderLightDirectional::GetWorldRotationMatrix() const
 
 void RenderLightDirectional::SetWorldTransformMatrix(const XMMATRIX& InMatrix)
 {
-	_WorldTransformMatrix = InMatrix;
+	// DirectionalLight는 Rotation을 제외한 Transform이 필요없음
 }
 
 void RenderLightDirectional::SetWorldRotation(const Quaternion& InRotation)
@@ -89,8 +90,43 @@ void RenderLightDirectional::SetEnableShadowMap(bool bEnable)
 	}
 }
 
-XMMATRIX RenderLightDirectional::CalcShadowMapVPMatrix() const
+const RenderLightDirectionalDesc& RenderLightDirectional::GetDirectionalLightDesc()
 {
-	XMVECTOR LightDir = {0,0,1,1};
+	return _Desc;
+}
+
+XMVECTOR RenderLightDirectional::CalcShadowMapVPMatrix() const
+{
+	XMVECTOR LightDir = {0,1,0,1}; // UpDirection
 	LightDir = XMVector4Transform(LightDir, _WorldRotationMatrix);
+
+	return LightDir;
+}
+
+void RenderLightDirectional::InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover)
+{
+	if (ShadowMapToHandover != nullptr)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	_ShadowMap = ShadowMapToHandover;
+}
+
+GALRenderTarget* RenderLightDirectional::GetShadowMap() const
+{
+	return _ShadowMap;
+}
+
+void RenderLightDirectional::ReleaseShadowMap()
+{
+	if (_ShadowMap == nullptr)
+	{
+		return;
+	}
+
+	delete _ShadowMap;
+	_ShadowMap = nullptr;
+
 }

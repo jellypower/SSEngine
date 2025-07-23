@@ -36,7 +36,7 @@
 #include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
-#include "SSRenderer/Public/RenderInstance/IRenderLight.h"
+#include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
@@ -409,7 +409,32 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 	else if (RIType == ERenderInstanceType::Light)
 	{
 		IRenderLight* InRenderLight = (IRenderLight*)InRenderInstance;
-		InRenderLight->
+
+		ELightType LightType = InRenderLight->GetLightType();
+		if (LightType == ELightType::Directional)
+		{
+			IRenderLightDirectional* DirectionalLight = static_cast<IRenderLightDirectional*>(InRenderLight);
+			const RenderLightDirectionalDesc& Desc = DirectionalLight->GetDirectionalLightDesc();
+
+			GALRenderTargetDesc ShadowMapDesc;
+			ShadowMapDesc.ResourceWidth = Desc.ShadowMapSize.X;
+			ShadowMapDesc.ResourceHeight = Desc.ShadowMapSize.Y;
+			ShadowMapDesc.ScissorRectSize.Min = Vector2f(0, 0);
+			ShadowMapDesc.ScissorRectSize.Max = Desc.ShadowMapSize;
+			ShadowMapDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+			ShadowMapDesc.DrawBoxSize.WidthHeight = Desc.ShadowMapSize;
+			ShadowMapDesc.DrawBoxSize.MinDepth = 0.f;
+			ShadowMapDesc.DrawBoxSize.MaxDepth = 1.f;
+			ShadowMapDesc.Format = ERTColorFormat::D32_FLOAT;
+			ShadowMapDesc.InitialResourceState = EResourceStateType::DepthWrite;
+			GALRenderTarget* NewShadowMap = _OwnerRenderDevice->CreateDepthStencilView(ShadowMapDesc, L"Main_DSV");
+
+			DirectionalLight->InjectShadowMapXXX(NewShadowMap);
+		}
+		else
+		{
+			SS_ASSERT(false);
+		}
 	}
 	else
 	{

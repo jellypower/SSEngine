@@ -7,7 +7,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
-#include "SSRenderer/Public/RenderInstance/IRenderLight.h"
+#include "SSRenderer/Public/RenderInstance/Light/IRenderLight.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 
