@@ -12,10 +12,3 @@ enum class EResourceStateType : uint8
 	Present,
 	DepthWrite,
 };
-
-enum class ERenderInstanceType : int32
-{
-	None = -1,
-
-	StaticMesh
-};

@@ -64,7 +64,7 @@ void RIStaticMesh::SetWorldRotation(const Quaternion& InRotation)
 	_WorldRotationMatrix = InRotation.AsMatrix();
 }
 
-void RIStaticMesh::SetGameObjectHashCodeXXX(SObjHashCode InHashCode)
+void RIStaticMesh::SetGameObjectIDXXX(SObjHashCode InHashCode)
 {
 	_GameObjectHashCode = InHashCode;
 }

@@ -29,6 +29,7 @@ public:
 	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) override;
 	virtual bool GenerateTextureGALAsset(ITextureAssetMutable* InTextureAsset) override;
 	virtual bool GenerateMaterialGALAsset(IMaterialAssetMutable* InMaterialAsset) override;
+
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 
 	virtual void SetRenderCamera(IRenderCamera* InCamera) override;

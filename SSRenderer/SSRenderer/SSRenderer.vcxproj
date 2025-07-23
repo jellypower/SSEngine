@@ -171,7 +171,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderBase\RenderWorld.cpp" />
     <ClCompile Include="Private\RenderBase\SSRenderer.cpp" />
     <ClCompile Include="Private\RenderInstance\RenderCamera.cpp" />
-    <ClCompile Include="Private\RenderInstance\RenderLight.cpp" />
+    <ClCompile Include="Private\RenderInstance\RenderLightDirectional.cpp" />
     <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -187,7 +187,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\RenderBase\RenderWorld.h" />
     <ClInclude Include="Private\RenderBase\SSRenderer.h" />
     <ClInclude Include="Private\RenderInstance\RenderCamera.h" />
-    <ClInclude Include="Private\RenderInstance\RenderLight.h" />
+    <ClInclude Include="Private\RenderInstance\RenderLightDirectional.h" />
     <ClInclude Include="Private\RenderInstance\RIStaticMesh.h" />
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h" />
     <ClInclude Include="Public\RenderAsset\IAssetManager.h" />
@@ -215,7 +215,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderCommon\SSVertexType.h" />
     <ClInclude Include="Public\RenderInstance\IRenderCamera.h" />
     <ClInclude Include="Public\RenderInstance\IRenderInstance.h" />
-    <ClInclude Include="Public\RenderInstance\IRenderLight.h" />
+    <ClInclude Include="Public\RenderInstance\Light\IRenderLightDirectional.h" />
+    <ClInclude Include="Public\RenderInstance\Light\IRenderLight.h" />
     <ClInclude Include="Public\RenderInstance\IRIMesh.h" />
     <ClInclude Include="Public\SSRendererGlobalVariableSet.h" />
   </ItemGroup>

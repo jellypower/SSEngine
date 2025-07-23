@@ -1,12 +1,22 @@
 #pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+#include "SObject/Public/SObjHashCode.h"
+
 class IModelAsset;
 class GALRIMetadata;
-enum class ERenderInstanceType : int32;
 class ModelAsset;
 class IRenderWorld;
 
+enum class ERenderInstanceType : int32
+{
+	None = -1,
+
+	StaticMesh,
+	SkinnedMesh,
+
+	Light,
+};
 
 
 /**
@@ -17,17 +27,18 @@ class IRenderInstance : public INoncopyable
 {
 public:
 	virtual SObjHashCode GetGameObjectID() const = 0;
+	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) = 0;
+
 	virtual ERenderInstanceType GetRIType() const = 0;
-	virtual const GALRIMetadata* GetGALMetadata() const = 0;
-	virtual void ReleaseGALMetaData() = 0;
+
 	virtual const XMMATRIX& GetWorldTransformMatrix() const	= 0;
 	virtual const XMMATRIX& GetWorldRotationMatrix() const = 0;
-
-	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) = 0;
 	virtual void SetWorldTransformMatrix(const XMMATRIX& InMatrix) = 0;
 	virtual void SetWorldRotation(const Quaternion& InRotation) = 0;
 
-	virtual void SetGameObjectHashCodeXXX(SObjHashCode InHashCode) = 0;
+	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) = 0;
+	virtual const GALRIMetadata* GetGALMetadata() const = 0;
+	virtual void ReleaseGALMetaData() = 0;
 
 	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) = 0;
 	virtual IRenderWorld* GetIncludedRenderWorld() const = 0;

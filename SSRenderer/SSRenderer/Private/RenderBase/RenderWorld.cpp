@@ -7,12 +7,12 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
+#include "SSRenderer/Public/RenderInstance/IRenderLight.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 
 RenderWorld::RenderWorld(const utf16* InWorldName) :
-	_RenderInstanceByHashCode(RENDERWORLD_HASHMAP_SIZE, RENDERWORLD_BUCKET_CAPACITY),
-	_RenderCameraByHashCode(RENDERLIGHT_HASHMAP_SIZE, RENDERLIHGT_BUCKET_CAPACITY)
+	_RenderInstanceByHashCode(RENDERWORLD_HASHMAP_SIZE, RENDERWORLD_BUCKET_CAPACITY)
 {
 	_RenderWorldName = InWorldName;
 }
@@ -40,7 +40,7 @@ SS::SHasherW RenderWorld::GetWorldName() const
 	return _RenderWorldName;
 }
 
-void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance) // TODO: RenderInstance에게 본인이 속한 RenderWorld 설정해주는 기능 만들기
+void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 {
 	SObjHashCode GameObjectHashCode = InRenderInstance->GetGameObjectID();
 	if (_RenderInstanceByHashCode.Find(GameObjectHashCode) != nullptr)
@@ -71,7 +71,7 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance) // TODO: RenderI
 }
 
 
-void RenderWorld::RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove)
+void RenderWorld::RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToRemove)
 {
 	IRenderInstance** ppRenderInstance = _RenderInstanceByHashCode.Find(RenderInstanceIDToRemove);
 	if (ppRenderInstance == nullptr)

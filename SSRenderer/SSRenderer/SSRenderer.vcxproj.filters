@@ -51,7 +51,7 @@
     <ClCompile Include="Private\RenderAsset\CommonRenderAssetSet.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\RenderInstance\RenderLight.cpp">
+    <ClCompile Include="Private\RenderInstance\RenderLightDirectional.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\RenderInstance\RenderCamera.cpp">
@@ -179,13 +179,16 @@
     <ClInclude Include="Public\RenderBase\ICommonRenderAssetSet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderInstance\IRenderLight.h">
+    <ClInclude Include="Public\RenderInstance\Light\IRenderLight.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\RenderInstance\RenderLight.h">
+    <ClInclude Include="Private\RenderInstance\RenderLightDirectional.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\RenderInstance\RenderCamera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderInstance\Light\IRenderLightDirectional.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

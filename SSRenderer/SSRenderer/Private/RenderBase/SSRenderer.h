@@ -24,6 +24,7 @@ private:
 	AssetManagerBase* _AssetManager = nullptr;
 
 	SS::PooledList<IRenderInstance*> _RenderInstancesToDraw;
+	SS::PooledList<IRenderLight*> _RenderLightsToDraw;
 
 	SS::PooledList<IMaterialAssetMutable*> _GALStateChangedMaterialAsset;
 	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
@@ -56,6 +57,7 @@ public:
 	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) override;
 	virtual IRIMesh* CreateRIStaticMesh() override;
 	virtual IRenderCamera* CreateRenderCamera() override;
+	virtual IRenderLight* CreateRenderLight() override;
 
 public:
 	virtual SObjHashCode GetPixelPickedObjectID() const override;
@@ -82,7 +84,10 @@ public:
 private:
 	void InstantiatePendingGALAssets(GALRenderDeviceContext* Executor);
 
-	void ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw, IRenderCamera* InCamera);
+	void ScrapRenderInstsances(
+		SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw,
+		SS::PooledList<IRenderLight*>& OutRenderLightsToDraw,
+		IRenderCamera* InCamera);
 
 	void Before_GALRenderDevice_EndRender();
 };

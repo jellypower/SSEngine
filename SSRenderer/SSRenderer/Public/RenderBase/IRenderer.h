@@ -5,6 +5,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+class IRenderLight;
 class IRenderer;
 class ICommonRenderAssetSet;
 class IRIMesh;
@@ -34,6 +35,7 @@ public:
 	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) = 0;
 	virtual IRIMesh* CreateRIStaticMesh() = 0;
 	virtual IRenderCamera* CreateRenderCamera() = 0;
+	virtual IRenderLight* CreateRenderLight() = 0;
 
 public:
 	virtual SObjHashCode GetPixelPickedObjectID() const = 0;

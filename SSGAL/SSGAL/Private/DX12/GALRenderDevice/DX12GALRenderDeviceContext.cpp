@@ -6,6 +6,7 @@
 #include "DX12GALRenderDeviceContext.h"
 
 
+
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "SSGAL/Private/PCommon/GALPrivateGlobals.h"
@@ -35,6 +36,7 @@
 #include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
+#include "SSRenderer/Public/RenderInstance/IRenderLight.h"
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
@@ -396,11 +398,18 @@ bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAssetMutable*
 
 void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance)
 {
-	if (InRenderInstance->GetRIType() == ERenderInstanceType::StaticMesh)
+	ERenderInstanceType RIType = InRenderInstance->GetRIType();
+
+	if (RIType == ERenderInstanceType::StaticMesh)
 	{
 		IRIMesh* InIRIMesh = (IRIMesh*)InRenderInstance;
 		DX12GALRIMetadata_SM* NewGALRI = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InIRIMesh);
 		InIRIMesh->InjectGALMetadataXXX(NewGALRI);
+	}
+	else if (RIType == ERenderInstanceType::Light)
+	{
+		IRenderLight* InRenderLight = (IRenderLight*)InRenderInstance;
+		InRenderLight->
 	}
 	else
 	{
@@ -576,15 +585,13 @@ void DX12GALRenderDeviceContext::Draw(IRenderInstance* InRenderInstance)
 	XMMATRIX ObjRotMat = InRenderInstance->GetWorldRotationMatrix();
 
 
-	switch (InRenderInstance->GetRIType())
+	if (InRenderInstance->GetRIType() == ERenderInstanceType::StaticMesh)
 	{
-	case ERenderInstanceType::StaticMesh:
-	{
-		DrawStaticMesh((IRIMesh*)InRenderInstance, ObjTransformMat, ObjRotMat);
+		IRIMesh* RIMesh = (IRIMesh*)InRenderInstance;
+		DrawStaticMesh(RIMesh, ObjTransformMat, ObjRotMat);
 	}
-	break;
-
-	default:
+	else
+	{
 		SS_INTERRUPT();
 		return;
 	}

@@ -14,6 +14,7 @@
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
 #include "SSRenderer/Private/RenderAsset/CommonRenderAssetSet.h"
 #include "SSRenderer/Private/RenderInstance/RenderCamera.h"
+#include "SSRenderer/Private/RenderInstance/RenderLightDirectional.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
@@ -26,7 +27,8 @@
 
 
 SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice) :
-	_RenderInstancesToDraw(1000)
+	_RenderInstancesToDraw(1000),
+	_RenderLightsToDraw(10)
 {
 	_GALRenderDevice = InRenderDevice;
 	_MainDeviceContext = _GALRenderDevice->CreateRenderDeviceContext();
@@ -62,6 +64,11 @@ IRIMesh* SSRenderer::CreateRIStaticMesh()
 IRenderCamera* SSRenderer::CreateRenderCamera()
 {
 	return DBG_NEW RenderCamera();
+}
+
+IRenderLight* SSRenderer::CreateRenderLight()
+{
+	return DBG_NEW RenderLightDirectional();
 }
 
 SObjHashCode SSRenderer::GetPixelPickedObjectID() const
@@ -180,7 +187,7 @@ void SSRenderer::PerFrame()
 	// RenderTime
 	{
 		_RenderInstancesToDraw.Clear();
-		ScrapRenderInstsances(_RenderInstancesToDraw, _MainRenderCamera);
+		ScrapRenderInstsances(_RenderInstancesToDraw, _RenderLightsToDraw ,_MainRenderCamera);
 	}
 
 
@@ -348,8 +355,8 @@ void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 }
 
 
-
-void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw, IRenderCamera* InCamera)
+void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw,
+	SS::PooledList<IRenderLight*>& OutRenderLightsToDraw, IRenderCamera* InCamera)
 {
 	RenderWorld* WorldToRender = (RenderWorld*)InCamera->GetIcludedRenderWorld();
 	if (WorldToRender == nullptr)
@@ -362,7 +369,20 @@ void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRend
 	for (const SS::pair<SObjHashCode, IRenderInstance*>& InstancePairItem : RenderInstanceMap)
 	{
 		IRenderInstance* InstanceItem = InstancePairItem.second;
-		OutRenderInstancesToDraw.PushBack(InstanceItem);
+		ERenderInstanceType RIType = InstanceItem->GetRIType();
+		if (RIType == ERenderInstanceType::Light)
+		{
+			OutRenderLightsToDraw.PushBack((IRenderLight*)InstanceItem);
+		}
+		else if (RIType == ERenderInstanceType::StaticMesh)
+		{
+			OutRenderInstancesToDraw.PushBack(InstanceItem);
+		}
+		else
+		{
+			SS_ASSERT_MSG(false, L"TODO: Implementation");
+		}
+
 	}
 }
 

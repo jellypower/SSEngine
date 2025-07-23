@@ -1,14 +1,13 @@
 ﻿#pragma once
-#include "SSGAL/Public/SSGALCommonEnums.h"
+#include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
 
-#include "SObject/Public/SObjHashCode.h"
-
-#include "SSRenderer/Public/RenderInstance/IRIMesh.h"
-
-
-class RIStaticMesh : public IRIMesh
+class RenderLightDirectional : public IRenderLightDirectional
 {
 public:
+	RenderLightDirectional(const RenderLightDirectionalDesc& InDesc);
+
+public:
+	// IRenderInstance
 	virtual SObjHashCode GetGameObjectID() const override;
 	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) override;
 
@@ -26,10 +25,22 @@ public:
 	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) override;
 	virtual IRenderWorld* GetIncludedRenderWorld() const override;
 
+	// ~IRenderInstance
+	ELightType GetLightType() const override;
+	virtual bool IsShadowMapEnabled() const override;
+
+	void SetEnableShadowMap(bool bEnable) override;
+
+	XMMATRIX CalcShadowMapVPMatrix() const override;
+
+	void InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover) override;
+	GALRenderTarget* GetShadowMap() const override;
+	void ReleaseShadowMap() override;
+	// IRenderLight
 
 
-	virtual IModelAsset* GetModelAsset() const override;
-	virtual void SetModelAsset(IModelAsset* InAsset) override;
+
+	// ~IRenderLight
 
 
 private:
@@ -37,6 +48,7 @@ private:
 	XMMATRIX _WorldRotationMatrix;
 	SObjHashCode _GameObjectHashCode = nullptr;
 	IModelAsset* _ModelRef = nullptr;
-	GALRIMetadata* _MetaData = nullptr;
 	IRenderWorld* _IncludedRenderWorld = nullptr;
+
+	RenderLightDirectionalDesc _Desc;
 };

@@ -27,8 +27,7 @@ public:
 	virtual SS::SHasherW GetWorldName() const override;
 	
 	void AddToWorld(IRenderInstance* InRenderInstance) override;
-
-	void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove) override;
+	virtual void RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToRemove) override;
 
 	virtual GALRWMetaData* GetGALMetadata() const override;
 	virtual void InjectGALMetadataXXX(GALRWMetaData* InMetadata) override;
@@ -41,5 +40,4 @@ private:
 
 	IRenderer* _OwnerRenderer = nullptr;
 	SS::HashMap<SObjHashCode, IRenderInstance*> _RenderInstanceByHashCode;
-	SS::HashMap<SObjHashCode, IRenderLight*> _RenderCameraByHashCode;
 };

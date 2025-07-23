@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SObject/Public/SObjHashCode.h"
 
+class IRenderLight;
 class IRenderInstance;
 class GALRWMetaData;
 
@@ -11,7 +12,8 @@ public:
 	virtual SS::SHasherW GetWorldName() const = 0;
 
 	virtual void AddToWorld(IRenderInstance* InRenderInstance) = 0;
-	virtual void RemoveFromWorld(SObjHashCode RenderInstanceIDToRemove) = 0;
+
+	virtual void RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToRemove) = 0;
 
 	virtual GALRWMetaData* GetGALMetadata() const = 0;
 	virtual void InjectGALMetadataXXX(GALRWMetaData* InMetadata) = 0;

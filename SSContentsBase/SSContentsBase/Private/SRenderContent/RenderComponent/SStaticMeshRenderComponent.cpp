@@ -22,7 +22,7 @@ void SStaticMeshRenderComponent::ConstructRenderInstance()
 
 	SGameObject* Parent = GetParent();
 	NewStaticMeshRI->SetModelAsset(FoundModelRef);
-	NewStaticMeshRI->SetGameObjectHashCodeXXX(Parent->GetHashCode());
+	NewStaticMeshRI->SetGameObjectIDXXX(Parent->GetHashCode());
 }
 
 void SStaticMeshRenderComponent::DestructRenderInstance()
