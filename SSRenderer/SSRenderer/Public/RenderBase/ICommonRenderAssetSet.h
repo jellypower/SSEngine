@@ -7,11 +7,11 @@ class ITextureAsset;
 class ICommonRenderAssetSet : public INoncopyable
 {
 public:
-	const ITextureAsset* GetTexEMPTY() const { return _TexEMPTY; }
-	const ITextureAsset* GetTexWHITE() const { return _TexWHITE; }
-	const ITextureAsset* GetTexBLACK() const { return _TexBLACK; }
-	const ITextureAsset* GetTexEMPTYNORMAL() const { return _TexEMPTYNORMAL; }
-	const IMaterialAsset* GetEmptyPBRMaterial() const { return _EmptyPBRMaterial; }
+	ITextureAsset* GetTexEMPTY() const { return _TexEMPTY; }
+	ITextureAsset* GetTexWHITE() const { return _TexWHITE; }
+	ITextureAsset* GetTexBLACK() const { return _TexBLACK; }
+	ITextureAsset* GetTexEMPTYNORMAL() const { return _TexEMPTYNORMAL; }
+	IMaterialAsset* GetEmptyPBRMaterial() const { return _EmptyPBRMaterial; }
 
 
 public:

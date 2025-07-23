@@ -7,6 +7,7 @@
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 
+class IMaterialAsset;
 class IModelCombinationAssetMutable;
 class IRenderer;
 struct AssetPlacementReference;
@@ -27,6 +28,7 @@ private:
 	SS::PooledList<SS::pair<::FbxMesh*, SS::SHasherW>> _importedMeshNames;
 
 	IAssetManagerMutable* _AssetManagerToImportAsset = nullptr;
+	ICommonRenderAssetSet* _CommonRenderAssetSetToImport = nullptr;
 
 public:
 	SSFBXImporter();
@@ -39,7 +41,7 @@ public:
 	virtual bool BindFbxSceneFile(const utf16* inFilePath) override;
 	virtual void ClearFbxSceneFile() override;
 
-	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager) override;
+	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* inCommonRenderAssetSet = nullptr) override;
 	virtual void ClearRendererToImportAsset() override;
 
 	virtual void ImportCurrentFileToAssetManager() override;
@@ -50,8 +52,11 @@ private:
 
 	void ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset);
 
+	void ImportCurrentFileToAnimAsset();
+
 	void PrintFbxNodeInfo(FbxNode* node);
 
-	void ImportCurrentFileToAnimAsset();
+private:
+	SS::HashMap<uint64, IMaterialAsset*> _FbxUniqueIDToMtlAsset;
 
 };

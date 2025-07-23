@@ -13,6 +13,7 @@
 
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
 #include "SSRenderer/Private/RenderAsset/CommonRenderAssetSet.h"
+#include "SSRenderer/Private/RenderInstance/RenderCamera.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
@@ -58,9 +59,21 @@ IRIMesh* SSRenderer::CreateRIStaticMesh()
 	return DBG_NEW RIStaticMesh();
 }
 
+IRenderCamera* SSRenderer::CreateRenderCamera()
+{
+	return DBG_NEW RenderCamera();
+}
+
 SObjHashCode SSRenderer::GetPixelPickedObjectID() const
 {
 	return _PickedObjectHash;
+}
+
+Vector2f SSRenderer::GetViewportSize() const
+{
+	GALRenderTarget* ViewportRT = _GALRenderDevice->GetDefaultViewportRenderTarget();
+	const ViewportBox& VB = ViewportRT->GetViewportBoxSize();
+	return VB.WidthHeight;
 }
 
 
@@ -94,7 +107,7 @@ IRenderWorld* SSRenderer::CreateRenderWorld(const utf16* InWorldName)
 
 void SSRenderer::SetRenderCamera(IRenderCamera* InCamera)
 {
-	_CurRenderCamera = InCamera;
+	_MainRenderCamera = InCamera;
 }
 
 void SSRenderer::RequestPixelPicking(int32 X, int32 Y)
@@ -111,25 +124,43 @@ void SSRenderer::StartUp()
 	Vector2i32 SwapChainBufferSize = SwapChainBuffer->GetResourceSize();
 
 	{
+		GALRenderTargetDesc IDDrawerRTDesc;
+		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
+		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
+		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
+		IDDrawerRTDesc.Format = ERTColorFormat::R32G32_SINT;
+		IDDrawerRTDesc.InitialResourceState = EResourceStateType::CopySrc;
+		_PixelPickerRenderTarget = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"PixelPickerRenderTarget");
 
-		GALRenderTargetDesc RTDesc;
-		RTDesc.ResourceWidth = SwapChainBufferSize.X;
-		RTDesc.ResourceHeight = SwapChainBufferSize.Y;
-		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-		RTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		RTDesc.DrawBoxSize.MinDepth = 0.f;
-		RTDesc.DrawBoxSize.MaxDepth = 1.f;
-		RTDesc.Format = ERTColorFormat::R32G32_SINT;
-		RTDesc.InitialResourceState = EResourceStateType::CopySrc;
-		_PixelPickerRenderTarget = _GALRenderDevice->CreateRenderTarget(RTDesc, L"PixelPickerRenderTarget");
 		int32 Pitch = _PixelPickerRenderTarget->GetResourceRowPitch();
 		_PixelPickerCPUReadableTex = _GALRenderDevice->CreateCPUReadableTexture(
 			ERTColorFormat::R32G32_SINT,
 			Vector2i32(SwapChainBufferSize.X, SwapChainBufferSize.Y),
 			Pitch,
 			L"PixelPickerCPUReadableTex");
+	}
+
+	{
+		constexpr int32 SHADOWMAP_RT_RESOLUTION_X = 1024;
+		constexpr int32 SHADOWMAP_RT_RESOLUTION_Y = 1024;
+
+		GALRenderTargetDesc ShadowMapRTDesc;
+		ShadowMapRTDesc.ResourceWidth = SHADOWMAP_RT_RESOLUTION_X;
+		ShadowMapRTDesc.ResourceHeight = SHADOWMAP_RT_RESOLUTION_Y;
+		ShadowMapRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		ShadowMapRTDesc.ScissorRectSize.Max = Vector2f(SHADOWMAP_RT_RESOLUTION_X, SHADOWMAP_RT_RESOLUTION_Y);
+		ShadowMapRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		ShadowMapRTDesc.DrawBoxSize.WidthHeight = Vector2f(SHADOWMAP_RT_RESOLUTION_X, SHADOWMAP_RT_RESOLUTION_Y);
+		ShadowMapRTDesc.DrawBoxSize.MinDepth = 0.f;
+		ShadowMapRTDesc.DrawBoxSize.MaxDepth = 1.f;
+		ShadowMapRTDesc.Format = ERTColorFormat::D32_FLOAT;
+		ShadowMapRTDesc.InitialResourceState = EResourceStateType::DepthWrite;
+		_ShadowMapRenderTarget = _GALRenderDevice->CreateDepthStencilView(ShadowMapRTDesc, L"ShadowMapRenderTarget");
 	}
 
 	{
@@ -149,7 +180,7 @@ void SSRenderer::PerFrame()
 	// RenderTime
 	{
 		_RenderInstancesToDraw.Clear();
-		ScrapRenderInstsances(_RenderInstancesToDraw, _CurRenderCamera);
+		ScrapRenderInstsances(_RenderInstancesToDraw, _MainRenderCamera);
 	}
 
 
@@ -186,7 +217,7 @@ void SSRenderer::PerFrame()
 
 			// Set Camera Setting
 			{
-				_MainDeviceContext->SetRenderCamera(_CurRenderCamera);
+				_MainDeviceContext->SetRenderCamera(_MainRenderCamera);
 			}
 
 
@@ -201,17 +232,9 @@ void SSRenderer::PerFrame()
 
 
 				GALRenderTarget* RenderTargets[RT_NUM_MAX] = { nullptr, };
-				if (_CurRenderCamera->GetSpecificRenderTarget() == nullptr)
-				{
-					RenderTargets[0] = _GALRenderDevice->GetDefaultViewportRenderTarget();
-					RenderTargets[1] = _PixelPickerRenderTarget;
-
-					_MainDeviceContext->SetRenderTarget(2, RenderTargets, _DSVRenderTarget);
-				}
-				else
-				{
-					SS_INTERRUPT(L"TODO: 구현하기");
-				}
+				RenderTargets[0] = _GALRenderDevice->GetDefaultViewportRenderTarget();
+				RenderTargets[1] = _PixelPickerRenderTarget;
+				_MainDeviceContext->SetRenderTarget(2, RenderTargets, _DSVRenderTarget);
 
 
 				for (IRenderInstance* Item : _RenderInstancesToDraw)
@@ -241,6 +264,9 @@ void SSRenderer::CleanUp()
 {
 	delete _DSVRenderTarget;
 	_DSVRenderTarget = nullptr;
+
+	delete _ShadowMapRenderTarget;
+	_ShadowMapRenderTarget = nullptr;
 
 	delete _PixelPickerCPUReadableTex;
 	_PixelPickerCPUReadableTex = nullptr;

@@ -33,7 +33,11 @@ public:
 public:
 	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) = 0;
 	virtual IRIMesh* CreateRIStaticMesh() = 0;
+	virtual IRenderCamera* CreateRenderCamera() = 0;
+
+public:
 	virtual SObjHashCode GetPixelPickedObjectID() const = 0;
+	virtual Vector2f GetViewportSize() const = 0;
 
 public:
 	virtual void SetRenderCamera(IRenderCamera* InCamera) = 0;

@@ -159,6 +159,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		CustomHeapAllocatorTest();
 		SHasherPoolTest();
 		SHasherTest();
+		StringTest();
 	}
 
 

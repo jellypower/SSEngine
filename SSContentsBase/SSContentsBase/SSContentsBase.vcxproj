@@ -165,7 +165,6 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\ContentBase\SGameObjectConstructor.cpp" />
     <ClCompile Include="Private\ContentBase\SWorld.cpp" />
     <ClCompile Include="Private\ModuleEntry\SSContentsBaseModuleEntry.cpp" />
-    <ClCompile Include="Private\SRenderContent\Camera\RenderCamera.cpp" />
     <ClCompile Include="Private\SRenderContent\Camera\SCameraComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderComponentBase.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SStaticMeshRenderComponent.cpp" />
@@ -173,7 +172,6 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
-    <ClInclude Include="Private\SRenderContent\Camera\RenderCamera.h" />
     <ClInclude Include="Public\ContentBase\SComponentBase.h" />
     <ClInclude Include="Public\ContentBase\SGameObject.h" />
     <ClInclude Include="Public\ContentBase\SGameObjectConstructor.h" />

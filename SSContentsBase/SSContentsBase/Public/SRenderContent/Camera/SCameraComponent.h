@@ -4,7 +4,6 @@
 #include "SSContentsBase/ModuleExportKeyword.h"
 
 class IRenderCamera;
-class GALRenderTarget;
 
 
 
@@ -13,30 +12,32 @@ constexpr float CAM_FOV_MAX = XM_PI * 0.99f;
 
 class SSCONTENTBASE_MODULE SCameraComponent : public SComponentBase
 {
-public:
-	GALRenderTarget* _RenderTarget = nullptr;
-
 private:
 	IRenderCamera* _RenderCamera = nullptr;
 
-	float _FOV; // FOV's unit is "Radian", "Y Degree" 
-	float _NearZ;
-	float _FarZ;
+	XMMATRIX _ViewMat;
+	XMMATRIX _ProjMat;
+
+	float _FOV = 0.f; // FOV's unit is "Radian", "Y Degree" 
+	float _NearZ = 0.f;
+	float _FarZ = 0.f;
 
 public:
 	virtual void PostConstructHierarchy() override;
+	virtual void OnEnterTheWorld() override;
+	virtual void OnExitTheWorld() override;
 	virtual void PreDestructHierarchy() override;
+
+	virtual void OnGameObjectTransformCommited() override;
 
 public:
 	IRenderCamera* GetRenderCamera() const { return _RenderCamera; }
-	XMMATRIX GetVPMatrix() const;
 
-	void SetFOVWithRadians(float InRadians);
 	void SetFOVWithDegrees(float InDegrees);
-	void SetNearZ(float InValue) { _NearZ = InValue; }
-	void SetFarZ(float InValue) { _FarZ = InValue; }
+	void SetFOVWithRadians(float InRadians);
+	void SetNearZ(float InValue); 
+	void SetFarZ(float InValue);
 
-protected:
-	void ConstructRenderTarget();
-	void DestructRenderTarget();
+	void CommitCameraRenderInfo();
+
 };

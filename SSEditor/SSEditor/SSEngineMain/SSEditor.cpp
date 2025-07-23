@@ -60,13 +60,14 @@ void SSEditor::StartupEngine()
 	g_ImGuiInitializer->StartupImGui(_Renderer);
 	_ImGUI_SelectedAssetManager_Type = EAssetType::Texture;
 	
+	TEMP_CreateAssets(); // CommonAssetSet을 초기화
 
-	_FbxImporter = g_fpCreateSSFBXImporter();
-	_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager());
-	_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
-	_FbxImporter->ImportCurrentFileToAssetManager();
-
-	TEMP_CreateAssets();
+	{
+		_FbxImporter = g_fpCreateSSFBXImporter();
+		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
+		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
+		_FbxImporter->ImportCurrentFileToAssetManager();
+	}
 
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
@@ -111,7 +112,6 @@ void SSEditor::StartupEngine()
 		_Renderer->SetRenderCamera(CameraComp->GetRenderCamera());
 	}
 
-	_Renderer->GetCommonRenderAssetSet()->CacheCommonRenderAssets();
 	_Renderer->GetCommonRenderAssetSet()->AddRefCachedAssets();
 }
 
@@ -184,6 +184,34 @@ void SSEditor::TEMP_CreateAssets()
 	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] = BlackTex;
 	TempMtl->InjectRawDataXXX(EmptyDefaultPBR);
 	AssetManager->AddToAssetPool(TempMtl);
+
+	_Renderer->GetCommonRenderAssetSet()->CacheCommonRenderAssets();
+
+
+	// Texture List 구성하기
+	{
+		const SS::pair<const utf16*, const utf16*> TextureAssetList[]
+			= {
+				{L"rp_nathan_animated_003_dif.tex", L"Resource/Texture/rp_nathan_animated_003_dif.dds"},
+
+				{L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds"},
+				{L"Worm_reflection.tex", L"Resource/Texture/Worm_reflection.dds"},
+				{L"Worm_Bump.tex", L"Resource/Texture/Worm_Bump.dds"},
+
+				{L"Teeth_SSS_Color.tex", L"Resource/Texture/Teeth_SSS_Color.dds"},
+				{L"Teeth_reflection.tex", L"Resource/Texture/Teeth_reflection.dds"},
+				{L"Teeth_Bump.tex", L"Resource/Texture/Teeth_Bump.dds"},
+		};
+
+		for (int32 i=0;i<_countof(TextureAssetList);i++)
+		{
+			const utf16* NameCStr = TextureAssetList[i].first;
+			const utf16* PathCStr = TextureAssetList[i].second;
+
+			ITextureAssetMutable* NewTex = AssetManager->CreateEmptyTextureAsset(NameCStr, PathCStr);
+			AssetManager->AddToAssetPool(NewTex);
+		}
+	}
 }
 
 void SSEditor::TEMP_ProcessContents()
@@ -507,55 +535,160 @@ void SSEditor::ImGUI_AssetManager_Material()
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& MtlList = AssetManager->GetAssetMap(EAssetType::Material);
 
-	if (ImGui::BeginTable("Materials", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders))
+
+	for (const SS::pair<SS::SHasherW, IAssetBase*>& MaterialItemPair : MtlList)
 	{
+		IMaterialAssetMutable* MtlItem = (IMaterialAssetMutable*)MaterialItemPair.second;
+		MtlDataBase* MtlData = MtlItem->GetMutableMtlData();
 		ImGui::TableNextColumn();
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Material Name");
-		ImGui::TableNextColumn();
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Material Path");
-		ImGui::TableNextColumn();
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
 
-		for (const SS::pair<SS::SHasherW, IAssetBase*>& MaterialItemPair : MtlList)
+		SS::SHasherW MtlName = MtlItem->GetAssetName();
+		uint32 MtlNameStrLen = 0;
+		const utf16* MtlNameCStr = nullptr;
+		MtlNameCStr = MtlName.C_Str(&MtlNameStrLen);
+
+		SS::SHasherW MtlPath = MtlItem->GetAssetPath();
+		uint32 MtlPathStrLen = 0;
+		const utf16* MtlPathCStr = nullptr;
+		MtlPathCStr = MtlPath.C_Str(&MtlPathStrLen);
+
+		constexpr int32 BUFFER_SIZE = 256;
+		utf8 u8MtlName[BUFFER_SIZE];
+		UTF16StrToUtf8Str(MtlNameCStr, MtlNameStrLen, u8MtlName, BUFFER_SIZE);
+
+		utf8 u8MtlPath[BUFFER_SIZE];
+		UTF16StrToUtf8Str(MtlPathCStr, MtlPathStrLen, u8MtlPath, BUFFER_SIZE);
+
+		bool bIsMtlEdited = false;
+
+		if (ImGui::CollapsingHeader(u8MtlName))
 		{
-			IAssetBase* MtlItem = MaterialItemPair.second;
-			ImGui::TableNextColumn();
-
-			uint32 AssetStrLen = 0;
-			const utf16* AssetCstr = nullptr;
-
+			ImGui::PushID(u8MtlName);
 			{
-				constexpr int32 BUFFER_SIZE = 256;
-				utf8 Converter[BUFFER_SIZE];
-				AssetCstr = MtlItem->GetAssetName().C_Str(&AssetStrLen);
-				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+				// ============================== Mtl Path ==============================
+				ImGui::Text("Material Path: %s", u8MtlPath);
+				ImGui::Dummy(ImVec2(1, 10));
 
-				ImGui::Text(Converter);
+				//
+				if (MtlData->_Type == EMaterialType::DefaultPBR)
+				{
+					MtlDataDefaultPBR* PbrMtlData = static_cast<MtlDataDefaultPBR*>(MtlData);
+
+					// ============================== Mtl Factor ==============================
+					ImGui::Text("Material Factor");
+					{
+						float BaseColor[4];
+						float EmissiveColor[4];
+						float NormalTexScale = PbrMtlData->_NormalTexScale;
+						float Metallic = PbrMtlData->_Metallic;
+						float Roughness = PbrMtlData->_Roughness;
+
+						const Vector4f& v4BaseColor = PbrMtlData->_BaseColorScale;
+						const Vector4f& v4EmissiveColor = PbrMtlData->_EmissiveScale;
+
+						memcpy(BaseColor, &v4BaseColor, sizeof(Vector4f));
+						memcpy(EmissiveColor, &v4EmissiveColor, sizeof(Vector4f));
+
+
+						if (ImGui::ColorEdit4("BaseColorFactor", BaseColor))
+						{
+							memcpy_s(&(PbrMtlData->_BaseColorScale), sizeof(Vector4f),
+								BaseColor, sizeof(Vector4f));
+
+							bIsMtlEdited = true;
+						}
+						if (ImGui::ColorEdit4("EmissiveColorFactor", EmissiveColor))
+						{
+							memcpy_s(&(PbrMtlData->_EmissiveScale), sizeof(Vector4f),
+								EmissiveColor, sizeof(Vector4f));
+
+							bIsMtlEdited = true;
+						}
+						if (ImGui::SliderFloat("NormalTexScale", &NormalTexScale, 0.0f, 1.0f))
+						{
+							PbrMtlData->_NormalTexScale = NormalTexScale;
+							bIsMtlEdited = true;
+						}
+						if (ImGui::SliderFloat("Metallic", &Metallic, 0.0f, 1.0f))
+						{
+							PbrMtlData->_Metallic = Metallic;
+							bIsMtlEdited = true;
+						}
+						if (ImGui::SliderFloat("Roughness", &Roughness, 0.0f, 1.0f))
+						{
+							PbrMtlData->_Roughness = Roughness;
+							bIsMtlEdited = true;
+						}
+					}
+
+					// ============================== Mtl Textures ==============================
+					if (ImGui::TreeNode("Material Textures"))
+					{
+						for (int32 i=0;i< (int32)EDefaultPBRMatTexTypes::Count;i++)
+						{
+							EDefaultPBRMatTexTypes TexType = (EDefaultPBRMatTexTypes)i;
+							const char* TexTypeStr = to_string(TexType);
+							ITextureAsset* TexItem = PbrMtlData->_Textures[i];
+							SS::SHasherW EquippedTexName;
+
+							constexpr int32 BUFFER_SIZE = 256;
+							utf8 u8EquippedTexName[BUFFER_SIZE] = "EMPTY";
+							if (TexItem != nullptr)
+							{
+								EquippedTexName = TexItem->GetAssetName();
+								uint32 EquippedTexNameCStrLen = 0;
+								const utf16* EquippedTexNameCStr = EquippedTexName.C_Str(&EquippedTexNameCStrLen);
+								UTF16StrToUtf8Str(EquippedTexNameCStr, EquippedTexNameCStrLen, u8EquippedTexName, BUFFER_SIZE);
+							}
+
+
+
+							if (ImGui::BeginCombo(TexTypeStr, u8EquippedTexName))
+							{
+								for (const SS::pair<SS::SHasherW, IAssetBase*>& ItemPair : TextureList)
+								{
+									ITextureAsset* SelectTexItem = (ITextureAsset*)ItemPair.second;
+									SS::SHasherW SelectTexItemName = SelectTexItem->GetAssetName();
+									uint32 SelectTexItemCStrLen = 0;
+									const utf16* SelectTexItemCStr = SelectTexItemName.C_Str(&SelectTexItemCStrLen);
+									utf8 u8SelectTexItemName[BUFFER_SIZE];
+									UTF16StrToUtf8Str(SelectTexItemCStr, SelectTexItemCStrLen, u8SelectTexItemName, BUFFER_SIZE);
+
+									bool bIsSelected = false;
+									if (EquippedTexName == SelectTexItemName)
+									{
+										bIsSelected = true;
+									}
+
+									if (ImGui::Selectable(u8SelectTexItemName, bIsSelected))
+									{
+										PbrMtlData->_Textures[i] = SelectTexItem;
+										bIsMtlEdited = true;
+									}
+
+									if (bIsSelected)
+									{
+										ImGui::SetItemDefaultFocus();
+									}
+								}
+								ImGui::EndCombo();
+							}
+						}
+						ImGui::TreePop();
+					}
+				}
+				else
+				{
+					SS_ASSERT(false);
+				}
 			}
+			ImGui::PopID();
 
+			if (bIsMtlEdited)
 			{
-				ImGui::TableNextColumn();
-
-				constexpr int32 BUFFER_SIZE = 256;
-				utf8 Converter[BUFFER_SIZE];
-				AssetCstr = MtlItem->GetAssetPath().C_Str(&AssetStrLen);
-				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
-
-				ImGui::Text(Converter);
-			}
-
-			{
-				ImGui::TableNextColumn();
-
-				constexpr int32 BUFFER_SIZE = 256;
-				utf8 StrBuffer[BUFFER_SIZE];
-
-				int32 RefCnt = MtlItem->GetAssetInstanceReferenceCnt();
-				_itoa(RefCnt, StrBuffer, 10);
-				ImGui::Text(StrBuffer);
+				MtlItem->NotifyMtlDataModified();
 			}
 		}
-		ImGui::EndTable();
 	}
 }
 

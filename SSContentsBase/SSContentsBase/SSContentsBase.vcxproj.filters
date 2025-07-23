@@ -30,9 +30,6 @@
     <ClCompile Include="Private\ContentBase\SWorld.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\SRenderContent\Camera\RenderCamera.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\SRenderContent\Camera\SCameraComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -72,9 +69,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\SRenderContent\SRendererUtil.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Private\SRenderContent\Camera\RenderCamera.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="BuildSettings.h">

@@ -32,12 +32,13 @@ private:
 	SS::PooledList<void(*)()> _OneTimeCallback_BeforeGALRenderDeviceEndRender;
 
 private:
-	IRenderCamera* _CurRenderCamera = nullptr;
+	IRenderCamera* _MainRenderCamera = nullptr;
 
 	bool _bPixelPickingReserved = false;
 	Vector2i32 _PixelPickingCoord;
 	GALRenderTarget* _DSVRenderTarget = nullptr;
 	GALRenderTarget* _PixelPickerRenderTarget = nullptr;
+	GALRenderTarget* _ShadowMapRenderTarget = nullptr;
 	GALCPUReadableTexture* _PixelPickerCPUReadableTex = nullptr;
 	SObjHashCode _PickedObjectHash;
 
@@ -47,7 +48,6 @@ public:
 
 public:
 	ICommonRenderAssetSet* GetCommonRenderAssetSet() const override;
-
 	IAssetManager* GetAssetManager() const override;
 	IAssetManagerMutable* GetMutableAssetManager() override;
 	
@@ -55,7 +55,11 @@ public:
 public:
 	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) override;
 	virtual IRIMesh* CreateRIStaticMesh() override;
+	virtual IRenderCamera* CreateRenderCamera() override;
+
+public:
 	virtual SObjHashCode GetPixelPickedObjectID() const override;
+	virtual Vector2f GetViewportSize() const override;
 
 public:
 	virtual void SetRenderCamera(IRenderCamera* InCamera) override;

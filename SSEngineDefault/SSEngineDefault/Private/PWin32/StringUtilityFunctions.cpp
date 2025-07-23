@@ -118,7 +118,7 @@ void LowerStr(SS::StringW& InStr)
 	}
 }
 
-void ExtractFileNameFromPath(SS::StringW& OutStr, const utf16* inFilePath)
+void ExtractFileNameFromPath(SS::StringW& OutStr, const utf16* inFilePath, bool bIncludeSuffix)
 {
 	OutStr.Clear();
 
@@ -134,4 +134,10 @@ void ExtractFileNameFromPath(SS::StringW& OutStr, const utf16* inFilePath)
 	}
 
 	OutStr = fileNameStart + 1;
+
+	if (bIncludeSuffix == false)
+	{
+		int32 CutOutLen = wcsrchr(OutStr.C_Str(), L'.') - OutStr.C_Str();
+		OutStr.CutOut(CutOutLen);
+	}
 }
