@@ -52,10 +52,9 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 	_RenderInstanceByHashCode.Add(GameObjectHashCode, InRenderInstance);
 	InRenderInstance->SetIncludedRenderWorldXXX(this);
 
+	ERenderInstanceType RIType = InRenderInstance->GetRIType();
 
-	switch (InRenderInstance->GetRIType())
-	{
-	case ERenderInstanceType::StaticMesh:
+	if (RIType == ERenderInstanceType::StaticMesh)
 	{
 		IRIMesh* InRIMesh = (IRIMesh*)InRenderInstance;
 
@@ -66,7 +65,13 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 		IModelAsset* ModelAsest = InRIMesh->GetModelAsset();
 		ModelAsest->AddAssetReference(AssetReferencer);
 	}
-	break;
+	else if (RIType == ERenderInstanceType::Light)
+	{
+		// noop
+	}
+	else
+	{
+		SS_ASSERT(false);
 	}
 }
 
@@ -91,9 +96,8 @@ void RenderWorld::RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToR
 	RenderInstanceToRemove->SetIncludedRenderWorldXXX(nullptr);
 
 
-	switch (RenderInstanceToRemove->GetRIType())
-	{
-	case ERenderInstanceType::StaticMesh:
+	ERenderInstanceType RIType = RenderInstanceToRemove->GetRIType();
+	if (RIType == ERenderInstanceType::StaticMesh)
 	{
 		IRIMesh* RIMeshToRemove = (IRIMesh*)RenderInstanceToRemove;
 
@@ -104,14 +108,15 @@ void RenderWorld::RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToR
 		IModelAsset* ModelAsset = RIMeshToRemove->GetModelAsset();
 		ModelAsset->RemoveAssetReference(AssetReferencer);
 	}
-	break;
-
-	default:
+	else if (RIType == ERenderInstanceType::Light)
+	{
+		// noop
+	}
+	else
 	{
 		SS_ASSERT(false);
-		break;
 	}
-	}
+
 }
 
 GALRWMetaData* RenderWorld::GetGALMetadata() const

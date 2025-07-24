@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
+#include "SSRenderer/Public/RenderInstance/Descriptors/LightDesc.h"
 
 class RenderLightDirectional : public IRenderLightDirectional
 {
@@ -29,12 +30,12 @@ public:
 
 	// IRenderLight
 	ELightType GetLightType() const override;
-	virtual bool IsShadowMapEnabled() const override;
+	virtual XMVECTOR CalcDirectionalLightDirection() const override;
 
+	virtual bool IsShadowMapEnabled() const override;
 	virtual void SetEnableShadowMap(bool bEnable) override;
 
 	virtual const RenderLightDirectionalDesc& GetDirectionalLightDesc() override;
-	virtual XMVECTOR CalcShadowMapVPMatrix() const override;
 
 	virtual void InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover) override;
 	virtual GALRenderTarget* GetShadowMap() const override;

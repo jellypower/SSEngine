@@ -167,11 +167,13 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\ModuleEntry\SSContentsBaseModuleEntry.cpp" />
     <ClCompile Include="Private\SRenderContent\Camera\SCameraComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderComponentBase.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SStaticMeshRenderComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\SRendererUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.h" />
     <ClInclude Include="Public\ContentBase\SComponentBase.h" />
     <ClInclude Include="Public\ContentBase\SGameObject.h" />
     <ClInclude Include="Public\ContentBase\SGameObjectConstructor.h" />

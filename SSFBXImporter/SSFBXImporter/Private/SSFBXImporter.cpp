@@ -156,7 +156,7 @@ void SSFBXImporter::ImportCurrentFileToMaterialAsset()
 		if (NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] == nullptr)
 		{
 			NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] =
-				_CommonRenderAssetSetToImport->GetTexEMPTY();
+				_CommonRenderAssetSetToImport->GetTexWHITE();
 		}
 
 

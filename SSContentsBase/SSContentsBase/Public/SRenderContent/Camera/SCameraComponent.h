@@ -32,6 +32,8 @@ public:
 
 public:
 	IRenderCamera* GetRenderCamera() const { return _RenderCamera; }
+	float GetNearZ() const { return _NearZ; }
+	float GetFarZ() const { return _FarZ; }
 
 	void SetFOVWithDegrees(float InDegrees);
 	void SetFOVWithRadians(float InRadians);

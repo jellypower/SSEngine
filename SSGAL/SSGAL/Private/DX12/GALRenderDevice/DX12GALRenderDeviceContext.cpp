@@ -37,12 +37,15 @@
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
+#include "SSRenderer/Public/RenderInstance/Descriptors/LightDesc.h"
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 
 
-DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 InitialCommandListCnt)
+DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 InitialCommandListCnt):
+	_BoundRenderTargets(RT_NUM_MAX),
+	_RenderLightsToDraw(32)
 {
 	_OwnerRenderDevice = InRenderDevice;
 
@@ -455,10 +458,42 @@ void DX12GALRenderDeviceContext::SetRenderCamera(IRenderCamera* InCamera)
 		CurRenderWorld->InjectGALMetadataXXX(_CurRenderWorldGALData);
 	}
 
+
 	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->VPMatrix = XMMatrixTranspose(InCamera->GetVPMatrix());
-	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunDirection = { 1, 1, 1, 0 };
-	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunIntensity = { 1, 1, 1, 0 };
 	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->ViewerPos = InCamera->GetCameraTransform().Position.SimdVec;
+}
+
+void DX12GALRenderDeviceContext::AddRenderLightToDraw(IRenderLight* InLight)
+{
+	_RenderLightsToDraw.PushBack(InLight);
+	SS_ASSERT(_RenderLightsToDraw.GetSize() == 1);
+
+	for (IRenderLight* LightItem : _RenderLightsToDraw)
+	{
+		ELightType LightType = LightItem->GetLightType();
+		if (LightType == ELightType::Directional)
+		{
+			IRenderLightDirectional* DirectionalLight = (IRenderLightDirectional*)LightItem;
+			const RenderLightDirectionalDesc& Desc = DirectionalLight->GetDirectionalLightDesc();
+
+			if (DirectionalLight->GetShadowMap() == nullptr && Desc.bEnableShadowMap)
+			{
+				GenerateRenderInstanceMetadata(DirectionalLight);
+			}
+			else if (DirectionalLight->GetShadowMap() != nullptr && Desc.bEnableShadowMap == false)
+			{
+				DirectionalLight->ReleaseShadowMap();
+			}
+
+
+			_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunDirection = DirectionalLight->CalcDirectionalLightDirection();
+			_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunIntensity = { 1, 1, 1, 0 };
+		}
+		else
+		{
+			SS_ASSERT(false);
+		}
+	}
 }
 
 void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From,
@@ -485,20 +520,17 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
-	_BoundRenderTargetCnt[_CurCommandListIdx] = NumRenderTargets;
-	_BoundDSV[_CurCommandListIdx] = InDepthStencilView;
+	_BoundDSV = InDepthStencilView;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE RTVDescHandles[RT_NUM_MAX];
 
+	_BoundRenderTargets.Clear();
 	for (int i = 0; i < NumRenderTargets; i++)
 	{
 		DX12GALRenderTargetBase* RTItem = (DX12GALRenderTargetBase*)InRenderTargets[i];
 		RTVDescHandles[i] = RTItem->GetCurrentDescHandle();
 
-		const ViewportBox& VB = RTItem->GetViewportBoxSize();
-		const BoundBox2f& SR = RTItem->GetScissorRectSize();
-
-		_BoundRenderTargets[_CurCommandListIdx][i] = RTItem;
+		_BoundRenderTargets.PushBack(RTItem);
 	}
 
 
@@ -656,11 +688,12 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 
 	{
+
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawMesh(
 			EMeshType::Rigid,
 			EMaterialType::DefaultPBR,
-			GetThisFrameBoundRenderTargetCnt(),
-			GetThisFrameBoundRenderTargets(),
+			_BoundRenderTargets.GetSize(),
+			_BoundRenderTargets.GetData(),
 			GetThisFrameBoundDSV());
 		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
 
@@ -724,6 +757,10 @@ void DX12GALRenderDeviceContext::ResetRenderState()
 	_ResourceUpdater->ResetUpdateBuffer();
 	ResetCommandList();
 
+	_RenderLightsToDraw.Clear();
+	_BoundRenderTargets.Clear();
+	_BoundDSV = nullptr;
+
 	_CurRenderWorldGALData = nullptr;
 }
 
@@ -740,14 +777,6 @@ void DX12GALRenderDeviceContext::ResetCommandList()
 		if (FAILED(hr)) DEBUG_BREAK();
 		hr = CurCommandList->Reset(CurCommandAllcator, nullptr);
 		if (FAILED(hr)) DEBUG_BREAK();
-	}
-
-	// TODO: nullptr 대입하기 전에 _CurCommandListIdx++ 해주는 기능 만들기
-	_BoundDSV[_CurCommandListIdx] = nullptr;
-	_BoundRenderTargetCnt[_CurCommandListIdx] = 0;
-	for (int i=0;i< RT_NUM_MAX;i++)
-	{
-		_BoundRenderTargets[_CurCommandListIdx][i] = nullptr; // TODO: nullptr 대입하기 전에 _CurCommandListIdx++ 해주는 기능 만들기
 	}
 
 	_CurCommandListIdx = 0;

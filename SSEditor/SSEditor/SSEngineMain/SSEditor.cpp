@@ -13,6 +13,7 @@
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/SRenderContent/SRendererUtil.h"
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
@@ -110,6 +111,18 @@ void SSEditor::StartupEngine()
 		CameraObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 0, 1, 0)));
 		TEMP_Camera = CameraComp;
 		_Renderer->SetRenderCamera(CameraComp->GetRenderCamera());
+	}
+
+
+	{
+		SGameObject* LightObject = NewSObject<SGameObject>(L"GlobalLight");
+		SRenderLightDirectionalComponent* LightComp = LightObject->CreateComponent<SRenderLightDirectionalComponent>(L"CameraComponent");
+		LightComp->_Desc.ShadowMapSize = Vector2f(1024.f, 1024.f);
+		LightComp->_Desc.bEnableShadowMap = true;
+		SGameObjectConstructor::FinishConstructHierarchy(LightObject);
+		_DefaultWorld->AddToWorld(LightObject);
+
+		TEMP_Light = LightComp;
 	}
 
 	_Renderer->GetCommonRenderAssetSet()->AddRefCachedAssets();
@@ -279,6 +292,7 @@ void SSEditor::TEMP_ProcessContents()
 		CamGameObj->SetPosition(Pos);
 	}
 
+
 	if (SSInput::GetMouse(EMouseCode::MOUSE_RIGHT))
 	{	
 		constexpr float CAM_ROT_SPEED = 2;
@@ -314,14 +328,14 @@ void SSEditor::TEMP_ProcessContents()
 
 	if (TEMP_PixelPickedObject != nullptr)
 	{
-		constexpr float OBJ_ROT_SPEED = 1;
+		constexpr float OBJ_ROT_SPEED = 3;
 		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
 		{
 			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
 			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
 			Vector4f UpVector = Parent->GetTransform().GetUp();
 
-			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * 10);
+			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * OBJ_ROT_SPEED);
 			TEMP_PixelPickedObject->SetRotation(CurRot);
 		}
 
@@ -331,7 +345,7 @@ void SSEditor::TEMP_ProcessContents()
 			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
 			Vector4f UpVector = Parent->GetTransform().GetUp();
 
-			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * -10);
+			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * -OBJ_ROT_SPEED);
 			TEMP_PixelPickedObject->SetRotation(CurRot);
 		}
 
@@ -341,7 +355,7 @@ void SSEditor::TEMP_ProcessContents()
 			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
 			Vector4f RightVector = Parent->GetTransform().GetRight();
 
-			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * 10);
+			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * OBJ_ROT_SPEED);
 			TEMP_PixelPickedObject->SetRotation(CurRot);
 		}
 
@@ -351,8 +365,55 @@ void SSEditor::TEMP_ProcessContents()
 			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
 			Vector4f RightVector = Parent->GetTransform().GetRight();
 
-			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -10);
+			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -OBJ_ROT_SPEED);
 			TEMP_PixelPickedObject->SetRotation(CurRot);
+		}
+	}
+	else
+	{
+		constexpr float OBJ_ROT_SPEED = 3;
+		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
+		{
+			SGameObject* LightGO = TEMP_Light->GetParent();
+			Quaternion CurRot = LightGO->GetTransform().Rotation;
+			const SGameObject* Parent = LightGO->GetParent();
+			Vector4f UpVector = Parent->GetTransform().GetUp();
+
+			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * 10);
+			LightGO->SetRotation(CurRot);
+		}
+
+		if (SSInput::GetKey(EKeyCode::KEY_RIGHT))
+		{
+			SGameObject* LightGO = TEMP_Light->GetParent();
+			Quaternion CurRot = LightGO->GetTransform().Rotation;
+			const SGameObject* Parent = LightGO->GetParent();
+			Vector4f UpVector = Parent->GetTransform().GetUp();
+
+			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * -10);
+			LightGO->SetRotation(CurRot);
+		}
+
+		if (SSInput::GetKey(EKeyCode::KEY_UP))
+		{
+			SGameObject* LightGO = TEMP_Light->GetParent();
+			Quaternion CurRot = LightGO->GetTransform().Rotation;
+			const SGameObject* Parent = LightGO->GetParent();
+			Vector4f RightVector = Parent->GetTransform().GetRight();
+
+			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * 10);
+			LightGO->SetRotation(CurRot);
+		}
+
+		if (SSInput::GetKey(EKeyCode::KEY_DOWN))
+		{
+			SGameObject* LightGO = TEMP_Light->GetParent();
+			Quaternion CurRot = LightGO->GetTransform().Rotation;
+			const SGameObject* Parent = LightGO->GetParent();
+			Vector4f RightVector = Parent->GetTransform().GetRight();
+
+			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -10);
+			LightGO->SetRotation(CurRot);
 		}
 	}
 }

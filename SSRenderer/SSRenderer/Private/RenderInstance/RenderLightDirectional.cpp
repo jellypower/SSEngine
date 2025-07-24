@@ -95,7 +95,7 @@ const RenderLightDirectionalDesc& RenderLightDirectional::GetDirectionalLightDes
 	return _Desc;
 }
 
-XMVECTOR RenderLightDirectional::CalcShadowMapVPMatrix() const
+XMVECTOR RenderLightDirectional::CalcDirectionalLightDirection() const
 {
 	XMVECTOR LightDir = {0,1,0,1}; // UpDirection
 	LightDir = XMVector4Transform(LightDir, _WorldRotationMatrix);
@@ -105,7 +105,7 @@ XMVECTOR RenderLightDirectional::CalcShadowMapVPMatrix() const
 
 void RenderLightDirectional::InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover)
 {
-	if (ShadowMapToHandover != nullptr)
+	if (_ShadowMap != nullptr)
 	{
 		SS_ASSERT(false);
 		return;

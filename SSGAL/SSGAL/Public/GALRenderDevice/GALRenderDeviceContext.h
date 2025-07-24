@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class IRenderLight;
 class IRenderCamera;
 struct BoundBox2f;
 struct ViewportBox;
@@ -31,6 +32,7 @@ public:
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 
 	virtual void SetRenderCamera(IRenderCamera* InCamera) = 0;
+	virtual void AddRenderLightToDraw(IRenderLight* InLight) = 0;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;
 	virtual void SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets, GALRenderTarget* InDepthStencilView) = 0;

@@ -169,6 +169,7 @@ void SSRenderer::PerFrame()
 	// RenderTime
 	{
 		_RenderInstancesToDraw.Clear();
+		_RenderLightsToDraw.Clear();
 		ScrapRenderInstsances(_RenderInstancesToDraw, _RenderLightsToDraw ,_MainRenderCamera);
 	}
 
@@ -207,6 +208,14 @@ void SSRenderer::PerFrame()
 			// Set Camera Setting
 			{
 				_MainDeviceContext->SetRenderCamera(_MainRenderCamera);
+			}
+
+			// Set Light Setting
+			{
+				for (IRenderLight* LightItem : _RenderLightsToDraw)
+				{
+					_MainDeviceContext->AddRenderLightToDraw(LightItem);
+				}
 			}
 
 

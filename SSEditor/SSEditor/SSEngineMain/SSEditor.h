@@ -4,6 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class SRenderLightDirectionalComponent;
 enum class EAssetType;
 class SSImGUIInitializer;
 class ITextureAssetMutable;
@@ -63,6 +64,7 @@ private:
 	
 
 	SCameraComponent* TEMP_Camera = nullptr;
+	SRenderLightDirectionalComponent* TEMP_Light = nullptr;
 	float TEMP_CamXRot = 0;
 	float TEMP_CamYRot = 0;
 	float TEMP_Speed = 10.f;
