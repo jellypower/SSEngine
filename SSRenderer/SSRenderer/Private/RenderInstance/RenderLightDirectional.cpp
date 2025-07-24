@@ -1,6 +1,10 @@
 ﻿#include "RenderLightDirectional.h"
 
+#include <SSGAL/Public/GALRenderInstance/GALRIMetadata.h>
+
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
 RenderLightDirectional::RenderLightDirectional(const RenderLightDirectionalDesc& InDesc)
@@ -45,18 +49,30 @@ void RenderLightDirectional::SetWorldRotation(const Quaternion& InRotation)
 
 void RenderLightDirectional::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover)
 {
-	SS_ASSERT_MSG(false, L"Metadata를 생성할 필요가 없습니다. RenderWorld의 Metadata를 공유합니다.");
+	if (MetadataToHandover->GetMetadataRenderInstanceType() != ERenderInstanceType::Light)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	_ShadowMapMetaData = MetadataToHandover;
 }
 
-const GALRIMetadata* RenderLightDirectional::GetGALMetadata() const
+GALRIMetadata* RenderLightDirectional::GetGALMetadata() const
 {
-	SS_ASSERT_MSG(false, L"Metadata를 생성할 필요가 없습니다. RenderWorld의 Metadata를 공유합니다.");
-	return nullptr;
+	return _ShadowMapMetaData;
 }
 
 void RenderLightDirectional::ReleaseGALMetaData()
 {
-	SS_ASSERT_MSG(false, L"Metadata를 생성할 필요가 없습니다. RenderWorld의 Metadata를 공유합니다.");
+	if (_ShadowMapMetaData == nullptr)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	delete _ShadowMapMetaData;
+	_ShadowMapMetaData = nullptr;
 }
 
 void RenderLightDirectional::SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld)
@@ -86,11 +102,11 @@ void RenderLightDirectional::SetEnableShadowMap(bool bEnable)
 
 	if (bEnable == false)
 	{
-		ReleaseShadowMap();
+		ReleaseGALMetaData();
 	}
 }
 
-const RenderLightDirectionalDesc& RenderLightDirectional::GetDirectionalLightDesc()
+const RenderLightDirectionalDesc& RenderLightDirectional::GetDirectionalLightDesc() const
 {
 	return _Desc;
 }
@@ -103,30 +119,21 @@ XMVECTOR RenderLightDirectional::CalcDirectionalLightDirection() const
 	return LightDir;
 }
 
-void RenderLightDirectional::InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover)
+XMMATRIX RenderLightDirectional::CalcShadowMapVPMatrix() const
 {
-	if (_ShadowMap != nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
+	constexpr float WORLD_BOUNDARY_RADIUS = 100000000;
 
-	_ShadowMap = ShadowMapToHandover;
-}
+	static const XMVECTOR UP_VECTOR = { 0, 1, 0 ,1 };
+	XMVECTOR ShadowMapCamPos = { 0,1,0,1 }; // UpDirection
+	ShadowMapCamPos = XMVector4Transform(ShadowMapCamPos, _WorldRotationMatrix);
 
-GALRenderTarget* RenderLightDirectional::GetShadowMap() const
-{
-	return _ShadowMap;
-}
+	XMMATRIX ViewMat = XMMatrixLookToLH(
+		ShadowMapCamPos * WORLD_BOUNDARY_RADIUS,
+		-ShadowMapCamPos,
+		UP_VECTOR);
 
-void RenderLightDirectional::ReleaseShadowMap()
-{
-	if (_ShadowMap == nullptr)
-	{
-		return;
-	}
 
-	delete _ShadowMap;
-	_ShadowMap = nullptr;
+	XMMATRIX ProjMat = XMMatrixOrthographicLH(_Desc.ShadowMapSize.X, _Desc.ShadowMapSize.X, 0.001, WORLD_BOUNDARY_RADIUS);
 
+	return ViewMat * ProjMat;
 }

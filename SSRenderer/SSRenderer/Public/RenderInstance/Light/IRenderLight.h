@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
+class GALRenderDeviceContext;
 class GALRenderTarget;
 
 enum class ELightType
@@ -17,7 +18,6 @@ class IRenderLight : public IRenderInstance
 public:
 	virtual ELightType GetLightType() const = 0;
 	virtual bool IsShadowMapEnabled() const = 0;
-
 	virtual void SetEnableShadowMap(bool bEnable) = 0;
 };
 

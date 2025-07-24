@@ -37,7 +37,7 @@ public:
 	virtual void SetWorldRotation(const Quaternion& InRotation) = 0;
 
 	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) = 0;
-	virtual const GALRIMetadata* GetGALMetadata() const = 0;
+	virtual GALRIMetadata* GetGALMetadata() const = 0;
 	virtual void ReleaseGALMetaData() = 0;
 
 	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) = 0;

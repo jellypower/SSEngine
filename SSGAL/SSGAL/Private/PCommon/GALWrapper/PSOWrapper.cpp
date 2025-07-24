@@ -100,3 +100,24 @@ PipelineDesc ConstructPSODescToDrawMesh(EMeshType InMeshType, EMaterialType InMt
 
 	return NewPipelineDesc;
 }
+
+PipelineDesc ConstructPSODescToDrawShadow(EMeshType InMeshType)
+{
+	PipelineDesc NewPipelineDesc;
+
+	switch (InMeshType)
+	{
+	case EMeshType::Rigid:
+		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
+		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
+		break;
+	default:
+		SS_ASSERT(false);
+		break;
+	}
+
+	NewPipelineDesc.DSColorFormat = ERTColorFormat::D32_FLOAT;
+	NewPipelineDesc.RootSignatureType = ERootSignatureType::Shadow;
+
+	return NewPipelineDesc;
+}

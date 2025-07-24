@@ -168,6 +168,8 @@ void SSRenderer::PerFrame()
 {
 	// RenderTime
 	{
+		RenderWorld* WorldToScrap = (RenderWorld*)_MainRenderCamera->GetIcludedRenderWorld();
+
 		_RenderInstancesToDraw.Clear();
 		_RenderLightsToDraw.Clear();
 		ScrapRenderInstsances(_RenderInstancesToDraw, _RenderLightsToDraw ,_MainRenderCamera);
@@ -204,7 +206,6 @@ void SSRenderer::PerFrame()
 		{
 			InstantiatePendingGALAssets(_MainDeviceContext);
 
-
 			// Set Camera Setting
 			{
 				_MainDeviceContext->SetRenderCamera(_MainRenderCamera);
@@ -215,6 +216,29 @@ void SSRenderer::PerFrame()
 				for (IRenderLight* LightItem : _RenderLightsToDraw)
 				{
 					_MainDeviceContext->AddRenderLightToDraw(LightItem);
+				}
+			}
+
+			// Shadow Map Draw
+			{
+				for (IRenderLight* LightItem : _RenderLightsToDraw)
+				{
+					if (LightItem->IsShadowMapEnabled() == false)
+					{
+						continue;
+					}
+
+					_MainDeviceContext->SetShadowMap(LightItem);
+
+					ELightType Type = LightItem->GetLightType();
+					if (Type == ELightType::Directional)
+					{
+						for (IRenderInstance* ShadowCastingInstance : _RenderInstancesToDraw)
+						{
+							_MainDeviceContext->DrawShadow(ShadowCastingInstance);
+						}
+					}
+
 				}
 			}
 
@@ -243,9 +267,8 @@ void SSRenderer::PerFrame()
 				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
 			}
-
 			
-			// Pixel Picker RenderTarget
+			// Copy to Pixel Picker RenderTarget
 			{
 				_MainDeviceContext->CopyRenderTarget(_PixelPickerCPUReadableTex, _PixelPickerRenderTarget);
 			}
@@ -373,6 +396,7 @@ void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRend
 
 	}
 }
+
 
 void SSRenderer::Before_GALRenderDevice_EndRender()
 {

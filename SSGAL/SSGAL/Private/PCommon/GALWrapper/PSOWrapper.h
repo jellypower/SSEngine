@@ -69,3 +69,7 @@ PipelineDesc ConstructPSODescToDrawMesh(
 	int32 NumRenderTarget,
 	GALRenderTarget* const* InRenderTargets,
 	GALRenderTarget* InDSV);
+
+PipelineDesc ConstructPSODescToDrawShadow(
+	EMeshType InMeshType
+);

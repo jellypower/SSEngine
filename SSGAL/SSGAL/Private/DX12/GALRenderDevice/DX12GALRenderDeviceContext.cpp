@@ -6,7 +6,7 @@
 #include "DX12GALRenderDeviceContext.h"
 
 
-
+#include "Private/DX12/GALRenderInstance/DX12GALRIDirectionalLightShadowMapMetadata.h"
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "SSGAL/Private/PCommon/GALPrivateGlobals.h"
@@ -419,20 +419,13 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 			IRenderLightDirectional* DirectionalLight = static_cast<IRenderLightDirectional*>(InRenderLight);
 			const RenderLightDirectionalDesc& Desc = DirectionalLight->GetDirectionalLightDesc();
 
-			GALRenderTargetDesc ShadowMapDesc;
-			ShadowMapDesc.ResourceWidth = Desc.ShadowMapSize.X;
-			ShadowMapDesc.ResourceHeight = Desc.ShadowMapSize.Y;
-			ShadowMapDesc.ScissorRectSize.Min = Vector2f(0, 0);
-			ShadowMapDesc.ScissorRectSize.Max = Desc.ShadowMapSize;
-			ShadowMapDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-			ShadowMapDesc.DrawBoxSize.WidthHeight = Desc.ShadowMapSize;
-			ShadowMapDesc.DrawBoxSize.MinDepth = 0.f;
-			ShadowMapDesc.DrawBoxSize.MaxDepth = 1.f;
-			ShadowMapDesc.Format = ERTColorFormat::D32_FLOAT;
-			ShadowMapDesc.InitialResourceState = EResourceStateType::DepthWrite;
-			GALRenderTarget* NewShadowMap = _OwnerRenderDevice->CreateDepthStencilView(ShadowMapDesc, L"Main_DSV");
+			if (Desc.bEnableShadowMap)
+			{
+				DX12GALRIDirectionalLightShadowMapMetadata* NewShadowMapMetadata = 
+					DBG_NEW DX12GALRIDirectionalLightShadowMapMetadata((DX12GALRenderDevice*)_OwnerRenderDevice, DirectionalLight);
 
-			DirectionalLight->InjectShadowMapXXX(NewShadowMap);
+				DirectionalLight->InjectGALMetadataXXX(NewShadowMapMetadata);
+			}
 		}
 		else
 		{
@@ -443,6 +436,27 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 	{
 		DEBUG_BREAK();
 		return;
+	}
+}
+
+void DX12GALRenderDeviceContext::SetShadowMap(IRenderLight* InLightToDrawShadowMap)
+{
+	ELightType LightType = InLightToDrawShadowMap->GetLightType();
+
+	if (LightType == ELightType::Directional)
+	{
+		GALRIMetadata* GM;
+		DX12GALRIDirectionalLightShadowMapMetadata* DirectionalLightShadowMapMetadata =
+			static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(InLightToDrawShadowMap->GetGALMetadata());
+
+		_LastSetShadowMapMetadata = DirectionalLightShadowMapMetadata;
+		GALRenderTarget* RenderTarget = DirectionalLightShadowMapMetadata->GetShadowMap();
+		SetRenderTarget(0, nullptr, RenderTarget);
+
+	}
+	else
+	{
+		SS_ASSERT(false);
 	}
 }
 
@@ -476,16 +490,24 @@ void DX12GALRenderDeviceContext::AddRenderLightToDraw(IRenderLight* InLight)
 			IRenderLightDirectional* DirectionalLight = (IRenderLightDirectional*)LightItem;
 			const RenderLightDirectionalDesc& Desc = DirectionalLight->GetDirectionalLightDesc();
 
-			if (DirectionalLight->GetShadowMap() == nullptr && Desc.bEnableShadowMap)
+			if (DirectionalLight->GetGALMetadata() == nullptr && Desc.bEnableShadowMap)
 			{
 				GenerateRenderInstanceMetadata(DirectionalLight);
 			}
-			else if (DirectionalLight->GetShadowMap() != nullptr && Desc.bEnableShadowMap == false)
+			else if (DirectionalLight->GetGALMetadata() != nullptr && Desc.bEnableShadowMap == false)
 			{
-				DirectionalLight->ReleaseShadowMap();
+				DirectionalLight->ReleaseGALMetaData();
 			}
 
 
+			if (DX12GALRIDirectionalLightShadowMapMetadata* GALDirectionalLightShadowMapMetadata = 
+				static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(LightItem->GetGALMetadata()))
+			{
+				GALDirectionalLightShadowMapMetadata->_ShadowMapCBSysMemAddr->VPMatrix =
+					XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix());
+			}
+
+			
 			_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunDirection = DirectionalLight->CalcDirectionalLightDirection();
 			_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunIntensity = { 1, 1, 1, 0 };
 		}
@@ -502,11 +524,32 @@ void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget
 	InRenderTarget->ResourceBarrier(this, From, To);
 }
 
+void DX12GALRenderDeviceContext::SetPSO(const PipelineDesc& InPSODesc)
+{
+	if (_LastSetPSO == InPSODesc)
+	{
+		return;
+	}
+
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+	PCommonGALRenderDevice* OwnerDevice = (PCommonGALRenderDevice*)GetOwnerRenderDevice();
+	RootSignaturePool* lRootSignaturePool = OwnerDevice->GetRootSignaturePool();
+	DX12PSOPool* PSOPool = (DX12PSOPool*)OwnerDevice->GetPSOPool();
+
+	const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(InPSODesc);
+
+	const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(InPSODesc.RootSignatureType);
+	const DX12RootSignatureWrapper* lDX12RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignatureWrapper;
+
+	CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
+	CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
+}
+
 
 void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets,
                                                  GALRenderTarget* InDepthStencilView)
 {
-	if (NumRenderTargets > RT_NUM_MAX || NumRenderTargets <= 0)
+	if (NumRenderTargets > RT_NUM_MAX)
 	{
 		SS_ASSERT(false);
 		return;
@@ -534,6 +577,7 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 	}
 
 
+	if (NumRenderTargets > 0)
 	{
 		DX12GALRenderTargetBase* MajorRT = (DX12GALRenderTargetBase*)InRenderTargets[0];
 		const ViewportBox& VB = MajorRT->GetViewportBoxSize();
@@ -557,15 +601,40 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 		CurCommandList->RSSetViewports(1, &ViewportSize);
 	}
 
-	if (InDepthStencilView == nullptr)
-	{
-		CurCommandList->OMSetRenderTargets(NumRenderTargets, RTVDescHandles, FALSE, nullptr);
-	}
-	else
+	if (NumRenderTargets > 0 && InDepthStencilView != nullptr) // DepthStencil이랑 NumRenderTarget이 모두 있는 경우
 	{
 		DX12GALDSVRenderTarget* DX12DSV = (DX12GALDSVRenderTarget*)InDepthStencilView;
 		D3D12_CPU_DESCRIPTOR_HANDLE DSVDescHandle = DX12DSV->GetCurrentDescHandle();
 		CurCommandList->OMSetRenderTargets(NumRenderTargets, RTVDescHandles, FALSE, &DSVDescHandle);
+	}
+	else if (NumRenderTargets > 0 && InDepthStencilView == nullptr) // DepStencil만 없는 경우
+	{
+		CurCommandList->OMSetRenderTargets(NumRenderTargets, RTVDescHandles, FALSE, nullptr);
+	}
+	else // DepthStencil만 있는 경우
+	{
+		DX12GALDSVRenderTarget* DX12DSV = (DX12GALDSVRenderTarget*)InDepthStencilView;
+		D3D12_CPU_DESCRIPTOR_HANDLE DSVDescHandle = DX12DSV->GetCurrentDescHandle();
+		const ViewportBox& VB = DX12DSV->GetViewportBoxSize();
+		const BoundBox2f& SR = DX12DSV->GetScissorRectSize();
+
+		D3D12_RECT ScissorRectSize;
+		ScissorRectSize.left = SR.Min.X;
+		ScissorRectSize.top = SR.Min.Y;
+		ScissorRectSize.right = SR.Max.X;
+		ScissorRectSize.bottom = SR.Max.Y;
+
+		D3D12_VIEWPORT ViewportSize;
+		ViewportSize.TopLeftX = VB.LeftTop.X;
+		ViewportSize.TopLeftY = VB.LeftTop.Y;
+		ViewportSize.Width = VB.WidthHeight.X;
+		ViewportSize.Height = VB.WidthHeight.Y;
+		ViewportSize.MinDepth = VB.MinDepth;
+		ViewportSize.MaxDepth = VB.MaxDepth;
+
+		CurCommandList->RSSetScissorRects(1, &ScissorRectSize);
+		CurCommandList->RSSetViewports(1, &ViewportSize);
+		CurCommandList->OMSetRenderTargets(0, nullptr, FALSE, &DSVDescHandle);
 	}
 }
 
@@ -650,9 +719,31 @@ void DX12GALRenderDeviceContext::Draw(IRenderInstance* InRenderInstance)
 	else
 	{
 		SS_INTERRUPT();
-		return;
 	}
 }
+
+void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
+{
+	if (InRenderInstance->GetGALMetadata() == nullptr)
+	{
+		GenerateRenderInstanceMetadata(InRenderInstance);
+	}
+
+	XMMATRIX ObjTransformMat = InRenderInstance->GetWorldTransformMatrix();
+	XMMATRIX ObjRotMat = InRenderInstance->GetWorldRotationMatrix();
+
+
+	if (InRenderInstance->GetRIType() == ERenderInstanceType::StaticMesh)
+	{
+		IRIMesh* RIMesh = (IRIMesh*)InRenderInstance;
+		DrawShadowStaticMesh(RIMesh, ObjTransformMat, ObjRotMat);
+	}
+	else
+	{
+		SS_INTERRUPT();
+	}
+}
+
 
 void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat)
 {
@@ -752,6 +843,73 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 	}
 }
 
+void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat,
+	const XMMATRIX& DrawRotMat)
+{
+	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
+	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
+
+	PCommonGALRenderDevice* OwnerDevice = (PCommonGALRenderDevice*)GetOwnerRenderDevice();
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+
+
+	// Scrap Mesh Asset
+	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	const DX12GALMeshAssetWrapper* GALMeshAsset = (const DX12GALMeshAssetWrapper*)lMeshAsset->GetGALMeshAsset();
+	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
+	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
+	const MeshRawDataDefault* DefaultMeshRawData = nullptr;
+	int32 SubMeshCnt = 0;
+	switch (MeshRawData->_MeshType)
+	{
+	case EMeshType::Rigid:
+	case EMeshType::Skinned:
+		DefaultMeshRawData = (MeshRawDataDefault*)MeshRawData;
+		SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
+		break;
+
+	default:
+		SS_ASSERT(false);
+		return;
+	}
+
+
+	{
+		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawShadow(
+			EMeshType::Rigid);
+		SetPSO(NewPipelineDesc);
+	}
+
+	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+
+	{
+		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(DrawMat);
+		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
+		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
+	}
+
+	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
+
+	if (_LastSetShadowMapMetadata->GetLightType() == ELightType::Directional)
+	{
+		DX12GALRIDirectionalLightShadowMapMetadata* DX12GalriDirectionalLightShadowMapMetaData =
+			static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(_LastSetShadowMapMetadata);
+		CurCommandList->SetGraphicsRootConstantBufferView(1, DX12GalriDirectionalLightShadowMapMetaData->_ShadowMapCBGPUMemAddr);
+	}
+	else
+	{
+		SS_ASSERT(false);
+	}
+
+	for (int32 i = 0; i < SubMeshCnt; i++)
+	{
+		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
+		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
+		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
+	}
+}
+
 void DX12GALRenderDeviceContext::ResetRenderState()
 {
 	_ResourceUpdater->ResetUpdateBuffer();
@@ -762,6 +920,8 @@ void DX12GALRenderDeviceContext::ResetRenderState()
 	_BoundDSV = nullptr;
 
 	_CurRenderWorldGALData = nullptr;
+	_LastSetShadowMapMetadata = nullptr;
+	_LastSetPSO = PipelineDesc(); // 초기화
 }
 
 void DX12GALRenderDeviceContext::ResetCommandList()

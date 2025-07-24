@@ -66,10 +66,6 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 {
 	switch (InRootSignatureType)
 	{
-	case ERootSignatureType::NONE:
-		DEBUG_BREAK();
-		return CD3DX12_ROOT_SIGNATURE_DESC();
-
 	case ERootSignatureType::SS_TEMP_ROOTSIGNATURE:
 	{
 		static CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
@@ -123,8 +119,34 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 
 		return rootSignatureDesc;
 	}
+	case ERootSignatureType::Shadow:
+	{
+		static CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+		static bool Initialized = false;
+
+		if (Initialized == false)
+		{
+			Initialized = true;
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
+			rootParameters[0].InitAsConstantBufferView(0); // b0
+			rootParameters[1].InitAsConstantBufferView(1); // b1
+
+			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(EGRD3D12SamplerDescType::DefaultSampler, 0);
+
+			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
+
+			return rootSignatureDesc;
+		}
+	}
 
 	}
+
+	SS_INTERRUPT();
+	return CD3DX12_ROOT_SIGNATURE_DESC();
 }
 
 D3D12_STATIC_SAMPLER_DESC DX12RootSignatureWrapper::GetSamplerDescOfType(EGRD3D12SamplerDescType InSamplerType, int32 registerIDX)

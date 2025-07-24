@@ -1,9 +1,11 @@
 ﻿#pragma once
 // #include <d3d12.h>
 
+#include "Private/PCommon/GALWrapper/PSOWrapper.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
+class GALRIShadowMapMetadata;
 class DX12GALRWMetaData;
 class IRenderWorld;
 class IMaterialAssetMutable;
@@ -32,21 +34,25 @@ public:
 
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 
+	virtual void SetShadowMap(IRenderLight* InLightToDrawShadowMap) override; // SetPSO, SetRenderTarget
 	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 	virtual void AddRenderLightToDraw(IRenderLight* InLight) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
+	virtual void SetPSO(const PipelineDesc& InPSODesc) override;
 	virtual void SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets, GALRenderTarget* InDepthStencilView) override;
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) override;
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) override;
 
 	virtual void Draw(IRenderInstance* InRenderInstance) override;
-
+	virtual void DrawShadow(IRenderInstance* InRenderInstance) override;
+	
 
 private:
 	void DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 
+	void DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 
 
 public:
@@ -74,4 +80,6 @@ private:
 	SS::PooledList<IRenderLight*> _RenderLightsToDraw;
 
 	DX12GALRWMetaData* _CurRenderWorldGALData = nullptr;
+	GALRIShadowMapMetadata* _LastSetShadowMapMetadata = nullptr;
+	PipelineDesc _LastSetPSO;
 };

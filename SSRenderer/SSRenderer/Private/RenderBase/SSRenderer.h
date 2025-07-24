@@ -89,6 +89,8 @@ private:
 		SS::PooledList<IRenderLight*>& OutRenderLightsToDraw,
 		IRenderCamera* InCamera);
 
+	
+
 	void Before_GALRenderDevice_EndRender();
 };
 

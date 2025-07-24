@@ -78,16 +78,20 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 		DEBUG_BREAK();
 		return;
 	}
-
-	const DX12GALShaderWrapper* PS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.PSName);
-	if (PS == nullptr)
-	{
-		DEBUG_BREAK();
-		return;
-	}
-
 	ID3DBlob* VSBlob = VS->GetCompiledShader();
-	ID3DBlob* PSBlob = PS->GetCompiledShader();
+
+	ID3DBlob* PSBlob = nullptr;
+	if (InPipelineDesc.PSName.IsEmpty() == false)
+	{
+		const DX12GALShaderWrapper* PS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.PSName);
+		if (PS == nullptr)
+		{
+			DEBUG_BREAK();
+			return;
+		}
+
+		PSBlob = PS->GetCompiledShader();
+	}
 
 
 	uint32 inputElementCnt = 0;
@@ -105,7 +109,7 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 	psoDesc.InputLayout = { inputElementDesc, inputElementCnt };
 	psoDesc.pRootSignature = RootSignature;
 	psoDesc.VS = CD3DX12_SHADER_BYTECODE(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize());
-	psoDesc.PS = CD3DX12_SHADER_BYTECODE(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize());
+	if (PSBlob != nullptr) psoDesc.PS = CD3DX12_SHADER_BYTECODE(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize());
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
@@ -127,7 +131,7 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 	if (FAILED(result))
 	{
 		_PipelineState = nullptr;
-		SS_CLASS_ERR_LOG("CreatePipeline Failed.");
+		SS_INTERRUPT("CreatePipeline Failed.");
 		return;
 	}
 }

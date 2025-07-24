@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/SSVector.h"
+#include "SSEngineDefault/Public/SSDirectXMathCustom.h"
 
 struct alignas(16) CBARenderEnvParam
 {

@@ -20,7 +20,7 @@ public:
 	virtual void SetWorldRotation(const Quaternion& InRotation) override;
 
 	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) override;
-	virtual const GALRIMetadata* GetGALMetadata() const override;
+	virtual GALRIMetadata* GetGALMetadata() const override;
 	virtual void ReleaseGALMetaData() override;
 
 	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) override;

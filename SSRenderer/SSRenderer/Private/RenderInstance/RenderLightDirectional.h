@@ -20,7 +20,7 @@ public:
 	virtual void SetWorldRotation(const Quaternion& InRotation) override;
 
 	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) override;
-	virtual const GALRIMetadata* GetGALMetadata() const override;
+	virtual GALRIMetadata* GetGALMetadata() const override;
 	virtual void ReleaseGALMetaData() override;
 
 	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) override;
@@ -30,16 +30,12 @@ public:
 
 	// IRenderLight
 	ELightType GetLightType() const override;
-	virtual XMVECTOR CalcDirectionalLightDirection() const override;
-
 	virtual bool IsShadowMapEnabled() const override;
 	virtual void SetEnableShadowMap(bool bEnable) override;
 
-	virtual const RenderLightDirectionalDesc& GetDirectionalLightDesc() override;
-
-	virtual void InjectShadowMapXXX(GALRenderTarget* ShadowMapToHandover) override;
-	virtual GALRenderTarget* GetShadowMap() const override;
-	virtual void ReleaseShadowMap() override;
+	virtual const RenderLightDirectionalDesc& GetDirectionalLightDesc() const override;
+	virtual XMVECTOR CalcDirectionalLightDirection() const override;
+	virtual XMMATRIX CalcShadowMapVPMatrix() const override;
 	// ~IRenderLight
 
 
@@ -47,7 +43,7 @@ private:
 	XMMATRIX _WorldRotationMatrix;
 	SObjHashCode _GameObjectHashCode = nullptr;
 	IRenderWorld* _IncludedRenderWorld = nullptr;
+	GALRIMetadata* _ShadowMapMetaData = nullptr;
 
 	RenderLightDirectionalDesc _Desc;
-	GALRenderTarget* _ShadowMap = nullptr;
 };

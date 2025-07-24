@@ -14,7 +14,7 @@ ERenderInstanceType RIStaticMesh::GetRIType() const
 	return ERenderInstanceType::StaticMesh;
 }
 
-const GALRIMetadata* RIStaticMesh::GetGALMetadata() const
+GALRIMetadata* RIStaticMesh::GetGALMetadata() const
 {
 	return _MetaData;
 }
