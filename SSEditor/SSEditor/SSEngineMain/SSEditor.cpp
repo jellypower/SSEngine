@@ -106,7 +106,7 @@ void SSEditor::StartupEngine()
 
 		CameraComp->SetFOVWithDegrees(90);
 		CameraComp->SetNearZ(0.01f);
-		CameraComp->SetFarZ(3.f);
+		CameraComp->SetFarZ(10000.f);
 		CameraObject->SetPosition(Vector4f(0,0,-10.f,0));
 		CameraObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 0, 1, 0)));
 		TEMP_Camera = CameraComp;

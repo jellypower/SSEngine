@@ -228,17 +228,12 @@ void SSRenderer::PerFrame()
 						continue;
 					}
 
-					_MainDeviceContext->SetShadowMap(LightItem);
-
-					ELightType Type = LightItem->GetLightType();
-					if (Type == ELightType::Directional)
+					_MainDeviceContext->BeginDrawShadowMap(LightItem);
+					for (IRenderInstance* ShadowCastingInstance : _RenderInstancesToDraw)
 					{
-						for (IRenderInstance* ShadowCastingInstance : _RenderInstancesToDraw)
-						{
-							_MainDeviceContext->DrawShadow(ShadowCastingInstance);
-						}
+						_MainDeviceContext->DrawShadow(ShadowCastingInstance);
 					}
-
+					_MainDeviceContext->EndDrawShadowMap();
 				}
 			}
 

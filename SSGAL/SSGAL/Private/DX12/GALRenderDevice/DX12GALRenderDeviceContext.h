@@ -34,9 +34,11 @@ public:
 
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 
-	virtual void SetShadowMap(IRenderLight* InLightToDrawShadowMap) override; // SetPSO, SetRenderTarget
-	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 	virtual void AddRenderLightToDraw(IRenderLight* InLight) override;
+	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) override; // SetPSO, SetRenderTarget
+	virtual void EndDrawShadowMap() override;
+
+	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
 	virtual void SetPSO(const PipelineDesc& InPSODesc) override;
@@ -81,6 +83,6 @@ private:
 
 	IRenderCamera* _CurRenderCamera = nullptr;
 	DX12GALRWMetaData* _CurRenderWorldGALData = nullptr;
-	GALRIShadowMapMetadata* _LastSetShadowMapMetadata = nullptr;
+	GALRIShadowMapMetadata* _DrawingShadowMapMetadata = nullptr;
 	PipelineDesc _LastSetPSO;
 };

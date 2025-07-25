@@ -21,7 +21,8 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 	_ResourceSize.Y = Desc.ResourceHeight;
 
 	SS_ASSERT(Desc.Format == ERTColorFormat::D32_FLOAT);
-	SS_ASSERT(Desc.InitialResourceState == EResourceStateType::DepthWrite);
+	D3D12_RESOURCE_STATES D3DInitialResourceState = SS::DX12Util::ConvertResourceStates(Desc.InitialResourceState);
+	
 
 	// Create DSV
 	{
@@ -54,7 +55,7 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 			&depthHeapTypeProp,
 			D3D12_HEAP_FLAG_NONE,
 			&depthDesc,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			D3DInitialResourceState,
 			&depthOptimizedClearValue,
 			IID_PPV_ARGS(&_DepthStencil));
 		if (FAILED(hr))
