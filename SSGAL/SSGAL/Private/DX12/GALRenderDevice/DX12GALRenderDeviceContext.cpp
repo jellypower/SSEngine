@@ -441,18 +441,44 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 
 void DX12GALRenderDeviceContext::SetShadowMap(IRenderLight* InLightToDrawShadowMap)
 {
+	bool bIsAddedLight = false;
+	for (IRenderLight* AddedRenderLightItem : _RenderLightsToDraw)
+	{
+		if (AddedRenderLightItem == InLightToDrawShadowMap)
+		{
+			bIsAddedLight = true;
+			break;
+		}
+	}
+
+	if (bIsAddedLight == false)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+
 	ELightType LightType = InLightToDrawShadowMap->GetLightType();
 
 	if (LightType == ELightType::Directional)
 	{
-		GALRIMetadata* GM;
+		IRenderLightDirectional* DirectionalLight = 
+			static_cast<IRenderLightDirectional*>(InLightToDrawShadowMap);
+
 		DX12GALRIDirectionalLightShadowMapMetadata* DirectionalLightShadowMapMetadata =
-			static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(InLightToDrawShadowMap->GetGALMetadata());
+			static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(DirectionalLight->GetGALMetadata());
 
 		_LastSetShadowMapMetadata = DirectionalLightShadowMapMetadata;
-		GALRenderTarget* RenderTarget = DirectionalLightShadowMapMetadata->GetShadowMap();
-		SetRenderTarget(0, nullptr, RenderTarget);
 
+		DirectionalLightShadowMapMetadata->_ShadowMapCBSysMemAddr->VPMatrix =
+			XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix());
+
+		
+
+		GALRenderTarget* ShadowMap = DirectionalLightShadowMapMetadata->GetShadowMap();
+
+		ClearRenderTarget(ShadowMap);
+		SetRenderTarget(0, nullptr, ShadowMap);
 	}
 	else
 	{
@@ -462,6 +488,8 @@ void DX12GALRenderDeviceContext::SetShadowMap(IRenderLight* InLightToDrawShadowM
 
 void DX12GALRenderDeviceContext::SetRenderCamera(IRenderCamera* InCamera)
 {
+	_CurRenderCamera = InCamera;
+
 	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
 
 	IRenderWorld* CurRenderWorld = InCamera->GetIcludedRenderWorld();
@@ -498,15 +526,6 @@ void DX12GALRenderDeviceContext::AddRenderLightToDraw(IRenderLight* InLight)
 			{
 				DirectionalLight->ReleaseGALMetaData();
 			}
-
-
-			if (DX12GALRIDirectionalLightShadowMapMetadata* GALDirectionalLightShadowMapMetadata = 
-				static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(LightItem->GetGALMetadata()))
-			{
-				GALDirectionalLightShadowMapMetadata->_ShadowMapCBSysMemAddr->VPMatrix =
-					XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix());
-			}
-
 			
 			_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunDirection = DirectionalLight->CalcDirectionalLightDirection();
 			_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunIntensity = { 1, 1, 1, 0 };
@@ -919,6 +938,7 @@ void DX12GALRenderDeviceContext::ResetRenderState()
 	_BoundRenderTargets.Clear();
 	_BoundDSV = nullptr;
 
+	_CurRenderCamera = nullptr;
 	_CurRenderWorldGALData = nullptr;
 	_LastSetShadowMapMetadata = nullptr;
 	_LastSetPSO = PipelineDesc(); // 초기화

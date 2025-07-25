@@ -79,6 +79,7 @@ private:
 	SS::PooledList<GALRenderTarget*> _BoundRenderTargets;
 	SS::PooledList<IRenderLight*> _RenderLightsToDraw;
 
+	IRenderCamera* _CurRenderCamera = nullptr;
 	DX12GALRWMetaData* _CurRenderWorldGALData = nullptr;
 	GALRIShadowMapMetadata* _LastSetShadowMapMetadata = nullptr;
 	PipelineDesc _LastSetPSO;

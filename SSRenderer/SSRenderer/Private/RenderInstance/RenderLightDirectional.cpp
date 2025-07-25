@@ -121,19 +121,40 @@ XMVECTOR RenderLightDirectional::CalcDirectionalLightDirection() const
 
 XMMATRIX RenderLightDirectional::CalcShadowMapVPMatrix() const
 {
-	constexpr float WORLD_BOUNDARY_RADIUS = 100000000;
+	constexpr float WORLD_BOUNDARY_RADIUS = 1000;
 
+	static const XMVECTOR FORWARD_VECTOR = { 0, 0, 1 ,1 };
 	static const XMVECTOR UP_VECTOR = { 0, 1, 0 ,1 };
-	XMVECTOR ShadowMapCamPos = { 0,1,0,1 }; // UpDirection
-	ShadowMapCamPos = XMVector4Transform(ShadowMapCamPos, _WorldRotationMatrix);
+	XMVECTOR ShadowMapCamPos = XMVector4Transform(UP_VECTOR, _WorldRotationMatrix);
+
+	XMVECTOR EyeDirection = -ShadowMapCamPos;
+	EyeDirection.m128_f32[3] = 0;
+
+	ShadowMapCamPos *= WORLD_BOUNDARY_RADIUS;
+	ShadowMapCamPos.m128_f32[3] = 1;
+
+	XMVECTOR CamUpDir = XMVector4Transform(FORWARD_VECTOR, _WorldRotationMatrix);
+
+
+//	XMMATRIX ViewMat = XMMatrixLookToLH(
+//		ShadowMapCamPos,
+//		EyeDirection,
+//		UP_VECTOR);
 
 	XMMATRIX ViewMat = XMMatrixLookToLH(
-		ShadowMapCamPos * WORLD_BOUNDARY_RADIUS,
-		-ShadowMapCamPos,
-		UP_VECTOR);
+		ShadowMapCamPos,
+		EyeDirection,
+		CamUpDir);
 
+	//XMMATRIX ViewMat = XMMatrixLookToLH(
+	//	{ 0.00000000, 0.00000000, -10.f, 1.00000000 },
+	//	{ 0.00000000, 0.00000000, 1.00000000, 0.00000000 },
+	//	{ 0.00000000, 1.00000000, 0.00000000, 0.00000000 });
 
-	XMMATRIX ProjMat = XMMatrixOrthographicLH(_Desc.ShadowMapSize.X, _Desc.ShadowMapSize.X, 0.001, WORLD_BOUNDARY_RADIUS);
-
+	// CameraComp->SetFOVWithDegrees(90);
+	// CameraComp->SetNearZ(0.01f);
+	// CameraComp->SetFarZ(10000.f);
+	constexpr float SUPER_TELEPHOTO_VIEWING_ANGLE = XM_PI * 0.03;
+	XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(SUPER_TELEPHOTO_VIEWING_ANGLE, 1, 0.1f, WORLD_BOUNDARY_RADIUS * 1.1f);
 	return ViewMat * ProjMat;
 }
