@@ -43,9 +43,10 @@ public:
 public:
 	virtual SObjHashCode GetPixelPickedObjectID() const = 0;
 	virtual Vector2f GetViewportSize() const = 0;
+	virtual const IRenderCamera* GetMainRenderCamera() const = 0;
 
 public:
-	virtual void SetRenderCamera(IRenderCamera* InCamera) = 0;
+	virtual void SetMainRenderCamera(IRenderCamera* InCamera) = 0;
 	virtual void RequestPixelPicking(int32 X, int32 Y) = 0;
 
 public:

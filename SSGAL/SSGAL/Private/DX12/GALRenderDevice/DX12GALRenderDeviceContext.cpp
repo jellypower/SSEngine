@@ -525,7 +525,7 @@ void DX12GALRenderDeviceContext::SetRenderCamera(IRenderCamera* InCamera)
 	}
 
 
-	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->VPMatrix = XMMatrixTranspose(InCamera->GetVPMatrix());
+	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->VPMatrix = XMMatrixTranspose(InCamera->CalcVPMatrix());
 	_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->ViewerPos = InCamera->GetCameraTransform().Position.SimdVec;
 }
 

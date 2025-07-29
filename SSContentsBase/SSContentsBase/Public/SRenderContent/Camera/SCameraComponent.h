@@ -15,12 +15,6 @@ class SSCONTENTBASE_MODULE SCameraComponent : public SComponentBase
 private:
 	IRenderCamera* _RenderCamera = nullptr;
 
-	XMMATRIX _ViewMat;
-	XMMATRIX _ProjMat;
-
-	float _FOV = 0.f; // FOV's unit is "Radian", "Y Degree" 
-	float _NearZ = 0.f;
-	float _FarZ = 0.f;
 
 public:
 	virtual void PostConstructHierarchy() override;
@@ -32,14 +26,12 @@ public:
 
 public:
 	IRenderCamera* GetRenderCamera() const { return _RenderCamera; }
-	float GetNearZ() const { return _NearZ; }
-	float GetFarZ() const { return _FarZ; }
+	float GetNearZ() const;
+	float GetFarZ() const;
 
+	void SetAspectRatio(float InRatio);
 	void SetFOVWithDegrees(float InDegrees);
 	void SetFOVWithRadians(float InRadians);
 	void SetNearZ(float InValue); 
 	void SetFarZ(float InValue);
-
-	void CommitCameraRenderInfo();
-
 };

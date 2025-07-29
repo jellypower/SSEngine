@@ -4,7 +4,6 @@
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 
 class IRenderLight;
-class IRenderer;
 class IRenderInstance;
 
 constexpr int32 RENDERWORLD_HASHMAP_SIZE = 1024 * 16;
@@ -25,6 +24,7 @@ public:
 
 	virtual bool IsAnyInstanceRemainInWorld() const override;
 	virtual SS::SHasherW GetWorldName() const override;
+	IRenderer* GetOwnerRenderer() const override;
 	
 	void AddToWorld(IRenderInstance* InRenderInstance) override;
 	virtual void RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToRemove) override;

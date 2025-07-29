@@ -38,7 +38,37 @@ void SCameraComponent::PreDestructHierarchy()
 
 void SCameraComponent::OnGameObjectTransformCommited()
 {
-	CommitCameraRenderInfo();
+	const SGameObject* Parent = GetParent();
+	const Transform& ParentTransform = Parent->GetTransform();
+
+	_RenderCamera->SetCameraTransform(ParentTransform);
+}
+
+float SCameraComponent::GetNearZ() const
+{
+	if (_RenderCamera == nullptr)
+	{
+		SS_ASSERT(false);
+		return 0.f;
+	}
+
+	return _RenderCamera->GetNearZ();
+}
+
+float SCameraComponent::GetFarZ() const
+{
+	if (_RenderCamera == nullptr)
+	{
+		SS_ASSERT(false);
+		return 0.f;
+	}
+
+	return _RenderCamera->GetFarZ();
+}
+
+void SCameraComponent::SetAspectRatio(float InRatio)
+{
+	_RenderCamera->SetAspectRatio(InRatio);
 }
 
 void SCameraComponent::SetFOVWithDegrees(float InDegrees)
@@ -58,59 +88,16 @@ void SCameraComponent::SetFOVWithRadians(float InRadians)
 		InRadians = CAM_FOV_MAX;
 	}
 
-	_FOV = InRadians;
-
-	if (CAM_FOV_MIN <= _FOV && _FOV <= CAM_FOV_MAX &&
-		0 < _NearZ &&
-		0 < _FarZ &&
-		_NearZ < _FarZ)
-	{
-		Vector2f ViewportSize = g_Renderer->GetViewportSize();
-		_ProjMat = XMMatrixPerspectiveFovLH(_FOV, ViewportSize.X / ViewportSize.Y, _NearZ, _FarZ);
-		CommitCameraRenderInfo();
-	}
+	_RenderCamera->SetFOVWithRadians(InRadians);
 }
 
 void SCameraComponent::SetNearZ(float InValue)
 {
-	_NearZ = InValue;
-
-	if (CAM_FOV_MIN <= _FOV && _FOV <= CAM_FOV_MAX &&
-		0 < _NearZ &&
-		0 < _FarZ &&
-		_NearZ < _FarZ)
-	{
-		Vector2f ViewportSize = g_Renderer->GetViewportSize();
-		_ProjMat = XMMatrixPerspectiveFovLH(_FOV, ViewportSize.X / ViewportSize.Y, _NearZ, _FarZ);
-		CommitCameraRenderInfo();
-	}
+	_RenderCamera->SetNearZ(InValue);
 }
 
 void SCameraComponent::SetFarZ(float InValue)
 {
-	_FarZ = InValue;
-
-	if (CAM_FOV_MIN <=_FOV && _FOV <= CAM_FOV_MAX &&
-		0 < _NearZ &&
-		0 < _FarZ &&
-		_NearZ <_FarZ)
-	{
-		Vector2f ViewportSize = g_Renderer->GetViewportSize();
-		_ProjMat = XMMatrixPerspectiveFovLH(_FOV, ViewportSize.X / ViewportSize.Y, _NearZ, _FarZ);
-		CommitCameraRenderInfo();
-	}
+	_RenderCamera->SetFarZ(InValue);
 }
 
-void SCameraComponent::CommitCameraRenderInfo()
-{
-	const SGameObject* Parent = GetParent();
-	const Transform& ParentTransform = Parent->GetTransform();
-
-	XMVECTOR EyePos = ParentTransform.Position.SimdVec;
-	XMVECTOR Direction = ParentTransform.GetForward().SimdVec;
-	XMVECTOR Up = ParentTransform.GetUp().SimdVec;
-	_ViewMat = XMMatrixLookToLH(EyePos, Direction, Up);
-
-	_RenderCamera->SetCameraTransform(ParentTransform);
-	_RenderCamera->SetVPMatrix(_ViewMat * _ProjMat);
-}

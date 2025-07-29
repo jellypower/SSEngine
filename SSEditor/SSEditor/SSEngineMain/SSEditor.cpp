@@ -104,20 +104,21 @@ void SSEditor::StartupEngine()
 		SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
 		_DefaultWorld->AddToWorld(CameraObject);
 
-		CameraComp->SetFOVWithDegrees(90);
+
+		CameraComp->SetFOVWithDegrees(60);
 		CameraComp->SetNearZ(0.01f);
-		CameraComp->SetFarZ(10000.f);
+		CameraComp->SetFarZ(20.f);
 		CameraObject->SetPosition(Vector4f(0,0,-10.f,0));
 		CameraObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 0, 1, 0)));
 		TEMP_Camera = CameraComp;
-		_Renderer->SetRenderCamera(CameraComp->GetRenderCamera());
+		_Renderer->SetMainRenderCamera(CameraComp->GetRenderCamera());
 	}
 
 
 	{
 		SGameObject* LightObject = NewSObject<SGameObject>(L"GlobalLight");
 		SRenderLightDirectionalComponent* LightComp = LightObject->CreateComponent<SRenderLightDirectionalComponent>(L"CameraComponent");
-		LightComp->_Desc.ShadowMapSize = Vector2f(1024.f, 1024.f);
+		LightComp->_Desc.ShadowMapSize = Vector2f(4096.f, 4096.f);
 		LightComp->_Desc.bEnableShadowMap = true;
 		SGameObjectConstructor::FinishConstructHierarchy(LightObject);
 		_DefaultWorld->AddToWorld(LightObject);

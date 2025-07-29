@@ -4,12 +4,14 @@
 class IRenderLight;
 class IRenderInstance;
 class GALRWMetaData;
+class IRenderer;
 
 class IRenderWorld : public INoncopyable
 {
 public:
 	virtual bool IsAnyInstanceRemainInWorld() const = 0;
 	virtual SS::SHasherW GetWorldName() const = 0;
+	virtual IRenderer* GetOwnerRenderer() const = 0;
 
 	virtual void AddToWorld(IRenderInstance* InRenderInstance) = 0;
 

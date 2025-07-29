@@ -62,9 +62,10 @@ public:
 public:
 	virtual SObjHashCode GetPixelPickedObjectID() const override;
 	virtual Vector2f GetViewportSize() const override;
+	virtual const IRenderCamera* GetMainRenderCamera() const override;
 
 public:
-	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
+	virtual void SetMainRenderCamera(IRenderCamera* InCamera) override;
 	virtual void RequestPixelPicking(int32 X, int32 Y) override;
 
 public:

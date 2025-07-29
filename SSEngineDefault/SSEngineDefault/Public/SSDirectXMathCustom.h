@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <cstring>
+
 #include "SSNativeKeywords.h"
 #include <DirectXMath.h>
 

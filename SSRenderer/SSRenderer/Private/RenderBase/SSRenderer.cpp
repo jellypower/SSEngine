@@ -83,6 +83,11 @@ Vector2f SSRenderer::GetViewportSize() const
 	return VB.WidthHeight;
 }
 
+const IRenderCamera* SSRenderer::GetMainRenderCamera() const
+{
+	return _MainRenderCamera;
+}
+
 
 void SSRenderer::AddGALStateChangedAsset(IAssetBase* AssetToChange)
 {
@@ -112,8 +117,12 @@ IRenderWorld* SSRenderer::CreateRenderWorld(const utf16* InWorldName)
 	return NewRenderWorld;
 }
 
-void SSRenderer::SetRenderCamera(IRenderCamera* InCamera)
+void SSRenderer::SetMainRenderCamera(IRenderCamera* InCamera)
 {
+	GALRenderTarget* SwapChainBuffer = _GALRenderDevice->GetDefaultViewportRenderTarget();
+	Vector2f ViewportWidthHeight = SwapChainBuffer->GetViewportBoxSize().WidthHeight;
+	InCamera->SetAspectRatio(ViewportWidthHeight.X / ViewportWidthHeight.Y);
+
 	_MainRenderCamera = InCamera;
 }
 
