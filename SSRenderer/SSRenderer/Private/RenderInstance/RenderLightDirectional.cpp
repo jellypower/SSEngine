@@ -121,15 +121,13 @@ XMVECTOR RenderLightDirectional::CalcDirectionalLightDirection() const
 	return LightDir;
 }
 
-XMMATRIX RenderLightDirectional::CalcShadowMapVPMatrix() const
+XMMATRIX RenderLightDirectional::CalcShadowMapVPMatrix(const IRenderCamera* CameraToUseShadowMap) const
 {
-	IRenderer* Renderer = _IncludedRenderWorld->GetOwnerRenderer();
-	const IRenderCamera* RenderCam = Renderer->GetMainRenderCamera();
-	const Transform& CamTransform = RenderCam->GetCameraTransform();
-	float CamFOV = RenderCam->GetFOVWithRadians();
-	float CamNearZ = RenderCam->GetNearZ();
-	float CamFarZ = RenderCam->GetFarZ();
-	float AspectRatio = RenderCam->GetAspectRatio();
+	const Transform& CamTransform = CameraToUseShadowMap->GetCameraTransform();
+	float CamFOV = CameraToUseShadowMap->GetFOVWithRadians();
+	float CamNearZ = CameraToUseShadowMap->GetNearZ();
+	float CamFarZ = CameraToUseShadowMap->GetFarZ();
+	float AspectRatio = CameraToUseShadowMap->GetAspectRatio();
 	float CamPlaneCenterDist = (CamNearZ + CamFarZ) / 2.f;
 	XMVECTOR CamForward = CamTransform.GetForward().SimdVec;
 	XMVECTOR CamFrustumCenter = CamTransform.Position.SimdVec + (CamForward * CamPlaneCenterDist);
@@ -142,12 +140,11 @@ XMMATRIX RenderLightDirectional::CalcShadowMapVPMatrix() const
 	float CamPlaneDepth = CamFarZ - CamNearZ;
 
 	// 카메라 직육면체의 대각선 길이
-	float CubiodMaxDist = FarHeight * FarHeight + FarWidth * FarHeight + CamPlaneDepth * CamPlaneDepth;
+	float CubiodMaxDist = FarHeight * FarHeight + FarWidth * FarWidth + CamPlaneDepth * CamPlaneDepth;
 	CubiodMaxDist = sqrt(CubiodMaxDist);
 
 	static const XMVECTOR DOWN_VECTOR = { 0, -1, 0 ,0 };
 	static const XMVECTOR FORWARD_VECTOR = { 0, 0, 1, 0 };
-	constexpr float SHADOWMAP_VIEWPOS_DIST = 10;
 	XMVECTOR ShadowMapViewDir = XMVector4Transform(DOWN_VECTOR, _WorldRotationMatrix);
 	XMVECTOR ShadowMapUpDir = XMVector4Transform(FORWARD_VECTOR, _WorldRotationMatrix);
 	XMVECTOR ShadowMapViewPos = CamFrustumCenter - ShadowMapViewDir * CubiodMaxDist / 2;

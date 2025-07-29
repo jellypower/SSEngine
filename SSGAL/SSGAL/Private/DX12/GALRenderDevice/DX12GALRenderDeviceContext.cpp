@@ -477,7 +477,7 @@ void DX12GALRenderDeviceContext::BeginDrawShadowMap(IRenderLight* InLightToDrawS
 		_DrawingShadowMapMetadata = DirectionalLightShadowMapMetadata;
 
 		DirectionalLightShadowMapMetadata->_ShadowMapCBSysMemAddr->VPMatrix =
-			XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix());
+			XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix(_CurRenderCamera));
 
 		
 

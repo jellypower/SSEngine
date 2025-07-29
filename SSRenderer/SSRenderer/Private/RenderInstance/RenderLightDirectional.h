@@ -35,7 +35,7 @@ public:
 
 	virtual const RenderLightDirectionalDesc& GetDirectionalLightDesc() const override;
 	virtual XMVECTOR CalcDirectionalLightDirection() const override;
-	virtual XMMATRIX CalcShadowMapVPMatrix() const override;
+	virtual XMMATRIX CalcShadowMapVPMatrix(const IRenderCamera* CameraToUseShadowMap) const override;
 	// ~IRenderLight
 
 

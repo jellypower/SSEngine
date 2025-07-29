@@ -1,5 +1,5 @@
 #include "include/CBSet/IS_DefaultPbrCBSet.hlsl"
-#include "include/Func/IS_PbrLight.hlsl"
+#include "include/Func/IS_PbrFunctionCollection.hlsl"
 #include "include/Types/IS_DeferredShading.hlsl"
 
 
