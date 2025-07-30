@@ -113,7 +113,7 @@ void DX12GALRWMetaData::SyncLights(const SS::PooledList<IRenderLight*>& InLights
 			&& LightItem->IsShadowMapEnabled() && lShadowMapCnt == 0)
 		{
 			IRenderLightDirectional* DirectionalLight = (IRenderLightDirectional*)LightItem;
-			_RenderLightParamSysMemAddr->ShadowMapVPMat = DirectionalLight->CalcShadowMapVPMatrix(MainRenderCamera);
+			_RenderLightParamSysMemAddr->ShadowMapVPMat = XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix(MainRenderCamera));
 
 			DX12GALRIDirectionalLightShadowMapMetadata* GALDirectionalLightShadowMapMetaData = static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(DirectionalLight->GetGALMetadata());
 			DX12GALDSVRenderTarget* ShadowMap = (DX12GALDSVRenderTarget*)GALDirectionalLightShadowMapMetaData->GetShadowMap();

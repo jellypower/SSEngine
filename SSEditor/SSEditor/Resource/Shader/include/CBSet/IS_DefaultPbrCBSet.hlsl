@@ -36,7 +36,7 @@ Texture2D<float> txOcclusion : register(t4);
 #define SINGLE_SHADOWMAP_CNT_LIMIT 4
 #define DIRECTIONAL_LIGHT_LIMIT 8
 #define POINT_LIGHT_LIMIT 32
-cbuffer RenderLightParam : register(b2)
+cbuffer RenderLightParam : register(b3)
 {
     int DirectionalLightCnt;
     int PointLightCnt;
@@ -45,7 +45,7 @@ cbuffer RenderLightParam : register(b2)
     PointLight PointLights[POINT_LIGHT_LIMIT];
 };
 
-Texture2D txSingleShadowMaps[SINGLE_SHADOWMAP_CNT_LIMIT] : register(t5);
+Texture2D<float> txSingleShadowMap : register(t5);
 
 
 

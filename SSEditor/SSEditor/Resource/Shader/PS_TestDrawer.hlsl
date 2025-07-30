@@ -18,6 +18,16 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     float4 SunDirection = float4(0, 1, 0, 0);
     float4 SunIntensity = float4(1, 1, 1, 1);
     
+    float4 MeshShadowPoint = mul(input.WorldPos, ShadowMapVPMat);
+    float2 ShadowMapUV = MeshShadowPoint.xy;
+    ShadowMapUV.y = -ShadowMapUV.y;
+    ShadowMapUV = ShadowMapUV / 2 + float2(0.5, 0.5);
+    float ShadowMapDepth = txSingleShadowMap.Sample(samLinear, ShadowMapUV);
+    if (ShadowMapDepth < MeshShadowPoint.z - 0.01)
+    {
+        SunIntensity = float4(0, 0, 0, 0);
+    }
+    
     float3 L = normalize(SunDirection);
 
 
