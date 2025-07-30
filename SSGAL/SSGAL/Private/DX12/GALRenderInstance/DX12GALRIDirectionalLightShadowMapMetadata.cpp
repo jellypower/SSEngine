@@ -36,7 +36,7 @@ DX12GALRIDirectionalLightShadowMapMetadata::DX12GALRIDirectionalLightShadowMapMe
 
 	// Constant Buffer
 	{
-		_OwnerRenderDevice = (DX12GALRenderDevice*)InRenderDevice;
+		_OwnerRenderDevice = InRenderDevice;
 		ID3D12Device5* D3DDevice = _OwnerRenderDevice->GetD3DDevice();
 		SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
 

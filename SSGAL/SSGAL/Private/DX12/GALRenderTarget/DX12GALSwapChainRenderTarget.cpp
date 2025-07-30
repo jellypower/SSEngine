@@ -235,8 +235,14 @@ ID3D12Resource* DX12GALSwapChainRenderTarget::GetCurrentResource() const
 	return _DXRenderTargets[_CurRenderTargetIdx];
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALSwapChainRenderTarget::GetCurrentDescHandle() const
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALSwapChainRenderTarget::GetCurrentDSV() const
 {
 	return _RTDescHandles[_CurRenderTargetIdx];
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALSwapChainRenderTarget::GetCurrentSRV() const
+{
+	SS_INTERRUPT("IT MUST NOT BE CALLED");
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE();
 }
 

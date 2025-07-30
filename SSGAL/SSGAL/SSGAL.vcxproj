@@ -237,6 +237,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClInclude Include="Private\PCommon\GALWrapper\RootSignaturePool.h" />
     <ClInclude Include="Private\PCommon\GALWrapper\RootSignatureWrapper.h" />
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBADefaultPbrMtlParam.h" />
+    <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBARenderLightParam.h" />
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h" />
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBARenderEnvParam.h" />
     <ClInclude Include="Public\GALRenderAsset\GALMaterialAssetWrapperBase.h" />

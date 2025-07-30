@@ -15,6 +15,9 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     float4 emissiveSample = txEmissive.Sample(samLinear, input.UV0);
     float3 emissive = emissiveFactor * emissiveSample.rgb * emissiveSample.a;
 
+    float4 SunDirection = float4(0, 1, 0, 0);
+    float4 SunIntensity = float4(1, 1, 1, 1);
+    
     float3 L = normalize(SunDirection);
 
 

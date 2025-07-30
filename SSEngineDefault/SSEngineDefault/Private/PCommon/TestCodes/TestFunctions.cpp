@@ -331,7 +331,7 @@ void CustomHeapAllocatorTest()
 	}
 
 	{
-		TestCustomHeapAllocator Allocator(1000, 10);
+		TestCustomHeapAllocator Allocator(1000, 10, 1);
 
 		{
 			AllocatedChunkHeader Desc300 = Allocator.AllocChunk(300);
@@ -400,7 +400,7 @@ void CustomHeapAllocatorTest()
 	}
 
 	{
-		TestCustomHeapAllocator Allocator(50, 10);
+		TestCustomHeapAllocator Allocator(50, 10, 1);
 
 		{
 			AllocatedChunkHeader Desc1 = Allocator.AllocChunk(10);

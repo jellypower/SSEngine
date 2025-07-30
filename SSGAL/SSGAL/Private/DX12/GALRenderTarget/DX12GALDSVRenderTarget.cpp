@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "DX12GALDSVRenderTarget.h"
 
+#include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
+
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
 #include "Private/DX12/Utils/SSDX12Utils.h"
@@ -26,11 +28,6 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 
 	// Create DSV
 	{
-		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-		depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
-		depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-		depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
-
 		D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
 		depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 		depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
@@ -71,24 +68,53 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 		{
 			_DepthStencil->SetName(ResourceName);
 		}
+	}
 
-		// Create Descriptor
+	// Create Descriptor Heap for DSV
+	{
+		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+		dsvHeapDesc.NumDescriptors = 1;	// Default Depth Buffer
+		dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		if (FAILED(D3DDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&_DSVHeap))))
 		{
-			D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-			dsvHeapDesc.NumDescriptors = 1;	// Default Depth Buffer
-			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-			dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			if (FAILED(D3DDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&_DSVHeap))))
-			{
-				SS_INTERRUPT();
-			}
-
-			_DSVDescriptorSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
+			SS_INTERRUPT();
 		}
 
+		_DSVDescriptorSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	}
+
+	// Create DSV
+	{
 		_DepthStencilDescHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
+
+		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
+		depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
 		D3DDevice->CreateDepthStencilView(_DepthStencil, &depthStencilDesc, _DepthStencilDescHandle);
+	}
+
+	// Alloc DescriptorHeap For Tex
+	{
+		SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
+
+		_SRVDescTableChunk = DescriptorTableAllocatorForTex->AllocChunk(1, L"DX12GALDefaultRenderTarget::_DepthStencil");
+		ID3D12DescriptorHeap* AllocatedDescHeap = (ID3D12DescriptorHeap*)_SRVDescTableChunk.PageContent;
+		_SRVDescHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+			AllocatedDescHeap->GetCPUDescriptorHandleForHeapStart(),
+			_SRVDescTableChunk.ChunkOffset,
+			D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	}
+
+	// Create SRV
+	{
+		D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+		SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		SRVDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		SRVDesc.Texture2D.MipLevels = 1;
+		D3DDevice->CreateShaderResourceView(_DepthStencil, &SRVDesc, _SRVDescHandle);
 	}
 
 
@@ -106,6 +132,11 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 
 DX12GALDSVRenderTarget::~DX12GALDSVRenderTarget()
 {
+	{
+		SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
+		DescriptorTableAllocatorForTex->ReleaseChunk(_SRVDescTableChunk);
+	}
+
 	_DSVHeap->Release();
 	_DepthStencil->Release();
 }
@@ -135,9 +166,14 @@ ID3D12Resource* DX12GALDSVRenderTarget::GetCurrentResource() const
 	return _DepthStencil;
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDSVRenderTarget::GetCurrentDescHandle() const
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDSVRenderTarget::GetCurrentDSV() const
 {
 	return _DepthStencilDescHandle;
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDSVRenderTarget::GetCurrentSRV() const
+{
+	return _SRVDescHandle;
 }
 
 void DX12GALDSVRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From,

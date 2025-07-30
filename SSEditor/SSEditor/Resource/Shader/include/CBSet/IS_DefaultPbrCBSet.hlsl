@@ -1,8 +1,6 @@
 // StaticMeshToDefaultPSInput
 #include "include/Types/IS_DefaultTypes.hlsl"
 
-
-
 cbuffer ModelBuffer : register(b0)
 {
     matrix WMatrix;
@@ -13,8 +11,6 @@ cbuffer ModelBuffer : register(b0)
 cbuffer RenderEnvParam : register(b1)
 {
     matrix VPMatrix;
-    float4 SunDirection;
-    float4 SunIntensity;
     float4 ViewerPos;
 };
 
@@ -33,5 +29,25 @@ Texture2D<float3> txNormal : register(t1);
 Texture2D<float> txMetallic : register(t2);
 Texture2D txEmissive : register(t3);
 Texture2D<float> txOcclusion : register(t4);
+
+
+
+
+#define SINGLE_SHADOWMAP_CNT_LIMIT 4
+#define DIRECTIONAL_LIGHT_LIMIT 8
+#define POINT_LIGHT_LIMIT 32
+cbuffer RenderLightParam : register(b2)
+{
+    int DirectionalLightCnt;
+    int PointLightCnt;
+    matrix ShadowMapVPMat;
+    DirectionalLight DirectionalLights[DIRECTIONAL_LIGHT_LIMIT];
+    PointLight PointLights[POINT_LIGHT_LIMIT];
+};
+
+Texture2D txSingleShadowMaps[SINGLE_SHADOWMAP_CNT_LIMIT] : register(t5);
+
+
+
 
 SamplerState samLinear : register(s0);

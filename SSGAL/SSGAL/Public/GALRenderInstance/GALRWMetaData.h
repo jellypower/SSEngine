@@ -5,6 +5,6 @@ class IRenderWorld;
 
 class GALRWMetaData : public INoncopyable
 {
-protected:
-	IRenderWorld* _OwnerRenderWorld = nullptr;
+public:
+	virtual IRenderWorld* GetOwnerRenderWorld() const = 0;
 };

@@ -1,7 +1,7 @@
 #include "TestCustomHeapAllocator.h"
 
-TestCustomHeapAllocator::TestCustomHeapAllocator(int32 DefaultPageSize, int32 MinAllocSize, const utf16* AllocatorName)
-	: SSCustomMemChunkAllocator(DefaultPageSize, MinAllocSize, AllocatorName)
+TestCustomHeapAllocator::TestCustomHeapAllocator(int32 DefaultPageSize, int32 MinAllocSize, int32 AlignSize, const utf16* AllocatorName)
+	: SSCustomMemChunkAllocator(DefaultPageSize, MinAllocSize, AlignSize, AllocatorName)
 {
 }
 

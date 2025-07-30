@@ -10,7 +10,7 @@ DX12DescriptorHeapCustomAllocator::DX12DescriptorHeapCustomAllocator(
 	int32 MinAllocSize,
 	D3D12_DESCRIPTOR_HEAP_FLAGS DescriptorHeapFlags,
 	const utf16* AllocatorName):
-	SSCustomMemChunkAllocator(InEachPageSize, MinAllocSize, AllocatorName),
+	SSCustomMemChunkAllocator(InEachPageSize, MinAllocSize, 1, AllocatorName),
 	_RenderDevice(InRenderDevice)
 {
 	ID3D12Device5* D3DDevice = _RenderDevice->GetD3DDevice();

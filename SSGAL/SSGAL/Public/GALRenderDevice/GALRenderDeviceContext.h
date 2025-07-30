@@ -34,6 +34,8 @@ public:
 
 	
 	virtual void AddRenderLightToDraw(IRenderLight* InLight) = 0;
+	virtual void CommitAddedRenderLights() = 0;
+
 	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) = 0; // RenderTarget과 PSO를 포함한 상태를 변화시킨다
 	virtual void EndDrawShadowMap() = 0;
 

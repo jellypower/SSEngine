@@ -33,6 +33,8 @@ public:
 	virtual bool IsShadowMapEnabled() const override;
 	virtual void SetEnableShadowMap(bool bEnable) override;
 
+	virtual XMVECTOR GetLightColor() const override;
+
 	virtual const RenderLightDirectionalDesc& GetDirectionalLightDesc() const override;
 	virtual XMVECTOR CalcDirectionalLightDirection() const override;
 	virtual XMMATRIX CalcShadowMapVPMatrix(const IRenderCamera* CameraToUseShadowMap) const override;

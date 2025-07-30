@@ -8,7 +8,8 @@ class DX12GALRenderTargetBase : public GALRenderTarget
 {
 public:
 	virtual ID3D12Resource* GetCurrentResource() const = 0;
-	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentDescHandle() const = 0;
+	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentDSV() const = 0;
+	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentSRV() const = 0;
 
 	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList) = 0;
 };

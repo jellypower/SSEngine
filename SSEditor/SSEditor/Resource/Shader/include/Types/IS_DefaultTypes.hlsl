@@ -44,4 +44,18 @@ struct Joint
     float4x4 RotMatrix; // Inverse-transpose of PosMatrix
 };
 
+
+struct DirectionalLight
+{
+    float4 Direction;
+    float4 Color;
+};
+
+struct PointLight
+{
+    float4 Pos;
+    float4 Color;
+    float Radius;
+};
+
 #endif

@@ -238,13 +238,19 @@ void SSRenderer::PerFrame()
 					}
 
 					_MainDeviceContext->BeginDrawShadowMap(LightItem);
+
 					for (IRenderInstance* ShadowCastingInstance : _RenderInstancesToDraw)
 					{
 						_MainDeviceContext->DrawShadow(ShadowCastingInstance);
 					}
+
 					_MainDeviceContext->EndDrawShadowMap();
 				}
 			}
+
+			// Commit Render Light and Shadows
+			_MainDeviceContext->CommitAddedRenderLights();
+
 
 
 			// Default Render Target
@@ -262,6 +268,7 @@ void SSRenderer::PerFrame()
 				RenderTargets[1] = _PixelPickerRenderTarget;
 				_MainDeviceContext->SetRenderTarget(2, RenderTargets, _DSVRenderTarget);
 
+				// TODO: BeginDrawMesh ¶û EndDrawMesh ¸¸µé±â
 
 				for (IRenderInstance* Item : _RenderInstancesToDraw)
 				{

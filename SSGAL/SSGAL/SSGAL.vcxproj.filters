@@ -287,6 +287,9 @@
     <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRIDirectionalLightShadowMapMetadata.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBARenderLightParam.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

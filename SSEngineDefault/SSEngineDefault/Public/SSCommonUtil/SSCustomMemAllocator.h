@@ -35,11 +35,12 @@ private:
 
 	int32 _EachPageSize = 0;
 	int32 _MinAllocSize = 0;
+	int32 _AlignSize = 0;
 
 	SS::StringW _AllocatorName;
 
 public:
-	explicit SSCustomMemChunkAllocator(int32 InEachPageSize, int32 MinAllocSize, const utf16* AllocatorName);
+	explicit SSCustomMemChunkAllocator(int32 InEachPageSize, int32 MinAllocSize, int32 AlignSize, const utf16* AllocatorName);
 
 public:
 	bool IsAnyChunkInUse() const;

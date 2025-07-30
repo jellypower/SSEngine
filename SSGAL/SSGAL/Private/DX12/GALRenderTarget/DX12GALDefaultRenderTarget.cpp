@@ -133,9 +133,15 @@ ID3D12Resource* DX12GALDefaultRenderTarget::GetCurrentResource() const
 	return _RenderTargetResource;
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentDescHandle() const
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentDSV() const
 {
 	return _DescHandle; 
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentSRV() const
+{
+	SS_INTERRUPT("TODO: 구현하기");
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE();
 }
 
 void DX12GALDefaultRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From,

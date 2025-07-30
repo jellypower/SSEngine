@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <SSEngineDefault/Public/SSCommonUtil/AllocatedChunkHeader.h>
+
 #include "DX12GALRenderTargetBase.h"
 
 class DX12GALRenderDevice;
@@ -12,6 +14,9 @@ private:
 	ID3D12DescriptorHeap* _DSVHeap = nullptr;
 	ID3D12Resource* _DepthStencil = nullptr;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE _DepthStencilDescHandle;
+
+	AllocatedChunkHeader _SRVDescTableChunk;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE _SRVDescHandle;
 
 	Vector2i32 _ResourceSize;
 	int32 _ResrouceRowPitch;
@@ -28,7 +33,8 @@ public:
 	virtual ERTColorFormat GetRTColorFormat() const override;
 
 	virtual ID3D12Resource* GetCurrentResource() const override;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentDescHandle() const override;
+	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentDSV() const override;
+	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentSRV() const override;
 
 	virtual void ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To) override;
 	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList) override;

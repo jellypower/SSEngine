@@ -96,19 +96,23 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 		if (Initialized == false) {
 			Initialized = true;
 
-			static CD3DX12_DESCRIPTOR_RANGE texDescTable[5] = {};
-			texDescTable[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);	// t0 
-			texDescTable[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1
-			texDescTable[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);	// t2 
-			texDescTable[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);	// t3 
-			texDescTable[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4);	// t4 
+			static CD3DX12_DESCRIPTOR_RANGE MaterialTextures[5] = {};
+			MaterialTextures[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);	// t0 
+			MaterialTextures[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1
+			MaterialTextures[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);	// t2 
+			MaterialTextures[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);	// t3 
+			MaterialTextures[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4);	// t4
 
-			static CD3DX12_ROOT_PARAMETER rootParameters[4] = {};
+			static CD3DX12_DESCRIPTOR_RANGE WorldRenderEnv[1] = {};
+			WorldRenderEnv[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5);	// t5 
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[6] = {};
 			rootParameters[0].InitAsConstantBufferView(0); // b0
 			rootParameters[1].InitAsConstantBufferView(1); // b1
 			rootParameters[2].InitAsConstantBufferView(2); // b2
-			rootParameters[3].InitAsDescriptorTable(_countof(texDescTable), texDescTable, D3D12_SHADER_VISIBILITY_ALL); // textures
-
+			rootParameters[3].InitAsDescriptorTable(_countof(MaterialTextures), MaterialTextures, D3D12_SHADER_VISIBILITY_ALL); // textures
+			rootParameters[4].InitAsConstantBufferView(3); // b3
+			rootParameters[5].InitAsDescriptorTable(_countof(WorldRenderEnv), WorldRenderEnv, D3D12_SHADER_VISIBILITY_ALL);
 			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 

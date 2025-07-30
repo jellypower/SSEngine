@@ -6,7 +6,7 @@
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 
 DX12ConstantBufferResourceCustomAllocator::DX12ConstantBufferResourceCustomAllocator(DX12GALRenderDevice* InRenderDevice, int32 InEachPageSize, int32 MinAllocSize, const utf16* AllocatorName) :
-	SSCustomMemChunkAllocator(InEachPageSize, MinAllocSize, AllocatorName),
+	SSCustomMemChunkAllocator(InEachPageSize, MinAllocSize, 256, AllocatorName),
 	_RenderDevice(InRenderDevice)
 {
 

@@ -23,7 +23,8 @@ public:
 	virtual ERTColorFormat GetRTColorFormat() const override;
 
 	virtual ID3D12Resource* GetCurrentResource() const override;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentDescHandle() const override;
+	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentDSV() const override;
+	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentSRV() const override;
 
 	virtual void ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To) override;
 	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList) override;

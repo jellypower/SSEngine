@@ -180,7 +180,7 @@ lb_loop:
 		DESCRIPTOR_HEAP_PAGE_SIZE,
 		1,
 		D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-		L"DX12GALRenderDevice::_DescriptorTableAllocator");
+		L"DX12GALRenderDevice::_DescriptorTableAllocatorForTex");
 	_DescriptorTableAllocatorForTex->ReserveDefaultPage(2);
 
 

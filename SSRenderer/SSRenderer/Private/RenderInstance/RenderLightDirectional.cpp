@@ -108,6 +108,11 @@ void RenderLightDirectional::SetEnableShadowMap(bool bEnable)
 	}
 }
 
+XMVECTOR RenderLightDirectional::GetLightColor() const
+{
+	return { 1,1,1,1 };
+}
+
 const RenderLightDirectionalDesc& RenderLightDirectional::GetDirectionalLightDesc() const
 {
 	return _Desc;

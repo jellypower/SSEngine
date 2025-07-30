@@ -550,9 +550,6 @@ void DX12GALRenderDeviceContext::AddRenderLightToDraw(IRenderLight* InLight)
 			{
 				DirectionalLight->ReleaseGALMetaData();
 			}
-			
-			_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunDirection = DirectionalLight->CalcDirectionalLightDirection();
-			_CurRenderWorldGALData->_RenderEnvCBSysMemAddr->SunIntensity = { 1, 1, 1, 0 };
 		}
 		else
 		{
@@ -560,6 +557,18 @@ void DX12GALRenderDeviceContext::AddRenderLightToDraw(IRenderLight* InLight)
 		}
 	}
 }
+
+void DX12GALRenderDeviceContext::CommitAddedRenderLights()
+{
+	if (_CurRenderCamera == nullptr)
+	{
+		SS_INTERRUPT();
+	}
+
+	_CurRenderWorldGALData->SyncLights(_RenderLightsToDraw, _CurRenderCamera);
+}
+
+
 
 void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From,
                                                  EResourceStateType To)
@@ -614,7 +623,7 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 	for (int i = 0; i < NumRenderTargets; i++)
 	{
 		DX12GALRenderTargetBase* RTItem = (DX12GALRenderTargetBase*)InRenderTargets[i];
-		RTVDescHandles[i] = RTItem->GetCurrentDescHandle();
+		RTVDescHandles[i] = RTItem->GetCurrentDSV();
 
 		_BoundRenderTargets.PushBack(RTItem);
 	}
@@ -647,7 +656,7 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 	if (NumRenderTargets > 0 && InDepthStencilView != nullptr) // DepthStencil이랑 NumRenderTarget이 모두 있는 경우
 	{
 		DX12GALDSVRenderTarget* DX12DSV = (DX12GALDSVRenderTarget*)InDepthStencilView;
-		D3D12_CPU_DESCRIPTOR_HANDLE DSVDescHandle = DX12DSV->GetCurrentDescHandle();
+		D3D12_CPU_DESCRIPTOR_HANDLE DSVDescHandle = DX12DSV->GetCurrentDSV();
 		CurCommandList->OMSetRenderTargets(NumRenderTargets, RTVDescHandles, FALSE, &DSVDescHandle);
 	}
 	else if (NumRenderTargets > 0 && InDepthStencilView == nullptr) // DepStencil만 없는 경우
@@ -657,7 +666,7 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 	else // DepthStencil만 있는 경우
 	{
 		DX12GALDSVRenderTarget* DX12DSV = (DX12GALDSVRenderTarget*)InDepthStencilView;
-		D3D12_CPU_DESCRIPTOR_HANDLE DSVDescHandle = DX12DSV->GetCurrentDescHandle();
+		D3D12_CPU_DESCRIPTOR_HANDLE DSVDescHandle = DX12DSV->GetCurrentDSV();
 		const ViewportBox& VB = DX12DSV->GetViewportBoxSize();
 		const BoundBox2f& SR = DX12DSV->GetScissorRectSize();
 
@@ -870,14 +879,35 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		if (MtlAsset == nullptr || GALMaterial == nullptr)
 		{
 			const IMaterialAsset* EmptyMtl = g_CommonRenderAssetSet->GetEmptyPBRMaterial();
-			GALMaterial = (DX12GALDefaultPBRMaterialAsset* )EmptyMtl->GetGALMaterialAsset();
+			GALMaterial = (DX12GALDefaultPBRMaterialAsset*)EmptyMtl->GetGALMaterialAsset();
 
 		}
 
 		CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2
-		CurCommandList->SetDescriptorHeaps(1, &GALMaterial->_MtlTexSRVDescHeap); // 메테리얼 디스크립터 힙 바인딩
+
+
+
+		// TODO: BeginDrawMesh랑 EndDrawMesh구현하면서 SetDescriptorHeaps, SetPipelineState, SetGraphicsRootSignature 하는거 몰아서 하기
+		if (GALMaterial->_MtlTexSRVDescHeap == _CurRenderWorldGALData->GetLightSettingDescHeap())
+		{
+			CurCommandList->SetDescriptorHeaps(1, &GALMaterial->_MtlTexSRVDescHeap); // 메테리얼, GALWorld 디스크립터 힙 바인딩
+		}
+		else
+		{
+			ID3D12DescriptorHeap* Heaps[] =
+			{
+				GALMaterial->_MtlTexSRVDescHeap,
+				_CurRenderWorldGALData->GetLightSettingDescHeap()
+			};
+			CurCommandList->SetDescriptorHeaps(_countof(Heaps), Heaps); // 메테리얼, GALWorld 디스크립터 힙 바인딩
+		}
+
 		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // 메테리얼 디스크립터 테이블 바인딩
 
+		{
+			CurCommandList->SetGraphicsRootConstantBufferView(4, _CurRenderWorldGALData->GetRenderLightParamCB());
+			CurCommandList->SetGraphicsRootDescriptorTable(5, _CurRenderWorldGALData->GetLightSeetingDescTable()); // GALWorld의 RenderEnv 바인딩
+		} // RenderEnv
 
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
 		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];

@@ -35,6 +35,8 @@ public:
 	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) override;
 
 	virtual void AddRenderLightToDraw(IRenderLight* InLight) override;
+	virtual void CommitAddedRenderLights() override;
+
 	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) override; // SetPSO, SetRenderTarget
 	virtual void EndDrawShadowMap() override;
 
