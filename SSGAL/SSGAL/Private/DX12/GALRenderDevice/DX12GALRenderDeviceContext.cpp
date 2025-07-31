@@ -576,7 +576,7 @@ void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget
 	InRenderTarget->ResourceBarrier(this, From, To);
 }
 
-void DX12GALRenderDeviceContext::SetPSO(const PipelineDesc& InPSODesc)
+void DX12GALRenderDeviceContext::SetPSOAndRootSignature(const PipelineDesc& InPSODesc)
 {
 	if (_LastSetPSO == InPSODesc)
 	{
@@ -831,21 +831,13 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 
 	{
-
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawMesh(
 			EMeshType::Rigid,
 			EMaterialType::DefaultPBR,
 			_BoundRenderTargets.GetSize(),
 			_BoundRenderTargets.GetData(),
 			GetThisFrameBoundDSV());
-		const DX12PSOWrapper* lDX12PSOWrapper = (const DX12PSOWrapper*)PSOPool->FindOrAddPSO(NewPipelineDesc);
-
-		const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(NewPipelineDesc.RootSignatureType);
-		const DX12RootSignatureWrapper* lDX12RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignatureWrapper;
-
-
-		CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
-		CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
+		SetPSOAndRootSignature(NewPipelineDesc);
 	}
 
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -950,7 +942,7 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
 	{
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawShadow(
 			EMeshType::Rigid);
-		SetPSO(NewPipelineDesc);
+		SetPSOAndRootSignature(NewPipelineDesc);
 	}
 
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

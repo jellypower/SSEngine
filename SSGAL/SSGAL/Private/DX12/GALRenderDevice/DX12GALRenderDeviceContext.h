@@ -37,20 +37,20 @@ public:
 	virtual void AddRenderLightToDraw(IRenderLight* InLight) override;
 	virtual void CommitAddedRenderLights() override;
 
-	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) override; // SetPSO, SetRenderTarget
+	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) override; // SetPSOAndRootSignature, SetRenderTarget
+	virtual void DrawShadow(IRenderInstance* InRenderInstance) override;
 	virtual void EndDrawShadowMap() override;
 
 	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
-	virtual void SetPSO(const PipelineDesc& InPSODesc) override;
+	virtual void SetPSOAndRootSignature(const PipelineDesc& InPSODesc) override;
 	virtual void SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets, GALRenderTarget* InDepthStencilView) override;
 	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) override;
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) override;
 
 	virtual void Draw(IRenderInstance* InRenderInstance) override;
-	virtual void DrawShadow(IRenderInstance* InRenderInstance) override;
 	
 
 private:

@@ -23,7 +23,7 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     ShadowMapUV.y = -ShadowMapUV.y;
     ShadowMapUV = ShadowMapUV / 2 + float2(0.5, 0.5);
     float ShadowMapDepth = txSingleShadowMap.Sample(samLinear, ShadowMapUV);
-    if (ShadowMapDepth < MeshShadowPoint.z - 0.01)
+    if (ShadowMapDepth < MeshShadowPoint.z - 0.0001)
     {
         SunIntensity = float4(0, 0, 0, 0);
     }
