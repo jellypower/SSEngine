@@ -40,6 +40,7 @@ cbuffer RenderLightParam : register(b3)
 {
     int DirectionalLightCnt;
     int PointLightCnt;
+    int ShadowMapIdxOnDirectionalLights;
     matrix ShadowMapVPMat;
     DirectionalLight DirectionalLights[DIRECTIONAL_LIGHT_LIMIT];
     PointLight PointLights[POINT_LIGHT_LIMIT];

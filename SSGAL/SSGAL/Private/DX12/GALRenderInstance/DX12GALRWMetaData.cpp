@@ -85,6 +85,7 @@ void DX12GALRWMetaData::SyncLights(const SS::PooledList<IRenderLight*>& InLights
 	ID3D12Device5* D3DDevice = _OwnerRenderDevice->GetD3DDevice();
 
 
+	int32 lShadowMapIdxOnDirectionalLights = 0;
 	int32 lShadowMapCnt = 0;
 	int32 lDirectionalLightCnt = 0;
 	int32 lPointLightCnt = 0;
@@ -121,6 +122,7 @@ void DX12GALRWMetaData::SyncLights(const SS::PooledList<IRenderLight*>& InLights
 			CD3DX12_CPU_DESCRIPTOR_HANDLE Dest = _LightSettingDescTableCPU;
 			D3DDevice->CopyDescriptorsSimple(1, Dest, ShadowMap->GetCurrentSRV(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
+			lShadowMapIdxOnDirectionalLights = lShadowMapCnt;
 			lShadowMapCnt++;
 		}
 		else
@@ -132,4 +134,5 @@ void DX12GALRWMetaData::SyncLights(const SS::PooledList<IRenderLight*>& InLights
 
 	_RenderLightParamSysMemAddr->DirectionalLightCnt = lDirectionalLightCnt;
 	_RenderLightParamSysMemAddr->PointLightCnt = lPointLightCnt;
+	_RenderLightParamSysMemAddr->ShadowMapIdxOnDirectionalLights = lShadowMapIdxOnDirectionalLights;
 }
