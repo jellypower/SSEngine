@@ -32,33 +32,19 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
 
 
     SurfaceProperties surface;
-    surface.N = ComputeNormal(input, normalTextureScale);
+    surface.N = ComputeNormal(input, txNormal, samLinear, normalTextureScale);
     surface.V = normalize(ViewerPos - input.WorldPos);
     surface.NdotV = saturate(dot(surface.N, surface.V));
     surface.c_diff = baseColor.rgb * (1 - kDielectricSpecular) * (1 - metallic) * occlusion;
     surface.c_spec = lerp(kDielectricSpecular, baseColor.rgb, metallic) * occlusion;
+    surface.baseColor = baseColor;
+    surface.metallic = metallic;
     surface.roughness = roughness;
     surface.alpha = roughness * roughness;
     surface.alphaSqr = surface.alpha * surface.alpha;
 
     float3 colorAccum = emissive;
-    
-    float3 H = normalize(surface.V + L);
-    float VdotH = dot(surface.V, H);
-    float k_s = Fresnel_Shlick(metallic, 1, VdotH);
-    float k_d = 1 - k_s;
-
-    float3 lambert = baseColor;
-
-    float NdotL = saturate(dot(surface.N, L));
-
-    float cookTorrenceNumerator = Specular_D_GGX(surface, L) * G_Schlick_Smith(surface, L) * k_s;
-    float cookTorrenceDenominator = 4.0 * surface.NdotV * NdotL;
-    cookTorrenceDenominator = max(cookTorrenceDenominator, 0.000001);
-    float cookTorrence = min(k_s, cookTorrenceNumerator / cookTorrenceDenominator);
-
-    float3 BRDF = k_d * lambert + cookTorrence;
-    colorAccum += BRDF * NdotL * SunIntensity;
+    colorAccum += ComputeLightWithCookTorrence(surface, SunDirection, SunIntensity);
     
     Output.Color = float4(colorAccum, baseColor.a);
     Output.Id = int2(Id.LSB, Id.MSB);

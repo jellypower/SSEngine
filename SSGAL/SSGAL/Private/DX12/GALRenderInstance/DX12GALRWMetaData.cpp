@@ -97,7 +97,7 @@ void DX12GALRWMetaData::SyncLights(const SS::PooledList<IRenderLight*>& InLights
 			_RenderLightParamSysMemAddr->DirectionalLights[lDirectionalLightCnt].Direction
 				= DirectionalLight->CalcDirectionalLightDirection();
 
-			_RenderLightParamSysMemAddr->DirectionalLights[lDirectionalLightCnt].Direction
+			_RenderLightParamSysMemAddr->DirectionalLights[lDirectionalLightCnt].Color
 				= DirectionalLight->GetLightColor();
 
 

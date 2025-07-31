@@ -7,6 +7,8 @@ struct SurfaceProperties
     float3 V;
     float3 c_diff;
     float3 c_spec;
+    float3 baseColor;
+    float metallic;
     float roughness;
     float alpha; // roughness squared
     float alphaSqr; // alpha squared

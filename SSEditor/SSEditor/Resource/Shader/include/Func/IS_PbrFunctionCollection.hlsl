@@ -56,7 +56,11 @@ float3 ComputeSpecular(SurfaceProperties surface)
 
 
 
-float3 ComputeNormal(PS_INPUT_DEFAULT psInput, float normalTextureScale)
+float3 ComputeNormal(
+    PS_INPUT_DEFAULT psInput,
+    Texture2D<float3> InTxNormal,
+    SamplerState InSampler,
+    float normalTextureScale)
 {
     float3 normal = normalize(psInput.Normal);
     float3 tangent = normalize(psInput.Tangent.xyz);
@@ -64,11 +68,36 @@ float3 ComputeNormal(PS_INPUT_DEFAULT psInput, float normalTextureScale)
 
     float3x3 tangentFrame = float3x3(tangent, bitangent, normal);
     
-    normal = txNormal.Sample(samLinear, psInput.UV0) * 2.0 - 1.0;
+    normal = InTxNormal.Sample(InSampler, psInput.UV0) * 2.0 - 1.0;
     normal = normalize(normal);
     normal = normalize(normal * float3(normalTextureScale, normalTextureScale, 1));
 
     return mul(normal, tangentFrame);
+}
+
+float3 ComputeLightWithCookTorrence(
+    SurfaceProperties surface,
+    float3 LightDir,
+    float3 LightColor)
+{
+    float3 H = normalize(surface.V + LightDir);
+    float VdotH = dot(surface.V, H);
+    float F = Fresnel_Shlick(surface.metallic, 1, VdotH); // 우선 프레넬 이펙트 값을 스페큘러 값으로 지정
+    float k_d = 1 - F;
+
+    // float3 lambert = baseColor;
+
+    float NdotL = saturate(dot(surface.N, LightDir));
+
+    float cookTorrenceNumerator = Specular_D_GGX(surface, LightDir) * G_Schlick_Smith(surface, LightDir) * F;
+    float cookTorrenceDenominator = 4.0 * surface.NdotV * NdotL;
+    cookTorrenceDenominator = max(cookTorrenceDenominator, 0.000001);
+    
+    float Specular = min(F, cookTorrenceNumerator / cookTorrenceDenominator); // Specular == Diffuse
+    float DiffuseColor = k_d * surface.baseColor;
+
+    float3 BRDF = DiffuseColor + Specular;
+    return BRDF * LightColor * NdotL;
 }
 
 #endif
