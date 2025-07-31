@@ -94,7 +94,7 @@ float3 ComputeLightWithCookTorrence(
     cookTorrenceDenominator = max(cookTorrenceDenominator, 0.000001);
     
     float Specular = min(F, cookTorrenceNumerator / cookTorrenceDenominator); // Specular == Diffuse
-    float DiffuseColor = k_d * surface.baseColor;
+    float3 DiffuseColor = k_d * surface.baseColor;
 
     float3 BRDF = DiffuseColor + Specular;
     return BRDF * LightColor * NdotL;

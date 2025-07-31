@@ -63,9 +63,18 @@ void SSEditor::StartupEngine()
 	
 	TEMP_CreateAssets(); // CommonAssetSet을 초기화
 
+
 	{
 		_FbxImporter = g_fpCreateSSFBXImporter();
 		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
+	}
+
+	{
+		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\Cube1m.fbx");
+		_FbxImporter->ImportCurrentFileToAssetManager();
+	}
+
+	{
 		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
 		_FbxImporter->ImportCurrentFileToAssetManager();
 	}
@@ -77,25 +86,19 @@ void SSEditor::StartupEngine()
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
 	{
+		SGameObject* Floor = SRendererUtil::InstantiateModel(L"cube1m/cube__1_.mdl");
+		_DefaultWorld->AddToWorld(Floor);
+		Floor->SetPosition(Vector4f(0, -0.05,0, 1));
+		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
+	}
+
+	{
 		
 		SS::StringW BoundFileName = _FbxImporter->GetBoundFileName().C_Str();
 		BoundFileName += ".mdlc";
 
 		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
-
-//		TEMP_MdlcObj = SRendererUtil::InstantiateModel(L"frew worm monster.fbx/body.mdl");
-//		TEMP_MdlcObj->SetScale(Vector4f(1000, 1000, 1000, 0));
-//		TEMP_MdlcObj->SetRotation(Quaternion());
-//		TEMP_MdlcObj->SetPosition(Vector4f::Zero);
-
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
-
-//		SGameObject* Parent = TEMP_MdlcObj->GetChild(0);
-//		SGameObject* Child = Parent->GetChild(0);
-//		TEMP_MdlcObj = Child;
-//		Parent->SetScale(Vector4f(2, 1, 1, 0));
-
-		int a = 0;
 	}
 
 	{

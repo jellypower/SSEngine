@@ -57,7 +57,7 @@ bool SSFBXImporter::BindFbxSceneFile(const utf16* inFilePath)
 
 
 	if (!_FBXImporter->Initialize(inFilePathMultiByte)) {
-		SS_CLASS_WARNING_LOG("%s", _FBXImporter->GetStatus().GetErrorString());
+		SS_ASSERT_MSG(false, L"%s", _FBXImporter->GetStatus().GetErrorString());
 		return false;
 	}
 
@@ -236,7 +236,7 @@ void SSFBXImporter::ImportCurrentFileToMaterialAsset()
 void SSFBXImporter::ImportCurrentFileToModelAsset()
 {
 	if (_currentScene == nullptr) {
-		SS_CLASS_WARNING_LOG("No scene to load");
+		SS_ASSERT_MSG(false, L"No scene to load");
 		return;
 	}
 
