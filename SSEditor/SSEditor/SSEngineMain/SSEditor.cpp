@@ -1032,16 +1032,6 @@ void SSEditor::ImGUI_DrawHierarchy()
 			{
 				ImGUI_DrawHierarchy_Recursion(RootObject->GetChild(i));
 			}
-
-			//const int numSubNodes = 30;
-			//for (int i = 0; i < numSubNodes; ++i)
-			//{
-			//	ImGui::TreeNodeEx("Some long title to force horizontal scroll", ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_DefaultOpen);
-			//}
-			//for (int i = 0; i < numSubNodes; ++i)
-			//{
-			//	ImGui::TreePop();
-			//}
 		}
 		ImGui::EndChild();
 	}
