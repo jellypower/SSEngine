@@ -67,11 +67,11 @@ private:
 	IRenderer* _Renderer = nullptr;
 
 
-	SGameObject* TEMP_PixelPickedObject = nullptr;
+	SObjHashCode _PickedObject = nullptr;
 
 	int32 _PixelPickingRequestFrameCounter = 0;
 	SObjHashCode _HieararchyPickedObject = nullptr;
-	SObjHashCode _PixelPickedObject = nullptr;
+	
 
 	SGameObject* TEMP_MdlcObj = nullptr;
 	

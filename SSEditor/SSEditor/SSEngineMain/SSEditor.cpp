@@ -313,77 +313,78 @@ void SSEditor::TEMP_ProcessContents()
 		CamGameObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_CamXRot, TEMP_CamYRot, 0, 0)));
 	}
 
-	if (SSInput::GetMouseDown(EMouseCode::MOUSE_LEFT))
-	{
-		Vector2i32 MousePos = SSInput::GetMousePos();
-		_Renderer->RequestPixelPicking(MousePos.X, MousePos.Y);
-		_PixelPickingRequestFrameCounter = SWAP_CHAIN_FRAME_COUNT + 1; // PixelPicking용 프레임버퍼가 2프레임 뒤에 그려져서 그걸 생각해야함.
-	}
 
-	if (_PixelPickingRequestFrameCounter >= 0)
+	// Pixel Picking
 	{
-		_PixelPickingRequestFrameCounter--;
-	}
+		if (SSInput::GetMouseDown(EMouseCode::MOUSE_LEFT))
+		{
+			Vector2i32 MousePos = SSInput::GetMousePos();
+			_Renderer->RequestPixelPicking(MousePos.X, MousePos.Y);
+			_PixelPickingRequestFrameCounter = SWAP_CHAIN_FRAME_COUNT + 1; // PixelPicking용 프레임버퍼가 2프레임 뒤에 그려져서 그걸 생각해야함.
+		}
 
-	if (_PixelPickingRequestFrameCounter == 0)
-	{
-		SObjHashCode ObjID = _Renderer->GetPixelPickedObjectID();
-		_PixelPickedObject = ObjID.GetSObject();
-		TEMP_PixelPickedObject = dynamic_cast<SGameObject*>(_PixelPickedObject.GetSObject());
-		_PixelPickedObject = nullptr;
-	}
+		if (_PixelPickingRequestFrameCounter >= 0)
+		{
+			_PixelPickingRequestFrameCounter--;
+		}
 
-	SObjectBase* NewHieararchyPickedObject = _HieararchyPickedObject.GetSObject();
-	if (NewHieararchyPickedObject != nullptr && TEMP_PixelPickedObject != NewHieararchyPickedObject)
-	{
-		TEMP_PixelPickedObject = dynamic_cast<SGameObject*>(NewHieararchyPickedObject);
-		_HieararchyPickedObject = nullptr;
+		if (_PixelPickingRequestFrameCounter == 0)
+		{
+			SObjHashCode PixelPickedObjID = _Renderer->GetPixelPickedObjectID();
+			_PickedObject = PixelPickedObjID;
+		}
+
+		if (_HieararchyPickedObject != nullptr && _PickedObject != _HieararchyPickedObject)
+		{
+			_PickedObject = _HieararchyPickedObject;
+			_HieararchyPickedObject = nullptr;
+		}
 	}
 
 	Quaternion::FromEulerRotation(Vector4f(45, 45, 90, 0));
 
 
-	if (TEMP_PixelPickedObject != nullptr)
+	if (SGameObject* PickedInstance = dynamic_cast<SGameObject*>(_PickedObject.GetSObject()))
 	{
 		constexpr float OBJ_ROT_SPEED = 3;
 		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
 		{
-			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
-			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
+			Quaternion CurRot = PickedInstance->GetTransform().Rotation;
+			const SGameObject* Parent = PickedInstance->GetParent();
 			Vector4f UpVector = Parent->GetTransform().GetUp();
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * OBJ_ROT_SPEED);
-			TEMP_PixelPickedObject->SetRotation(CurRot);
+			PickedInstance->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_RIGHT))
 		{
-			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
-			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
+			Quaternion CurRot = PickedInstance->GetTransform().Rotation;
+			const SGameObject* Parent = PickedInstance->GetParent();
 			Vector4f UpVector = Parent->GetTransform().GetUp();
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * -OBJ_ROT_SPEED);
-			TEMP_PixelPickedObject->SetRotation(CurRot);
+			PickedInstance->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_UP))
 		{
-			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
-			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
+			Quaternion CurRot = PickedInstance->GetTransform().Rotation;
+			const SGameObject* Parent = PickedInstance->GetParent();
 			Vector4f RightVector = Parent->GetTransform().GetRight();
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * OBJ_ROT_SPEED);
-			TEMP_PixelPickedObject->SetRotation(CurRot);
+			PickedInstance->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_DOWN))
 		{
-			Quaternion CurRot = TEMP_PixelPickedObject->GetTransform().Rotation;
-			const SGameObject* Parent = TEMP_PixelPickedObject->GetParent();
+			Quaternion CurRot = PickedInstance->GetTransform().Rotation;
+			const SGameObject* Parent = PickedInstance->GetParent();
 			Vector4f RightVector = Parent->GetTransform().GetRight();
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -OBJ_ROT_SPEED);
-			TEMP_PixelPickedObject->SetRotation(CurRot);
+			PickedInstance->SetRotation(CurRot);
 		}
 	}
 	else
@@ -929,15 +930,16 @@ void SSEditor::ImGUI_PIckedObject()
 		constexpr int32 BUFFER_SIZE = 512;
 		char PickedObjName[BUFFER_SIZE] = "EMPTY";
 		int64 ObjectID = 0;
+		SGameObject* PickedInstance = dynamic_cast<SGameObject*>(_PickedObject.GetSObject());
 
-		if (TEMP_PixelPickedObject != nullptr)
+		if (PickedInstance != nullptr)
 		{
-			SS::SHasherW sObjectName = TEMP_PixelPickedObject->GetObjectName();
+			SS::SHasherW sObjectName = PickedInstance->GetObjectName();
 			uint32 iObjNameLen = 0;
 			const utf16* u16ObjName = sObjectName.C_Str(&iObjNameLen);
 			UTF16StrToUtf8Str(u16ObjName, iObjNameLen, PickedObjName, BUFFER_SIZE);
 
-			ObjectID = TEMP_PixelPickedObject->GetHashCode().GetNativeValue();
+			ObjectID = PickedInstance->GetHashCode().GetNativeValue();
 		}
 
 		{
@@ -946,9 +948,9 @@ void SSEditor::ImGUI_PIckedObject()
 			ImGui::Dummy(ImVec2(1, 7));
 		}
 
-		if (TEMP_PixelPickedObject != nullptr)
+		if (PickedInstance != nullptr)
 		{
-			const Transform& transform = TEMP_PixelPickedObject->GetTransform();
+			const Transform& transform = PickedInstance->GetTransform();
 
 
 			// Set Scale
@@ -965,7 +967,7 @@ void SSEditor::ImGUI_PIckedObject()
 					NewScale.Z = PickedScale[2];
 					NewScale.W = 1;
 
-					TEMP_PixelPickedObject->SetScale(NewScale);
+					PickedInstance->SetScale(NewScale);
 				}
 			}
 
@@ -990,7 +992,7 @@ void SSEditor::ImGUI_PIckedObject()
 					NewRot.W = 0;
 
 					Quaternion NewQuatRot = Quaternion::FromEulerRotation(NewRot);
-					TEMP_PixelPickedObject->SetRotation(NewQuatRot);
+					PickedInstance->SetRotation(NewQuatRot);
 				}
 			}
 
@@ -1008,7 +1010,7 @@ void SSEditor::ImGUI_PIckedObject()
 					NewPos.Z = PickedPosition[2];
 					NewPos.W = 1;
 
-					TEMP_PixelPickedObject->SetPosition(NewPos);
+					PickedInstance->SetPosition(NewPos);
 				}
 			}
 
