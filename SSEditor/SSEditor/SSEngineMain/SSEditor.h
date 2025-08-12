@@ -49,6 +49,10 @@ private:
 	void ImGUI_AssetManager_Material();
 	void ImGUI_AssetManager_Model();
 
+	void ImGUI_FrameInfo();
+
+	void ImGUI_PIckedObject();
+
 #pragma endregion
 
 private:

@@ -75,6 +75,9 @@ void SSImGUIInitializer::StartupImGui(IRenderer* InRenderer)
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
+
+	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.f, NULL, io.Fonts->GetGlyphRangesKorean());
+
 	ImGui_ImplWin32_Init(g_hWnd);
 
 	// Setup Platform/Renderer backends

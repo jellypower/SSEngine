@@ -267,8 +267,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// ================================= IMGUI =================================
 	extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+	{
 		return true;
+	}
 	// ================================= ~IMGUI =================================
 
 	switch (message)
@@ -320,8 +323,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONUP:
 	case WM_MOUSEWHEEL:
+	{
+		if (ImGui::GetCurrentContext() != nullptr)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			if (io.WantCaptureMouse || io.WantCaptureKeyboard)
+			{
+				return 0;
+			}
+		}
+
 		Win32ProcessInputEvent(g_RawInputProcessor, hWnd, message, wParam, lParam);
 		break;
+	}
+
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
