@@ -135,4 +135,5 @@ void DX12GALRWMetaData::SyncLights(const SS::PooledList<IRenderLight*>& InLights
 	_RenderLightParamSysMemAddr->DirectionalLightCnt = lDirectionalLightCnt;
 	_RenderLightParamSysMemAddr->PointLightCnt = lPointLightCnt;
 	_RenderLightParamSysMemAddr->ShadowMapIdxOnDirectionalLights = lShadowMapIdxOnDirectionalLights;
+	_RenderLightParamSysMemAddr->AmbientLightIntensity = { 0.3,0.3,0.3,1 };
 }

@@ -24,6 +24,7 @@ struct alignas(16) CBARenderLightParam
     int32 DirectionalLightCnt;
     int32 PointLightCnt;
     int32 ShadowMapIdxOnDirectionalLights;
+    XMVECTOR AmbientLightIntensity;
     XMMATRIX ShadowMapVPMat;
     CBADirectionalLight DirectionalLights[DIRECTIONAL_LIGHT_LIMIT];
     CBAPointLight PointLights[POINT_LIGHT_LIMIT];

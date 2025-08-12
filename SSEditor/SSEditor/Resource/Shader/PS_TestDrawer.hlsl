@@ -52,6 +52,9 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
         colorAccum += ComputeLightWithCookTorrence(surface, LightDir, LightIntensity);
     }
     
+    colorAccum += ComputeLightWithCookTorrence(surface, surface.V, AmbientLightIntensity);
+    
+    colorAccum = saturate(colorAccum);
     Output.Color = float4(colorAccum, baseColor.a);
     Output.Id = int2(Id.LSB, Id.MSB);
     return Output;
