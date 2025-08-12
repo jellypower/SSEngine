@@ -317,16 +317,27 @@ void SSEditor::TEMP_ProcessContents()
 	{
 		Vector2i32 MousePos = SSInput::GetMousePos();
 		_Renderer->RequestPixelPicking(MousePos.X, MousePos.Y);
+		_PixelPickingRequestFrameCounter = SWAP_CHAIN_FRAME_COUNT + 1; // PixelPicking용 프레임버퍼가 2프레임 뒤에 그려져서 그걸 생각해야함.
 	}
 
-	SObjHashCode ObjID = _Renderer->GetPixelPickedObjectID();
-
-	SObjectBase* PickedObj = ObjID.GetSObject();
-	SGameObject* PickedGameObj = dynamic_cast<SGameObject*>(PickedObj);
-
-	if (PickedGameObj != TEMP_PixelPickedObject)
+	if (_PixelPickingRequestFrameCounter >= 0)
 	{
-		TEMP_PixelPickedObject = PickedGameObj;
+		_PixelPickingRequestFrameCounter--;
+	}
+
+	if (_PixelPickingRequestFrameCounter == 0)
+	{
+		SObjHashCode ObjID = _Renderer->GetPixelPickedObjectID();
+		_PixelPickedObject = ObjID.GetSObject();
+		TEMP_PixelPickedObject = dynamic_cast<SGameObject*>(_PixelPickedObject.GetSObject());
+		_PixelPickedObject = nullptr;
+	}
+
+	SObjectBase* NewHieararchyPickedObject = _HieararchyPickedObject.GetSObject();
+	if (NewHieararchyPickedObject != nullptr && TEMP_PixelPickedObject != NewHieararchyPickedObject)
+	{
+		TEMP_PixelPickedObject = dynamic_cast<SGameObject*>(NewHieararchyPickedObject);
+		_HieararchyPickedObject = nullptr;
 	}
 
 	Quaternion::FromEulerRotation(Vector4f(45, 45, 90, 0));
@@ -429,6 +440,7 @@ void SSEditor::ProcessImGUI()
 	ImGUI_AssetManagerWindow();
 	ImGUI_FrameInfo();
 	ImGUI_PIckedObject();
+	ImGUI_DrawHierarchy();
 }
 
 void SSEditor::ImGUI_AssetManagerWindow()
@@ -1003,4 +1015,66 @@ void SSEditor::ImGUI_PIckedObject()
 		}
 	}
 	ImGui::End();
+}
+
+void SSEditor::ImGUI_DrawHierarchy()
+{
+	if (ImGui::Begin("Node Debugger")) 
+	{
+
+		if (ImGui::BeginChild("SceneTree", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) 
+		{
+			SGameObject* RootObject = _DefaultWorld->GetWorldRootObject();
+
+			int32 ChildCnt = RootObject->GetChildCnt();
+
+			for (int i=0;i<ChildCnt;i++)
+			{
+				ImGUI_DrawHierarchy_Recursion(RootObject->GetChild(i));
+			}
+
+			//const int numSubNodes = 30;
+			//for (int i = 0; i < numSubNodes; ++i)
+			//{
+			//	ImGui::TreeNodeEx("Some long title to force horizontal scroll", ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_DefaultOpen);
+			//}
+			//for (int i = 0; i < numSubNodes; ++i)
+			//{
+			//	ImGui::TreePop();
+			//}
+		}
+		ImGui::EndChild();
+	}
+	ImGui::End();
+}
+
+void SSEditor::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
+{
+	int32 ChildCnt = Object->GetChildCnt();
+
+	SS::SHasherW sObjectName = Object->GetObjectName();
+	uint32 iObjectNameLen = 0;
+	const utf16* u16ObjectName = sObjectName.C_Str(&iObjectNameLen);
+
+	utf8 u8ObjectName[SHASHER_STRLEN_MAX];
+	UTF16StrToUtf8Str(u16ObjectName, iObjectNameLen, u8ObjectName, SHASHER_STRLEN_MAX);
+
+	if (ImGui::TreeNodeEx(u8ObjectName, 
+		ImGuiTreeNodeFlags_SpanLabelWidth |
+		ImGuiTreeNodeFlags_OpenOnArrow |
+		ImGuiTreeNodeFlags_Selected | 
+		ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (ImGui::IsItemClicked(0))
+		{
+			_HieararchyPickedObject = Object;
+		}
+
+		for (int i = 0; i < ChildCnt; i++)
+		{
+			ImGUI_DrawHierarchy_Recursion(Object->GetChild(i));
+		}
+		
+		ImGui::TreePop();
+	}
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include "SObject/Public/SObjHashCode.h"
+
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
@@ -53,6 +55,9 @@ private:
 
 	void ImGUI_PIckedObject();
 
+	void ImGUI_DrawHierarchy();
+	void ImGUI_DrawHierarchy_Recursion(SGameObject* Object);
+
 #pragma endregion
 
 private:
@@ -63,6 +68,10 @@ private:
 
 
 	SGameObject* TEMP_PixelPickedObject = nullptr;
+
+	int32 _PixelPickingRequestFrameCounter = 0;
+	SObjHashCode _HieararchyPickedObject = nullptr;
+	SObjHashCode _PixelPickedObject = nullptr;
 
 	SGameObject* TEMP_MdlcObj = nullptr;
 	
