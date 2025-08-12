@@ -329,6 +329,8 @@ void SSEditor::TEMP_ProcessContents()
 		TEMP_PixelPickedObject = PickedGameObj;
 	}
 
+	Quaternion::FromEulerRotation(Vector4f(45, 45, 90, 0));
+
 
 	if (TEMP_PixelPickedObject != nullptr)
 	{

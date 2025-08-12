@@ -160,6 +160,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		SHasherPoolTest();
 		SHasherTest();
 		StringTest();
+		DirectXMathTest();
 	}
 
 

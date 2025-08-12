@@ -1,9 +1,11 @@
 ﻿#define SSENGINEDEFAULT_MODULE_EXPORT
 #include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
 
+#include <ctime>
 #include <unordered_map>
 
 
+#include "SSEngineDefault/Public/SSDirectXMathCustom.h"
 #include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "TestClasses/TestCustomHeapAllocator.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
@@ -649,4 +651,193 @@ void StringTest()
 
 	if (_CrtCheckMemory() == false) SS_INTERRUPT();
 	int a = 0;
+}
+
+void DirectXMathTest()
+{
+	{
+		XMVECTOR e1;
+		e1.m128_f32[0] = XM_PIDIV2;
+		e1.m128_f32[1] = 0;
+		e1.m128_f32[2] = 0;
+		e1.m128_f32[3] = 0;
+		XMVECTOR q1 = XMQuaternionRotationRollPitchYawFromVector(e1);
+		XMVECTOR e2 = XMEulerFromQuaternion(q1);
+
+		SS_ASSERT(XMAlmostEqual(e1, e2));
+
+		int a = 0;
+	}
+
+	{
+		XMVECTOR v1 = {0,0,0,0};
+		XMVECTOR v2 = {1,1,1,1};
+		SS_ASSERT(XMAlmostEqual(v1, v2) == false);
+
+		v1 = { 0,0,0,0 };
+		v2 = { 0.1,0,0.1,0};
+		SS_ASSERT(XMAlmostEqual(v1, v2) == false);
+
+		v1 = { 0,0,0,0 };
+		v2 = { 0.00001,0,0.00001,0 };
+		SS_ASSERT(XMAlmostEqual(v1, v2));
+	}
+
+
+	{
+		XMVECTOR e1;
+		e1.m128_f32[0] = XM_PIDIV2;
+		e1.m128_f32[1] = XM_PIDIV2;
+		e1.m128_f32[2] = 0;
+		e1.m128_f32[3] = 0;
+		XMVECTOR Quat = XMQuaternionRotationRollPitchYawFromVector(e1);
+
+		XMVECTOR e2 = XMEulerFromQuaternion(Quat);
+
+		SS_ASSERT(XMAlmostEqual(e1, e2));
+	}
+
+
+	{
+		XMVECTOR e1;
+		e1.m128_f32[0] = XM_PIDIV2 / 2;
+		e1.m128_f32[1] = XM_PIDIV2 / 2;
+		e1.m128_f32[2] = XM_PIDIV2 / 2;
+		e1.m128_f32[3] = 0;
+		XMVECTOR Quat = XMQuaternionRotationRollPitchYawFromVector(e1);
+
+		XMVECTOR e2 = XMEulerFromQuaternion(Quat);
+
+		SS_ASSERT(XMAlmostEqual(e1, e2));
+	}
+
+	{
+		XMVECTOR e1;
+		e1.m128_f32[0] = XM_PIDIV2;
+		e1.m128_f32[1] = XM_PIDIV2 / 3;
+		e1.m128_f32[2] = XM_PI;
+		e1.m128_f32[3] = 0;
+		XMVECTOR q1 = XMQuaternionRotationRollPitchYawFromVector(e1);
+
+		XMVECTOR e2 = XMEulerFromQuaternion(q1);
+		XMVECTOR q2 = XMQuaternionRotationRollPitchYawFromVector(e2);
+
+		SS_ASSERT(XMAlmostEqual(q1, q2));
+
+		int a = 0;
+	}
+
+	{
+		XMVECTOR e1;
+		e1.m128_f32[0] = -XM_PIDIV2;
+		e1.m128_f32[1] = XM_PIDIV2 / 3;
+		e1.m128_f32[2] = XM_PI;
+		e1.m128_f32[3] = 0;
+		XMVECTOR q1 = XMQuaternionRotationRollPitchYawFromVector(e1);
+
+		XMVECTOR e2 = XMEulerFromQuaternion(q1);
+		XMVECTOR q2 = XMQuaternionRotationRollPitchYawFromVector(e2);
+
+		SS_ASSERT(XMAlmostEqual(q1, q2));
+
+		int a = 0;
+	}
+
+	{
+		XMVECTOR e1;
+		e1.m128_f32[0] = -XM_PIDIV2;
+		e1.m128_f32[1] = -XM_PIDIV2 / 3;
+		e1.m128_f32[2] = XM_PI;
+		e1.m128_f32[3] = 0;
+		XMVECTOR q1 = XMQuaternionRotationRollPitchYawFromVector(e1);
+
+		XMVECTOR e2 = XMEulerFromQuaternion(q1);
+		XMVECTOR q2 = XMQuaternionRotationRollPitchYawFromVector(e2);
+
+		SS_ASSERT(XMAlmostEqual(q1, q2));
+
+		int a = 0;
+	}
+
+	{
+		XMVECTOR e1;
+		e1.m128_f32[0] = -XM_PIDIV2;
+		e1.m128_f32[1] = -XM_PIDIV2 / 3;
+		e1.m128_f32[2] = -XM_PI;
+		e1.m128_f32[3] = 0;
+		XMVECTOR q1 = XMQuaternionRotationRollPitchYawFromVector(e1);
+
+		XMVECTOR e2 = XMEulerFromQuaternion(q1);
+		XMVECTOR q2 = XMQuaternionRotationRollPitchYawFromVector(e2);
+
+		SS_ASSERT(XMAlmostEqual(q1, q2));
+
+		int a = 0;
+	}
+
+	for (int i=0;i<10;i++)
+	{
+		XMVECTOR e1;
+
+		srand(time(NULL));
+		// generate random from -PI to PI
+		float r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+		e1.m128_f32[0] = r;
+		r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+		e1.m128_f32[1] = r;
+		r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+		e1.m128_f32[2] = r;
+		e1.m128_f32[3] = 0;
+		XMVECTOR q1 = XMQuaternionRotationRollPitchYawFromVector(e1);
+
+		XMVECTOR e2 = XMEulerFromQuaternion(q1);
+		XMVECTOR q2 = XMQuaternionRotationRollPitchYawFromVector(e2);
+
+
+		constexpr float DEG_1 = 0.0174533;
+		SS_ASSERT(XMAlmostEqual(q1, q2, DEG_1) || XMAlmostEqual(q1, -q2, DEG_1));
+	}
+
+	for (int i = 0; i < 10; i++)
+	{
+		XMVECTOR e1;
+
+		srand(time(NULL));
+		// generate random from -PI to PI
+		e1.m128_f32[0] = XM_PIDIV2;
+		float r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+		e1.m128_f32[1] = r;
+		r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+		e1.m128_f32[2] = r;
+		e1.m128_f32[3] = 0;
+		XMVECTOR q1 = XMQuaternionRotationRollPitchYawFromVector(e1);
+
+		XMVECTOR e2 = XMEulerFromQuaternion(q1);
+		XMVECTOR q2 = XMQuaternionRotationRollPitchYawFromVector(e2);
+
+
+		constexpr float DEG_1 = 0.0174533;
+		SS_ASSERT(XMAlmostEqual(q1, q2, DEG_1) || XMAlmostEqual(q1, -q2, DEG_1));
+	}
+
+	for (int i=0;i<10;i++)
+	{
+		XMVECTOR e1;
+
+		srand(time(NULL));
+		float r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+		e1.m128_f32[0] = r;
+		r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+		e1.m128_f32[1] = r;
+		r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+		e1.m128_f32[2] = r;
+		e1.m128_f32[3] = 0;
+
+		XMVECTOR q1 = XMQuaternionRotationRollPitchYawFromVector(e1);
+		XMVECTOR e2 = XMEulerFromQuaternion(q1);
+		XMVECTOR q2 = XMQuaternionRotationRollPitchYawFromVector(e2);
+
+		constexpr float DEG_1 = 0.0174533;
+		SS_ASSERT(XMAlmostEqual(q1, q2, DEG_1) || XMAlmostEqual(q1, -q2, DEG_1));
+	}
 }
