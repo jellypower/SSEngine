@@ -56,14 +56,14 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
             const float THRESHOLD = 0.0001;
             if (ShadowMapDepth < MeshShadowPoint.z - THRESHOLD)
             {
-                LightIntensity *= 0.2;
+                LightIntensity *= 0;
             }
         }
         
-        colorAccum += ComputeLightWithCookTorrence(Props, ViewerPos, LightDir, LightIntensity);
+        colorAccum += ComputeLightWithCookTorrence(Props, WorldToViewerPos, LightDir, LightIntensity);
     }
     
-    colorAccum += ComputeLightWithCookTorrence(Props, ViewerPos, ViewerPos, AmbientLightIntensity);
+    colorAccum += ComputeLightWithCookTorrence(Props, WorldToViewerPos, WorldToViewerPos, AmbientLightIntensity);
     
     colorAccum = saturate(colorAccum);
     Output.Color = float4(colorAccum, baseColor.a);
