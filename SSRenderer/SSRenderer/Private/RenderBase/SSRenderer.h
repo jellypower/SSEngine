@@ -37,7 +37,15 @@ private:
 
 	bool _bPixelPickingReserved = false;
 	Vector2i32 _PixelPickingCoord;
+
+	GALRenderTarget* _RTGBufferNormal = nullptr;
+	GALRenderTarget* _RTGBufferAlbedo = nullptr;
+	GALRenderTarget* _RTGBufferWorldPos = nullptr;
+	GALRenderTarget* _RTGBufferMetallicRoughness = nullptr;
+	GALRenderTarget* _RTGBufferEmissive = nullptr;
+
 	GALRenderTarget* _DSVRenderTarget = nullptr;
+
 	GALRenderTarget* _PixelPickerRenderTarget = nullptr;
 	GALCPUReadableTexture* _PixelPickerCPUReadableTex = nullptr;
 	SObjHashCode _PickedObjectHash;

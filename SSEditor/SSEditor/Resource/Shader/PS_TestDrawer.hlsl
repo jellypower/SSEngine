@@ -38,7 +38,7 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     Props.Emissive = emissive;
 
     
-    float3 colorAccum = emissive;
+    float3 colorAccum = float3(0, 0, 0);
     
     for (int i = 0; i < DirectionalLightCnt; i++)
     {
@@ -65,8 +65,15 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     
     colorAccum += ComputeLightWithCookTorrence(Props, WorldToViewerPos, WorldToViewerPos, AmbientLightIntensity);
     
-    colorAccum = saturate(colorAccum);
-    Output.Color = float4(colorAccum, baseColor.a);
+    colorAccum = saturate(colorAccum);    
+    colorAccum += emissive;
+    
+    Output.TEMP_FinalColor = float4(colorAccum, baseColor.a);
+    Output.Normal = Props.N;
+    Output.Albedo = Props.BaseColor;
+    Output.WorldPos = Props.WorldPos;
+    Output.MetallicRoughness = float2(Props.Metallic, Props.Roughness);
+    Output.Emissive = Props.Emissive;
     Output.Id = int2(Id.LSB, Id.MSB);
     return Output;
 }

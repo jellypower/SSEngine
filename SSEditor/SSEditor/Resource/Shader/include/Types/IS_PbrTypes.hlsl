@@ -22,7 +22,7 @@ struct GBufferProperties
     float3 WorldPos;
     float Metallic;
     float Roughness;
-    float Emissive;
+    float3 Emissive;
 };
 
 #endif

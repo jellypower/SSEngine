@@ -161,6 +161,7 @@ void SSRenderer::StartUp()
 			L"PixelPickerCPUReadableTex");
 	}
 
+
 	{
 		GALRenderTargetDesc DSVDesc;
 		DSVDesc.ResourceWidth = SwapChainBufferSize.X;
@@ -170,6 +171,88 @@ void SSRenderer::StartUp()
 		DSVDesc.Format = ERTColorFormat::D32_FLOAT;
 		DSVDesc.InitialResourceState = EResourceStateType::DepthWrite;
 		_DSVRenderTarget = _GALRenderDevice->CreateDepthStencilView(DSVDesc, L"Main_DSV");
+	}
+
+
+	// G-Buffer Normal
+	{
+		GALRenderTargetDesc IDDrawerRTDesc;
+		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
+		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
+		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
+		IDDrawerRTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferNormal = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferNormal");
+
+	}
+
+	// G-Buffer Albedo
+	{
+		GALRenderTargetDesc IDDrawerRTDesc;
+		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
+		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
+		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
+		IDDrawerRTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferAlbedo = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferAlbedo");
+	}
+
+	// G-Buffer WorldPos
+	{
+		GALRenderTargetDesc IDDrawerRTDesc;
+		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
+		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
+		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
+		IDDrawerRTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferWorldPos = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferWorldPos");
+	}
+
+	// G-Buffer MetallicRoughness
+	{
+		GALRenderTargetDesc IDDrawerRTDesc;
+		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
+		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
+		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
+		IDDrawerRTDesc.Format = ERTColorFormat::R32G32_FLOAT;
+		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferMetallicRoughness = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferMetallicRoughness");
+	}
+
+	// G-Buffer Emissive
+	{
+		GALRenderTargetDesc IDDrawerRTDesc;
+		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
+		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
+		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
+		IDDrawerRTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferEmissive = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferEmissive");
 	}
 }
 
@@ -255,18 +338,42 @@ void SSRenderer::PerFrame()
 
 			// Default Render Target
 			{
-				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::RenderTarget);
-				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
+				{
+					_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::RenderTarget);
 
-				_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget);
-				_MainDeviceContext->ClearRenderTarget(_DSVRenderTarget);
-				_MainDeviceContext->ClearRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
+					_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
+
+					_MainDeviceContext->ResourceBarrier(_RTGBufferNormal, EResourceStateType::Common, EResourceStateType::RenderTarget);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferAlbedo, EResourceStateType::Common, EResourceStateType::RenderTarget);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferWorldPos, EResourceStateType::Common, EResourceStateType::RenderTarget);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferMetallicRoughness, EResourceStateType::Common, EResourceStateType::RenderTarget);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferEmissive, EResourceStateType::Common, EResourceStateType::RenderTarget);
+				}
+
+				{
+					_MainDeviceContext->ClearRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
+
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferNormal);
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferAlbedo);
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferWorldPos);
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferMetallicRoughness);
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferEmissive);
+
+					_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget);
+
+					_MainDeviceContext->ClearRenderTarget(_DSVRenderTarget);
+				}
 
 
 				GALRenderTarget* RenderTargets[RT_NUM_MAX] = { nullptr, };
 				RenderTargets[0] = _GALRenderDevice->GetDefaultViewportRenderTarget();
-				RenderTargets[1] = _PixelPickerRenderTarget;
-				_MainDeviceContext->SetRenderTarget(2, RenderTargets, _DSVRenderTarget);
+				RenderTargets[1] = _RTGBufferNormal;
+				RenderTargets[2] = _RTGBufferAlbedo;
+				RenderTargets[3] = _RTGBufferWorldPos;
+				RenderTargets[4] = _RTGBufferMetallicRoughness;
+				RenderTargets[5] = _RTGBufferEmissive;
+				RenderTargets[6] = _PixelPickerRenderTarget;
+				_MainDeviceContext->SetRenderTarget(7, RenderTargets, _DSVRenderTarget);
 
 				// TODO: BeginDrawMesh ¶û EndDrawMesh ¸¸µé±â
 
@@ -275,8 +382,15 @@ void SSRenderer::PerFrame()
 					_MainDeviceContext->Draw(Item);
 				}
 
-				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
+
+				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
+
+				_MainDeviceContext->ResourceBarrier(_RTGBufferNormal, EResourceStateType::RenderTarget, EResourceStateType::Common);
+				_MainDeviceContext->ResourceBarrier(_RTGBufferAlbedo, EResourceStateType::RenderTarget, EResourceStateType::Common);
+				_MainDeviceContext->ResourceBarrier(_RTGBufferWorldPos, EResourceStateType::RenderTarget, EResourceStateType::Common);
+				_MainDeviceContext->ResourceBarrier(_RTGBufferMetallicRoughness, EResourceStateType::RenderTarget, EResourceStateType::Common);
+				_MainDeviceContext->ResourceBarrier(_RTGBufferEmissive, EResourceStateType::RenderTarget, EResourceStateType::Common);
 			}
 			
 			// Copy to Pixel Picker RenderTarget
@@ -294,6 +408,17 @@ void SSRenderer::PerFrame()
 
 void SSRenderer::CleanUp()
 {
+	delete _RTGBufferEmissive;
+	delete _RTGBufferMetallicRoughness;
+	delete _RTGBufferWorldPos;
+	delete _RTGBufferAlbedo;
+	delete _RTGBufferNormal;
+	_RTGBufferEmissive = nullptr;
+	_RTGBufferMetallicRoughness = nullptr;
+	_RTGBufferWorldPos = nullptr;
+	_RTGBufferAlbedo = nullptr;
+	_RTGBufferNormal = nullptr;
+
 	delete _DSVRenderTarget;
 	_DSVRenderTarget = nullptr;
 
