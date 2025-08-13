@@ -146,6 +146,37 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 			return rootSignatureDesc;
 		}
 	}
+	case ERootSignatureType::CS_Deferred:
+	{
+		static CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+		static bool Initialized = false;
+
+		if (Initialized == false)
+		{
+			Initialized = true;
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[5] = {};
+			rootParameters[0].InitAsShaderResourceView(0); // float3 Normal : SV_Target1;
+			rootParameters[1].InitAsShaderResourceView(1); // float3 Albedo : SV_Target2;
+			rootParameters[2].InitAsShaderResourceView(2); // float3 WorldPos : SV_Target3;
+			rootParameters[3].InitAsShaderResourceView(3); // float2 MetallicRoughness : SV_Target4;
+			rootParameters[4].InitAsShaderResourceView(4); // float3 Emissive : SV_Target5;
+
+
+			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
+
+			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(EGRD3D12SamplerDescType::DefaultSampler, 0);
+
+			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
+
+		}return rootSignatureDesc;
+	}
 
 	}
 

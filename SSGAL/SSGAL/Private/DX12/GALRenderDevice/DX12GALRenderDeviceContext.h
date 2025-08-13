@@ -50,8 +50,12 @@ public:
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) override;
 
-	virtual void Draw(IRenderInstance* InRenderInstance) override;
-	
+	virtual void BeginDrawMesh() override;
+	virtual void DrawMesh(IRenderInstance* InRenderInstance) override;
+	virtual void EndDrawMesh() override;
+
+	void BeginPostProcessing() override;
+	void EndPostProcessing() override;
 
 private:
 	void DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
@@ -75,6 +79,8 @@ private:
 
 
 private:
+	ERenderDeviceTaskPhase _TaskPhase = ERenderDeviceTaskPhase::TaskDenial;
+
 	SS::PooledList<ID3D12CommandAllocator*> _CommandAllocators; // TODO: SWAP_CHAIN_FRAME_COUNT 개수만큼 만들기
 	SS::PooledList <ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT 개수만큼 만들기
 	int32 _CurCommandListIdx = 0;

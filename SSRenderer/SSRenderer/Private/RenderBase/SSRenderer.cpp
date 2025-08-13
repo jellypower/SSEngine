@@ -376,21 +376,24 @@ void SSRenderer::PerFrame()
 				_MainDeviceContext->SetRenderTarget(7, RenderTargets, _DSVRenderTarget);
 
 				// TODO: BeginDrawMesh ¶û EndDrawMesh ¸¸µé±â
-
+				_MainDeviceContext->BeginDrawMesh();
 				for (IRenderInstance* Item : _RenderInstancesToDraw)
 				{
-					_MainDeviceContext->Draw(Item);
+					_MainDeviceContext->DrawMesh(Item);
 				}
+				_MainDeviceContext->EndDrawMesh();
 
-				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
+				{
+					_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
 
-				_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
+					_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 
-				_MainDeviceContext->ResourceBarrier(_RTGBufferNormal, EResourceStateType::RenderTarget, EResourceStateType::Common);
-				_MainDeviceContext->ResourceBarrier(_RTGBufferAlbedo, EResourceStateType::RenderTarget, EResourceStateType::Common);
-				_MainDeviceContext->ResourceBarrier(_RTGBufferWorldPos, EResourceStateType::RenderTarget, EResourceStateType::Common);
-				_MainDeviceContext->ResourceBarrier(_RTGBufferMetallicRoughness, EResourceStateType::RenderTarget, EResourceStateType::Common);
-				_MainDeviceContext->ResourceBarrier(_RTGBufferEmissive, EResourceStateType::RenderTarget, EResourceStateType::Common);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferNormal, EResourceStateType::RenderTarget, EResourceStateType::Common);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferAlbedo, EResourceStateType::RenderTarget, EResourceStateType::Common);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferWorldPos, EResourceStateType::RenderTarget, EResourceStateType::Common);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferMetallicRoughness, EResourceStateType::RenderTarget, EResourceStateType::Common);
+					_MainDeviceContext->ResourceBarrier(_RTGBufferEmissive, EResourceStateType::RenderTarget, EResourceStateType::Common);
+				}
 			}
 			
 			// Copy to Pixel Picker RenderTarget

@@ -17,6 +17,22 @@ class IRenderInstance;
 class GALResourceUpdater;
 class GALRenderDevice;
 
+
+enum class ERenderDeviceTaskPhase
+{
+	None = -1,
+
+	TaskWaiting,
+
+	DrawShadow,
+	DrawMesh,
+	PostProcess, // Including DeferredShadowing
+
+	TaskDenial,
+
+	Count
+};
+
 class GALRenderDeviceContext : public INoncopyable
 {
 public:
@@ -36,9 +52,6 @@ public:
 	virtual void AddRenderLightToDraw(IRenderLight* InLight) = 0;
 	virtual void CommitAddedRenderLights() = 0;
 
-	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) = 0; // RenderTarget과 PSO를 포함한 상태를 변화시킨다
-	virtual void DrawShadow(IRenderInstance* InRenderInstance) = 0;
-	virtual void EndDrawShadowMap() = 0;
 
 	virtual void SetRenderCamera(IRenderCamera* InCamera) = 0;
 
@@ -49,8 +62,16 @@ public:
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) = 0;
 
+	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) = 0; // RenderTarget과 PSO를 포함한 상태를 변화시킨다
+	virtual void DrawShadow(IRenderInstance* InRenderInstance) = 0;
+	virtual void EndDrawShadowMap() = 0;
 
-	virtual void Draw(IRenderInstance* InRenderInstance) = 0;
+	virtual void BeginDrawMesh() = 0;
+	virtual void DrawMesh(IRenderInstance* InRenderInstance) = 0;
+	virtual void EndDrawMesh() = 0;
+
+	virtual void BeginPostProcessing() = 0;
+	virtual void EndPostProcessing() = 0;
 
 protected:
 	virtual void ResetRenderState() = 0;

@@ -14,8 +14,9 @@ enum class EInputLayoutType : int32
 {
 	NONE = 0,
 
-	SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT = 1,
-	SS_DEFAULT_VS_SKIN_VERTEX_LAYOUT = 2,
+	SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT,
+	SS_DEFAULT_VS_SKIN_VERTEX_LAYOUT,
+	CS_TexCoord,
 };
 
 enum class ERasterizerState : int32
@@ -36,6 +37,7 @@ struct PipelineDesc
 {
 	SS::SHasherW		VSName;
 	SS::SHasherW		PSName;
+	SS::SHasherW		CSName;
 	EInputLayoutType	LayoutType = EInputLayoutType::NONE;
 	ERootSignatureType	RootSignatureType = ERootSignatureType::NONE;
 	ERTColorFormat		DSColorFormat = ERTColorFormat::None; // DepthStancilColorFormat

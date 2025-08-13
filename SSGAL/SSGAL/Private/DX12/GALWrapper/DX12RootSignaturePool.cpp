@@ -18,6 +18,7 @@ void DX12RootSignaturePool::InstantiateAllRootSignatures()
 		_rootSignatures[i] = DBG_NEW DX12RootSignatureWrapper(static_cast<ERootSignatureType>(i), this);
 		if (_rootSignatures[i]->IsValid() == false)
 		{
+			SS_ASSERT(false);
 			delete _rootSignatures[i];
 			_rootSignatures[i] = nullptr;
 		}

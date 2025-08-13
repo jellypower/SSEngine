@@ -441,6 +441,12 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 
 void DX12GALRenderDeviceContext::BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap)
 {
+	if (_TaskPhase != ERenderDeviceTaskPhase::TaskWaiting)
+	{
+		SS_INTERRUPT();
+	}
+	_TaskPhase = ERenderDeviceTaskPhase::DrawShadow;
+
 	if (_DrawingShadowMapMetadata != nullptr)
 	{
 		SS_ASSERT(false);
@@ -495,6 +501,12 @@ void DX12GALRenderDeviceContext::BeginDrawShadowMap(IRenderLight* InLightToDrawS
 
 void DX12GALRenderDeviceContext::EndDrawShadowMap()
 {
+	if (_TaskPhase != ERenderDeviceTaskPhase::DrawShadow)
+	{
+		SS_INTERRUPT();
+	}
+	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
+
 	ELightType LightType = _DrawingShadowMapMetadata->GetLightType();
 
 	if (LightType == ELightType::Directional)
@@ -752,7 +764,17 @@ void DX12GALRenderDeviceContext::CopyRenderTarget(GALCPUReadableTexture* CopyDes
 	CurCommandList->CopyTextureRegion(&destLocation, box.left, box.top, 0, &srcLocation, &box);
 }
 
-void DX12GALRenderDeviceContext::Draw(IRenderInstance* InRenderInstance)
+void DX12GALRenderDeviceContext::BeginDrawMesh()
+{
+	if (_TaskPhase != ERenderDeviceTaskPhase::TaskWaiting)
+	{
+		SS_INTERRUPT();
+	}
+
+	_TaskPhase = ERenderDeviceTaskPhase::DrawMesh;
+}
+
+void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 {
 	if (InRenderInstance->GetGALMetadata() == nullptr)
 	{
@@ -772,6 +794,33 @@ void DX12GALRenderDeviceContext::Draw(IRenderInstance* InRenderInstance)
 	{
 		SS_INTERRUPT();
 	}
+}
+
+void DX12GALRenderDeviceContext::EndDrawMesh()
+{
+	if (_TaskPhase != ERenderDeviceTaskPhase::DrawMesh)
+	{
+		SS_INTERRUPT();
+	}
+	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
+}
+
+void DX12GALRenderDeviceContext::BeginPostProcessing()
+{
+	if (_TaskPhase != ERenderDeviceTaskPhase::TaskWaiting)
+	{
+		SS_INTERRUPT();
+	}
+	_TaskPhase = ERenderDeviceTaskPhase::PostProcess;
+}
+
+void DX12GALRenderDeviceContext::EndPostProcessing()
+{
+	if (_TaskPhase != ERenderDeviceTaskPhase::PostProcess)
+	{
+		SS_INTERRUPT();
+	}
+	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
 }
 
 void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
@@ -1010,11 +1059,24 @@ void DX12GALRenderDeviceContext::ResetCommandList()
 
 void DX12GALRenderDeviceContext::BeginRender()
 {
+	if (_TaskPhase != ERenderDeviceTaskPhase::TaskDenial)
+	{
+		SS_INTERRUPT();
+	}
+	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
+
 	ResetRenderState();
 }
 
 void DX12GALRenderDeviceContext::EndRender()
 {
+	if (_TaskPhase != ERenderDeviceTaskPhase::TaskWaiting)
+	{
+		SS_INTERRUPT();
+	}
+	_TaskPhase = ERenderDeviceTaskPhase::TaskDenial;
+
+
 	HRESULT hr;
 
 	for (int32 i = 0; i <= _CurCommandListIdx; i++)

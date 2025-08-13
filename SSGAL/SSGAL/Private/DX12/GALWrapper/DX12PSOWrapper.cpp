@@ -51,6 +51,19 @@ const D3D12_INPUT_ELEMENT_DESC* DX12PSOWrapper::GetInputElementDesc(EInputLayout
 		outElementCnt = _countof(inputElementDesc);
 		return inputElementDesc;
 	}
+	case EInputLayoutType::CS_TexCoord:
+	{
+		static D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+
+		};
+
+		DEBUG_BREAK(); // TODO: Skinning 구현하기 2024/12/31
+
+		outElementCnt = _countof(inputElementDesc);
+		return inputElementDesc;
+	}
 	}
 }
 
