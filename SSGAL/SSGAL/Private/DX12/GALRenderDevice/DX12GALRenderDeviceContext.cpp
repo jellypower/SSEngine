@@ -867,6 +867,12 @@ void DX12GALRenderDeviceContext::DeferredShading(
 		SS_INTERRUPT();
 		return;
 	}
+
+	SS_INTERRUPT(); // TODO: 구현하기
+
+	PipelineDesc Desc = ConstructPSOToDeferredShading();
+	SetPSOAndRootSignature(Desc);
+
 	DX12GALUAVRenderTarget* UAVRTResult = (DX12GALUAVRenderTarget*)InRTResult;
 }
 

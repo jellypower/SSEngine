@@ -37,6 +37,12 @@ struct PS_INPUT_DEFAULT
     float4 WorldPos : TEXCOORD2;
 };
 
+struct VS_OUTPUT_FULLSCREEN_QUAD
+{
+    float4 pos : SV_POSITION;
+    float2 uv : TEXCOORD0;
+};
+
 
 struct Joint
 {

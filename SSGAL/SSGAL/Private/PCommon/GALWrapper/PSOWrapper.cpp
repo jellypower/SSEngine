@@ -77,3 +77,13 @@ PipelineDesc ConstructPSODescToDrawShadow(EMeshType InMeshType)
 
 	return NewPipelineDesc;
 }
+
+PipelineDesc ConstructPSOToDeferredShading()
+{
+	PipelineDesc NewPipelineDesc;
+	NewPipelineDesc.VSName = "VS_FullScreenQuad";
+	NewPipelineDesc.PSName = "PS_DeferredShading";
+	NewPipelineDesc.RootSignatureType = ERootSignatureType::CS_Deferred;
+
+	return NewPipelineDesc;
+}

@@ -155,13 +155,18 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 		{
 			Initialized = true;
 
-			static CD3DX12_ROOT_PARAMETER rootParameters[5] = {};
-			rootParameters[0].InitAsShaderResourceView(0); // float3 Normal : SV_Target1;
-			rootParameters[1].InitAsShaderResourceView(1); // float3 Albedo : SV_Target2;
-			rootParameters[2].InitAsShaderResourceView(2); // float3 WorldPos : SV_Target3;
-			rootParameters[3].InitAsShaderResourceView(3); // float2 MetallicRoughness : SV_Target4;
-			rootParameters[4].InitAsShaderResourceView(4); // float3 Emissive : SV_Target5;
+			
+			static CD3DX12_DESCRIPTOR_RANGE DeferredTextures[6] = {};
+			DeferredTextures[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0); // float 3Result
 
+			DeferredTextures[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // float3 Normal
+			DeferredTextures[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // float3 Albedo
+			DeferredTextures[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2); // float3 WorldPos
+			DeferredTextures[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3); // float2 MetallicRoughness
+			DeferredTextures[5].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4); // float3 Emissive
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[1] = {};
+			rootParameters[0].InitAsDescriptorTable(_countof(DeferredTextures), DeferredTextures, D3D12_SHADER_VISIBILITY_ALL);
 
 			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |

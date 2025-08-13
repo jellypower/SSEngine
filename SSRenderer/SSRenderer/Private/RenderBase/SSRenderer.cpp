@@ -419,6 +419,7 @@ void SSRenderer::PerFrame()
 
 				_MainDeviceContext->BeginPostProcessing();
 
+				/*
 				_MainDeviceContext->DeferredShading(
 					_RTDeferredSceneResult,
 
@@ -428,6 +429,7 @@ void SSRenderer::PerFrame()
 					_RTGBufferMetallicRoughness,
 					_RTGBufferEmissive
 				);
+				*/
 
 				_MainDeviceContext->EndPostProcessing();
 

@@ -31,9 +31,13 @@ void GALPCommonShaderPool::Initialize()
 		ShaderConstructDesc DescSet[] =
 		{
 			{L"VS_SMToDefaultPSInput", L"Resource/Shader/VS_SMToDefaultPSInput.hlsl", "Main", EShaderType::VertexShader},
+			{L"VS_FullScreenQuad", L"Resource/Shader/VS_FullScreenQuad.hlsl", "Main", EShaderType::VertexShader},
 
 			{L"PS_TestDrawer", L"Resource/Shader/PS_TestDrawer.hlsl", "Main", EShaderType::PixelShader},
 			{L"PS_IDDrawer", L"Resource/Shader/PS_IDDrawer.hlsl", "Main", EShaderType::PixelShader},
+
+			{L"PS_DeferredShading", L"Resource/Shader/VS_FullScreenQuad.hlsl", "Main", EShaderType::VertexShader},
+
 		};
 
 		for (const ShaderConstructDesc& DescItem : DescSet)

@@ -31,3 +31,5 @@ PipelineDesc ConstructPSODescToDrawMesh(
 PipelineDesc ConstructPSODescToDrawShadow(
 	EMeshType InMeshType
 );
+
+PipelineDesc ConstructPSOToDeferredShading();

@@ -139,6 +139,8 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 	}
 	else // Compute Shader인 경우
 	{
+		SS_INTERRUPT(); // TODO: 아직 미구현된 기능입니다.
+
 		const DX12RootSignatureWrapper* RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignaturePool->GetRootSignature(InPipelineDesc.RootSignatureType);
 		if (RootSignatureWrapper->IsValid() == false)
 		{
@@ -158,7 +160,7 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 
 		const D3D12_COMPUTE_PIPELINE_STATE_DESC computePsoDesc = {
 			.pRootSignature = RootSignature,
-			.CS = CSBlob,
+			.CS = CD3DX12_SHADER_BYTECODE(CSBlob->GetBufferPointer(), CSBlob->GetBufferSize()),
 			.NodeMask = 0,
 			.CachedPSO = {.pCachedBlob = NULL, .CachedBlobSizeInBytes = 0 },
 			.Flags = D3D12_PIPELINE_STATE_FLAG_NONE
