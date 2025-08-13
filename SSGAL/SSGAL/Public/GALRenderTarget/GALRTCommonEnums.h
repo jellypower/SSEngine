@@ -9,6 +9,7 @@ enum class ERenderTargetType : uint8
 	None = 0,
 	SwapChain,
 	Default,
+	Default_UAV,
 	DepthStencil
 };
 

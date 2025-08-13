@@ -14,10 +14,11 @@ struct GALRenderTargetDesc
 {
 	int32 ResourceWidth = 0;
 	int32 ResourceHeight = 0;
-	BoundBox2f ScissorRectSize;
-	ViewportBox DrawBoxSize;
+	BoundBox2f ScissorRectSize; // ScissorRects: 실제 전체 텍스쳐 영역에서 Scissor까지만 그림(LeftTop=Min, RightBottom=Max에 따라서)
+	ViewportBox DrawBoxSize; // Viewports: 실제 전체 텍스쳐 영역에서 TopLeft기준으로 WidthHeight만큼 그림(WidthHeight가 늘었다 줄었다 하면 이미지 사이즈가 달라짐)
 	ERTColorFormat Format = ERTColorFormat::None;
 	EResourceStateType InitialResourceState = EResourceStateType::None;
+	bool bUseUAV = false;
 };
 
 

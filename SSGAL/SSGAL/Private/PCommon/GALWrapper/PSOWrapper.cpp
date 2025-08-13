@@ -15,6 +15,7 @@ bool operator==(const PipelineDesc& lhs, const PipelineDesc& rhs)
 {
 	bool bResult = lhs.VSName == rhs.VSName;
 	bResult = bResult && lhs.PSName == rhs.PSName;
+	bResult = bResult && lhs.CSName == rhs.CSName;
 	bResult = bResult && lhs.LayoutType == rhs.LayoutType;
 	bResult = bResult && lhs.RootSignatureType == rhs.RootSignatureType;
 	bResult = bResult && lhs.DSColorFormat == rhs.DSColorFormat;
@@ -37,6 +38,7 @@ uint32 HashValue(const PipelineDesc& inValue)
 {
 	uint32 PSHashValue = HashValue(inValue.PSName);
 	uint32 VSHashValue = HashValue(inValue.VSName);
+	uint32 CSHashValue = HashValue(inValue.CSName);
 	uint32 LayoutTypeHashValue = (uint32)inValue.LayoutType;
 	uint32 RootsignatureTypeHashValue = (uint32)inValue.RootSignatureType;
 	uint32 ui32DSColorFormat = (uint32)inValue.DSColorFormat;
@@ -48,7 +50,7 @@ uint32 HashValue(const PipelineDesc& inValue)
 		RTColorFormatHashValue += (uint32)inValue.RTColorFormats[i];
 	}
 
-	int64 HashResult = (PSHashValue ^ VSHashValue) >> 1
+	int64 HashResult = (PSHashValue ^ VSHashValue ^ CSHashValue) >> 1
 		+ LayoutTypeHashValue + RootsignatureTypeHashValue + RTColorFormatHashValue + ui32DSColorFormat;
 
 	return HashResult;

@@ -176,83 +176,100 @@ void SSRenderer::StartUp()
 
 	// G-Buffer Normal
 	{
-		GALRenderTargetDesc IDDrawerRTDesc;
-		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
-		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
-		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
-		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
-		IDDrawerRTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
-		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
-		_RTGBufferNormal = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferNormal");
+		GALRenderTargetDesc RTDesc;
+		RTDesc.ResourceWidth = SwapChainBufferSize.X;
+		RTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		RTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.MinDepth = 0.f;
+		RTDesc.DrawBoxSize.MaxDepth = 1.f;
+		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		RTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferNormal = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferNormal");
 
 	}
 
 	// G-Buffer Albedo
 	{
-		GALRenderTargetDesc IDDrawerRTDesc;
-		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
-		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
-		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
-		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
-		IDDrawerRTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
-		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
-		_RTGBufferAlbedo = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferAlbedo");
+		GALRenderTargetDesc RTDesc;
+		RTDesc.ResourceWidth = SwapChainBufferSize.X;
+		RTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		RTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.MinDepth = 0.f;
+		RTDesc.DrawBoxSize.MaxDepth = 1.f;
+		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		RTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferAlbedo = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferAlbedo");
 	}
 
 	// G-Buffer WorldPos
 	{
-		GALRenderTargetDesc IDDrawerRTDesc;
-		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
-		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
-		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
-		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
-		IDDrawerRTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
-		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
-		_RTGBufferWorldPos = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferWorldPos");
+		GALRenderTargetDesc RTDesc;
+		RTDesc.ResourceWidth = SwapChainBufferSize.X;
+		RTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		RTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.MinDepth = 0.f;
+		RTDesc.DrawBoxSize.MaxDepth = 1.f;
+		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		RTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferWorldPos = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferWorldPos");
 	}
 
 	// G-Buffer MetallicRoughness
 	{
-		GALRenderTargetDesc IDDrawerRTDesc;
-		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
-		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
-		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
-		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
-		IDDrawerRTDesc.Format = ERTColorFormat::R32G32_FLOAT;
-		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
-		_RTGBufferMetallicRoughness = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferMetallicRoughness");
+		GALRenderTargetDesc RTDesc;
+		RTDesc.ResourceWidth = SwapChainBufferSize.X;
+		RTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		RTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.MinDepth = 0.f;
+		RTDesc.DrawBoxSize.MaxDepth = 1.f;
+		RTDesc.Format = ERTColorFormat::R32G32_FLOAT;
+		RTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferMetallicRoughness = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferMetallicRoughness");
 	}
 
 	// G-Buffer Emissive
 	{
-		GALRenderTargetDesc IDDrawerRTDesc;
-		IDDrawerRTDesc.ResourceWidth = SwapChainBufferSize.X;
-		IDDrawerRTDesc.ResourceHeight = SwapChainBufferSize.Y;
-		IDDrawerRTDesc.ScissorRectSize.Min = Vector2f(0, 0);
-		IDDrawerRTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
-		IDDrawerRTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
-		IDDrawerRTDesc.DrawBoxSize.MinDepth = 0.f;
-		IDDrawerRTDesc.DrawBoxSize.MaxDepth = 1.f;
-		IDDrawerRTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
-		IDDrawerRTDesc.InitialResourceState = EResourceStateType::Common;
-		_RTGBufferEmissive = _GALRenderDevice->CreateRenderTarget(IDDrawerRTDesc, L"_RTGBufferEmissive");
+		GALRenderTargetDesc RTDesc;
+		RTDesc.ResourceWidth = SwapChainBufferSize.X;
+		RTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		RTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.MinDepth = 0.f;
+		RTDesc.DrawBoxSize.MaxDepth = 1.f;
+		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		RTDesc.InitialResourceState = EResourceStateType::Common;
+		_RTGBufferEmissive = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferEmissive");
+	}
+
+	{
+		GALRenderTargetDesc RTDesc;
+		RTDesc.ResourceWidth = SwapChainBufferSize.X;
+		RTDesc.ResourceHeight = SwapChainBufferSize.Y;
+		RTDesc.ScissorRectSize.Min = Vector2f(0, 0);
+		RTDesc.ScissorRectSize.Max = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.LeftTop = Vector2f(0, 0);
+		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
+		RTDesc.DrawBoxSize.MinDepth = 0.f;
+		RTDesc.DrawBoxSize.MaxDepth = 1.f;
+		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		RTDesc.InitialResourceState = EResourceStateType::Common;
+		RTDesc.bUseUAV = true;
+		_RTDeferredSceneResult = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTDeferredSceneResult");
+
 	}
 }
 
@@ -395,6 +412,27 @@ void SSRenderer::PerFrame()
 					_MainDeviceContext->ResourceBarrier(_RTGBufferEmissive, EResourceStateType::RenderTarget, EResourceStateType::Common);
 				}
 			}
+
+			// Post Processing
+			{
+				_MainDeviceContext->ResourceBarrier(_RTDeferredSceneResult, EResourceStateType::Common, EResourceStateType::RenderTarget);
+
+				_MainDeviceContext->BeginPostProcessing();
+
+				_MainDeviceContext->DeferredShading(
+					_RTDeferredSceneResult,
+
+					_RTGBufferNormal,
+					_RTGBufferAlbedo,
+					_RTGBufferWorldPos,
+					_RTGBufferMetallicRoughness,
+					_RTGBufferEmissive
+				);
+
+				_MainDeviceContext->EndPostProcessing();
+
+				_MainDeviceContext->ResourceBarrier(_RTDeferredSceneResult, EResourceStateType::RenderTarget, EResourceStateType::Common);
+			}
 			
 			// Copy to Pixel Picker RenderTarget
 			{
@@ -411,11 +449,13 @@ void SSRenderer::PerFrame()
 
 void SSRenderer::CleanUp()
 {
+	delete _RTDeferredSceneResult;
 	delete _RTGBufferEmissive;
 	delete _RTGBufferMetallicRoughness;
 	delete _RTGBufferWorldPos;
 	delete _RTGBufferAlbedo;
 	delete _RTGBufferNormal;
+	_RTDeferredSceneResult = nullptr;
 	_RTGBufferEmissive = nullptr;
 	_RTGBufferMetallicRoughness = nullptr;
 	_RTGBufferWorldPos = nullptr;

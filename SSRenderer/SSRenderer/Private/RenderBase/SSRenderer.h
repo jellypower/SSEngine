@@ -43,6 +43,7 @@ private:
 	GALRenderTarget* _RTGBufferWorldPos = nullptr;
 	GALRenderTarget* _RTGBufferMetallicRoughness = nullptr;
 	GALRenderTarget* _RTGBufferEmissive = nullptr;
+	GALRenderTarget* _RTDeferredSceneResult = nullptr;
 
 	GALRenderTarget* _DSVRenderTarget = nullptr;
 

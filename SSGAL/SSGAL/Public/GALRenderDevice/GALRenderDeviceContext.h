@@ -62,16 +62,37 @@ public:
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) = 0;
 
+
+
+
+
+	// ERenderDeviceTaskPhase::DrawShadow
 	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) = 0; // RenderTarget과 PSO를 포함한 상태를 변화시킨다
 	virtual void DrawShadow(IRenderInstance* InRenderInstance) = 0;
 	virtual void EndDrawShadowMap() = 0;
+	// ~ERenderDeviceTaskPhase::DrawShadow
 
+
+
+	// ERenderDeviceTaskPhase::DrawMesh
 	virtual void BeginDrawMesh() = 0;
 	virtual void DrawMesh(IRenderInstance* InRenderInstance) = 0;
 	virtual void EndDrawMesh() = 0;
+	// ~ERenderDeviceTaskPhase::DrawMesh
 
+
+
+	// ERenderDeviceTaskPhase::PostProcess
 	virtual void BeginPostProcessing() = 0;
+	virtual void DeferredShading(GALRenderTarget* InRTResult, 
+		GALRenderTarget* InRTGBufferNormal,
+		GALRenderTarget* InRTGBufferAlbedo,
+		GALRenderTarget* InRTGBufferWorldPos,
+		GALRenderTarget* InRTGBufferMetallicRoughness,
+		GALRenderTarget* InRTGBufferEmissive
+		) = 0;
 	virtual void EndPostProcessing() = 0;
+	// ~ERenderDeviceTaskPhase::PostProcess
 
 protected:
 	virtual void ResetRenderState() = 0;

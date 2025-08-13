@@ -5,6 +5,7 @@
 #include "DX12GALRenderDeviceContext.h"
 #include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
 #include "Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
+#include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourceAllocator.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12DescriptorHeapCustomAllocator.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
@@ -298,7 +299,7 @@ GALRenderDeviceContext* DX12GALRenderDevice::CreateRenderDeviceContext()
 	ID3D12CommandAllocator* NewCommandAllocator = nullptr;
 	ID3D12GraphicsCommandList* NewCommandList = nullptr;
 
-	DX12GALRenderDeviceContext* NewDeviceContext = DBG_NEW DX12GALRenderDeviceContext(this, GAL_CONTEXT_DEFAULT_COMMANDLIST_NUM);
+	DX12GALRenderDeviceContext* NewDeviceContext = DBG_NEW DX12GALRenderDeviceContext(this, SWAP_CHAIN_FRAME_COUNT);
 
 	if (NewDeviceContext->IsValid())
 	{
@@ -311,7 +312,16 @@ GALRenderDeviceContext* DX12GALRenderDevice::CreateRenderDeviceContext()
 
 GALRenderTarget* DX12GALRenderDevice::CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName)
 {
-	DX12GALDefaultRenderTarget* NewRenderTarget = DBG_NEW DX12GALDefaultRenderTarget(this, Desc, ResourceName);
+	DX12GALDefaultRenderTarget* NewRenderTarget = nullptr;
+	if (Desc.bUseUAV)
+	{
+		NewRenderTarget = DBG_NEW DX12GALUAVRenderTarget(this, Desc, ResourceName);
+	}
+	else
+	{
+		NewRenderTarget = DBG_NEW DX12GALDefaultRenderTarget(this, Desc, ResourceName);
+	}
+
 	return NewRenderTarget;
 }
 

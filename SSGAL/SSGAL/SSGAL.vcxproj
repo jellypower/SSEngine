@@ -181,6 +181,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALDefaultRenderTarget.cpp" />
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALDSVRenderTarget.cpp" />
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALUAVRenderTarget.cpp" />
     <ClCompile Include="Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.cpp" />
     <ClCompile Include="Private\DX12\GALWrapper\DX12GALShaderPool.cpp" />
     <ClCompile Include="Private\DX12\GALWrapper\DX12GALShaderWrapper.cpp" />
@@ -220,6 +221,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALDSVRenderTarget.h" />
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALRenderTargetBase.h" />
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALSwapChainRenderTarget.h" />
+    <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALUAVRenderTarget.h" />
     <ClInclude Include="Private\DX12\GALResourceUpdater\DX12GALResourceUpdater.h" />
     <ClInclude Include="Private\DX12\GALWrapper\DX12GALShaderPool.h" />
     <ClInclude Include="Private\DX12\GALWrapper\DX12GALShaderWrapper.h" />

@@ -17,17 +17,18 @@ public:
 	virtual ERTColorFormat GetRTColorFormat() const override;
 
 	virtual ID3D12Resource* GetCurrentResource() const override;
-	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentDSV() const override;
+	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentRTV() const override;
 	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentSRV() const override;
 
 	virtual void ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To) override;
 	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList) override;
 
+protected:
+	ID3D12Resource* _RenderTargetResource = nullptr;
 
 private:
 	GALRenderTargetDesc _InitializedDesc;
 
-	ID3D12Resource* _RenderTargetResource = nullptr;
 	ID3D12DescriptorHeap* _RenderTargetDescHeap = nullptr;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE _DescHandle;
 	uint32 _RTVDescriptorSize = 0;

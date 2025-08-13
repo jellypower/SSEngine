@@ -19,12 +19,6 @@ const D3D12_INPUT_ELEMENT_DESC* DX12PSOWrapper::GetInputElementDesc(EInputLayout
 {
 	switch (InputElementType)
 	{
-	case EInputLayoutType::NONE:
-	{
-		DEBUG_BREAK();
-		outElementCnt = 0;
-		return nullptr;
-	}
 	case EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT:
 	{
 		static D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
@@ -51,18 +45,11 @@ const D3D12_INPUT_ELEMENT_DESC* DX12PSOWrapper::GetInputElementDesc(EInputLayout
 		outElementCnt = _countof(inputElementDesc);
 		return inputElementDesc;
 	}
-	case EInputLayoutType::CS_TexCoord:
+	default:
 	{
-		static D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-
-		};
-
-		DEBUG_BREAK(); // TODO: Skinning 구현하기 2024/12/31
-
-		outElementCnt = _countof(inputElementDesc);
-		return inputElementDesc;
+		DEBUG_BREAK();
+		outElementCnt = 0;
+		return nullptr;
 	}
 	}
 }
@@ -76,76 +63,108 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 	DX12RootSignaturePool* RootSignaturePool = (DX12RootSignaturePool*)GALDevice->GetRootSignaturePool();
 
 
-	const DX12RootSignatureWrapper* RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignaturePool->GetRootSignature(InPipelineDesc.RootSignatureType);
-	if (RootSignatureWrapper->IsValid() == false)
+	if (InPipelineDesc.CSName.IsEmpty()) // Compute Shader가 아닌 경우
 	{
-		DEBUG_BREAK();
-		return;
-	}
-	ID3D12RootSignature* RootSignature = RootSignatureWrapper->GetRootSignatureInstantce();
+		const DX12RootSignatureWrapper* RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignaturePool->GetRootSignature(InPipelineDesc.RootSignatureType);
+		if (RootSignatureWrapper->IsValid() == false)
+		{
+			DEBUG_BREAK();
+			return;
+		}
+		ID3D12RootSignature* RootSignature = RootSignatureWrapper->GetRootSignatureInstantce();
 
 
-	const DX12GALShaderWrapper* VS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.VSName);
-	if (VS == nullptr)
-	{
-		DEBUG_BREAK();
-		return;
-	}
-	ID3DBlob* VSBlob = VS->GetCompiledShader();
+		const DX12GALShaderWrapper* VS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.VSName);
+		if (VS == nullptr)
+		{
+			DEBUG_BREAK();
+			return;
+		}
+		ID3DBlob* VSBlob = VS->GetCompiledShader();
 
-	ID3DBlob* PSBlob = nullptr;
-	if (InPipelineDesc.PSName.IsEmpty() == false)
-	{
-		const DX12GALShaderWrapper* PS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.PSName);
-		if (PS == nullptr)
+		ID3DBlob* PSBlob = nullptr;
+		if (InPipelineDesc.PSName.IsEmpty() == false)
+		{
+			const DX12GALShaderWrapper* PS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.PSName);
+			if (PS == nullptr)
+			{
+				DEBUG_BREAK();
+				return;
+			}
+
+			PSBlob = PS->GetCompiledShader();
+		}
+
+
+		uint32 inputElementCnt = 0;
+		const D3D12_INPUT_ELEMENT_DESC* inputElementDesc = GetInputElementDesc(InPipelineDesc.LayoutType, inputElementCnt);
+		if (inputElementDesc == nullptr)
 		{
 			DEBUG_BREAK();
 			return;
 		}
 
-		PSBlob = PS->GetCompiledShader();
+		// Describe and create the graphics pipeline state object (PSO).
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+
+
+		psoDesc.InputLayout = { inputElementDesc, inputElementCnt };
+		psoDesc.pRootSignature = RootSignature;
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize());
+		if (PSBlob != nullptr) psoDesc.PS = CD3DX12_SHADER_BYTECODE(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize());
+		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		psoDesc.DepthStencilState.StencilEnable = FALSE;
+		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+		psoDesc.SampleMask = UINT_MAX;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.NumRenderTargets = InPipelineDesc.NumRenderTarget;
+		for (int32 i = 0; i < InPipelineDesc.NumRenderTarget; i++)
+		{
+			psoDesc.RTVFormats[i] = SS::DX12Util::ConvertColorFormat(InPipelineDesc.RTColorFormats[i]);
+		}
+		psoDesc.DSVFormat = SS::DX12Util::ConvertColorFormat(InPipelineDesc.DSColorFormat);
+		psoDesc.SampleDesc.Count = 1;
+
+
+		HRESULT result = D3DDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&_PipelineState));
+		if (FAILED(result))
+		{
+			_PipelineState = nullptr;
+			SS_INTERRUPT("CreatePipeline Failed.");
+			return;
+		}
 	}
-
-
-	uint32 inputElementCnt = 0;
-	const D3D12_INPUT_ELEMENT_DESC* inputElementDesc = GetInputElementDesc(InPipelineDesc.LayoutType, inputElementCnt);
-	if (inputElementDesc == nullptr)
+	else // Compute Shader인 경우
 	{
-		DEBUG_BREAK();
-		return;
-	}
-
-	// Describe and create the graphics pipeline state object (PSO).
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-
-
-	psoDesc.InputLayout = { inputElementDesc, inputElementCnt };
-	psoDesc.pRootSignature = RootSignature;
-	psoDesc.VS = CD3DX12_SHADER_BYTECODE(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize());
-	if (PSBlob != nullptr) psoDesc.PS = CD3DX12_SHADER_BYTECODE(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize());
-	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	psoDesc.DepthStencilState.StencilEnable = FALSE;
-	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
-	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = InPipelineDesc.NumRenderTarget;
-	for (int32 i = 0; i < InPipelineDesc.NumRenderTarget; i++)
-	{
-		psoDesc.RTVFormats[i] = SS::DX12Util::ConvertColorFormat(InPipelineDesc.RTColorFormats[i]);
-	}
-	psoDesc.DSVFormat = SS::DX12Util::ConvertColorFormat(InPipelineDesc.DSColorFormat);
-	psoDesc.SampleDesc.Count = 1;
+		const DX12RootSignatureWrapper* RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignaturePool->GetRootSignature(InPipelineDesc.RootSignatureType);
+		if (RootSignatureWrapper->IsValid() == false)
+		{
+			DEBUG_BREAK();
+			return;
+		}
+		ID3D12RootSignature* RootSignature = RootSignatureWrapper->GetRootSignatureInstantce();
 
 
-	HRESULT result = D3DDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&_PipelineState));
-	if (FAILED(result))
-	{
-		_PipelineState = nullptr;
-		SS_INTERRUPT("CreatePipeline Failed.");
-		return;
+		const DX12GALShaderWrapper* CS = (DX12GALShaderWrapper*)ShaderPool->FindShader(InPipelineDesc.CSName);
+		if (CS == nullptr)
+		{
+			DEBUG_BREAK();
+			return;
+		}
+		ID3DBlob* CSBlob = CS->GetCompiledShader();
+
+		const D3D12_COMPUTE_PIPELINE_STATE_DESC computePsoDesc = {
+			.pRootSignature = RootSignature,
+			.CS = CSBlob,
+			.NodeMask = 0,
+			.CachedPSO = {.pCachedBlob = NULL, .CachedBlobSizeInBytes = 0 },
+			.Flags = D3D12_PIPELINE_STATE_FLAG_NONE
+		};
+
+		D3DDevice->CreateComputePipelineState(&computePsoDesc, IID_PPV_ARGS(&_PipelineState));
 	}
 }
 

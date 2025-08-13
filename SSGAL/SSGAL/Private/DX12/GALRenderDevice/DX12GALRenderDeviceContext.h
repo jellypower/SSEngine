@@ -19,7 +19,7 @@ class DX12GALRenderDevice;
 class DX12GALRenderDeviceContext : public GALRenderDeviceContext
 {
 public:
-	DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 InitialCommandListCnt);
+	DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 SwapChainFrameCnt);
 	virtual ~DX12GALRenderDeviceContext();
 
 public:
@@ -55,6 +55,13 @@ public:
 	virtual void EndDrawMesh() override;
 
 	void BeginPostProcessing() override;
+	void DeferredShading(
+		GALRenderTarget* InRTResult,
+		GALRenderTarget* InRTGBufferNormal,
+		GALRenderTarget* InRTGBufferAlbedo,
+		GALRenderTarget* InRTGBufferWorldPos,
+		GALRenderTarget* InRTGBufferMetallicRoughness,
+		GALRenderTarget* InRTGBufferEmissive) override;
 	void EndPostProcessing() override;
 
 private:
@@ -66,6 +73,9 @@ private:
 public:
 	ID3D12GraphicsCommandList* GetCurrentDrawWorkerCmdList() const { return _DrawWorkerCommandLists[_CurCommandListIdx]; }
 	const SS::PooledList<ID3D12GraphicsCommandList*>& GetDrawWorkerCommandLists() const { return _DrawWorkerCommandLists; }
+
+	ID3D12GraphicsCommandList* GetCurrentPostProcessCmdList() const;
+	ID3D12CommandAllocator* GetCurrentPostProcessCmdAllocator() const;
 
 protected:
 	virtual void ResetRenderState() override;
@@ -81,8 +91,13 @@ private:
 private:
 	ERenderDeviceTaskPhase _TaskPhase = ERenderDeviceTaskPhase::TaskDenial;
 
-	SS::PooledList<ID3D12CommandAllocator*> _CommandAllocators; // TODO: SWAP_CHAIN_FRAME_COUNT 개수만큼 만들기
-	SS::PooledList <ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT 개수만큼 만들기
+	SS::PooledList<ID3D12CommandAllocator*> _DrawWorkerCommandAllocators;
+	SS::PooledList <ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
+	// TODO: Shadow용 CommandList 따로 만들기
+
+	SS::PooledList<ID3D12CommandAllocator*> _PostProcessCommandAllocators;
+	SS::PooledList <ID3D12GraphicsCommandList*> _PostProcessCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
+
 	int32 _CurCommandListIdx = 0;
 
 	GALRenderTarget* _BoundDSV = nullptr;

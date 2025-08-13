@@ -21,6 +21,6 @@ void QueryCurrentD3DGALDeviceContext(GALRenderDevice* DeviceToQuery, ID3D12Resou
 	DX12GALRenderDevice* DX12GALDevice = (DX12GALRenderDevice*)DeviceToQuery;
 	DX12GALSwapChainRenderTarget* SwapChainRT = (DX12GALSwapChainRenderTarget*)DX12GALDevice->GetDefaultViewportRenderTarget();
 
-	*OutBackBufferDescHeap = SwapChainRT->GetCurrentDSV();
+	*OutBackBufferDescHeap = SwapChainRT->GetCurrentRTV();
 	*OutBackBuffer = SwapChainRT->GetCurrentResource();
 }

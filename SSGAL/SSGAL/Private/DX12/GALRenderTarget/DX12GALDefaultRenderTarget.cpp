@@ -45,6 +45,11 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 		RTVDesc.SampleDesc.Quality = 0;
 		RTVDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
+		if (Desc.bUseUAV)
+		{
+			RTVDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
+
 		CD3DX12_HEAP_PROPERTIES RenderTargetTypeProp = { };
 		RenderTargetTypeProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -77,7 +82,7 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 			RTHeapDesc.NumDescriptors = 1;
 			RTHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			RTHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			hr = D3DDevice->CreateDescriptorHeap(&RTHeapDesc, IID_PPV_ARGS(&_RenderTargetDescHeap));
+			hr = D3DDevice->CreateDescriptorHeap(&RTHeapDesc, IID_PPV_ARGS(&_RenderTargetDescHeap)); // TODO: 
 			if (FAILED(hr))
 			{
 				SS_INTERRUPT();
@@ -133,7 +138,7 @@ ID3D12Resource* DX12GALDefaultRenderTarget::GetCurrentResource() const
 	return _RenderTargetResource;
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentDSV() const
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentRTV() const
 {
 	return _DescHandle; 
 }

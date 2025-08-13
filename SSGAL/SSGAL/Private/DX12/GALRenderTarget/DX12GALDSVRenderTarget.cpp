@@ -166,8 +166,9 @@ ID3D12Resource* DX12GALDSVRenderTarget::GetCurrentResource() const
 	return _DepthStencil;
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDSVRenderTarget::GetCurrentDSV() const
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDSVRenderTarget::GetCurrentRTV() const
 {
+	// DSVRenderTarget객체는 DepthStencilView를 리턴해줌
 	return _DepthStencilDescHandle;
 }
 

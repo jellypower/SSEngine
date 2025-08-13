@@ -235,7 +235,7 @@ ID3D12Resource* DX12GALSwapChainRenderTarget::GetCurrentResource() const
 	return _DXRenderTargets[_CurRenderTargetIdx];
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALSwapChainRenderTarget::GetCurrentDSV() const
+CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALSwapChainRenderTarget::GetCurrentRTV() const
 {
 	return _RTDescHandles[_CurRenderTargetIdx];
 }
