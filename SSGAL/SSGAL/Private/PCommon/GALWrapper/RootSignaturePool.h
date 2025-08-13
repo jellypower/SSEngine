@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "RootSignatureWrapper.h"
+#include "Public/GALRenderTarget/GALRTCommonEnums.h"
 #include "SSEngineDefault/Public/INoncopyable.h"
 
 class GALRenderDevice;

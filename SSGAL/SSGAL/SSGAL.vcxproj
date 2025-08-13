@@ -255,6 +255,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClInclude Include="Public\GALRenderTarget\GALRTCommonEnums.h" />
     <ClInclude Include="Public\GALWrapper\GALShaderPool.h" />
     <ClInclude Include="Public\GALWrapper\GALShaderWrapper.h" />
+    <ClInclude Include="Public\GALWrapper\PipelineDesc.h" />
     <ClInclude Include="Public\ModuleEntry\ExtractD3DDeviceInfo.h" />
     <ClInclude Include="Public\ModuleEntry\GALInstanceFactory.h" />
     <ClInclude Include="Public\SSGALCommonEnums.h" />

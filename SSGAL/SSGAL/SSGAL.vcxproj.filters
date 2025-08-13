@@ -296,6 +296,9 @@
     <ClInclude Include="Private\DX12\GALRenderTarget\DX12GALUAVRenderTarget.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Public\GALWrapper\PipelineDesc.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
