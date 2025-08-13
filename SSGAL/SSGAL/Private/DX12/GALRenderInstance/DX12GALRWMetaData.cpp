@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "DX12GALRWMetaData.h"
 
-#include <SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h>
+#include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
 
 #include "SSRenderer/Public/RenderInstance/Light/IRenderLight.h"
 

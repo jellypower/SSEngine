@@ -20,19 +20,20 @@ float Fresnel_Shlick(float F0, float F90, float cosine)
     return lerp(F0, F90, Pow5(1.0 - cosine));
 }
 
-float Specular_D_GGX(SurfaceProperties Surface, float3 L)
+// N=Normal, V=ToViewerPos, L=LightDir, AlphaSqr
+float Specular_D_GGX(float3 N, float3 H, float3 L, float AlphaSqr)
 {
-    float3 H = normalize(Surface.V + L);
-    float NdotH = dot(Surface.N, H);
+    float NdotH = dot(N, H);
 
-    float lower = lerp(1, Surface.alphaSqr, NdotH * NdotH);
-    return Surface.alphaSqr / max(1e-6, PI * lower * lower);
+    float lower = lerp(1, AlphaSqr, NdotH * NdotH);
+    return AlphaSqr / max(1e-6, PI * lower * lower);
 }
 
-float G_Schlick_Smith(SurfaceProperties Surface, float3 L)
+// N=Normal, L=LightDir, NdotV(V=ToViewrPos), AlphaSqr
+float G_Schlick_Smith(float3 N, float3 L, float NdotV, float Alpha)
 {
-    float NdotL = dot(Surface.N, L);
-    return 1.0 / max(1e-6, lerp(Surface.NdotV, 1, Surface.alpha * 0.5) * lerp(NdotL, 1, Surface.alpha * 0.5));
+    float NdotL = dot(N, L);
+    return 1.0 / max(1e-6, lerp(NdotV, 1, Alpha * 0.5) * lerp(NdotL, 1, Alpha * 0.5));
 }
 
 
@@ -76,25 +77,33 @@ float3 ComputeNormal(
 }
 
 float3 ComputeLightWithCookTorrence(
-    SurfaceProperties surface,
+    GBufferProperties Props,
+    float3 WorldToViewerPos,
     float3 LightDir,
     float3 LightColor)
 {
-    float3 H = normalize(surface.V + LightDir);
-    float VdotH = dot(surface.V, H);
-    float F = Fresnel_Shlick(surface.metallic, 1, VdotH); // 우선 프레넬 이펙트 값을 스페큘러 값으로 지정
+    float NdotV = saturate(dot(Props.N, WorldToViewerPos));
+    float Alpha = Props.Roughness * Props.Roughness;
+    float AlphaSqr = Alpha * Alpha;
+    
+    
+    float3 H = normalize(WorldToViewerPos + LightDir);
+    float VdotH = dot(WorldToViewerPos, H);
+    float F = Fresnel_Shlick(Props.Metallic, 1, VdotH); // 우선 프레넬 이펙트 값을 스페큘러 값으로 지정
     float k_d = 1 - F;
 
     // float3 lambert = baseColor;
 
-    float NdotL = saturate(dot(surface.N, LightDir));
+    float NdotL = saturate(dot(Props.N, LightDir));
 
-    float cookTorrenceNumerator = Specular_D_GGX(surface, LightDir) * G_Schlick_Smith(surface, LightDir) * F;
-    float cookTorrenceDenominator = 4.0 * surface.NdotV * NdotL;
+    float D = Specular_D_GGX(Props.N, H, LightDir, AlphaSqr);
+    float G = G_Schlick_Smith(Props.N, LightDir, NdotV, Alpha);
+    float cookTorrenceNumerator = D * G * F;
+    float cookTorrenceDenominator = 4.0 * NdotV * NdotL;
     cookTorrenceDenominator = max(cookTorrenceDenominator, 0.000001);
     
     float Specular = min(F, cookTorrenceNumerator / cookTorrenceDenominator); // Specular == Diffuse
-    float3 DiffuseColor = k_d * surface.baseColor;
+    float3 DiffuseColor = k_d * Props.BaseColor;
 
     float3 BRDF = DiffuseColor + Specular;
     return BRDF * LightColor * NdotL;

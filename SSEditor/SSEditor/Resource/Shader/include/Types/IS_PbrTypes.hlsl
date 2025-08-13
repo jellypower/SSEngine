@@ -15,4 +15,14 @@ struct SurfaceProperties
     float NdotV;
 };
 
+struct GBufferProperties
+{
+    float3 N;
+    float3 BaseColor;
+    float3 WorldPos;
+    float Metallic;
+    float Roughness;
+    float Emissive;
+};
+
 #endif

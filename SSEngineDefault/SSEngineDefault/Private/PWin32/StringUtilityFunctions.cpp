@@ -32,10 +32,10 @@ int32 CharStrToUTF16Str(const char* charStr, int32 charLen, utf16* outUtf16Str, 
 	return multibyteLen;
 }
 
-int32 UTF16StrToCharStr(const utf16* utf16Str, int32 utf16StrLen, char* outCharStr, int32 charLen)
+int32 UTF16StrToCharStr(const utf16* utf16Str, int32 utf16StrLen, char* outCharStr, int32 mbBufferSize)
 {
 	int32 writtenBytes = WideCharToMultiByte(CP_ACP, 0, utf16Str, utf16StrLen, NULL, 0, NULL, NULL);
-	SS_ASSERT(writtenBytes < charLen);
+	SS_ASSERT(writtenBytes < mbBufferSize);
 	writtenBytes = WideCharToMultiByte(CP_ACP, 0, utf16Str, utf16StrLen, outCharStr, writtenBytes, NULL, NULL);
 	outCharStr[writtenBytes] = '\0';
 	return writtenBytes;

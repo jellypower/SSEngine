@@ -15,18 +15,27 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     float4 emissiveSample = txEmissive.Sample(samLinear, input.UV0);
     float3 emissive = emissiveFactor * emissiveSample.rgb * emissiveSample.a;
     
+    float3 WorldToViewerPos = normalize(ViewerPos - input.WorldPos);
 
-    SurfaceProperties surface;
-    surface.N = ComputeNormal(input, txNormal, samLinear, normalTextureScale);
-    surface.V = normalize(ViewerPos - input.WorldPos);
-    surface.NdotV = saturate(dot(surface.N, surface.V));
-    surface.c_diff = baseColor.rgb * (1 - kDielectricSpecular) * (1 - metallic) * occlusion;
-    surface.c_spec = lerp(kDielectricSpecular, baseColor.rgb, metallic) * occlusion;
-    surface.baseColor = baseColor;
-    surface.metallic = metallic;
-    surface.roughness = roughness;
-    surface.alpha = roughness * roughness;
-    surface.alphaSqr = surface.alpha * surface.alpha;
+//    SurfaceProperties surface;
+//    surface.N = ComputeNormal(input, txNormal, samLinear, normalTextureScale);
+//    surface.V = normalize(ViewerPos - input.WorldPos);
+//    surface.NdotV = saturate(dot(surface.N, surface.V));
+//    surface.c_diff = baseColor.rgb * (1 - kDielectricSpecular) * (1 - metallic) * occlusion;
+//    surface.c_spec = lerp(kDielectricSpecular, baseColor.rgb, metallic) * occlusion;
+//    surface.baseColor = baseColor;
+//    surface.metallic = metallic;
+//    surface.roughness = roughness;
+//    surface.alpha = roughness * roughness;
+//    surface.alphaSqr = surface.alpha * surface.alpha;
+
+    GBufferProperties Props;
+    Props.N = ComputeNormal(input, txNormal, samLinear, normalTextureScale);;
+    Props.BaseColor = baseColor;
+    Props.WorldPos = input.WorldPos;
+    Props.Metallic = metallic;
+    Props.Roughness = roughness;
+    Props.Emissive = emissive;
 
     
     float3 colorAccum = emissive;
@@ -43,16 +52,18 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
             ShadowMapUV.y = -ShadowMapUV.y;
             ShadowMapUV = ShadowMapUV / 2 + float2(0.5, 0.5);
             float ShadowMapDepth = txSingleShadowMap.Sample(samLinear, ShadowMapUV);
-            if (ShadowMapDepth < MeshShadowPoint.z - 0.0001)
+            
+            const float THRESHOLD = 0.0001;
+            if (ShadowMapDepth < MeshShadowPoint.z - THRESHOLD)
             {
                 LightIntensity *= 0.2;
             }
         }
         
-        colorAccum += ComputeLightWithCookTorrence(surface, LightDir, LightIntensity);
+        colorAccum += ComputeLightWithCookTorrence(Props, ViewerPos, LightDir, LightIntensity);
     }
     
-    colorAccum += ComputeLightWithCookTorrence(surface, surface.V, AmbientLightIntensity);
+    colorAccum += ComputeLightWithCookTorrence(Props, ViewerPos, ViewerPos, AmbientLightIntensity);
     
     colorAccum = saturate(colorAccum);
     Output.Color = float4(colorAccum, baseColor.a);
