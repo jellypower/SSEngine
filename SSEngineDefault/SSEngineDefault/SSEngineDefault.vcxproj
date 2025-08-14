@@ -180,6 +180,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SSContainer\Allocators\InlineAllocator.h" />
     <ClInclude Include="Public\SSContainer\BasicHashFunctionCollection.h" />
     <ClInclude Include="Public\SSContainer\CityHash.h" />
+    <ClInclude Include="Public\SSContainer\ContainerUtil\ContainerUtil.h" />
     <ClInclude Include="Public\SSContainer\FixedList.h" />
     <ClInclude Include="Public\SSContainer\HashMap.h" />
     <ClInclude Include="Public\SSContainer\PooledLinkedList.h" />

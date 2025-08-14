@@ -116,4 +116,6 @@ private:
 	DX12GALRWMetaData* _CurRenderWorldGALData = nullptr;
 	GALRIShadowMapMetadata* _DrawingShadowMapMetadata = nullptr;
 	PipelineDesc _LastSetPSO;
+
+	SS::PooledList<ID3D12DescriptorHeap*> _UniqueDescHeapWorkTable;
 };

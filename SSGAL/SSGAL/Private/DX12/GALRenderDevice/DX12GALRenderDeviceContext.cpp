@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
+#include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
 
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
@@ -47,7 +48,8 @@
 
 DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 SwapChainFrameCnt):
 	_BoundRenderTargets(RT_NUM_MAX),
-	_RenderLightsToDraw(32)
+	_RenderLightsToDraw(32),
+	_UniqueDescHeapWorkTable(10)
 {
 	_OwnerRenderDevice = InRenderDevice;
 
@@ -867,15 +869,24 @@ void DX12GALRenderDeviceContext::ExecuteDeferredShading(GALPPCDeferredShading* I
 	PipelineDesc Desc = ConstructPSOToDeferredShading();
 	SetPSOAndRootSignature(Desc);
 
-
 	DX12GALPPCDeferredShading* DeferredShadingContext = (DX12GALPPCDeferredShading*)InDeferredShadingContext;
+
 	ID3D12DescriptorHeap* DescHeap = DeferredShadingContext->GetGBufferSRVDescHeap();
-	D3D12_GPU_DESCRIPTOR_HANDLE GPUDescHandle = DeferredShadingContext->GetGBufferSRVGPUDescTable();
+	ID3D12DescriptorHeap* RenderLightDescHeap = _CurRenderWorldGALData->GetLightSettingDescHeap();
+	_UniqueDescHeapWorkTable.Clear();
+	ListPushBackUnique(_UniqueDescHeapWorkTable, DescHeap);
+	ListPushBackUnique(_UniqueDescHeapWorkTable, RenderLightDescHeap);
+	CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+	
+
+	D3D12_GPU_DESCRIPTOR_HANDLE GBufferDescTableHandle = DeferredShadingContext->GetGBufferSRVGPUDescTable();
+	D3D12_GPU_DESCRIPTOR_HANDLE ShadowMapDescTableHandle = _CurRenderWorldGALData->GetLightSeetingDescTable();
 
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CurCommandList->SetDescriptorHeaps(1, &DescHeap);
-	CurCommandList->SetGraphicsRootConstantBufferView(0, _CurRenderWorldGALData->GetRenderLightParamCB());
-	CurCommandList->SetGraphicsRootDescriptorTable(1, GPUDescHandle);
+	CurCommandList->SetGraphicsRootConstantBufferView(0, _CurRenderWorldGALData->GetRenderLightParamCB()); // RenderLight
+	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr); // RenderEnvParam
+	CurCommandList->SetGraphicsRootDescriptorTable(2, GBufferDescTableHandle); // G-Buffer
+	CurCommandList->SetGraphicsRootDescriptorTable(3, ShadowMapDescTableHandle); // ShadowMap
 	CurCommandList->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -1020,8 +1031,8 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // 메테리얼 디스크립터 테이블 바인딩
 
 		{
-			CurCommandList->SetGraphicsRootConstantBufferView(4, _CurRenderWorldGALData->GetRenderLightParamCB());
-			CurCommandList->SetGraphicsRootDescriptorTable(5, _CurRenderWorldGALData->GetLightSeetingDescTable()); // GALWorld의 RenderEnv 바인딩
+			CurCommandList->SetGraphicsRootConstantBufferView(4, _CurRenderWorldGALData->GetRenderLightParamCB()); // GALWorld의 RenderEnv 바인딩
+			CurCommandList->SetGraphicsRootDescriptorTable(5, _CurRenderWorldGALData->GetLightSeetingDescTable()); // ShadowMapBinding
 		} // RenderEnv
 
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);

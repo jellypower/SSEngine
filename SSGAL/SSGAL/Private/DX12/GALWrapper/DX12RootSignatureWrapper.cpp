@@ -156,16 +156,21 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 			Initialized = true;
 
 			
-			static CD3DX12_DESCRIPTOR_RANGE DeferredTextures[5] = {};
-			DeferredTextures[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // float3 Normal
-			DeferredTextures[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // float3 Albedo
-			DeferredTextures[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2); // float3 WorldPos
-			DeferredTextures[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3); // float2 MetallicRoughness
-			DeferredTextures[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4); // float3 Emissive
+			static CD3DX12_DESCRIPTOR_RANGE GBufferTextures[5] = {};
+			GBufferTextures[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // float3 Normal
+			GBufferTextures[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // float3 Albedo
+			GBufferTextures[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2); // float3 WorldPos
+			GBufferTextures[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3); // float2 MetallicRoughness
+			GBufferTextures[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4); // float3 Emissive
 
-			static CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
-			rootParameters[0].InitAsConstantBufferView(0);
-			rootParameters[1].InitAsDescriptorTable(_countof(DeferredTextures), DeferredTextures, D3D12_SHADER_VISIBILITY_ALL);
+			static CD3DX12_DESCRIPTOR_RANGE ShadowMapTextures[1] = {};
+			ShadowMapTextures[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5); // float ShadowMap
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[4] = {};
+			rootParameters[0].InitAsConstantBufferView(0); // RenderLight
+			rootParameters[1].InitAsConstantBufferView(1); // RenderEnv
+			rootParameters[2].InitAsDescriptorTable(_countof(GBufferTextures), GBufferTextures, D3D12_SHADER_VISIBILITY_ALL); // G-Buffer
+			rootParameters[3].InitAsDescriptorTable(_countof(ShadowMapTextures), ShadowMapTextures, D3D12_SHADER_VISIBILITY_ALL); // ShadowMap
 
 			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
