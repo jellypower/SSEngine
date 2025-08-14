@@ -1,18 +1,23 @@
 #include "pch.h"
 #include "DX12GALPPCDeferredShading.h"
 
+#include <SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h>
+#include <SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h>
+
+#include "Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 
 #include "Public/GALRenderTarget/GALRenderTarget.h"
 
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
+#include "Private/PCommon/GALPrivateGlobals.h"
 
 DX12GALPPCDeferredShading::DX12GALPPCDeferredShading(DX12GALRenderDevice* InOwnerDevice)
 {
 	_OwnerDevice = InOwnerDevice;
 	
-	ID3D12Device5* D3DDevice= InOwnerDevice->GetD3DDevice();
+	ID3D12Device5* D3DDevice = InOwnerDevice->GetD3DDevice();
 
 
 	// Alloc DescriptorTable
@@ -52,39 +57,19 @@ void DX12GALPPCDeferredShading::SyncGALPPCParam()
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE DescHandleToCopy = _GBuffersSRVDescTableCPU;
 
-	D3DDevice->CopyDescriptorsSimple(
-		1,
-		DescHandleToCopy,
-		_RTNormal->GetCurrentSRV(),
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3DDevice->CopyDescriptorsSimple(1, DescHandleToCopy, _RTNormal->GetCurrentSRV(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	DescHandleToCopy.Offset(1, DescriptorIncrementalSize);
 
-	D3DDevice->CopyDescriptorsSimple(
-		1,
-		DescHandleToCopy,
-		_RTAlbedo->GetCurrentSRV(),
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3DDevice->CopyDescriptorsSimple(1, DescHandleToCopy, _RTAlbedo->GetCurrentSRV(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	DescHandleToCopy.Offset(1, DescriptorIncrementalSize);
 
-	D3DDevice->CopyDescriptorsSimple(
-		1,
-		DescHandleToCopy,
-		_RTWorldPos->GetCurrentSRV(),
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3DDevice->CopyDescriptorsSimple(1, DescHandleToCopy, _RTWorldPos->GetCurrentSRV(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	DescHandleToCopy.Offset(1, DescriptorIncrementalSize);
 
-	D3DDevice->CopyDescriptorsSimple(
-		1,
-		DescHandleToCopy,
-		_RTMetallicRoughness->GetCurrentSRV(),
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3DDevice->CopyDescriptorsSimple(1, DescHandleToCopy, _RTMetallicRoughness->GetCurrentSRV(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	DescHandleToCopy.Offset(1, DescriptorIncrementalSize);
 
-	D3DDevice->CopyDescriptorsSimple(
-		1,
-		DescHandleToCopy,
-		_RTEmissive->GetCurrentSRV(),
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3DDevice->CopyDescriptorsSimple(1, DescHandleToCopy, _RTEmissive->GetCurrentSRV(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	DescHandleToCopy.Offset(1, DescriptorIncrementalSize);
 }
 

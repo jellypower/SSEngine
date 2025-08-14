@@ -106,6 +106,13 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 				SRVHeap->GetCPUDescriptorHandleForHeapStart(),
 				_SRVDescTableChunk.ChunkOffset,
 				D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+
+			D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+			SRVDesc.Format = DXGIColorFormat;
+			SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			SRVDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			SRVDesc.Texture2D.MipLevels = 1;
+			D3DDevice->CreateShaderResourceView(_RenderTargetResource, &SRVDesc, _SRVHandle);
 		}
 	}
 

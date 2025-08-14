@@ -286,7 +286,7 @@ void SSRenderer::StartUp()
 		_DeferredShadingContext->SetRTWorldPos(_RTGBufferWorldPos);
 		_DeferredShadingContext->SetRTMetallicRoughness(_RTGBufferMetallicRoughness);
 		_DeferredShadingContext->SetRTEmissive(_RTGBufferEmissive);
-		_DeferredShadingContext->SyncGALPPCParam();
+
 	}
 }
 
@@ -432,6 +432,8 @@ void SSRenderer::PerFrame()
 
 			// Post Processing
 			{
+				_DeferredShadingContext->SyncGALPPCParam();
+
 				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::Common, EResourceStateType::RenderTarget);
 
 				_MainDeviceContext->BeginPostProcessing();
