@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "DX12GALPPCDeferredShading.h"
 
-#include <SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h>
-#include <SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h>
 
 #include "Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
@@ -11,7 +9,6 @@
 
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
-#include "Private/PCommon/GALPrivateGlobals.h"
 
 DX12GALPPCDeferredShading::DX12GALPPCDeferredShading(DX12GALRenderDevice* InOwnerDevice)
 {
