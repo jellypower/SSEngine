@@ -9,10 +9,10 @@ Texture2D<float> g_TxEmissive : register(t4);
 
 SamplerState samLinear : register(s0);
 
-float4 Main(VS_OUTPUT_FULLSCREEN_QUAD input)
+float4 Main(VS_OUTPUT_FULLSCREEN_QUAD input) : SV_Target
 {
     float3 Color = 
-        g_TxAlbedo.Sample(samLinear, input.uv);
+        g_TxNormal.Sample(samLinear, input.uv);
     
     return float4(Color, 1);
 }

@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "SSEngineDefault/Public/SSCommonUtil/AllocatedChunkHeader.h"
+
 #include "DX12GALRenderTargetBase.h"
 
 class DX12GALRenderDevice;
@@ -30,8 +32,11 @@ private:
 	GALRenderTargetDesc _InitializedDesc;
 
 	ID3D12DescriptorHeap* _RenderTargetDescHeap = nullptr;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE _DescHandle;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE _RTVHandle;
 	uint32 _RTVDescriptorSize = 0;
+
+	AllocatedChunkHeader _SRVDescTableChunk;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE _SRVHandle;
 
 	Vector2i32 _ResourceSize;
 	int32 _ResrouceRowPitch;

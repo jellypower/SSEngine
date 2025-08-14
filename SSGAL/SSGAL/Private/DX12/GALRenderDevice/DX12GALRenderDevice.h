@@ -31,6 +31,8 @@ public:
 	virtual GALRenderTarget* CreateDepthStencilView(const GALRenderTargetDesc& Desc, const utf16* ResourceName) override;
 	virtual GALCPUReadableTexture* CreateCPUReadableTexture(ERTColorFormat InColorFormat, Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName = nullptr) override;
 
+	virtual GALPPCDeferredShading* CreateDeferredShadingPostProcessContext() override;
+
 	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) override;
 
 

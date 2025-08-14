@@ -3,6 +3,8 @@
 
 #include "DX12GALDefaultRenderTarget.h"
 
+#include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
+
 #include "Private/DX12/Utils/SSDX12Utils.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
@@ -89,8 +91,21 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 			}
 			_RTVDescriptorSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-			_DescHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart());
-			D3DDevice->CreateRenderTargetView(_RenderTargetResource, nullptr, _DescHandle);
+			_RTVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart());
+			D3DDevice->CreateRenderTargetView(_RenderTargetResource, nullptr, _RTVHandle);
+		}
+
+		// Alloc DescriptorHeap For Tex
+		if (Desc.bUseSRV)
+		{
+			SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
+
+			_SRVDescTableChunk = DescriptorTableAllocatorForTex->AllocChunk(1, L"DX12GALDefaultRenderTarget");
+			ID3D12DescriptorHeap* SRVHeap = (ID3D12DescriptorHeap*)_SRVDescTableChunk.PageContent;
+			_SRVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+				SRVHeap->GetCPUDescriptorHandleForHeapStart(),
+				_SRVDescTableChunk.ChunkOffset,
+				D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 		}
 	}
 
@@ -109,6 +124,12 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 
 DX12GALDefaultRenderTarget::~DX12GALDefaultRenderTarget()
 {
+	if (_InitializedDesc.bUseSRV)
+	{
+		SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
+		DescriptorTableAllocatorForTex->ReleaseChunk(_SRVDescTableChunk);
+	}
+
 	_RenderTargetResource->Release();
 	_RenderTargetDescHeap->Release();
 }
@@ -140,13 +161,17 @@ ID3D12Resource* DX12GALDefaultRenderTarget::GetCurrentResource() const
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentRTV() const
 {
-	return _DescHandle; 
+	return _RTVHandle; 
 }
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDefaultRenderTarget::GetCurrentSRV() const
 {
-	SS_INTERRUPT("TODO: 구현하기");
-	return CD3DX12_CPU_DESCRIPTOR_HANDLE();
+	if (_InitializedDesc.bUseSRV == false)
+	{
+		SS_INTERRUPT();
+	}
+
+	return _SRVHandle;
 }
 
 void DX12GALDefaultRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From,

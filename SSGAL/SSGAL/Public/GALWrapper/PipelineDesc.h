@@ -17,7 +17,8 @@ enum class EInputLayoutType : int32
 
 	SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT,
 	SS_DEFAULT_VS_SKIN_VERTEX_LAYOUT,
-	ComputeShader,
+
+	SS_INPUTLAYOUT_NULL,
 };
 
 enum class ERasterizerState : int32

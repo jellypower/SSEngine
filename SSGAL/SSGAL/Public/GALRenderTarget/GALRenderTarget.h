@@ -19,6 +19,7 @@ struct GALRenderTargetDesc
 	ERTColorFormat Format = ERTColorFormat::None;
 	EResourceStateType InitialResourceState = EResourceStateType::None;
 	bool bUseUAV = false;
+	bool bUseSRV = false;
 };
 
 

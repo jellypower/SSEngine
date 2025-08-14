@@ -37,10 +37,6 @@ public:
 	virtual void AddRenderLightToDraw(IRenderLight* InLight) override;
 	virtual void CommitAddedRenderLights() override;
 
-	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) override; // SetPSOAndRootSignature, SetRenderTarget
-	virtual void DrawShadow(IRenderInstance* InRenderInstance) override;
-	virtual void EndDrawShadowMap() override;
-
 	virtual void SetRenderCamera(IRenderCamera* InCamera) override;
 
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) override;
@@ -50,23 +46,35 @@ public:
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) override;
 
+
+
+
+
+	// ERenderDeviceTaskPhase::DrawShadow
+	virtual void BeginDrawShadowMap(IRenderLight* InLightToDrawShadowMap) override; // SetPSOAndRootSignature, SetRenderTarget
+	virtual void DrawShadow(IRenderInstance* InRenderInstance) override;
+	virtual void EndDrawShadowMap() override;
+	// ERenderDeviceTaskPhase::~DrawShadow
+
+
+
+	// ERenderDeviceTaskPhase::DrawMesh
 	virtual void BeginDrawMesh() override;
 	virtual void DrawMesh(IRenderInstance* InRenderInstance) override;
 	virtual void EndDrawMesh() override;
+	// ERenderDeviceTaskPhase::~DrawMesh
 
+
+
+	// ERenderDeviceTaskPhase::PostProcess
 	void BeginPostProcessing() override;
-	void DeferredShading(
-		GALRenderTarget* InRTResult,
-		GALRenderTarget* InRTGBufferNormal,
-		GALRenderTarget* InRTGBufferAlbedo,
-		GALRenderTarget* InRTGBufferWorldPos,
-		GALRenderTarget* InRTGBufferMetallicRoughness,
-		GALRenderTarget* InRTGBufferEmissive) override;
+	void ExecuteDeferredShading(GALPPCDeferredShading* InDeferredShadingContext) override;
 	void EndPostProcessing() override;
+	// ERenderDeviceTaskPhase::~PostProcess
+
 
 private:
 	void DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
-
 	void DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 
 

@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class GALPPCDeferredShading;
 class CommonRenderAssetSet;
 class ITextureAssetMutable;
 class GALCPUReadableTexture;
@@ -35,18 +36,21 @@ private:
 private:
 	IRenderCamera* _MainRenderCamera = nullptr;
 
-	bool _bPixelPickingReserved = false;
-	Vector2i32 _PixelPickingCoord;
 
+	GALPPCDeferredShading* _DeferredShadingContext = nullptr;
 	GALRenderTarget* _RTGBufferNormal = nullptr;
 	GALRenderTarget* _RTGBufferAlbedo = nullptr;
 	GALRenderTarget* _RTGBufferWorldPos = nullptr;
 	GALRenderTarget* _RTGBufferMetallicRoughness = nullptr;
 	GALRenderTarget* _RTGBufferEmissive = nullptr;
-	GALRenderTarget* _RTDeferredSceneResult = nullptr;
+	GALRenderTarget* _RTPostProcessResult = nullptr;
+
 
 	GALRenderTarget* _DSVRenderTarget = nullptr;
 
+
+	bool _bPixelPickingReserved = false;
+	Vector2i32 _PixelPickingCoord;
 	GALRenderTarget* _PixelPickerRenderTarget = nullptr;
 	GALCPUReadableTexture* _PixelPickerCPUReadableTex = nullptr;
 	SObjHashCode _PickedObjectHash;

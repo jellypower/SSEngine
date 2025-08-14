@@ -6,6 +6,7 @@
 #include "DX12GALRenderDeviceContext.h"
 
 
+#include "Private/DX12/GALPostProcessContext/DX12GALPPCDeferredShading.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIDirectionalLightShadowMapMetadata.h"
 #include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
@@ -854,27 +855,30 @@ void DX12GALRenderDeviceContext::BeginPostProcessing()
 	if (FAILED(hr)) SS_INTERRUPT();
 }
 
-void DX12GALRenderDeviceContext::DeferredShading(
-	GALRenderTarget* InRTResult,
-	GALRenderTarget* InRTGBufferNormal,
-	GALRenderTarget* InRTGBufferAlbedo,
-	GALRenderTarget* InRTGBufferWorldPos,
-	GALRenderTarget* InRTGBufferMetallicRoughness,
-	GALRenderTarget* InRTGBufferEmissive)
+void DX12GALRenderDeviceContext::ExecuteDeferredShading(GALPPCDeferredShading* InDeferredShadingContext)
 {
-	if (InRTResult->GetRenderTargetType() != ERenderTargetType::Default_UAV)
+	if (_TaskPhase != ERenderDeviceTaskPhase::PostProcess)
 	{
 		SS_INTERRUPT();
 		return;
 	}
-
-	SS_INTERRUPT(); // TODO: 구현하기
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 	PipelineDesc Desc = ConstructPSOToDeferredShading();
 	SetPSOAndRootSignature(Desc);
 
-	DX12GALUAVRenderTarget* UAVRTResult = (DX12GALUAVRenderTarget*)InRTResult;
+
+	DX12GALPPCDeferredShading* DeferredShadingContext = (DX12GALPPCDeferredShading*)InDeferredShadingContext;
+	ID3D12DescriptorHeap* DescHeap = DeferredShadingContext->GetGBufferSRVDescHeap();
+	D3D12_GPU_DESCRIPTOR_HANDLE GPUDescHandle = DeferredShadingContext->GetGBufferSRVGPUDescTable();
+
+	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CurCommandList->SetDescriptorHeaps(1, &DescHeap);
+	CurCommandList->SetGraphicsRootConstantBufferView(0, _CurRenderWorldGALData->GetRenderLightParamCB());
+	CurCommandList->SetGraphicsRootDescriptorTable(1, GPUDescHandle);
+	CurCommandList->DrawInstanced(3, 1, 0, 0);
 }
+
 
 void DX12GALRenderDeviceContext::EndPostProcessing()
 {

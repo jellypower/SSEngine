@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/Allocators/InlineAllocator.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
 
+class GALPPCDeferredShading;
 enum class ERTColorFormat : int32;
 class IRenderer;
 class ICommonRenderAssetSet;
@@ -47,6 +48,8 @@ public:
 	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) = 0;
 	virtual GALRenderTarget* CreateDepthStencilView(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) = 0;
 	virtual GALCPUReadableTexture* CreateCPUReadableTexture(ERTColorFormat InColorFormat, Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName = nullptr) = 0;
+
+	virtual GALPPCDeferredShading* CreateDeferredShadingPostProcessContext() = 0;
 
 	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) = 0;
 

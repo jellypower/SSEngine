@@ -6,7 +6,6 @@
 #include "DX12GALShaderWrapper.h"
 #include "DX12RootSignaturePool.h"
 #include "DX12RootSignatureWrapper.h"
-#include "Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
 #include "Private/DX12/Utils/SSDX12Utils.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/PCommon/GALWrapper/PSOPool.h"
@@ -44,6 +43,11 @@ const D3D12_INPUT_ELEMENT_DESC* DX12PSOWrapper::GetInputElementDesc(EInputLayout
 
 		outElementCnt = _countof(inputElementDesc);
 		return inputElementDesc;
+	}
+	case EInputLayoutType::SS_INPUTLAYOUT_NULL:
+	{
+		outElementCnt = 0;
+		return nullptr;
 	}
 	default:
 	{
@@ -98,11 +102,6 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 
 		uint32 inputElementCnt = 0;
 		const D3D12_INPUT_ELEMENT_DESC* inputElementDesc = GetInputElementDesc(InPipelineDesc.LayoutType, inputElementCnt);
-		if (inputElementDesc == nullptr)
-		{
-			DEBUG_BREAK();
-			return;
-		}
 
 		// Describe and create the graphics pipeline state object (PSO).
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};

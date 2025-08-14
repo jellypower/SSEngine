@@ -95,20 +95,18 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 		D3DDevice->CreateDepthStencilView(_DepthStencil, &depthStencilDesc, _DepthStencilDescHandle);
 	}
 
-	// Alloc DescriptorHeap For Tex
+	// Create SRV
+	if (Desc.bUseSRV)
 	{
 		SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
 
 		_SRVDescTableChunk = DescriptorTableAllocatorForTex->AllocChunk(1, L"DX12GALDefaultRenderTarget::_DepthStencil");
-		ID3D12DescriptorHeap* AllocatedDescHeap = (ID3D12DescriptorHeap*)_SRVDescTableChunk.PageContent;
+		ID3D12DescriptorHeap* SRVHeap = (ID3D12DescriptorHeap*)_SRVDescTableChunk.PageContent;
 		_SRVDescHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
-			AllocatedDescHeap->GetCPUDescriptorHandleForHeapStart(),
+			SRVHeap->GetCPUDescriptorHandleForHeapStart(),
 			_SRVDescTableChunk.ChunkOffset,
 			D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-	}
 
-	// Create SRV
-	{
 		D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
 		SRVDesc.Format = DXGI_FORMAT_R32_FLOAT;
 		SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -116,6 +114,7 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 		SRVDesc.Texture2D.MipLevels = 1;
 		D3DDevice->CreateShaderResourceView(_DepthStencil, &SRVDesc, _SRVDescHandle);
 	}
+
 
 
 	// Getting Pitch
@@ -132,6 +131,7 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 
 DX12GALDSVRenderTarget::~DX12GALDSVRenderTarget()
 {
+	if (_InitializedDesc.bUseSRV)
 	{
 		SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
 		DescriptorTableAllocatorForTex->ReleaseChunk(_SRVDescTableChunk);
@@ -172,8 +172,14 @@ CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDSVRenderTarget::GetCurrentRTV() const
 	return _DepthStencilDescHandle;
 }
 
+
 CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALDSVRenderTarget::GetCurrentSRV() const
 {
+	if (_InitializedDesc.bUseSRV == false)
+	{
+		SS_INTERRUPT();
+	}
+
 	return _SRVDescHandle;
 }
 

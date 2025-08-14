@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class GALPPCDeferredShading;
 struct PipelineDesc;
 class IRenderLight;
 class IRenderCamera;
@@ -84,13 +85,7 @@ public:
 
 	// ERenderDeviceTaskPhase::PostProcess
 	virtual void BeginPostProcessing() = 0;
-	virtual void DeferredShading(GALRenderTarget* InRTResult, 
-		GALRenderTarget* InRTGBufferNormal,
-		GALRenderTarget* InRTGBufferAlbedo,
-		GALRenderTarget* InRTGBufferWorldPos,
-		GALRenderTarget* InRTGBufferMetallicRoughness,
-		GALRenderTarget* InRTGBufferEmissive
-		) = 0;
+	virtual void ExecuteDeferredShading(GALPPCDeferredShading* InDeferredShadingContext) = 0;
 	virtual void EndPostProcessing() = 0;
 	// ~ERenderDeviceTaskPhase::PostProcess
 

@@ -31,6 +31,7 @@ DX12GALRIDirectionalLightShadowMapMetadata::DX12GALRIDirectionalLightShadowMapMe
 		ShadowMapDesc.DrawBoxSize.MaxDepth = 1.f;
 		ShadowMapDesc.Format = ERTColorFormat::D32_FLOAT;
 		ShadowMapDesc.InitialResourceState = EResourceStateType::Common;
+		ShadowMapDesc.bUseSRV = true;
 		_ShadowMap = InRenderDevice->CreateDepthStencilView(ShadowMapDesc, L"DX12GALRIDirectionalLightShadowMapMetadata");
 	}
 

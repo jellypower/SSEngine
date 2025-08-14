@@ -3,6 +3,7 @@
 #include "DX12GALRenderDevice.h"
 
 #include "DX12GALRenderDeviceContext.h"
+#include "Private/DX12/GALPostProcessContext/DX12GALPPCDeferredShading.h"
 #include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
 #include "Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
@@ -275,12 +276,10 @@ void DX12GALRenderDevice::ExecuteRenderContext(GALRenderDeviceContext* DeviceCon
 
 	// 필요한 데이터 뽑아오기
 	DX12GALRenderDeviceContext* DX12DeviceContext = (DX12GALRenderDeviceContext*)DeviceContext;
-	const SS::PooledList<ID3D12GraphicsCommandList*>& CommandLists = DX12DeviceContext->GetDrawWorkerCommandLists();
-	int32 Size = CommandLists.GetSize();
-	ID3D12CommandList* const* Lists = (ID3D12CommandList* const*)CommandLists.GetData();
+	ID3D12CommandList* CurCommandList = DX12DeviceContext->GetCurrentDrawWorkerCmdList();
 
 	// 실행
-	_D3DCommandQueue->ExecuteCommandLists(Size, Lists);
+	_D3DCommandQueue->ExecuteCommandLists(1, &CurCommandList);
 	_ExecutedDeviceContext.PushBack(DX12DeviceContext);
 }
 
@@ -335,6 +334,12 @@ GALCPUReadableTexture* DX12GALRenderDevice::CreateCPUReadableTexture(ERTColorFor
 {
 	DX12GALCPUReadableTexture* NewReadableTex = DBG_NEW DX12GALCPUReadableTexture(this, InColorFormat, InWidthHeight, Pitch, ResourceName);
 	return NewReadableTex;
+}
+
+GALPPCDeferredShading* DX12GALRenderDevice::CreateDeferredShadingPostProcessContext()
+{
+	DX12GALPPCDeferredShading* NewPostProcessContext = DBG_NEW DX12GALPPCDeferredShading(this);
+	return NewPostProcessContext;
 }
 
 

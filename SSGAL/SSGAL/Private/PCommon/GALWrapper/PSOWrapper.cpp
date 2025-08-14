@@ -5,8 +5,8 @@
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 #include "PSOWrapper.h"
 
-#include <SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h>
-#include <SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h>
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
 
 #include "Public/GALRenderTarget/GALRenderTarget.h"
 
@@ -83,7 +83,10 @@ PipelineDesc ConstructPSOToDeferredShading()
 	PipelineDesc NewPipelineDesc;
 	NewPipelineDesc.VSName = "VS_FullScreenQuad";
 	NewPipelineDesc.PSName = "PS_DeferredShading";
-	NewPipelineDesc.RootSignatureType = ERootSignatureType::CS_Deferred;
-
+	NewPipelineDesc.LayoutType = EInputLayoutType::SS_INPUTLAYOUT_NULL;
+	NewPipelineDesc.RootSignatureType = ERootSignatureType::DeferredShading;
+	NewPipelineDesc.NumRenderTarget = 1;
+	NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R32G32B32A32_FLOAT;
+	NewPipelineDesc.DSColorFormat = ERTColorFormat::Unknown;
 	return NewPipelineDesc;
 }

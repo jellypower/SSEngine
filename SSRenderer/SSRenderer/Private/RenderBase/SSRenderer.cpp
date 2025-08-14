@@ -10,6 +10,7 @@
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
 #include "SSGAL/Public/GALRenderTarget/GALCPUReadableTexture.h"
+#include "SSGAL/Public/GALPostProcessContext/GALPPCDeferredShading.h"
 
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
 #include "SSRenderer/Private/RenderAsset/CommonRenderAssetSet.h"
@@ -170,6 +171,7 @@ void SSRenderer::StartUp()
 		DSVDesc.DrawBoxSize = SwapChainBuffer->GetViewportBoxSize();
 		DSVDesc.Format = ERTColorFormat::D32_FLOAT;
 		DSVDesc.InitialResourceState = EResourceStateType::DepthWrite;
+		DSVDesc.bUseSRV = true;
 		_DSVRenderTarget = _GALRenderDevice->CreateDepthStencilView(DSVDesc, L"Main_DSV");
 	}
 
@@ -187,6 +189,7 @@ void SSRenderer::StartUp()
 		RTDesc.DrawBoxSize.MaxDepth = 1.f;
 		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
 		RTDesc.InitialResourceState = EResourceStateType::Common;
+		RTDesc.bUseSRV = true;
 		_RTGBufferNormal = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferNormal");
 
 	}
@@ -204,6 +207,7 @@ void SSRenderer::StartUp()
 		RTDesc.DrawBoxSize.MaxDepth = 1.f;
 		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
 		RTDesc.InitialResourceState = EResourceStateType::Common;
+		RTDesc.bUseSRV = true;
 		_RTGBufferAlbedo = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferAlbedo");
 	}
 
@@ -220,6 +224,7 @@ void SSRenderer::StartUp()
 		RTDesc.DrawBoxSize.MaxDepth = 1.f;
 		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
 		RTDesc.InitialResourceState = EResourceStateType::Common;
+		RTDesc.bUseSRV = true;
 		_RTGBufferWorldPos = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferWorldPos");
 	}
 
@@ -236,6 +241,7 @@ void SSRenderer::StartUp()
 		RTDesc.DrawBoxSize.MaxDepth = 1.f;
 		RTDesc.Format = ERTColorFormat::R32G32_FLOAT;
 		RTDesc.InitialResourceState = EResourceStateType::Common;
+		RTDesc.bUseSRV = true;
 		_RTGBufferMetallicRoughness = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferMetallicRoughness");
 	}
 
@@ -252,9 +258,11 @@ void SSRenderer::StartUp()
 		RTDesc.DrawBoxSize.MaxDepth = 1.f;
 		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
 		RTDesc.InitialResourceState = EResourceStateType::Common;
+		RTDesc.bUseSRV = true;
 		_RTGBufferEmissive = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTGBufferEmissive");
 	}
 
+	// PostProcessResult
 	{
 		GALRenderTargetDesc RTDesc;
 		RTDesc.ResourceWidth = SwapChainBufferSize.X;
@@ -267,9 +275,18 @@ void SSRenderer::StartUp()
 		RTDesc.DrawBoxSize.MaxDepth = 1.f;
 		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
 		RTDesc.InitialResourceState = EResourceStateType::Common;
-		RTDesc.bUseUAV = true;
-		_RTDeferredSceneResult = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTDeferredSceneResult");
+		_RTPostProcessResult = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTPostProcessResult");
+	}
 
+	// DeferredShadingContext
+	{
+		_DeferredShadingContext = _GALRenderDevice->CreateDeferredShadingPostProcessContext();
+		_DeferredShadingContext->SetRTNormal(_RTGBufferNormal);
+		_DeferredShadingContext->SetRTAlbedo(_RTGBufferAlbedo);
+		_DeferredShadingContext->SetRTWorldPos(_RTGBufferWorldPos);
+		_DeferredShadingContext->SetRTMetallicRoughness(_RTGBufferMetallicRoughness);
+		_DeferredShadingContext->SetRTEmissive(_RTGBufferEmissive);
+		_DeferredShadingContext->SyncGALPPCParam();
 	}
 }
 
@@ -415,25 +432,14 @@ void SSRenderer::PerFrame()
 
 			// Post Processing
 			{
-				_MainDeviceContext->ResourceBarrier(_RTDeferredSceneResult, EResourceStateType::Common, EResourceStateType::RenderTarget);
+				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::Common, EResourceStateType::RenderTarget);
 
 				_MainDeviceContext->BeginPostProcessing();
-
-				/*
-				_MainDeviceContext->DeferredShading(
-					_RTDeferredSceneResult,
-
-					_RTGBufferNormal,
-					_RTGBufferAlbedo,
-					_RTGBufferWorldPos,
-					_RTGBufferMetallicRoughness,
-					_RTGBufferEmissive
-				);
-				*/
-
+				_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
+				_MainDeviceContext->ExecuteDeferredShading(_DeferredShadingContext);
 				_MainDeviceContext->EndPostProcessing();
 
-				_MainDeviceContext->ResourceBarrier(_RTDeferredSceneResult, EResourceStateType::RenderTarget, EResourceStateType::Common);
+				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::Common);
 			}
 			
 			// Copy to Pixel Picker RenderTarget
@@ -451,13 +457,16 @@ void SSRenderer::PerFrame()
 
 void SSRenderer::CleanUp()
 {
-	delete _RTDeferredSceneResult;
+	delete _DeferredShadingContext;
+	_DeferredShadingContext = nullptr;
+
+	delete _RTPostProcessResult;
 	delete _RTGBufferEmissive;
 	delete _RTGBufferMetallicRoughness;
 	delete _RTGBufferWorldPos;
 	delete _RTGBufferAlbedo;
 	delete _RTGBufferNormal;
-	_RTDeferredSceneResult = nullptr;
+	_RTPostProcessResult = nullptr;
 	_RTGBufferEmissive = nullptr;
 	_RTGBufferMetallicRoughness = nullptr;
 	_RTGBufferWorldPos = nullptr;
