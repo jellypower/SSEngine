@@ -15,19 +15,6 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     float4 emissiveSample = txEmissive.Sample(samLinear, input.UV0);
     float3 emissive = emissiveFactor * emissiveSample.rgb * emissiveSample.a;
     
-    float3 WorldToViewerPos = normalize(ViewerPos - input.WorldPos);
-
-//    SurfaceProperties surface;
-//    surface.N = ComputeNormal(input, txNormal, samLinear, normalTextureScale);
-//    surface.V = normalize(ViewerPos - input.WorldPos);
-//    surface.NdotV = saturate(dot(surface.N, surface.V));
-//    surface.c_diff = baseColor.rgb * (1 - kDielectricSpecular) * (1 - metallic) * occlusion;
-//    surface.c_spec = lerp(kDielectricSpecular, baseColor.rgb, metallic) * occlusion;
-//    surface.baseColor = baseColor;
-//    surface.metallic = metallic;
-//    surface.roughness = roughness;
-//    surface.alpha = roughness * roughness;
-//    surface.alphaSqr = surface.alpha * surface.alpha;
 
     GBufferProperties Props;
     Props.N = ComputeNormal(input, txNormal, samLinear, normalTextureScale);;
@@ -36,39 +23,7 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     Props.Metallic = metallic;
     Props.Roughness = roughness;
     Props.Emissive = emissive;
-
     
-    float3 colorAccum = float3(0, 0, 0);
-    
-    for (int i = 0; i < DirectionalLightCnt; i++)
-    {
-        float4 LightDir = DirectionalLights[i].Direction;
-        float4 LightIntensity = DirectionalLights[i].Color;
-    
-        if (i == ShadowMapIdxOnDirectionalLights)
-        {
-            float4 MeshShadowPoint = mul(input.WorldPos, ShadowMapVPMat);
-            float2 ShadowMapUV = MeshShadowPoint.xy;
-            ShadowMapUV.y = -ShadowMapUV.y;
-            ShadowMapUV = ShadowMapUV / 2 + float2(0.5, 0.5);
-            float ShadowMapDepth = txSingleShadowMap.Sample(samLinear, ShadowMapUV);
-            
-            const float THRESHOLD = 0.0001;
-            if (ShadowMapDepth < MeshShadowPoint.z - THRESHOLD)
-            {
-                LightIntensity *= 0;
-            }
-        }
-        
-        colorAccum += ComputeLightWithCookTorrence(Props, WorldToViewerPos, LightDir, LightIntensity);
-    }
-    
-    colorAccum += ComputeLightWithCookTorrence(Props, WorldToViewerPos, WorldToViewerPos, AmbientLightIntensity);
-    
-    colorAccum = saturate(colorAccum);    
-    colorAccum += emissive;
-    
-    Output.TEMP_FinalColor = float4(colorAccum, baseColor.a);
     Output.Normal = Props.N;
     Output.Albedo = Props.BaseColor;
     Output.WorldPos = Props.WorldPos;

@@ -197,7 +197,7 @@ void DX12GALDSVRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDeviceCon
 }
 
 
-void DX12GALDSVRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList)
+void DX12GALDSVRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList, const Vector4f& ClearColor)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_DSVHeap->GetCPUDescriptorHandleForHeapStart());
 	CmdList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);

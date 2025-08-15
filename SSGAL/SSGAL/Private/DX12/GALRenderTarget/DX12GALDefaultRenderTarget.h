@@ -23,7 +23,7 @@ public:
 	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentSRV() const override;
 
 	virtual void ResourceBarrier(GALRenderDeviceContext* InDeviceContext, EResourceStateType From, EResourceStateType To) override;
-	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList) override;
+	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList, const Vector4f& ClearColor) override;
 
 protected:
 	ID3D12Resource* _RenderTargetResource = nullptr;

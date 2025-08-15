@@ -59,10 +59,10 @@ public:
 	virtual void ResourceBarrier(GALRenderTarget* InRenderTarget, EResourceStateType From, EResourceStateType To) = 0;
 	virtual void SetPSOAndRootSignature(const PipelineDesc& PSODesc) = 0;
 	virtual void SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets, GALRenderTarget* InDepthStencilView) = 0;
-	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget) = 0;
+	virtual void ClearRenderTarget(GALRenderTarget* InRenderTarget, const Vector4f& ClearColor) = 0;
 
 	virtual void CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc) = 0;
-
+	virtual void CopyRenderTarget(GALRenderTarget* CopyDest, GALRenderTarget* CopySrc) = 0;
 
 
 

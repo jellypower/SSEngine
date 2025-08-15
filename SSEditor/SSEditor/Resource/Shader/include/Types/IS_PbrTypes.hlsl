@@ -14,6 +14,18 @@ struct SurfaceProperties
     float alphaSqr; // alpha squared
     float NdotV;
 };
+//    SurfaceProperties surface;
+//    surface.N = ComputeNormal(input, txNormal, samLinear, normalTextureScale);
+//    surface.V = normalize(ViewerPos - input.WorldPos);
+//    surface.NdotV = saturate(dot(surface.N, surface.V));
+//    surface.c_diff = baseColor.rgb * (1 - kDielectricSpecular) * (1 - metallic) * occlusion;
+//    surface.c_spec = lerp(kDielectricSpecular, baseColor.rgb, metallic) * occlusion;
+//    surface.baseColor = baseColor;
+//    surface.metallic = metallic;
+//    surface.roughness = roughness;
+//    surface.alpha = roughness * roughness;
+//    surface.alphaSqr = surface.alpha * surface.alpha;
+
 
 struct GBufferProperties
 {

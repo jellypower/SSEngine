@@ -35,8 +35,16 @@ SamplerState samLinear : register(s0);
 
 float4 Main(VS_OUTPUT_FULLSCREEN_QUAD input) : SV_Target
 {
+    float3 Normal = g_TxNormal.Sample(samLinear, input.uv);
+    float NormalSqrLen =
+        Normal.x * Normal.x + Normal.y * Normal.y + Normal.z * Normal.z;
+    if(NormalSqrLen < 0.1)
+    {
+        discard;
+    }
+    
     GBufferProperties Props;
-    Props.N = g_TxNormal.Sample(samLinear, input.uv);
+    Props.N = Normal;
     Props.BaseColor = g_TxAlbedo.Sample(samLinear, input.uv);
     Props.WorldPos = g_TxWorldPos.Sample(samLinear, input.uv);
     float2 MetallicRoughness = g_TxMetallicRoughness.Sample(samLinear, input.uv);
@@ -55,7 +63,8 @@ float4 Main(VS_OUTPUT_FULLSCREEN_QUAD input) : SV_Target
     
         if (i == ShadowMapIdxOnDirectionalLights)
         {
-            float4 MeshShadowPoint = mul(Props.WorldPos, ShadowMapVPMat);
+            float4 f4WorldPos = float4(Props.WorldPos, 1);
+            float4 MeshShadowPoint = mul(f4WorldPos, ShadowMapVPMat);
             float2 ShadowMapUV = MeshShadowPoint.xy;
             ShadowMapUV.y = -ShadowMapUV.y;
             ShadowMapUV = ShadowMapUV / 2 + float2(0.5, 0.5);

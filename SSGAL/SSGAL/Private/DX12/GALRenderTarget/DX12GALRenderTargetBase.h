@@ -15,5 +15,5 @@ public:
 	// virtual ID3D12DescriptorHeap* GetCurrentSRVDescHeap() const = 0; // 필요없음: 어차피 CopyDescriptorsSimple써서 사용하기 때문에
 	virtual CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentSRV() const = 0;
 
-	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList) = 0;
+	virtual void ClearRenderTarget(ID3D12GraphicsCommandList* CmdList, const Vector4f& ClearColor) = 0;
 };

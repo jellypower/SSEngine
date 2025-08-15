@@ -134,12 +134,11 @@ HRESULT DX12GALSwapChainRenderTarget::Present()
 }
 
 
-void DX12GALSwapChainRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList)
+void DX12GALSwapChainRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList, const Vector4f& ClearColor)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
-
-	constexpr float CLEAR_COLOR[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	CmdList->ClearRenderTargetView(rtvHandle, CLEAR_COLOR, 0, nullptr);
+	const float f4ClearColor[] = { ClearColor.X, ClearColor.Y, ClearColor.Z, ClearColor.W };
+	CmdList->ClearRenderTargetView(rtvHandle, f4ClearColor, 0, nullptr);
 }
 
 

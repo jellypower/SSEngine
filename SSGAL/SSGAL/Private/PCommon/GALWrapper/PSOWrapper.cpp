@@ -86,7 +86,7 @@ PipelineDesc ConstructPSOToDeferredShading()
 	NewPipelineDesc.LayoutType = EInputLayoutType::SS_INPUTLAYOUT_NULL;
 	NewPipelineDesc.RootSignatureType = ERootSignatureType::DeferredShading;
 	NewPipelineDesc.NumRenderTarget = 1;
-	NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R32G32B32A32_FLOAT;
+	NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R8G8B8A8_UNORM;
 	NewPipelineDesc.DSColorFormat = ERTColorFormat::Unknown;
 	return NewPipelineDesc;
 }

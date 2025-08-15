@@ -195,10 +195,10 @@ void DX12GALDefaultRenderTarget::ResourceBarrier(GALRenderDeviceContext* InDevic
 	CurCmdList->ResourceBarrier(1, &Barrier);
 }
 
-void DX12GALDefaultRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList)
+void DX12GALDefaultRenderTarget::ClearRenderTarget(ID3D12GraphicsCommandList* CmdList, const Vector4f& ClearColor)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), _CurRenderTargetIdx, _RTVDescriptorSize);
 
-	constexpr FLOAT CLEAR_COLOR[] = { 0.f, 0.f, 0.f, 0.f };
-	CmdList->ClearRenderTargetView(rtvHandle, CLEAR_COLOR, 0, nullptr);
+	const float f4ClearColor[] = { ClearColor.X, ClearColor.Y, ClearColor.Z, ClearColor.W };
+	CmdList->ClearRenderTargetView(rtvHandle, f4ClearColor, 0, nullptr);
 }

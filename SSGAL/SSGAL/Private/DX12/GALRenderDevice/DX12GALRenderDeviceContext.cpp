@@ -523,7 +523,7 @@ void DX12GALRenderDeviceContext::BeginDrawShadowMap(IRenderLight* InLightToDrawS
 		GALRenderTarget* ShadowMap = DirectionalLightShadowMapMetadata->GetShadowMap();
 
 		ResourceBarrier(ShadowMap, EResourceStateType::Common, EResourceStateType::DepthWrite);
-		ClearRenderTarget(ShadowMap);
+		ClearRenderTarget(ShadowMap, Vector4f::Zero);
 		SetRenderTarget(0, nullptr, ShadowMap);
 	}
 	else
@@ -735,12 +735,12 @@ void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRend
 	}
 }
 
-void DX12GALRenderDeviceContext::ClearRenderTarget(GALRenderTarget* InRenderTarget)
+void DX12GALRenderDeviceContext::ClearRenderTarget(GALRenderTarget* InRenderTarget, const Vector4f& ClearColor)
 {
 	DX12GALRenderTargetBase* DX12RenderTarget = (DX12GALRenderTargetBase*)InRenderTarget;
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
-	DX12RenderTarget->ClearRenderTarget(CurCommandList);
+	DX12RenderTarget->ClearRenderTarget(CurCommandList, ClearColor);
 }
 
 void DX12GALRenderDeviceContext::CopyRenderTarget(GALCPUReadableTexture* CopyDest, GALRenderTarget* CopySrc)
@@ -790,6 +790,77 @@ void DX12GALRenderDeviceContext::CopyRenderTarget(GALCPUReadableTexture* CopyDes
 	destLocation.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 
 	D3D12_TEXTURE_COPY_LOCATION	srcLocation;
+	srcLocation.pResource = SrcRes;
+	srcLocation.SubresourceIndex = 0;
+	srcLocation.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+
+	CurCommandList->CopyTextureRegion(&destLocation, box.left, box.top, 0, &srcLocation, &box);
+}
+
+void DX12GALRenderDeviceContext::CopyRenderTarget(GALRenderTarget* CopyDest, GALRenderTarget* CopySrc)
+{
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+	DX12GALRenderDevice* OwnerDeviceDX12 = (DX12GALRenderDevice*)GetOwnerRenderDevice();
+	ID3D12Device5* D3DDevice = OwnerDeviceDX12->GetD3DDevice();
+
+
+	DX12GALRenderTargetBase* DestRTDX12 = (DX12GALRenderTargetBase*)CopyDest;
+	ID3D12Resource* DestRes = DestRTDX12->GetCurrentResource();
+
+
+	DX12GALRenderTargetBase* SrcRTDX12 = (DX12GALRenderTargetBase*)CopySrc;
+	ID3D12Resource* SrcRes = SrcRTDX12->GetCurrentResource();
+
+
+	UINT __Rows = 0;
+	UINT64 __RowSize = 0;
+	UINT64 __TotalBytes = 0;
+	D3D12_RESOURCE_DESC SrcDesc = SrcRes->GetDesc();
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT SrcFootprint;
+	D3DDevice->GetCopyableFootprints(
+		&SrcDesc,
+		0,
+		1,
+		0,
+		&SrcFootprint,
+		&__Rows,
+		&__RowSize,
+		&__TotalBytes
+	);
+
+
+	D3D12_RESOURCE_DESC DestDesc = DestRes->GetDesc();
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT DestFootprint;
+	D3DDevice->GetCopyableFootprints(
+		&DestDesc,
+		0,
+		1,
+		0,
+		&DestFootprint,
+		&__Rows,
+		&__RowSize,
+		&__TotalBytes
+	);
+
+
+
+
+	D3D12_BOX box;
+	box.front = 0;
+	box.back = 1;
+	box.left = 0;
+	box.right = DestRTDX12->GetViewportBoxSize().WidthHeight.X;
+	box.top = 0;
+	box.bottom = DestRTDX12->GetViewportBoxSize().WidthHeight.Y;
+
+	D3D12_TEXTURE_COPY_LOCATION	destLocation;
+	destLocation.PlacedFootprint = DestFootprint;
+	destLocation.pResource = DestRes;
+	destLocation.SubresourceIndex = 0;
+	destLocation.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+
+	D3D12_TEXTURE_COPY_LOCATION	srcLocation;
+	srcLocation.PlacedFootprint = SrcFootprint;
 	srcLocation.pResource = SrcRes;
 	srcLocation.SubresourceIndex = 0;
 	srcLocation.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
@@ -1014,19 +1085,12 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 
 		// TODO: BeginDrawMesh랑 EndDrawMesh구현하면서 SetDescriptorHeaps, SetPipelineState, SetGraphicsRootSignature 하는거 몰아서 하기
-		if (GALMaterial->_MtlTexSRVDescHeap == _CurRenderWorldGALData->GetLightSettingDescHeap())
-		{
-			CurCommandList->SetDescriptorHeaps(1, &GALMaterial->_MtlTexSRVDescHeap); // 메테리얼, GALWorld 디스크립터 힙 바인딩
-		}
-		else
-		{
-			ID3D12DescriptorHeap* Heaps[] =
-			{
-				GALMaterial->_MtlTexSRVDescHeap,
-				_CurRenderWorldGALData->GetLightSettingDescHeap()
-			};
-			CurCommandList->SetDescriptorHeaps(_countof(Heaps), Heaps); // 메테리얼, GALWorld 디스크립터 힙 바인딩
-		}
+		_UniqueDescHeapWorkTable.Clear();
+		ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_MtlTexSRVDescHeap);
+		ListPushBackUnique(_UniqueDescHeapWorkTable, _CurRenderWorldGALData->GetLightSettingDescHeap());
+		CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+
+
 
 		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // 메테리얼 디스크립터 테이블 바인딩
 

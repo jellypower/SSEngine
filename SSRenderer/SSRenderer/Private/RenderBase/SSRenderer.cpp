@@ -273,7 +273,7 @@ void SSRenderer::StartUp()
 		RTDesc.DrawBoxSize.WidthHeight = Vector2f(SwapChainBufferSize.X, SwapChainBufferSize.Y);
 		RTDesc.DrawBoxSize.MinDepth = 0.f;
 		RTDesc.DrawBoxSize.MaxDepth = 1.f;
-		RTDesc.Format = ERTColorFormat::R32G32B32A32_FLOAT;
+		RTDesc.Format = ERTColorFormat::R8G8B8A8_UNORM;
 		RTDesc.InitialResourceState = EResourceStateType::Common;
 		_RTPostProcessResult = _GALRenderDevice->CreateRenderTarget(RTDesc, L"_RTPostProcessResult");
 	}
@@ -286,7 +286,7 @@ void SSRenderer::StartUp()
 		_DeferredShadingContext->SetRTWorldPos(_RTGBufferWorldPos);
 		_DeferredShadingContext->SetRTMetallicRoughness(_RTGBufferMetallicRoughness);
 		_DeferredShadingContext->SetRTEmissive(_RTGBufferEmissive);
-
+		_DeferredShadingContext->SyncGALPPCParam();
 	}
 }
 
@@ -373,8 +373,6 @@ void SSRenderer::PerFrame()
 			// Default Render Target
 			{
 				{
-					_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::RenderTarget);
-
 					_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
 
 					_MainDeviceContext->ResourceBarrier(_RTGBufferNormal, EResourceStateType::Common, EResourceStateType::RenderTarget);
@@ -385,29 +383,26 @@ void SSRenderer::PerFrame()
 				}
 
 				{
-					_MainDeviceContext->ClearRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget());
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferNormal, Vector4f::Zero);
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferAlbedo, Vector4f::Zero);
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferWorldPos, Vector4f::Zero);
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferMetallicRoughness, Vector4f::Zero);
+					_MainDeviceContext->ClearRenderTarget(_RTGBufferEmissive, Vector4f::Zero);
 
-					_MainDeviceContext->ClearRenderTarget(_RTGBufferNormal);
-					_MainDeviceContext->ClearRenderTarget(_RTGBufferAlbedo);
-					_MainDeviceContext->ClearRenderTarget(_RTGBufferWorldPos);
-					_MainDeviceContext->ClearRenderTarget(_RTGBufferMetallicRoughness);
-					_MainDeviceContext->ClearRenderTarget(_RTGBufferEmissive);
+					_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget, Vector4f::Zero);
 
-					_MainDeviceContext->ClearRenderTarget(_PixelPickerRenderTarget);
-
-					_MainDeviceContext->ClearRenderTarget(_DSVRenderTarget);
+					_MainDeviceContext->ClearRenderTarget(_DSVRenderTarget, Vector4f::Zero);
 				}
 
 
 				GALRenderTarget* RenderTargets[RT_NUM_MAX] = { nullptr, };
-				RenderTargets[0] = _GALRenderDevice->GetDefaultViewportRenderTarget();
-				RenderTargets[1] = _RTGBufferNormal;
-				RenderTargets[2] = _RTGBufferAlbedo;
-				RenderTargets[3] = _RTGBufferWorldPos;
-				RenderTargets[4] = _RTGBufferMetallicRoughness;
-				RenderTargets[5] = _RTGBufferEmissive;
-				RenderTargets[6] = _PixelPickerRenderTarget;
-				_MainDeviceContext->SetRenderTarget(7, RenderTargets, _DSVRenderTarget);
+				RenderTargets[0] = _RTGBufferNormal;
+				RenderTargets[1] = _RTGBufferAlbedo;
+				RenderTargets[2] = _RTGBufferWorldPos;
+				RenderTargets[3] = _RTGBufferMetallicRoughness;
+				RenderTargets[4] = _RTGBufferEmissive;
+				RenderTargets[5] = _PixelPickerRenderTarget;
+				_MainDeviceContext->SetRenderTarget(6, RenderTargets, _DSVRenderTarget);
 
 				// TODO: BeginDrawMesh ¶û EndDrawMesh ¸¸µé±â
 				_MainDeviceContext->BeginDrawMesh();
@@ -418,8 +413,6 @@ void SSRenderer::PerFrame()
 				_MainDeviceContext->EndDrawMesh();
 
 				{
-					_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::RenderTarget, EResourceStateType::Present);
-
 					_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 
 					_MainDeviceContext->ResourceBarrier(_RTGBufferNormal, EResourceStateType::RenderTarget, EResourceStateType::Common);
@@ -431,18 +424,24 @@ void SSRenderer::PerFrame()
 			}
 
 			// Post Processing
+
+
+			_MainDeviceContext->BeginPostProcessing();
 			{
-				_DeferredShadingContext->SyncGALPPCParam();
-
 				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::Common, EResourceStateType::RenderTarget);
+				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::CopyDest);
 
-				_MainDeviceContext->BeginPostProcessing();
+				_MainDeviceContext->ClearRenderTarget(_RTPostProcessResult, {0.5, 0.5, 0.5, 1});
 				_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
 				_MainDeviceContext->ExecuteDeferredShading(_DeferredShadingContext);
-				_MainDeviceContext->EndPostProcessing();
 
-				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::Common);
+				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
+				_MainDeviceContext->CopyRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget(), _RTPostProcessResult);
+
+				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::CopyDest, EResourceStateType::Present);
+				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::CopySrc, EResourceStateType::Common);
 			}
+			_MainDeviceContext->EndPostProcessing();
 			
 			// Copy to Pixel Picker RenderTarget
 			{
