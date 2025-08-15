@@ -719,7 +719,7 @@ void SSEditor::ImGUI_AssetManager_Material()
 
 
 
-							if (ImGui::BeginCombo(TexTypeStr, u8EquippedTexName))
+							if (ImGui::BeginCombo(TexTypeStr, u8EquippedTexName, ImGuiComboFlags_WidthFitPreview))
 							{
 								for (const SS::pair<SS::SHasherW, IAssetBase*>& ItemPair : TextureList)
 								{
@@ -810,7 +810,7 @@ void SSEditor::ImGUI_AssetManager_Model()
 
 					utf8 u8MeshName[BUFFER_SIZE];
 					UTF16StrToUtf8Str(u16SelectedMeshAssetName, MeshAssetNameStrLen, u8MeshName, BUFFER_SIZE);
-					if (ImGui::BeginCombo("Mesh", u8MeshName))
+					if (ImGui::BeginCombo("Mesh", u8MeshName, ImGuiComboFlags_WidthFitPreview))
 					{
 						for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshItemInListPair : MeshList)
 						{
@@ -872,7 +872,7 @@ void SSEditor::ImGUI_AssetManager_Model()
 					_itoa(MtlIdx, MtlHeader + 9, 10);
 
 
-					if (ImGui::BeginCombo(MtlHeader, u8MtlName))
+					if (ImGui::BeginCombo(MtlHeader, u8MtlName, ImGuiComboFlags_WidthFitPreview))
 					{
 						for (const SS::pair<SS::SHasherW, IAssetBase*>& MtlItemPair : MtlList)
 						{
