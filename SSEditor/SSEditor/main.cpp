@@ -329,6 +329,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			ImGuiIO& io = ImGui::GetIO();
 			if (io.WantCaptureMouse || io.WantCaptureKeyboard)
 			{
+				g_RawInputProcessor->ResetCurInputState();
 				return 0;
 			}
 		}

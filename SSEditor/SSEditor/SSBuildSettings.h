@@ -9,6 +9,7 @@
 #pragma comment(lib, "SSContentsBase.lib")
 
 #pragma comment(lib, "SSImgui.lib")
+#pragma comment(lib, "DXGI.lib") // ImGUI에서 DXGI초기화가 필요해서 추가
 
 #ifdef _DEBUG
 

@@ -438,6 +438,9 @@ void SSEditor::TEMP_ProcessContents()
 
 void SSEditor::ProcessImGUI()
 {
+	ImGuiID dockspace_id = ImGui::GetID("IMGUI_SSEDITOR_DOCKSPACE");
+	ImGui::DockSpaceOverViewport(dockspace_id, nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
+
 	ImGUI_AssetManagerWindow();
 	ImGUI_FrameInfo();
 	ImGUI_PIckedObject();
