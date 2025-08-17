@@ -116,7 +116,7 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(EGRD3D12SamplerDescType::DefaultSampler, 0);
+			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(ESSSamplerDescType::DefaultSampler, 0);
 
 			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
 		}
@@ -139,7 +139,7 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(EGRD3D12SamplerDescType::DefaultSampler, 0);
+			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(ESSSamplerDescType::DefaultSampler, 0);
 
 			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
 
@@ -180,9 +180,13 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
 
-			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(EGRD3D12SamplerDescType::DefaultSampler, 0);
+			static D3D12_STATIC_SAMPLER_DESC samplers[] =
+			{
+				GetSamplerDescOfType(ESSSamplerDescType::DefaultSampler, 0),
+				GetSamplerDescOfType(ESSSamplerDescType::ShadowCmpSmapler, 1)
+			};
 
-			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
+			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, _countof(samplers), samplers, rootSignatureFlags);
 
 		}return rootSignatureDesc;
 	}
@@ -193,11 +197,11 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 	return CD3DX12_ROOT_SIGNATURE_DESC();
 }
 
-D3D12_STATIC_SAMPLER_DESC DX12RootSignatureWrapper::GetSamplerDescOfType(EGRD3D12SamplerDescType InSamplerType, int32 registerIDX)
+D3D12_STATIC_SAMPLER_DESC DX12RootSignatureWrapper::GetSamplerDescOfType(ESSSamplerDescType InSamplerType, int32 registerIDX)
 {
 	switch (InSamplerType)
 	{
-	case EGRD3D12SamplerDescType::DefaultSampler:
+	case ESSSamplerDescType::DefaultSampler:
 	{
 		D3D12_STATIC_SAMPLER_DESC newSampler = {};
 		newSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
@@ -215,7 +219,24 @@ D3D12_STATIC_SAMPLER_DESC DX12RootSignatureWrapper::GetSamplerDescOfType(EGRD3D1
 		newSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 		return newSampler;
 	}
-
+	case ESSSamplerDescType::ShadowCmpSmapler:
+	{
+		D3D12_STATIC_SAMPLER_DESC newSampler = {};
+		newSampler.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+		newSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		newSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		newSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		newSampler.MipLODBias = 0.0f;
+		newSampler.MaxAnisotropy = 16;
+		newSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		newSampler.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
+		newSampler.MinLOD = -FLT_MAX;
+		newSampler.MaxLOD = D3D12_FLOAT32_MAX;
+		newSampler.ShaderRegister = registerIDX;
+		newSampler.RegisterSpace = 0;
+		newSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+		return newSampler;
+	}
 	}
 
 	SS_INTERRUPT();

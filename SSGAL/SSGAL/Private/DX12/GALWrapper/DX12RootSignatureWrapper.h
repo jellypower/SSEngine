@@ -3,11 +3,12 @@
 
 #include "SSGAL/Private/PCommon/GALWrapper/RootSignatureWrapper.h"
 
-enum class EGRD3D12SamplerDescType
+enum class ESSSamplerDescType
 {
 	None = -1,
 
-	DefaultSampler
+	DefaultSampler,
+	ShadowCmpSmapler
 };
 
 
@@ -25,5 +26,5 @@ public:
 
 private:
 	static const CD3DX12_ROOT_SIGNATURE_DESC& GetRootSignatureDescOfType(ERootSignatureType InRootSignatureType);
-	static D3D12_STATIC_SAMPLER_DESC GetSamplerDescOfType(EGRD3D12SamplerDescType InSamplerType, int32 registerIDX);
+	static D3D12_STATIC_SAMPLER_DESC GetSamplerDescOfType(ESSSamplerDescType InSamplerType, int32 registerIDX);
 };
