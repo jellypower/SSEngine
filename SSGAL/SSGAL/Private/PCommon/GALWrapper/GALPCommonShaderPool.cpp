@@ -33,7 +33,7 @@ void GALPCommonShaderPool::Initialize()
 			{L"VS_SMToDefaultPSInput", L"Resource/Shader/VS_SMToDefaultPSInput.hlsl", "Main", EShaderType::VertexShader},
 			{L"VS_FullScreenQuad", L"Resource/Shader/VS_FullScreenQuad.hlsl", "Main", EShaderType::VertexShader},
 
-			{L"PS_TestDrawer", L"Resource/Shader/PS_TestDrawer.hlsl", "Main", EShaderType::PixelShader},
+			{L"PS_DeferredShadeGBufferOutput", L"Resource/Shader/PS_DeferredShadeGBufferOutput.hlsl", "Main", EShaderType::PixelShader},
 			{L"PS_IDDrawer", L"Resource/Shader/PS_IDDrawer.hlsl", "Main", EShaderType::PixelShader},
 
 			{L"PS_DeferredShading", L"Resource/Shader/PS_DeferredShading.hlsl", "Main", EShaderType::PixelShader},

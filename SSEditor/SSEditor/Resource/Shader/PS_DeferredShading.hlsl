@@ -76,22 +76,28 @@ float4 Main(VS_OUTPUT_FULLSCREEN_QUAD input) : SV_Target
             ShadowMapUV.y = -ShadowMapUV.y;
             ShadowMapUV = ShadowMapUV / 2 + float2(0.5, 0.5);
             
-            for (int x = -1; x <= 1; x++)
+            const float SHADOW_MAP_PCF_DELTA = 0.0002;
+            float2 ShadowMapUVs[] =
             {
-                for (int y = -1; y <= 1; y++)
-                {
-                    const float SHADOW_MAP_PCF_DELTA = 0.0002;
-                    float2 ShadowMapUVItem = ShadowMapUV;
-                    ShadowMapUVItem.x += (x * SHADOW_MAP_PCF_DELTA);
-                    ShadowMapUVItem.y += (y * SHADOW_MAP_PCF_DELTA);
-                    
-                    const float THRESHOLD = 0.001;
-                    float Result = g_TxSingleShadowMap.SampleCmpLevelZero(g_SamShadowMapCmp, ShadowMapUVItem.xy, MeshShadowPoint.z - THRESHOLD);
-                    // SampleCmp -> 셰이더는 텍스처를 UV값으로 쓰지만 실제 텍스쳐는 1024 * 1024 같은 사이즈이다.
-                    // 그렇기 때문에 하나의 실수에 여러개의 텍스쳐값의 중간이 겹치거나 할 수 있는데
-                    // SampleCmp함수는 내가 샘플링한 좌표를 기준으로 주변 텍셀들을 비교해서 값이 샘플러 세팅과 얼마나 유사한지 0 ~ 1사이로 리턴해준다.
-                    ShadowProbability += Result;
-                }
+                float2(ShadowMapUV.x - SHADOW_MAP_PCF_DELTA, ShadowMapUV.y - SHADOW_MAP_PCF_DELTA),
+                float2(ShadowMapUV.x - SHADOW_MAP_PCF_DELTA, ShadowMapUV.y),
+                float2(ShadowMapUV.x - SHADOW_MAP_PCF_DELTA, ShadowMapUV.y + SHADOW_MAP_PCF_DELTA),
+                
+                float2(ShadowMapUV.x, ShadowMapUV.y - SHADOW_MAP_PCF_DELTA),
+                float2(ShadowMapUV.x, ShadowMapUV.y),
+                float2(ShadowMapUV.x, ShadowMapUV.y + SHADOW_MAP_PCF_DELTA),
+                
+                float2(ShadowMapUV.x + SHADOW_MAP_PCF_DELTA, ShadowMapUV.y - SHADOW_MAP_PCF_DELTA),
+                float2(ShadowMapUV.x + SHADOW_MAP_PCF_DELTA, ShadowMapUV.y),
+                float2(ShadowMapUV.x + SHADOW_MAP_PCF_DELTA, ShadowMapUV.y + SHADOW_MAP_PCF_DELTA),
+            };
+            
+            
+            for (int j = 0; j < 9; j++)
+            {
+                const float THRESHOLD = 0.001;   
+                float Result = g_TxSingleShadowMap.SampleCmpLevelZero(g_SamShadowMapCmp, ShadowMapUVs[i].xy, MeshShadowPoint.z - THRESHOLD);
+                ShadowProbability += Result;
             }
             
             ShadowProbability /= 9.0f;

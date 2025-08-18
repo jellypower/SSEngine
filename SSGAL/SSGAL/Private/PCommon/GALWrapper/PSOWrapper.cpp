@@ -39,7 +39,7 @@ PipelineDesc ConstructPSODescToDrawMesh(EMeshType InMeshType, EMaterialType InMt
 	switch (InMtlType)
 	{
 	case EMaterialType::DefaultPBR:
-		NewPipelineDesc.PSName = L"PS_TestDrawer";
+		NewPipelineDesc.PSName = L"PS_DeferredShadeGBufferOutput";
 		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_DEFAULT_PBR;
 		break;
 	default:
