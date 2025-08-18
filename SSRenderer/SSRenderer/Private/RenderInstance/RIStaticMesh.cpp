@@ -51,6 +51,12 @@ void RIStaticMesh::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover)
 		return;
 	}
 
+	if (MetadataToHandover->GetMetadataRenderInstanceType() != ERenderInstanceType::StaticMesh)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
 	_MetaData = MetadataToHandover;
 }
 

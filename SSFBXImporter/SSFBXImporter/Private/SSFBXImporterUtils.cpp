@@ -3,7 +3,7 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
@@ -149,7 +149,7 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 		uint32 polygonVertexIdx;
 		uint32 directIdx;
 		const FbxGeometryElementUV* fbxUV = fbxMesh->GetElementUV(i);
-		assert(fbxUV != nullptr);
+		SS_ASSERT(fbxUV != nullptr);
 
 		switch (fbxUV->GetMappingMode())
 		{
@@ -232,15 +232,36 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 	return outVertex;
 }
 
+SSSkinnedVertex ExtractSkinnedVertexWithoutSkinData(FbxMesh* fbxMesh, uint32 polygonIdx, uint32 positionInPolygon, uint32& outControlPointIdx)
+{
+	SSDefaultVertex DefaultVertex = ExtractVertex(fbxMesh, polygonIdx, positionInPolygon, outControlPointIdx);
+	SSSkinnedVertex outVertex;
+	outVertex.Pos = DefaultVertex.Pos;
+	outVertex.Normal = DefaultVertex.Normal;
+	outVertex.Tangent = DefaultVertex.Tangent;
+	outVertex.Uv[0] = DefaultVertex.Uv[0];
+	outVertex.Uv[1] = DefaultVertex.Uv[1];
+
+	
+	// Skinning
+	for (int32 i = 0; i < VERTEX_SKINNING_BONE_COUNT_MAX; i++)
+	{
+		outVertex.BoneIdx[i] = SS_UINT32_MAX;
+		outVertex.Weight[i] = 0;
+	}
+
+	return outVertex;
+}
+
 IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh, SS::SHasherW NewAssetName, const utf16* InAssetPath)
 {
-	assert(fbxMesh != nullptr);
+	SS_ASSERT(fbxMesh != nullptr);
 
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
 	
 	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
-	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
+	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataSkinned();
 	NewMeshRawData->_MeshType = EMeshType::Rigid;
 
 	// - Load num
@@ -435,7 +456,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 	}
 
 	for (uint32 i = 0; i < NewMeshRawData->_subMeshCnt; i++)
-		assert(NewMeshRawData->_indexDataCnt[i] == subMaterialIdxDataCounter[i]);
+		SS_ASSERT(NewMeshRawData->_indexDataCnt[i] == subMaterialIdxDataCounter[i]);
 
 
 
@@ -447,7 +468,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 		{
 			uint32* thisIdxData = NewMeshRawData->_indexData + NewMeshRawData->_indexDataStartIndex[subGeomIdx];
 			int32 thisIdxDataNum = NewMeshRawData->_indexDataCnt[subGeomIdx];
-			assert(thisIdxDataNum % 3 == 0);
+			SS_ASSERT(thisIdxDataNum % 3 == 0);
 
 			for (uint32 i = 0; i < thisIdxDataNum; i += 3)
 			{
@@ -469,5 +490,320 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 	}
 
 	NewMeshAsset->InjectRawDataXXX(NewMeshRawData);
+	return NewMeshAsset;
+}
+
+IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(FbxMesh* fbxMesh, SS::SHasherW NewAssetName,
+	const utf16* InAssetPath)
+{
+	if (fbxMesh == nullptr)
+	{
+		SS_INTERRUPT();
+		return nullptr;
+	}
+
+	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
+	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
+	MeshRawDataSkinned* NewSkinnedMeshRawData = DBG_NEW MeshRawDataSkinned();
+	NewSkinnedMeshRawData->_MeshType = EMeshType::Skinned;
+
+	// 1. Load num
+	const uint32 layerNum = fbxMesh->GetLayerCount();
+	const uint32 ControlPointCnt = fbxMesh->GetControlPointsCount();
+	const uint32 PolygonCount = fbxMesh->GetPolygonCount();
+	const uint32 PolygonVertexCnt = fbxMesh->GetPolygonVertexCount(); // sum of vertex in each polygon
+	const FbxGeometryElementNormal* const FbxNormal = fbxMesh->GetElementNormal();
+	SS_ASSERT(FbxNormal != nullptr, "normal must be exists.");
+
+
+	// ControlPointToSSIdxMap[ControlPointIdx][배열에 들어온대로의 순서] = SSVertexBuffer의Idx
+	// i번째 ControlPoint에 해당되는(물리적 위치가 같은) SSVertexBufferIdx의 리스트를 들고있음
+	SS::PooledList<SS::PooledList<uint32>> ControlPointToSSIdxMap(ControlPointCnt);
+	ControlPointToSSIdxMap.Resize(ControlPointCnt);
+	for (SS::PooledList<uint32>& item : ControlPointToSSIdxMap)
+	{
+		constexpr uint32 PLENTY_VALUE_FOR_EACH_IDX_MAP = 10;
+		item.Reserve(PLENTY_VALUE_FOR_EACH_IDX_MAP);
+	}
+
+	// PolygonVertexToCtrlPointMap[PolygonIdx][PolygonVertexIdx] = <FBX파일의 ControlPoint의 Idx, ControlPointToSSIdxMap의 Idx>
+	// i번째 Polygon에 해당되는 FBXControlPointIdx와 SSVertexBufferIdx의 리스트를 담고있음
+
+	uint32 uvChannelCnt = fbxMesh->GetUVLayerCount();
+	FbxGeometryElementUV* fbxUV[VERTEX_UV_MAP_COUNT_MAX];
+	if (uvChannelCnt > VERTEX_UV_MAP_COUNT_MAX)
+	{
+		SS_ASSERT_MSG(false, L"Too many uv channel");
+		uvChannelCnt = VERTEX_UV_MAP_COUNT_MAX;
+	}
+	for (uint32 i = 0; i < uvChannelCnt; i++)
+	{
+		fbxUV[i] = fbxMesh->GetElementUV(i);
+		SS_ASSERT(fbxUV[i] != nullptr, "uv must be exists of idx %d", i);
+	}
+
+
+	SS::PooledList<SSSkinnedVertex> ssVertexBuffer(ControlPointCnt * 2);
+
+	// PolygonVertexToCtrlPointMap[PolygonIdx][PolygonVertexIdx] = <FBX파일의 ControlPoint의 Idx, ControlPointToSSIdxMap의 Idx>
+	// i번째 Polygon에 해당되는 FBXControlPointIdx와 SSVertexBufferIdx의 리스트를 담고있음
+	SS::PooledList<SS::PooledList<SS::pair<uint32, int32>>> PolygonVertexToCtrlPointMap;
+	PolygonVertexToCtrlPointMap.Resize(PolygonCount);
+
+	for (uint32 i = 0; i < PolygonCount; i++)
+	{
+		uint32 PolygonVertexCount = fbxMesh->GetPolygonSize(i);
+		PolygonVertexToCtrlPointMap[i].Reserve(PolygonVertexCount);
+		for (uint32 j = 0; j < PolygonVertexCount; j++)
+		{
+			uint32 ControlPointIdx;
+			SSSkinnedVertex extractedVertex = ExtractSkinnedVertexWithoutSkinData(fbxMesh, i, j, ControlPointIdx);
+			SS_ASSERT(ControlPointIdx != -1, "Invalid ControlPoint");
+
+			int32 ctrlPointListIdx = -1;
+			for (uint32 k = 0; k < ControlPointToSSIdxMap[ControlPointIdx].GetSize(); k++)
+			{
+				uint32 ssIdx = ControlPointToSSIdxMap[ControlPointIdx][k];
+				if (AreSimilarVertex(ssVertexBuffer[ssIdx], extractedVertex))
+				{
+					ctrlPointListIdx = k;
+					break;
+				}
+			}
+
+			if (ctrlPointListIdx == -1)
+			{
+				// 아래 코드대로 대입되면 PolygonVertexToCtrlPointMap[PolygonIdx][PolygonVertexIdx] = SSVertexBuffer의 Idx가 됨.
+				PolygonVertexToCtrlPointMap[i].PushBack({ ControlPointIdx, (int32)ControlPointToSSIdxMap[ControlPointIdx].GetSize() });
+
+				// ControlPointToSSIdxMap[ControlPointIdx] = SSVertexBuffer의Idx
+				ControlPointToSSIdxMap[ControlPointIdx].PushBack(ssVertexBuffer.GetSize());
+
+				// SimilarVertex가 없을땐 FbxMesh의 PolygonVeretex를 하나씩 돌면서 SSVertex 버퍼에 값을 차곡차곡 채워넣음
+				ssVertexBuffer.PushBack(extractedVertex);
+			}
+			else
+			{
+				// SimilarVertex가 있으면 해당 FBX Vertex의 
+				PolygonVertexToCtrlPointMap[i].PushBack({ ControlPointIdx, ctrlPointListIdx });
+			}
+		}
+	}
+
+
+	uint32 ssVertexCnt = 0;
+	for (uint32 i = 0; i < ControlPointToSSIdxMap.GetSize(); i++)
+	{
+		ssVertexCnt += ControlPointToSSIdxMap[i].GetSize();
+	}
+
+
+	// Load Skinning Data
+	SS::PooledList<uint8> boneCntArr;
+	boneCntArr.Resize(ControlPointCnt);
+	for (uint32 i = 0; i < ControlPointCnt; i++)
+	{
+		boneCntArr[i] = 0;
+	}
+
+	uint32 deformerCnt = fbxMesh->GetDeformerCount();
+	assert(deformerCnt == 1);
+
+	FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
+	assert(fbxSkin != nullptr);
+	uint32 ClusterCnt = fbxSkin->GetClusterCount();
+
+	NewSkinnedMeshRawData->_BoneCnt = ClusterCnt;
+	NewSkinnedMeshRawData->_BoneNames = DBG_NEW SS::SHasherW[ClusterCnt];
+	for (int32 BoneIdx = 0; BoneIdx < ClusterCnt; BoneIdx++)
+	{
+		FbxCluster* CurCluster = fbxSkin->GetCluster(BoneIdx);
+		NewSkinnedMeshRawData->_BoneNames[BoneIdx] = CurCluster->GetLink()->GetName();
+
+		uint32 clusterIndicesCnt = CurCluster->GetControlPointIndicesCount();
+		int* curClusterCtlrPointIndices = CurCluster->GetControlPointIndices();
+		double* curClusterCtrlPointWeights = CurCluster->GetControlPointWeights();
+
+		for (uint32 j = 0; j < clusterIndicesCnt; j++)
+		{
+			int ctrlPointIdx = curClusterCtlrPointIndices[j];
+			double ctrlPointWeight = curClusterCtrlPointWeights[j];
+			uint32 boneCnt = boneCntArr[ctrlPointIdx];
+
+			if (boneCnt >= VERTEX_SKINNING_BONE_COUNT_MAX)
+			{
+				SS_INTERRUPT("Too many bones for a vertex");
+				return nullptr;
+			}
+
+			constexpr float SKIN_WEIGHT_THRESHOLD = 0.03;
+			if (ctrlPointWeight <= SKIN_WEIGHT_THRESHOLD)
+			{
+				for (uint32 ssIdx : ControlPointToSSIdxMap[ctrlPointIdx])
+				{
+					ssVertexBuffer[ssIdx].Weight[boneCnt] += ctrlPointWeight;
+				}
+				continue;
+			}
+
+			for (uint32 ssIdx : ControlPointToSSIdxMap[ctrlPointIdx])
+			{
+				ssVertexBuffer[ssIdx].BoneIdx[boneCnt] = BoneIdx;
+				ssVertexBuffer[ssIdx].Weight[boneCnt] += ctrlPointWeight;
+			}
+			boneCntArr[ctrlPointIdx]++;
+
+		}
+	}
+
+	// ================================================================
+
+
+	// 2. alloc vertex memory
+	NewSkinnedMeshRawData->_vertexCnt = ssVertexBuffer.GetSize();
+	NewSkinnedMeshRawData->_eachVertexSize = sizeof(SSSkinnedVertex);
+	uint32 validVertexBufferSize = NewSkinnedMeshRawData->_eachVertexSize * NewSkinnedMeshRawData->_vertexCnt;
+	NewSkinnedMeshRawData->_vertexData = DBG_MALLOC(validVertexBufferSize);
+	SSSkinnedVertex* ssSkinnedVertex = (SSSkinnedVertex*)NewSkinnedMeshRawData->_vertexData;
+
+	// 3. copy to real time vertex buffer
+	memcpy_s(ssSkinnedVertex, validVertexBufferSize, ssVertexBuffer.GetData(), validVertexBufferSize);
+
+
+	// 4. alloc index memory
+	if (fbxMesh->GetNode()->GetMaterial(0) != nullptr)
+	{
+		NewSkinnedMeshRawData->_subMeshCnt = fbxMesh->GetNode()->GetMaterialCount();
+	}
+	else
+	{
+		NewSkinnedMeshRawData->_subMeshCnt = 1;
+	}
+	SS_ASSERT(NewSkinnedMeshRawData->_subMeshCnt < SUBMESH_COUNT_MAX);
+
+
+	FbxLayerElementArrayTemplate<int>* materialIndices = nullptr;
+	if (fbxMesh->GetElementMaterial() != nullptr && fbxMesh->GetElementMaterial()->GetMappingMode() == FbxLayerElement::eByPolygon)
+	{
+		fbxMesh->GetMaterialIndices(&materialIndices);
+
+		for (uint32 i = 0; i < PolygonCount; i++)
+		{
+			uint8 matIdx = materialIndices->GetAt(i);
+			NewSkinnedMeshRawData->_indexDataCnt[matIdx] += ((fbxMesh->GetPolygonSize(i) - 2) * 3);
+		}
+	}
+	else
+	{
+		for (uint32 i = 0; i < PolygonCount; i++)
+		{
+			NewSkinnedMeshRawData->_indexDataCnt[0] += (fbxMesh->GetPolygonSize(i) - 2);
+		}
+		NewSkinnedMeshRawData->_indexDataCnt[0] *= 3;
+	}
+
+	uint32 idxAcc = 0;
+	for (uint8 i = 0; i < NewSkinnedMeshRawData->_subMeshCnt; i++)
+	{
+		NewSkinnedMeshRawData->_indexDataStartIndex[i] = idxAcc;
+		idxAcc += NewSkinnedMeshRawData->_indexDataCnt[i];
+	}
+	NewSkinnedMeshRawData->_wholeIndexDataCnt = idxAcc;
+	NewSkinnedMeshRawData->_indexData = (uint32*)DBG_MALLOC(sizeof(uint32) * NewSkinnedMeshRawData->_wholeIndexDataCnt);
+
+
+	// 5. load index memory
+	uint32 subMaterialIdxDataCounter[SUBMESH_COUNT_MAX] = { 0, };
+
+	if (fbxMesh->GetElementMaterial() != nullptr && fbxMesh->GetElementMaterial()->GetMappingMode() == FbxLayerElement::eByPolygon)
+	{
+		for (uint32 i = 0; i < PolygonCount; i++)
+		{
+			uint32 PolygonVertexCount = fbxMesh->GetPolygonSize(i);
+			uint32 matIdx = materialIndices->GetAt(i);
+			uint32 idxDataStart = NewSkinnedMeshRawData->_indexDataStartIndex[matIdx];
+			for (uint32 j = 1; j < PolygonVertexCount - 1; j++)
+			{
+				SS::pair<uint32, int32> CtrlPointIdx = PolygonVertexToCtrlPointMap[i][0];
+				uint32 ssIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
+				NewSkinnedMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 2] = ssIdx;
+
+				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j];
+				ssIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
+				NewSkinnedMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx] + 1] = ssIdx;
+
+				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j + 1];
+				ssIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
+				NewSkinnedMeshRawData->_indexData[idxDataStart + subMaterialIdxDataCounter[matIdx]] = ssIdx;
+
+				subMaterialIdxDataCounter[matIdx] += 3;
+			}
+		}
+	}
+	else
+	{
+		for (uint32 i = 0; i < fbxMesh->GetPolygonCount(); i++)
+		{
+			uint32 thisPolygonSize = fbxMesh->GetPolygonSize(i);
+			for (uint32 j = 1; j < thisPolygonSize - 1; j++)
+			{
+				SS::pair<uint32, int32> CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j + 1];
+				uint32 ssIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
+				NewSkinnedMeshRawData->_indexData[subMaterialIdxDataCounter[0]] = ssIdx;
+
+				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j];
+				ssIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
+				NewSkinnedMeshRawData->_indexData[subMaterialIdxDataCounter[0] + 1] = ssIdx;
+
+				CtrlPointIdx = PolygonVertexToCtrlPointMap[i][0];
+				ssIdx = ControlPointToSSIdxMap[CtrlPointIdx.first][CtrlPointIdx.second];
+				NewSkinnedMeshRawData->_indexData[subMaterialIdxDataCounter[0] + 2] = ssIdx;
+
+				subMaterialIdxDataCounter[0] += 3;
+			}
+		}
+	}
+
+	for (uint32 i = 0; i < NewSkinnedMeshRawData->_subMeshCnt; i++)
+	{
+		if (NewSkinnedMeshRawData->_indexDataCnt[i] != subMaterialIdxDataCounter[i])
+		{
+			SS_INTERRUPT();
+			return nullptr;
+		}
+	}
+
+
+
+	// Load Tangent Data
+	FbxGeometryElementTangent* fbxTangent = fbxMesh->GetElementTangent();
+	if (fbxTangent == nullptr)
+	{
+		for (uint32 subGeomIdx = 0; subGeomIdx < NewSkinnedMeshRawData->_subMeshCnt; subGeomIdx++)
+		{
+			uint32* thisIdxData = NewSkinnedMeshRawData->_indexData + NewSkinnedMeshRawData->_indexDataStartIndex[subGeomIdx];
+			uint32 thisIdxDataNum = NewSkinnedMeshRawData->_indexDataCnt[subGeomIdx];
+			SS_ASSERT(thisIdxDataNum % 3 == 0);
+
+			for (uint32 i = 0; i < thisIdxDataNum; i += 3)
+			{
+				SSDefaultVertex& v0 = ssSkinnedVertex[thisIdxData[i]];
+				SSDefaultVertex& v1 = ssSkinnedVertex[thisIdxData[i + 1]];
+				SSDefaultVertex& v2 = ssSkinnedVertex[thisIdxData[i + 2]];
+
+				Vector4f dv1 = v1.Pos - v0.Pos;
+				Vector4f dv2 = v2.Pos - v0.Pos;
+
+				Vector2f duv1 = v1.Uv[0] - v0.Uv[0];
+				Vector2f duv2 = v2.Uv[0] - v0.Uv[0];
+
+				float detInverse = 1.0f / (duv1.X * duv2.Y - duv1.Y * duv2.X);
+				Vector4f tangent = (dv1 * duv2.Y - dv2 * duv1.Y) * detInverse;
+				v2.Tangent = v1.Tangent = v0.Tangent = tangent;
+			}
+		}
+	}
+
+	NewMeshAsset->InjectRawDataXXX(NewSkinnedMeshRawData);
 	return NewMeshAsset;
 }

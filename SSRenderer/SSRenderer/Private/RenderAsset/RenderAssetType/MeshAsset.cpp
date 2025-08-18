@@ -20,7 +20,8 @@ EAssetType MeshAsset::GetAssetType() const
 
 int32 MeshAsset::GetSubMeshCnt() const
 {
-	if (_MeshRawData->_MeshType == EMeshType::Rigid)
+	if (_MeshRawData->_MeshType == EMeshType::Rigid || 
+		_MeshRawData->_MeshType == EMeshType::Skinned)
 	{
 		MeshRawDataDefault* DefaultMeshRawData = (MeshRawDataDefault*)_MeshRawData;
 		return DefaultMeshRawData->_subMeshCnt;

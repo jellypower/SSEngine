@@ -172,6 +172,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderBase\SSRenderer.cpp" />
     <ClCompile Include="Private\RenderInstance\RenderCamera.cpp" />
     <ClCompile Include="Private\RenderInstance\RenderLightDirectional.cpp" />
+    <ClCompile Include="Private\RenderInstance\RISkinnedMesh.cpp" />
     <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +189,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\RenderBase\SSRenderer.h" />
     <ClInclude Include="Private\RenderInstance\RenderCamera.h" />
     <ClInclude Include="Private\RenderInstance\RenderLightDirectional.h" />
+    <ClInclude Include="Private\RenderInstance\RISkinnedMesh.h" />
     <ClInclude Include="Private\RenderInstance\RIStaticMesh.h" />
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h" />
     <ClInclude Include="Public\RenderAsset\IAssetManager.h" />
@@ -203,6 +205,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\ITextureAsset.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataSkinned.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataBase.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshDataDefault.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataBase.h" />
@@ -216,6 +219,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderInstance\Descriptors\LightDesc.h" />
     <ClInclude Include="Public\RenderInstance\IRenderCamera.h" />
     <ClInclude Include="Public\RenderInstance\IRenderInstance.h" />
+    <ClInclude Include="Public\RenderInstance\IRISkinnedMesh.h" />
     <ClInclude Include="Public\RenderInstance\Light\IRenderLightDirectional.h" />
     <ClInclude Include="Public\RenderInstance\Light\IRenderLight.h" />
     <ClInclude Include="Public\RenderInstance\IRIMesh.h" />

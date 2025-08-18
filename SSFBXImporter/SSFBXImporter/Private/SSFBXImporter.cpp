@@ -309,11 +309,17 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 					_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), EAssetType::Mesh);
 
 
-				//			if (fbxMesh->GetDeformerCount() == 0)
-				newMeshAsset = SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(fbxMesh, NewMeshName, _boundFilePath.C_Str());
-				NewAssetPlacementRef.MeshType = EMeshType::Rigid;
-				//			else
-				//				newMeshAsset = GenerateSkinnedGeometryFromFbxMesh(fbxMesh);
+				if (fbxMesh->GetDeformerCount() == 0)
+				{
+					newMeshAsset = SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(fbxMesh, NewMeshName, _boundFilePath.C_Str());
+					NewAssetPlacementRef.MeshType = EMeshType::Rigid;
+				}
+				else
+				{
+					newMeshAsset = SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(fbxMesh, NewMeshName, _boundFilePath.C_Str());
+					NewAssetPlacementRef.MeshType = EMeshType::Skinned;
+				}
+
 
 				_AssetManagerToImportAsset->AddToAssetPool(newMeshAsset);
 				SS::pair<::FbxMesh*, SS::SHasherW> NewPair = SS::MakePair(fbxMesh, NewMeshName);

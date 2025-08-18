@@ -2,6 +2,7 @@
 #include "SSContentsBase/Public/SRenderContent/SRendererUtil.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SSkinnedMeshRenderComponent.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
@@ -25,29 +26,19 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 
 	SGameObject* NewGameObj = NewSObject<SGameObject>(MdlcAssetName);
 
-	if (MdlcAsset->GetChildCnt() == 2) // 단일 모델이면
+	if (MdlcAsset->GetChildCnt() == 2) // 단일 모델이면 -> GetChildCnt중 1개는 루트오브젝트, 1개는 실제 인스턴스
 	{
 		const AssetPlacementReference& AssetPlacement = MdlcAsset->GetChildAt(1);
 
-		switch (AssetPlacement.MeshType)
-		{
-		case EMeshType::None:
-		{
-
-		}
-		break;
-		case EMeshType::Rigid:
+		if (AssetPlacement.MeshType == EMeshType::Rigid)
 		{
 			SRenderComponentBase* NewRenderComponent = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(MdlcAsset->GetAssetName());
 			NewRenderComponent->SetModelAsset(AssetPlacement.AssetName);
 			NewRenderComponent->PostConstructHierarchy();
 		}
-		break;
-		case EMeshType::Skinned:
+		else
 		{
-			SS_ASSERT(false); // TODO: Skinning 구현하기 2024/12/31
-		}
-		break;
+			SS_ASSERT(false); // 일어나면 안되는 상황
 		}
 
 		return NewGameObj;
@@ -89,11 +80,25 @@ void SRendererUtil::InstantiateModelObjTree_Recursion(const IModelCombinationAss
 		SGameObject* NewChildObj = NewSObject<SGameObject>(ChildAssetPlacement.PlacementName);
 		NewChildObj->SetParent(CurGameObject);
 		NewChildObj->SetTransform(ChildAssetPlacement.Transform);
-		if (ChildAssetPlacement.AssetName.IsEmpty() == false)
+
+		if(ChildAssetPlacement.AssetName.IsEmpty() == false)
 		{
-			SRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SStaticMeshRenderComponent>(ChildAssetPlacement.PlacementName);
-			NewRenderComp->SetModelAsset(ChildAssetPlacement.AssetName);
+			if (ChildAssetPlacement.MeshType == EMeshType::Rigid)
+			{
+				SRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SStaticMeshRenderComponent>(ChildAssetPlacement.PlacementName);
+				NewRenderComp->SetModelAsset(ChildAssetPlacement.AssetName);
+			}
+			else if (ChildAssetPlacement.MeshType == EMeshType::Skinned)
+			{
+				SRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SSkinnedMeshRenderComponent>(ChildAssetPlacement.PlacementName);
+				NewRenderComp->SetModelAsset(ChildAssetPlacement.AssetName);
+			}
+			else
+			{
+				SS_ASSERT(false);
+			}
 		}
+		
 		InstantiateModelObjTree_Recursion(MdlcAsset, ChildIdx, NewChildObj);
 	}
 

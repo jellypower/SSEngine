@@ -23,8 +23,10 @@ struct VS_INPUT_SKINNED
     float4 Tangent : TANGENT;
     float2 UV0 : TEXCOORD0;
     float2 UV1 : TEXCOORD1;
-    uint4 jointIndices : BLENDINDICES;
-    float4 jointWeights : BLENDWEIGHT;
+    uint4 jointIndices0 : BLENDINDICES0; // 8쌍씩 준비하기
+    uint4 jointIndices1 : BLENDINDICES1; // 8쌍씩 준비하기
+    float4 jointWeights0 : BLENDWEIGHT0; // 8쌍씩 준비하기
+    float4 jointWeights1 : BLENDWEIGHT1; // 8쌍씩 준비하기
 };
 
 struct PS_INPUT_DEFAULT

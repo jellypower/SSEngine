@@ -1,4 +1,4 @@
-// StaticMeshToDefaultPSInput
+// VS_SMToDefaultPSInput
 #include "include/CBSet/IS_DefaultPbrCBSet.hlsl"
 
 

@@ -120,6 +120,12 @@
     <ClCompile Include="Private\DX12\GALRenderTarget\DX12GALUAVRenderTarget.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\DX12\GALPostProcessContext\DX12GALPPCDeferredShading.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SKM.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\GALConstantBufferAccessorTypes\CBAModelBuffer.h">
@@ -297,6 +303,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\GALWrapper\PipelineDesc.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DX12\GALPostProcessContext\DX12GALPPCDeferredShading.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\GALPostProcessContext\GALPostProcessContextBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\GALPostProcessContext\GALPPCDeferredShading.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SKM.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -3,7 +3,7 @@
 
 class IModelAsset;
 
-class IRIMesh : public IRenderInstance // TODO: IRIModel으로 이름 바꾸기
+class IRIMesh : public IRenderInstance
 {
 public:
 	virtual IModelAsset* GetModelAsset() const = 0;

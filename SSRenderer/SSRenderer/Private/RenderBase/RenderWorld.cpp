@@ -9,6 +9,7 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderInstance/Light/IRenderLight.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
+#include "SSRenderer/Public/RenderInstance/IRISkinnedMesh.h"
 
 
 RenderWorld::RenderWorld(const utf16* InWorldName) :
@@ -70,6 +71,18 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 		IModelAsset* ModelAsest = InRIMesh->GetModelAsset();
 		ModelAsest->AddAssetReference(AssetReferencer);
 	}
+	else if (RIType == ERenderInstanceType::SkinnedMesh)
+	{
+		IRISkinnedMesh* InRIMesh = (IRISkinnedMesh*)InRenderInstance;
+
+		AssetInstanceReferencer AssetReferencer;
+		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
+		AssetReferencer.ObjHashCode = GameObjectHashCode;
+
+		IModelAsset* ModelAsest = InRIMesh->GetModelAsset();
+		ModelAsest->AddAssetReference(AssetReferencer);
+		
+	}
 	else if (RIType == ERenderInstanceType::Light)
 	{
 		// noop
@@ -102,7 +115,8 @@ void RenderWorld::RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToR
 
 
 	ERenderInstanceType RIType = RenderInstanceToRemove->GetRIType();
-	if (RIType == ERenderInstanceType::StaticMesh)
+	if (RIType == ERenderInstanceType::StaticMesh ||
+		RIType == ERenderInstanceType::SkinnedMesh)
 	{
 		IRIMesh* RIMeshToRemove = (IRIMesh*)RenderInstanceToRemove;
 

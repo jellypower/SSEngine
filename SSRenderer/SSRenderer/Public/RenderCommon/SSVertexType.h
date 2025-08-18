@@ -10,7 +10,7 @@ struct alignas(16) SSDefaultVertex {
 	Vector2f Uv[VERTEX_UV_MAP_COUNT_MAX];
 };
 
-struct SSSkinnedVertex : SSDefaultVertex
+struct alignas(16) SSSkinnedVertex : SSDefaultVertex
 {
 	uint32 BoneIdx[VERTEX_SKINNING_BONE_COUNT_MAX] = { 0, };
 	float Weight[VERTEX_SKINNING_BONE_COUNT_MAX] = { 0, };

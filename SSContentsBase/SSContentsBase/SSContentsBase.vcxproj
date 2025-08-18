@@ -170,6 +170,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SStaticMeshRenderComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\SRendererUtil.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
@@ -181,6 +182,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\ModuleEntry\SSContentsBaseModuleEntry.h" />
     <ClInclude Include="Public\SRenderContent\Camera\SCameraComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderComponentBase.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SStaticMeshRenderComponent.h" />
     <ClInclude Include="Public\SRenderContent\SRendererUtil.h" />
     <ClInclude Include="ModuleExportKeyword.h" />

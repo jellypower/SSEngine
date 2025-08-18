@@ -68,6 +68,7 @@ public:
 public:
 	virtual IRenderWorld* CreateRenderWorld(const utf16* InWorldName = nullptr) override;
 	virtual IRIMesh* CreateRIStaticMesh() override;
+	virtual IRISkinnedMesh* CreateRISkinnedMesh() override;
 	virtual IRenderCamera* CreateRenderCamera() override;
 
 	virtual IRenderLightDirectional* CreateDirectionalLight(const RenderLightDirectionalDesc& InDesc) override;

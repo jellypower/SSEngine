@@ -16,6 +16,7 @@
 #include "SSRenderer/Private/RenderAsset/CommonRenderAssetSet.h"
 #include "SSRenderer/Private/RenderInstance/RenderCamera.h"
 #include "SSRenderer/Private/RenderInstance/RenderLightDirectional.h"
+#include "SSRenderer/Private/RenderInstance/RISkinnedMesh.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
@@ -60,6 +61,11 @@ IAssetManagerMutable* SSRenderer::GetMutableAssetManager()
 IRIMesh* SSRenderer::CreateRIStaticMesh()
 {
 	return DBG_NEW RIStaticMesh();
+}
+
+IRISkinnedMesh* SSRenderer::CreateRISkinnedMesh()
+{
+	return DBG_NEW RISkinnedMesh();
 }
 
 IRenderCamera* SSRenderer::CreateRenderCamera()
@@ -576,7 +582,8 @@ void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRend
 		{
 			OutRenderLightsToDraw.PushBack((IRenderLight*)InstanceItem);
 		}
-		else if (RIType == ERenderInstanceType::StaticMesh)
+		else if (RIType == ERenderInstanceType::StaticMesh ||
+				RIType == ERenderInstanceType::SkinnedMesh)
 		{
 			OutRenderInstancesToDraw.PushBack(InstanceItem);
 		}

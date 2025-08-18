@@ -31,6 +31,12 @@ PipelineDesc ConstructPSODescToDrawMesh(EMeshType InMeshType, EMaterialType InMt
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
 		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
 		break;
+
+	case EMeshType::Skinned:
+		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_SKIN_VERTEX_LAYOUT;
+		NewPipelineDesc.VSName = L"VS_SKMToDefaultPSInput";
+		break;
+
 	default:
 		SS_ASSERT(false);
 		break;
@@ -67,6 +73,12 @@ PipelineDesc ConstructPSODescToDrawShadow(EMeshType InMeshType)
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
 		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
 		break;
+
+	case EMeshType::Skinned:
+		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_SKIN_VERTEX_LAYOUT;
+		NewPipelineDesc.VSName = L"VS_SKMToDefaultPSInput";
+		break;
+
 	default:
 		SS_ASSERT(false);
 		break;

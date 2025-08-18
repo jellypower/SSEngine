@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
+class IRISkinnedMesh;
 class GALRIShadowMapMetadata;
 class DX12GALRWMetaData;
 class IRenderWorld;
@@ -78,7 +79,10 @@ public:
 
 private:
 	void DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
+	void DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
+
 	void DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
+	void DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 
 
 public:
@@ -104,7 +108,7 @@ private:
 
 	SS::PooledList<ID3D12CommandAllocator*> _DrawWorkerCommandAllocators;
 	SS::PooledList <ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
-	// TODO: Shadow용 CommandList 따로 만들기
+	// TODO: Shadow용 CommandList 없애기
 
 	SS::PooledList<ID3D12CommandAllocator*> _PostProcessCommandAllocators;
 	SS::PooledList <ID3D12GraphicsCommandList*> _PostProcessCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
