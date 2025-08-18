@@ -21,7 +21,7 @@ public:
 
 	int32 _SubMeshCntCache;
 
-private:
+protected:
 	DX12GALRenderDevice* _OwnerRenderDevice;
 
 public:

@@ -259,6 +259,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClInclude Include="Public\GALRenderTarget\GALCPUReadableTexture.h" />
     <ClInclude Include="Public\GALRenderTarget\GALRenderTarget.h" />
     <ClInclude Include="Public\GALRenderTarget\GALRTCommonEnums.h" />
+    <ClInclude Include="Public\GALStructuredBufferAccessorTypes\SBASkinningJointMatrix.h" />
     <ClInclude Include="Public\GALWrapper\GALShaderPool.h" />
     <ClInclude Include="Public\GALWrapper\GALShaderWrapper.h" />
     <ClInclude Include="Public\GALWrapper\PipelineDesc.h" />

@@ -2,5 +2,5 @@
 #include "include/Types/IS_DefaultTypes.hlsl"
 
 
-StructuredBuffer<Joint> SkeletonJointInverse : register(t5);
-StructuredBuffer<Joint> CurrentJoint : register(t6);
+StructuredBuffer<SkinningJoint> SkeletonJointInverse : register(t5);
+StructuredBuffer<SkinningJoint> CurrentJoint : register(t6);

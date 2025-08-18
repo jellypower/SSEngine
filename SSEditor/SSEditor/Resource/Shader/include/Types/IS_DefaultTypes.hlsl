@@ -46,10 +46,10 @@ struct VS_OUTPUT_FULLSCREEN_QUAD
 };
 
 
-struct Joint
+struct SkinningJoint
 {
-    float4x4 PosMatrix;
-    float4x4 RotMatrix; // Inverse-transpose of PosMatrix
+    float4x4 WMatrix;
+    float4x4 RotMatrix;
 };
 
 
