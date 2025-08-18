@@ -1,19 +1,23 @@
 #include "pch.h"
 #include "DX12GALPPCDeferredShading.h"
 
-
-#include "Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
+#include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 
-#include "Public/GALRenderTarget/GALRenderTarget.h"
 
+#include "Public/GALRenderTarget/GALRenderTarget.h"
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
+#include "Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
+#include "Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
 #include "Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
+#include "Private/PCommon/GALWrapper/PSOWrapper.h"
 
 DX12GALPPCDeferredShading::DX12GALPPCDeferredShading(DX12GALRenderDevice* InOwnerDevice)
 {
 	_OwnerDevice = InOwnerDevice;
-	
+	_PsoDescToExecute = ConstructPSOToDeferredShading();
+
+
 	ID3D12Device5* D3DDevice = InOwnerDevice->GetD3DDevice();
 
 
@@ -46,6 +50,11 @@ DX12GALPPCDeferredShading::~DX12GALPPCDeferredShading()
 	DesciptorHandleAllocator->ReleaseChunk(_GBuffersSRVDescTableChunk);
 }
 
+const PipelineDesc& DX12GALPPCDeferredShading::GetPSODescToExecute()
+{
+	return _PsoDescToExecute;
+}
+
 void DX12GALPPCDeferredShading::SyncGALPPCParam()
 {
 	ID3D12Device5* D3DDevice = _OwnerDevice->GetD3DDevice();
@@ -70,15 +79,39 @@ void DX12GALPPCDeferredShading::SyncGALPPCParam()
 	DescHandleToCopy.Offset(1, DescriptorIncrementalSize);
 }
 
-void DX12GALPPCDeferredShading::SetRTResult(GALRenderTarget* InRenderTarget)
+void DX12GALPPCDeferredShading::ExecutePostProcess(GALRenderDeviceContext* Executor)
 {
-	if (InRenderTarget->GetRTColorFormat() != ERTColorFormat::R32G32B32A32_FLOAT)
+	if (Executor->GetTaskPhase() != ERenderDeviceTaskPhase::PostProcess)
 	{
 		SS_INTERRUPT();
 		return;
 	}
 
-	_RTResult = static_cast<DX12GALRenderTargetBase*>(InRenderTarget);
+	DX12GALRenderDeviceContext* DX12Executor = (DX12GALRenderDeviceContext*)Executor;
+	ID3D12GraphicsCommandList* CurCommandList = DX12Executor->GetCurrentDrawWorkerCmdList();
+
+	DX12GALRWMetaData* CurGALRWMetaData = (DX12GALRWMetaData*)(Executor->GetCurRenderWorldGALMetaData());
+	ID3D12DescriptorHeap* DeferredShadingDescHeap = GetGBufferSRVDescHeap();
+	ID3D12DescriptorHeap* RenderLightDescHeap = CurGALRWMetaData->GetLightSettingDescHeap();
+
+
+	DX12Executor->SetPSOAndRootSignature(_PsoDescToExecute);
+
+	_UniqueDescHeapWorkTable.Clear();
+	ListPushBackUnique(_UniqueDescHeapWorkTable, DeferredShadingDescHeap);
+	ListPushBackUnique(_UniqueDescHeapWorkTable, RenderLightDescHeap);
+	CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+
+
+	D3D12_GPU_DESCRIPTOR_HANDLE GBufferDescTableHandle = GetGBufferSRVGPUDescTable();
+	D3D12_GPU_DESCRIPTOR_HANDLE ShadowMapDescTableHandle = CurGALRWMetaData->GetLightSeetingDescTable();
+
+	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CurCommandList->SetGraphicsRootConstantBufferView(0, CurGALRWMetaData->GetRenderLightParamCB()); // RenderLight
+	CurCommandList->SetGraphicsRootConstantBufferView(1, CurGALRWMetaData->_RenderEnvCBGPUMemAddr); // RenderEnvParam
+	CurCommandList->SetGraphicsRootDescriptorTable(2, GBufferDescTableHandle); // G-Buffer
+	CurCommandList->SetGraphicsRootDescriptorTable(3, ShadowMapDescTableHandle); // ShadowMap
+	CurCommandList->DrawInstanced(3, 1, 0, 0);
 }
 
 void DX12GALPPCDeferredShading::SetRTNormal(GALRenderTarget* InRenderTarget)

@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
-class GALPPCDeferredShading;
+class GALRWMetaData;
+class GALPostProcessContextBase;
 struct PipelineDesc;
 class IRenderLight;
 class IRenderCamera;
@@ -38,8 +39,12 @@ class GALRenderDeviceContext : public INoncopyable
 {
 public:
 	virtual bool IsValid() const = 0;
+	virtual ERenderDeviceTaskPhase GetTaskPhase() = 0;
+	virtual GALRWMetaData* GetCurRenderWorldGALMetaData() const = 0;
+
 	GALRenderDevice* GetOwnerRenderDevice() const { return _OwnerRenderDevice; }
 
+public:
 	virtual void BeginRender() = 0;
 	virtual void EndRender() = 0;
 
@@ -85,7 +90,7 @@ public:
 
 	// ERenderDeviceTaskPhase::PostProcess
 	virtual void BeginPostProcessing() = 0;
-	virtual void ExecuteDeferredShading(GALPPCDeferredShading* InDeferredShadingContext) = 0;
+	virtual void ExecutePostProcessing(GALPostProcessContextBase* PostProcessContext) = 0;
 	virtual void EndPostProcessing() = 0;
 	// ~ERenderDeviceTaskPhase::PostProcess
 

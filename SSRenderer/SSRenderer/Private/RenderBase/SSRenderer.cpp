@@ -433,7 +433,7 @@ void SSRenderer::PerFrame()
 
 				_MainDeviceContext->ClearRenderTarget(_RTPostProcessResult, {0.5, 0.5, 0.5, 1});
 				_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
-				_MainDeviceContext->ExecuteDeferredShading(_DeferredShadingContext);
+				_MainDeviceContext->ExecutePostProcessing(_DeferredShadingContext);
 
 				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 				_MainDeviceContext->CopyRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget(), _RTPostProcessResult);

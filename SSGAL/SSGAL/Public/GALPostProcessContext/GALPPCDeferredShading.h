@@ -6,8 +6,6 @@ class GALRenderTarget;
 class GALPPCDeferredShading : public GALPostProcessContextBase
 {
 public:
-	virtual void SetRTResult(GALRenderTarget* InRenderTarget) = 0;
-
 	virtual void SetRTNormal(GALRenderTarget* InRenderTarget) = 0;
 	virtual void SetRTAlbedo(GALRenderTarget* InRenderTarget) = 0;
 	virtual void SetRTWorldPos(GALRenderTarget* InRenderTarget) = 0;

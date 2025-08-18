@@ -24,6 +24,8 @@ public:
 
 public:
 	virtual bool IsValid() const override;
+	virtual ERenderDeviceTaskPhase GetTaskPhase() override;
+	virtual GALRWMetaData* GetCurRenderWorldGALMetaData() const override;
 
 	virtual void BeginRender() override;
 	virtual void EndRender() override;
@@ -68,9 +70,9 @@ public:
 
 
 	// ERenderDeviceTaskPhase::PostProcess
-	void BeginPostProcessing() override;
-	void ExecuteDeferredShading(GALPPCDeferredShading* InDeferredShadingContext) override;
-	void EndPostProcessing() override;
+	virtual void BeginPostProcessing() override;
+	virtual void ExecutePostProcessing(GALPostProcessContextBase* PostProcessContext) override;
+	virtual void EndPostProcessing() override;
 	// ERenderDeviceTaskPhase::~PostProcess
 
 
@@ -114,9 +116,11 @@ private:
 	SS::PooledList<IRenderLight*> _RenderLightsToDraw;
 
 	IRenderCamera* _CurRenderCamera = nullptr;
+	IRenderWorld* _CurRenderWorld = nullptr;
 	DX12GALRWMetaData* _CurRenderWorldGALData = nullptr;
+
 	GALRIShadowMapMetadata* _DrawingShadowMapMetadata = nullptr;
 	PipelineDesc _LastSetPSO;
 
-	SS::PooledList<ID3D12DescriptorHeap*> _UniqueDescHeapWorkTable;
+	SS::PooledList<ID3D12DescriptorHeap*, SS::InlineAllocator<10>> _UniqueDescHeapWorkTable;
 };

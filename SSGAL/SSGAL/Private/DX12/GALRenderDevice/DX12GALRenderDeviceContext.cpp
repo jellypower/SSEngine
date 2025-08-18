@@ -48,8 +48,7 @@
 
 DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 SwapChainFrameCnt):
 	_BoundRenderTargets(RT_NUM_MAX),
-	_RenderLightsToDraw(32),
-	_UniqueDescHeapWorkTable(10)
+	_RenderLightsToDraw(32)
 {
 	_OwnerRenderDevice = InRenderDevice;
 
@@ -169,6 +168,22 @@ DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 bool DX12GALRenderDeviceContext::IsValid() const
 {
 	return _DrawWorkerCommandLists.GetSize() != 0;
+}
+
+ERenderDeviceTaskPhase DX12GALRenderDeviceContext::GetTaskPhase()
+{
+	return _TaskPhase;
+}
+
+GALRWMetaData* DX12GALRenderDeviceContext::GetCurRenderWorldGALMetaData() const
+{
+	if (_CurRenderWorldGALData == nullptr)
+	{
+		SS_INTERRUPT();
+		return nullptr;
+	}
+
+	return _CurRenderWorldGALData;
 }
 
 bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset)
@@ -561,12 +576,19 @@ void DX12GALRenderDeviceContext::SetRenderCamera(IRenderCamera* InCamera)
 
 	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
 
-	IRenderWorld* CurRenderWorld = InCamera->GetIcludedRenderWorld();
-	_CurRenderWorldGALData = (DX12GALRWMetaData*)CurRenderWorld->GetGALMetadata();
+	IRenderWorld* RenderWorldToStartDraw = InCamera->GetIcludedRenderWorld();
+	if (RenderWorldToStartDraw == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	_CurRenderWorld = RenderWorldToStartDraw;
+	_CurRenderWorldGALData = (DX12GALRWMetaData*)RenderWorldToStartDraw->GetGALMetadata();
 	if (_CurRenderWorldGALData == nullptr)
 	{
-		_CurRenderWorldGALData = DBG_NEW DX12GALRWMetaData(OwnerDX12RenderDevice, CurRenderWorld);
-		CurRenderWorld->InjectGALMetadataXXX(_CurRenderWorldGALData);
+		_CurRenderWorldGALData = DBG_NEW DX12GALRWMetaData(OwnerDX12RenderDevice, RenderWorldToStartDraw);
+		RenderWorldToStartDraw->InjectGALMetadataXXX(_CurRenderWorldGALData);
 	}
 
 
@@ -928,39 +950,17 @@ void DX12GALRenderDeviceContext::BeginPostProcessing()
 	if (FAILED(hr)) SS_INTERRUPT();
 }
 
-void DX12GALRenderDeviceContext::ExecuteDeferredShading(GALPPCDeferredShading* InDeferredShadingContext)
+void DX12GALRenderDeviceContext::ExecutePostProcessing(
+	GALPostProcessContextBase* PostProcessContext)
 {
 	if (_TaskPhase != ERenderDeviceTaskPhase::PostProcess)
 	{
 		SS_INTERRUPT();
 		return;
 	}
-	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
-	PipelineDesc Desc = ConstructPSOToDeferredShading();
-	SetPSOAndRootSignature(Desc);
-
-	DX12GALPPCDeferredShading* DeferredShadingContext = (DX12GALPPCDeferredShading*)InDeferredShadingContext;
-
-	ID3D12DescriptorHeap* DescHeap = DeferredShadingContext->GetGBufferSRVDescHeap();
-	ID3D12DescriptorHeap* RenderLightDescHeap = _CurRenderWorldGALData->GetLightSettingDescHeap();
-	_UniqueDescHeapWorkTable.Clear();
-	ListPushBackUnique(_UniqueDescHeapWorkTable, DescHeap);
-	ListPushBackUnique(_UniqueDescHeapWorkTable, RenderLightDescHeap);
-	CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
-	
-
-	D3D12_GPU_DESCRIPTOR_HANDLE GBufferDescTableHandle = DeferredShadingContext->GetGBufferSRVGPUDescTable();
-	D3D12_GPU_DESCRIPTOR_HANDLE ShadowMapDescTableHandle = _CurRenderWorldGALData->GetLightSeetingDescTable();
-
-	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CurCommandList->SetGraphicsRootConstantBufferView(0, _CurRenderWorldGALData->GetRenderLightParamCB()); // RenderLight
-	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr); // RenderEnvParam
-	CurCommandList->SetGraphicsRootDescriptorTable(2, GBufferDescTableHandle); // G-Buffer
-	CurCommandList->SetGraphicsRootDescriptorTable(3, ShadowMapDescTableHandle); // ShadowMap
-	CurCommandList->DrawInstanced(3, 1, 0, 0);
+	PostProcessContext->ExecutePostProcess(this);
 }
-
 
 void DX12GALRenderDeviceContext::EndPostProcessing()
 {
@@ -1205,7 +1205,9 @@ void DX12GALRenderDeviceContext::ResetRenderState()
 	_BoundDSV = nullptr;
 
 	_CurRenderCamera = nullptr;
+	_CurRenderWorld = nullptr;
 	_CurRenderWorldGALData = nullptr;
+
 	_DrawingShadowMapMetadata = nullptr;
 	_LastSetPSO = PipelineDesc(); // 초기화
 }
