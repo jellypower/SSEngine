@@ -12,12 +12,22 @@ public:
 	MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
 
 public:
-	EAssetType GetAssetType() const override;
-	int32 GetSubMeshCnt() const override;
+	virtual void InjectRawDataXXX(MeshRawDataBase* InRawData) override;
 
-	void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
-	void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
-	void ReleaseSystemData() override;
-	void ReleaseGALData() override;
+	virtual const MeshRawDataBase* GetMeshRawData() const override;
+	virtual EMeshType GetMeshType() const override;
+	virtual int32 GetSubMeshCnt() const override;
+
+	virtual EAssetType GetAssetType() const override;
+
+	virtual void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
+	virtual void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
+	virtual void ReleaseSystemData() override;
+	virtual void ReleaseGALData() override;
+
+private:
+	const MeshRawDataBase* _MeshRawData = nullptr;
+
+	EMeshType _CachedMeshType = EMeshType::None;
 };
 

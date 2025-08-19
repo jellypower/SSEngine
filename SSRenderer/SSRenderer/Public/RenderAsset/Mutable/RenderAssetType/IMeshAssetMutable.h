@@ -4,6 +4,6 @@
 class IMeshAssetMutable : public IMeshAsset
 {
 public:
-	void InjectRawDataXXX(MeshRawDataBase* InRawData) { _MeshRawData = InRawData; }
+	virtual void InjectRawDataXXX(MeshRawDataBase* InRawData) = 0;
 	void InjectGALMeshAsset(GALMeshAssetWrapperBase* InGALMeshAsset) { _GALMeshAsset = InGALMeshAsset; }
 };

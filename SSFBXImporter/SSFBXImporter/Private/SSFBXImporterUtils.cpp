@@ -1,6 +1,8 @@
 #include "SSFBXImporterUtils.h"
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+#include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
+
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
@@ -28,8 +30,8 @@ Transform SSFBXImporterUtils::ExtractTransformFromNode(FbxNode* node, FbxTime fb
 	fbxMat.SetR(node->GetGeometricRotation(FbxNode::eSourcePivot));
 	fbxMat.SetS(node->GetGeometricScaling(FbxNode::eSourcePivot));
 
-
-	fbxMat = node->EvaluateLocalTransform(fbxTime) * fbxMat;
+	const FbxAMatrix& AnimTransform = node->EvaluateLocalTransform(fbxTime);
+	fbxMat = AnimTransform * fbxMat;
 
 	Transform transform;
 
@@ -37,7 +39,7 @@ Transform SSFBXImporterUtils::ExtractTransformFromNode(FbxNode* node, FbxTime fb
 	transform.Position.X = -fbxTranslate.mData[0] * 0.01;
 	transform.Position.Y = fbxTranslate.mData[1] * 0.01;
 	transform.Position.Z = fbxTranslate.mData[2] * 0.01;
-	transform.Position.W = 0;
+	transform.Position.W = 1;
 
 	const FbxDouble3 fbxScale = fbxMat.GetS();
 	transform.Scale.X = fbxScale.mData[0];
@@ -610,15 +612,14 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(FbxMesh*
 	assert(deformerCnt == 1);
 
 	FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
-	assert(fbxSkin != nullptr);
-	uint32 ClusterCnt = fbxSkin->GetClusterCount();
+	SS_ASSERT(fbxSkin != nullptr);
 
-	NewSkinnedMeshRawData->_BoneCnt = ClusterCnt;
-	NewSkinnedMeshRawData->_BoneNames = DBG_NEW SS::SHasherW[ClusterCnt];
+	ExtractOriginalBoneFromFbxSkin(NewSkinnedMeshRawData->_BoneOriginalPose, fbxSkin);
+	
+	uint32 ClusterCnt = fbxSkin->GetClusterCount();
 	for (int32 BoneIdx = 0; BoneIdx < ClusterCnt; BoneIdx++)
 	{
 		FbxCluster* CurCluster = fbxSkin->GetCluster(BoneIdx);
-		NewSkinnedMeshRawData->_BoneNames[BoneIdx] = CurCluster->GetLink()->GetName();
 
 		uint32 clusterIndicesCnt = CurCluster->GetControlPointIndicesCount();
 		int* curClusterCtlrPointIndices = CurCluster->GetControlPointIndices();
@@ -806,4 +807,92 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(FbxMesh*
 
 	NewMeshAsset->InjectRawDataXXX(NewSkinnedMeshRawData);
 	return NewMeshAsset;
+}
+
+void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::PooledList<BonePlacement>& OutBones, FbxSkin* fbxSkin)
+{
+	uint32 ClusterCnt = fbxSkin->GetClusterCount();
+
+	OutBones.Reserve(ClusterCnt);
+
+	SS::PooledList<int32> BoneParentIndices;
+	BoneParentIndices.Reserve(ClusterCnt);
+
+	for (int32 BoneIdx = 0; BoneIdx < ClusterCnt; BoneIdx++)
+	{
+		FbxCluster* CurCluster = fbxSkin->GetCluster(BoneIdx);
+		FbxNode* CurBoneNode = CurCluster->GetLink();
+
+		SS::SHasherW CurBoneName = CurBoneNode->GetName();
+
+		BonePlacement NewBonePlacement;
+		NewBonePlacement.BoneName = CurBoneName;
+		OutBones.PushBack(NewBonePlacement);
+	}
+
+
+	for (int32 i = 0; i < ClusterCnt; i++)
+	{
+		FbxCluster* CurCluster = fbxSkin->GetCluster(i);
+		FbxNode* CurNode = CurCluster->GetLink();
+		SS::SHasherW ParentNodeName = CurNode->GetParent()->GetName();
+		int32 ParentNodeIdx = INVALID_IDX;
+
+		int32 FindIdx = 0;
+		for (; FindIdx < ClusterCnt; FindIdx++)
+		{
+			if (OutBones[FindIdx].BoneName == ParentNodeName)
+			{
+				ParentNodeIdx = FindIdx;
+				break;
+			}
+		}
+
+		BoneParentIndices.PushBack(ParentNodeIdx); // 부모노드의 인덱스를 찾는다
+	}
+
+	// 전에 드래곤 모델처럼 리깅포인트의 Root가 2개 이상일 수 있음
+
+
+	for (int32 BoneItemIdx = 0; BoneItemIdx < ClusterCnt; BoneItemIdx++)
+	{
+		int32 ParentBoneIdx = BoneParentIndices[BoneItemIdx];
+
+
+		FbxCluster* CurCluster = fbxSkin->GetCluster(BoneItemIdx);
+		FbxNode* CurNode = CurCluster->GetLink();
+
+		Transform BoneTransformResult;
+		SS::SHasherW FORDEBUG_CurNodeName = CurNode->GetName();
+		if (ParentBoneIdx != INVALID_IDX) // Root본이 아니면
+		{
+			BoneTransformResult = ExtractTransformFromNode(CurNode); // 현재 노드의 Transform을 가지고온다.
+		}
+
+
+		while (ParentBoneIdx != INVALID_IDX)
+		{
+			Transform ParentTransform;
+
+			if (BoneParentIndices[ParentBoneIdx] == INVALID_IDX) // 부모가 Root 본이면
+			{
+				ParentTransform = Transform::Identity; // 부모의 Transform은 원점이어야 한다.
+			}
+			else // 부모가 Root 본이 아니면 
+			{
+				FbxCluster* ParentCluster = fbxSkin->GetCluster(ParentBoneIdx);
+				FbxNode* ParentNode = ParentCluster->GetLink();
+
+				ParentTransform = ExtractTransformFromNode(ParentNode); // 부모의 상대좌표를 가져온다.
+			}
+
+			BoneTransformResult = ParentTransform * BoneTransformResult; // 곱해준다.
+
+			ParentBoneIdx = BoneParentIndices[ParentBoneIdx];
+		}
+
+		OutBones[BoneItemIdx].BoneTransform = BoneTransformResult;
+	}
+
+	int a = 0;
 }

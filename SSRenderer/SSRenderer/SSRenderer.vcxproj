@@ -174,6 +174,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderInstance\RenderLightDirectional.cpp" />
     <ClCompile Include="Private\RenderInstance\RISkinnedMesh.cpp" />
     <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
+    <ClCompile Include="Public\RenderCommon\SSBoneType.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
@@ -214,6 +215,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderBase\ICommonRenderAssetSet.h" />
     <ClInclude Include="Public\RenderBase\IRenderer.h" />
     <ClInclude Include="Public\RenderBase\IRenderWorld.h" />
+    <ClInclude Include="Public\RenderCommon\SSBoneType.h" />
     <ClInclude Include="Public\RenderCommon\SSRendererInlineSettings.h" />
     <ClInclude Include="Public\RenderCommon\SSVertexType.h" />
     <ClInclude Include="Public\RenderInstance\Descriptors\LightDesc.h" />

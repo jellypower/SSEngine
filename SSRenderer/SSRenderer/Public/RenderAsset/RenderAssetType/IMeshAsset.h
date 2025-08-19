@@ -1,6 +1,7 @@
 #pragma once
 #pragma once
 #include "IAssetBase.h"
+#include "MeshData/MeshRawDataBase.h"
 
 struct MeshRawDataBase;
 class GALMeshAssetWrapperBase;
@@ -13,15 +14,15 @@ public:
 	static const EAssetType ThisAssetType = EAssetType::Mesh;
 
 protected:
-	const MeshRawDataBase* _MeshRawData = nullptr;
 	GALMeshAssetWrapperBase* _GALMeshAsset = nullptr;
 
 
 public:
-	const MeshRawDataBase* GetMeshRawData() const { return _MeshRawData; }
 	const GALMeshAssetWrapperBase* GetGALMeshAsset() const { return _GALMeshAsset; }
 
 public:
+	virtual const MeshRawDataBase* GetMeshRawData() const = 0;
+	virtual EMeshType GetMeshType() const = 0;
 	virtual int32 GetSubMeshCnt() const = 0;
 
 	virtual void ReleaseSystemData() = 0;

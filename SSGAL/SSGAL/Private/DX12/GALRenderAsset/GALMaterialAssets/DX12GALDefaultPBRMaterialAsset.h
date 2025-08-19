@@ -16,7 +16,7 @@ public:
 	D3D12_GPU_VIRTUAL_ADDRESS _MtlCBGPUMemAddr;
 
 	AllocatedChunkHeader _MtlTexSRVDescTableChunk;
-	ID3D12DescriptorHeap* _MtlTexSRVDescHeap = nullptr;
+	ID3D12DescriptorHeap* _CachedMtlTexSRVDescHeap = nullptr;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE _MtlTexSRVDescTableCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE _MtlTexSRVDescTableGPU = {};
 

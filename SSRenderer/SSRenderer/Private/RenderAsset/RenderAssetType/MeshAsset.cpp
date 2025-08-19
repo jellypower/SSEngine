@@ -13,6 +13,23 @@ MeshAsset::MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 	_assetPath = InAssetPath;
 }
 
+void MeshAsset::InjectRawDataXXX(MeshRawDataBase* InRawData)
+{
+	_MeshRawData = InRawData;
+
+	_CachedMeshType = _MeshRawData->_MeshType;
+}
+
+const MeshRawDataBase* MeshAsset::GetMeshRawData() const
+{
+	return _MeshRawData;
+}
+
+EMeshType MeshAsset::GetMeshType() const
+{
+	return _CachedMeshType;
+}
+
 EAssetType MeshAsset::GetAssetType() const
 {
 	return ThisAssetType;

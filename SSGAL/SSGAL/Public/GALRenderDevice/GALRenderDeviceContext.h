@@ -43,6 +43,7 @@ public:
 	virtual GALRWMetaData* GetCurRenderWorldGALMetaData() const = 0;
 
 	GALRenderDevice* GetOwnerRenderDevice() const { return _OwnerRenderDevice; }
+	GALResourceUpdater* GetResourceUpdater() const { return _ResourceUpdater; }
 
 public:
 	virtual void BeginRender() = 0;

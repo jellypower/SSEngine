@@ -8,6 +8,7 @@
 
 
 #include "Private/DX12/GALPostProcessContext/DX12GALPPCDeferredShading.h"
+#include "Private/DX12/GALRenderAsset/DX12GALSkinnedMeshAssetWrapper.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIDirectionalLightShadowMapMetadata.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIMetadata_SKM.h"
 #include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
@@ -198,143 +199,23 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAssetMutable* InMeshA
 
 	HRESULT hr = S_OK;
 
-	DX12GALResourceUpdater* DX12ResourceUpdater = (DX12GALResourceUpdater*)_ResourceUpdater;
-	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
-	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
-	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
-	DX12GALMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALMeshAssetWrapper(InMeshAsset, OwnerDX12RenderDevice);
-	
-
-	const MeshRawDataBase* MeshRawData = InMeshAsset->GetMeshRawData();
-	const MeshRawDataDefault* DefaultMeshRawData = nullptr;
-	switch (MeshRawData->_MeshType)
+	if (InMeshAsset->GetMeshType() == EMeshType::Rigid)
 	{
-	case EMeshType::Rigid:
-	case EMeshType::Skinned:
-		DefaultMeshRawData = (MeshRawDataDefault*)MeshRawData;
-		break;
-
-	default:
-		SS_ASSERT(false);
-		break;
-	}
-	
-	{
-		int32 EachVertexSize = DefaultMeshRawData->_eachVertexSize;
-		int32 VertexCnt = DefaultMeshRawData->_vertexCnt;
-		uint64 VertexBufferSize = VertexCnt * EachVertexSize;
-		const void* VertexData = DefaultMeshRawData->_vertexData;
-
-		ID3D12Resource* NewVertexBuffer = nullptr;
-
-
-		CD3DX12_HEAP_PROPERTIES DefaultHeapTypeProp(D3D12_HEAP_TYPE_DEFAULT);
-		CD3DX12_RESOURCE_DESC ResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(VertexBufferSize);
-		hr = D3DDevice->CreateCommittedResource(
-			&DefaultHeapTypeProp,
-			D3D12_HEAP_FLAG_NONE,
-			&ResourceDesc,
-			D3D12_RESOURCE_STATE_COMMON,
-			nullptr,
-			IID_PPV_ARGS(&NewVertexBuffer));
-		if (FAILED(hr))
-		{
-			DEBUG_BREAK();
-			goto lb_fail;
-		}
-		NewVertexBuffer->SetName(InMeshAsset->GetAssetName().C_Str());
-
-		hr = DX12ResourceUpdater->UpdateBuffer(CurCommandList, NewVertexBuffer, VertexData, VertexBufferSize,
-			D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-		if (FAILED(hr))
-		{
-			DEBUG_BREAK();
-			goto lb_fail;
-		}
-
-		D3D12_VERTEX_BUFFER_VIEW NewVertexBufferView;
-		NewVertexBufferView.BufferLocation = NewVertexBuffer->GetGPUVirtualAddress();
-		NewVertexBufferView.StrideInBytes = EachVertexSize;
-		NewVertexBufferView.SizeInBytes = VertexBufferSize;
-
-		NewGALMeshAsset->_VertexBuffer = NewVertexBuffer;
-		NewGALMeshAsset->_VertexBufferView = NewVertexBufferView;
+		DX12GALMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALMeshAssetWrapper(InMeshAsset, this);
+		InMeshAsset->InjectGALMeshAsset(NewGALMeshAsset);
+		return true;
 	}
 
+	if (InMeshAsset->GetMeshType() == EMeshType::Skinned)
 	{
-		
-		int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
-		NewGALMeshAsset->_SubMeshCnt = SubMeshCnt;
-		int32 WholeIdxDataCnt = DefaultMeshRawData->_wholeIndexDataCnt;
-		const uint32* IndexData = DefaultMeshRawData->_indexData;
-		int32 WholeIndexBufferSize = sizeof(uint32) * WholeIdxDataCnt;
-
-		ID3D12Resource* NewIndexBuffer = nullptr;
-
-		CD3DX12_HEAP_PROPERTIES DefaultHeapProp(D3D12_HEAP_TYPE_DEFAULT);
-		CD3DX12_RESOURCE_DESC ResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(WholeIndexBufferSize);
-		hr = D3DDevice->CreateCommittedResource(
-			&DefaultHeapProp,
-			D3D12_HEAP_FLAG_NONE,
-			&ResourceDesc,
-			D3D12_RESOURCE_STATE_COMMON,
-			nullptr,
-			IID_PPV_ARGS(&NewIndexBuffer));
-		if (FAILED(hr))
-		{
-			DEBUG_BREAK();
-			goto lb_fail;
-		}
-		NewIndexBuffer->SetName(InMeshAsset->GetAssetName().C_Str());
-
-		hr = DX12ResourceUpdater->UpdateBuffer(CurCommandList, NewIndexBuffer, IndexData, WholeIndexBufferSize,
-			D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_INDEX_BUFFER);
-		if (FAILED(hr))
-		{
-			DEBUG_BREAK();
-			goto lb_fail;
-		}
-
-		NewGALMeshAsset->_IndexBuffer = NewIndexBuffer;
-
-		int32 CurIdxDataCnt = 0;
-		int32 Offset = 0;
-		for (int32 i = 0; i < SubMeshCnt; i++)
-		{
-			CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
-
-			D3D12_INDEX_BUFFER_VIEW NewIndexBufferView;
-			NewIndexBufferView.BufferLocation = NewIndexBuffer->GetGPUVirtualAddress() + (sizeof(uint32) * Offset);
-			NewIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
-			NewIndexBufferView.SizeInBytes = CurIdxDataCnt * sizeof(uint32);
-
-			NewGALMeshAsset->_IndexBufferView[i] = NewIndexBufferView;
-
-			Offset += CurIdxDataCnt;
-		}
+		DX12GALSkinnedMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALSkinnedMeshAssetWrapper(InMeshAsset, this);
+		InMeshAsset->InjectGALMeshAsset(NewGALMeshAsset);
+		return true;
 	}
 
-	InMeshAsset->InjectGALMeshAsset(NewGALMeshAsset);
 
-	return true;
-
-lb_fail:
-	if (NewGALMeshAsset != nullptr)
-	{
-		if (NewGALMeshAsset->_VertexBuffer != nullptr)
-		{
-			NewGALMeshAsset->_VertexBuffer->Release();
-		}
-
-		if (NewGALMeshAsset->_IndexBuffer != nullptr)
-		{
-			NewGALMeshAsset->_IndexBuffer->Release();
-		}
-
-		delete NewGALMeshAsset;
-	}
-
+	SS_INTERRUPT();
 	return false;
 }
 
@@ -1097,7 +978,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 		// TODO: BeginDrawMesh랑 EndDrawMesh구현하면서 SetDescriptorHeaps, SetPipelineState, SetGraphicsRootSignature 하는거 몰아서 하기
 		_UniqueDescHeapWorkTable.Clear();
-		ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_MtlTexSRVDescHeap);
+		ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_CachedMtlTexSRVDescHeap);
 		ListPushBackUnique(_UniqueDescHeapWorkTable, _CurRenderWorldGALData->GetLightSettingDescHeap());
 		CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
 
@@ -1120,7 +1001,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {
-	DX12GALRIMetadata_SKM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
+	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
 	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
@@ -1128,17 +1009,17 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 
 	// Scrap Mesh Asset
 	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
-	const DX12GALMeshAssetWrapper* GALMeshAsset = (const DX12GALMeshAssetWrapper*)lMeshAsset->GetGALMeshAsset();
-	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
-
 	if (MeshRawData->_MeshType != EMeshType::Skinned)
 	{
 		SS_INTERRUPT();
 		return;
 	}
-	const MeshRawDataSkinned* DefaultMeshRawData = static_cast<const MeshRawDataSkinned*>(MeshRawData);
-	int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
+	const MeshRawDataSkinned* SkinnedMeshRawData = static_cast<const MeshRawDataSkinned*>(MeshRawData);
+	int32 SubMeshCnt = SkinnedMeshRawData->_subMeshCnt;
+
+	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(lMeshAsset->GetGALMeshAsset());
+	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 
 
 	{
@@ -1157,13 +1038,13 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 
 
 	{
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(DrawMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
+		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(DrawMat);
+		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
+		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
 
 	}
 
-	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
+	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12SkinnedRIMetaData->_ModelCBGPUMemAddr);
 	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
 
 
@@ -1193,8 +1074,9 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 
 		// TODO: BeginDrawMesh랑 EndDrawMesh구현하면서 SetDescriptorHeaps, SetPipelineState, SetGraphicsRootSignature 하는거 몰아서 하기
 		_UniqueDescHeapWorkTable.Clear();
-		ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_MtlTexSRVDescHeap);
+		ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_CachedMtlTexSRVDescHeap);
 		ListPushBackUnique(_UniqueDescHeapWorkTable, _CurRenderWorldGALData->GetLightSettingDescHeap());
+		ListPushBackUnique(_UniqueDescHeapWorkTable, DX12SkinnedRIMetaData->_CachedJointSRVDescHeap);
 		CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
 
 
@@ -1206,8 +1088,13 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 			CurCommandList->SetGraphicsRootDescriptorTable(5, _CurRenderWorldGALData->GetLightSeetingDescTable()); // ShadowMapBinding
 		} // RenderEnv
 
+		{
+			CurCommandList->SetGraphicsRootDescriptorTable(6, DX12SkinnedRIMetaData->_JointSRVDescTableGPU); // SkinningBinding
+
+		} // Skinning
+
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
+		int32 CurIdxDataCnt = SkinnedMeshRawData->_indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
 	}
@@ -1315,6 +1202,12 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 	}
 
 	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
+
+
+	{
+		CurCommandList->SetDescriptorHeaps(1, &DX12RenderInstanceMetaData->_CachedJointSRVDescHeap);
+		CurCommandList->SetGraphicsRootDescriptorTable(2, DX12RenderInstanceMetaData->_JointSRVDescTableGPU);
+	}
 
 	if (_DrawingShadowMapMetadata->GetLightType() == ELightType::Directional)
 	{

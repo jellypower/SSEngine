@@ -52,15 +52,15 @@ DX12GALDefaultPBRMaterialAsset::DX12GALDefaultPBRMaterialAsset(IMaterialAsset* o
 		SSCustomMemChunkAllocator* DescriptorTableAllocator = _OwnerRenderDevice->GetDescriptorTableAllocator();
 
 		_MtlTexSRVDescTableChunk = DescriptorTableAllocator->AllocChunk((int32)EDefaultPBRMatTexTypes::Count, MaterialName);
-		_MtlTexSRVDescHeap = (ID3D12DescriptorHeap *)_MtlTexSRVDescTableChunk.PageContent;
+		_CachedMtlTexSRVDescHeap = (ID3D12DescriptorHeap *)_MtlTexSRVDescTableChunk.PageContent;
 
 		_MtlTexSRVDescTableCPU = CD3DX12_CPU_DESCRIPTOR_HANDLE(
-			_MtlTexSRVDescHeap->GetCPUDescriptorHandleForHeapStart(),
+			_CachedMtlTexSRVDescHeap->GetCPUDescriptorHandleForHeapStart(),
 			_MtlTexSRVDescTableChunk.ChunkOffset,
 			DescriptorIncrementalSize);
 
 		_MtlTexSRVDescTableGPU = CD3DX12_GPU_DESCRIPTOR_HANDLE(
-			_MtlTexSRVDescHeap->GetGPUDescriptorHandleForHeapStart(),
+			_CachedMtlTexSRVDescHeap->GetGPUDescriptorHandleForHeapStart(),
 			_MtlTexSRVDescTableChunk.ChunkOffset,
 			DescriptorIncrementalSize);
 	}

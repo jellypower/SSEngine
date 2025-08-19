@@ -10,8 +10,6 @@ PS_INPUT_DEFAULT Main(VS_INPUT_SKINNED input)
     PS_INPUT_DEFAULT output = (PS_INPUT_DEFAULT) 0;
     
     
-    int i = 0;
-    
     uint JointIndices[] =
     {
         input.jointIndices0[0],
@@ -35,6 +33,8 @@ PS_INPUT_DEFAULT Main(VS_INPUT_SKINNED input)
         input.jointWeights1[2],
         input.jointWeights1[3],
     };
+    
+    int i = 0;
     
     float4 PosAcc = float4(0, 0, 0, 0);
     for (i = 0; i < 8; i++)

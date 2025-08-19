@@ -15,7 +15,7 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     
 
     MRT_Deferred Output;
-    Output.Normal = ComputeNormal(input, txNormal, samLinear, normalTextureScale);;
+    Output.Normal = ComputeNormal(input, txNormal, samLinear, normalTextureScale);
     Output.Albedo = baseColor;
     Output.WorldPos = input.WorldPos;
     Output.MetallicRoughness = float2(metallic, roughness);

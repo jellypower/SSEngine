@@ -104,15 +104,25 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 			MaterialTextures[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4);	// t4
 
 			static CD3DX12_DESCRIPTOR_RANGE WorldRenderEnv[1] = {};
-			WorldRenderEnv[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5);	// t5 
+			WorldRenderEnv[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5);	// t5
 
-			static CD3DX12_ROOT_PARAMETER rootParameters[6] = {};
+			static CD3DX12_DESCRIPTOR_RANGE SkinningJoint[2] = {};
+			SkinningJoint[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 10);	// t10
+			SkinningJoint[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 11);	// t11
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[7] = {};
+
 			rootParameters[0].InitAsConstantBufferView(0); // b0
 			rootParameters[1].InitAsConstantBufferView(1); // b1
 			rootParameters[2].InitAsConstantBufferView(2); // b2
 			rootParameters[3].InitAsDescriptorTable(_countof(MaterialTextures), MaterialTextures, D3D12_SHADER_VISIBILITY_ALL); // textures
+
 			rootParameters[4].InitAsConstantBufferView(3); // b3
 			rootParameters[5].InitAsDescriptorTable(_countof(WorldRenderEnv), WorldRenderEnv, D3D12_SHADER_VISIBILITY_ALL);
+
+			rootParameters[6].InitAsDescriptorTable(_countof(SkinningJoint), SkinningJoint, D3D12_SHADER_VISIBILITY_ALL);
+			
+
 			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
@@ -132,9 +142,15 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 		{
 			Initialized = true;
 
-			static CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
-			rootParameters[0].InitAsConstantBufferView(0); // b0
-			rootParameters[1].InitAsConstantBufferView(1); // b1
+			static CD3DX12_DESCRIPTOR_RANGE SkinningJoint[2] = {};
+			SkinningJoint[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 10);	// t10
+			SkinningJoint[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 11);	// t11
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
+			rootParameters[0].InitAsConstantBufferView(0); // b0 ModelBuffer
+			rootParameters[1].InitAsConstantBufferView(1); // b1 RenderEnvParam
+			rootParameters[2].InitAsDescriptorTable(_countof(SkinningJoint), SkinningJoint, D3D12_SHADER_VISIBILITY_VERTEX); // Skinning
+
 
 			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;

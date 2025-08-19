@@ -4,15 +4,18 @@
 #include "SSGAL/Public/GALRenderAsset/GALMeshAssetWrapperBase.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
+class DX12GALRenderDeviceContext;
 class DX12GALRenderDevice;
 
 class DX12GALMeshAssetWrapper : public GALMeshAssetWrapperBase
 {
 public:
-	DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX12GALRenderDevice* InOwnerRenderDevice);
+	DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX12GALRenderDeviceContext* ResourceUpdateExecutor);
 	virtual ~DX12GALMeshAssetWrapper();
 
 public:
+	DX12GALRenderDevice* _OwnerRenderDevice = nullptr;
+
 	ID3D12Resource* _VertexBuffer = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW _VertexBufferView = {};
 

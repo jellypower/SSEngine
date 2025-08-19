@@ -9,6 +9,6 @@ class GALMeshAssetWrapperBase : public INoncopyable
 {
 protected:
 	IMeshAsset* _OwnerMeshAsset = nullptr;
-	GALRenderDevice* _OwnerRenderDevice = nullptr;
+	
 };
 

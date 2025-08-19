@@ -10,13 +10,15 @@ class DX12GALRIMetadata_SKM : public DX12GALRIMetadata_SM
 {
 public:
 	DX12GALRIMetadata_SKM(GALRenderDevice* InRenderDevice, const IRISkinnedMesh* InOwnerRenderInstance);
-
+	virtual ~DX12GALRIMetadata_SKM();
 public:
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() override;
 
 public:
 	ID3D12Resource* _JointSBResource = nullptr;
-	ID3D12DescriptorHeap* _JointSBDescHeap = nullptr;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE _JointSRVDescHandle;
-	SBASkinningJointMatrix* _SBAJoints = nullptr;
+
+	AllocatedChunkHeader _JointSRVDescTableChunk;
+	ID3D12DescriptorHeap* _CachedJointSRVDescHeap = nullptr;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE _JointSRVDescTableCPU = {};
+	CD3DX12_GPU_DESCRIPTOR_HANDLE _JointSRVDescTableGPU = {};
 };
