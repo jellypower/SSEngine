@@ -5,14 +5,14 @@
 
 void SComponentBase::InitComponentWithParent(SGameObject* InParent)
 {
-	if (_Parent != nullptr)
+	if (_ParentGameObject != nullptr)
 	{
 		SS_ASSERT_MSG(false, L"Canging Component's parent is impossible.");
 		return;
 	}
 
-	_Parent = InParent;
-	if (_Parent->GetIsHierarchyInitialized())
+	_ParentGameObject = InParent;
+	if (_ParentGameObject->GetIsHierarchyInitialized())
 	{
 		PostConstructHierarchy();
 	}

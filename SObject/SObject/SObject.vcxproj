@@ -166,6 +166,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SObjectBase.h" />
     <ClInclude Include="Public\SObjectGlobalHashMap.h" />
     <ClInclude Include="Public\SObjHashCode.h" />
+    <ClInclude Include="Public\SObjHashT.h" />
     <ClInclude Include="SObjectBuildSettings.h" />
   </ItemGroup>
   <ItemGroup>

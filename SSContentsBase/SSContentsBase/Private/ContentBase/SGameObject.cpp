@@ -29,6 +29,43 @@ SWorld* SGameObject::GetIncludedWorldRef() const
 	return World;
 }
 
+SGameObject* SGameObject::FindChildOfName(SS::SHasherW Name, bool bIncludeHieararchy) const
+{
+	if (bIncludeHieararchy == false)
+	{
+		for (SGameObject* ChildItem : _Children)
+		{
+			if (ChildItem->GetObjectName() == Name)
+			{
+				return ChildItem;
+			}
+		}
+
+		return nullptr;
+	}
+
+	for (SGameObject* ChildItem : _Children)
+	{
+		if (ChildItem->GetObjectName() == Name)
+		{
+			return ChildItem;
+		}
+
+		SGameObject* Descendant = ChildItem->FindChildOfName(Name, bIncludeHieararchy);
+		if (Descendant != nullptr)
+		{
+			return Descendant;
+		}
+	}
+
+	return nullptr;
+}
+
+void SGameObject::ScrapAllDescendants(SS::PooledList<SGameObject*>& OutDescendants) const
+{
+	ScrapAllDescendant_Recursion(OutDescendants, this);
+}
+
 Transform SGameObject::GetWorldTransform() const
 {
 	if (IsRootInWorld())
@@ -125,7 +162,7 @@ void SGameObject::SetParent(SGameObject* InNewParent)
 
 void SGameObject::AddComponent(SComponentBase* InComponent)
 {
-	if (InComponent->GetParent() != nullptr)
+	if (InComponent->GetGameObject() != nullptr)
 	{
 		SS_ASSERT_MSG(false, L"Already has a Parent");
 		return;
@@ -145,6 +182,15 @@ void SGameObject::OnEnterTheWorld(SObjHashCode WorldHashCode)
 void SGameObject::OnExitTheWorld()
 {
 	_IncludedWorldHash = nullptr;
+}
+
+void SGameObject::ScrapAllDescendant_Recursion(SS::PooledList<SGameObject*>& OutDescendants, const SGameObject* ParentToScrap)
+{
+	for (SGameObject* ChildItem : ParentToScrap->_Children)
+	{
+		OutDescendants.PushBack(ChildItem);
+		ParentToScrap->ScrapAllDescendant_Recursion(OutDescendants, ChildItem);
+	}
 }
 
 

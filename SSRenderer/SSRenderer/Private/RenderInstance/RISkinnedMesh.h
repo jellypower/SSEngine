@@ -1,8 +1,13 @@
 ﻿#pragma once
 #include "SSRenderer/Public/RenderInstance/IRISkinnedMesh.h"
 
+
+
 class RISkinnedMesh : public IRISkinnedMesh
 {
+public:
+	RISkinnedMesh();
+
 public:
 	virtual SObjHashCode GetGameObjectID() const override;
 	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) override;
@@ -24,7 +29,8 @@ public:
 	virtual IModelAsset* GetModelAsset() const override;
 	virtual void SetModelAsset(IModelAsset* InAsset) override;
 
-	virtual void UpdateSkeleton() override;
+	virtual const SS::PooledList<SBASkinningJointMatrix>& GetSkeletonPose() const override;
+	virtual void UpdateSkeletonPose(int32 BoneIdx, const XMMATRIX& WMatrix, const XMMATRIX& RotMatrix) override;
 
 private:
 	XMMATRIX _WorldTransformMatrix;
@@ -33,4 +39,6 @@ private:
 	IModelAsset* _ModelRef = nullptr;
 	GALRIMetadata* _MetaData = nullptr;
 	IRenderWorld* _IncludedRenderWorld = nullptr;
+
+	SS::PooledList<SBASkinningJointMatrix> _SkeletonPose;
 };

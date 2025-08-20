@@ -8,17 +8,22 @@ class SGameObject;
 class SSCONTENTBASE_MODULE SComponentBase : public SObjectBase
 {
 private:
-	SGameObject* _Parent = nullptr;
+	SGameObject* _ParentGameObject = nullptr;
 
 public:
-	SGameObject* GetParent() const { return _Parent; }
+	SGameObject* GetGameObject() const { return _ParentGameObject; }
 
 	void InitComponentWithParent(SGameObject* InParent);
 
 public:
+	virtual bool ShouldProcessPerFrameInherently() const { return false; }
+
 	// virtual void PostConstruct() { };
 	virtual void PostConstructHierarchy() { }
 	virtual void OnEnterTheWorld() { }
+
+	virtual void PerFrame() { }
+
 	virtual void OnExitTheWorld() { }
 	virtual void PreDestructHierarchy() { }
 	// virtual void PreDestruct() { };

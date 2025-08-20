@@ -19,13 +19,13 @@ void SRenderLightDirectionalComponent::PostConstructHierarchy()
 	}
 
 	_DirectionalLight = g_Renderer->CreateDirectionalLight(_Desc);
-	SGameObject* Parent = GetParent();
+	SGameObject* Parent = GetGameObject();
 	_DirectionalLight->SetGameObjectIDXXX(Parent->GetHashCode());
 }
 
 void SRenderLightDirectionalComponent::OnEnterTheWorld()
 {
-	SGameObject* Parent = GetParent();
+	SGameObject* Parent = GetGameObject();
 	SWorld* World = Parent->GetIncludedWorldRef();
 	IRenderWorld* RenderWorld = World->GetRenderWorld();
 
@@ -34,7 +34,7 @@ void SRenderLightDirectionalComponent::OnEnterTheWorld()
 
 void SRenderLightDirectionalComponent::OnExitTheWorld()
 {
-	SGameObject* Parent = GetParent();
+	SGameObject* Parent = GetGameObject();
 	SWorld* World = Parent->GetIncludedWorldRef();
 	IRenderWorld* RenderWorld = World->GetRenderWorld();
 
@@ -51,7 +51,7 @@ void SRenderLightDirectionalComponent::PreDestructHierarchy()
 
 void SRenderLightDirectionalComponent::OnGameObjectTransformCommited()
 {
-	SGameObject* Owner = GetParent();
+	SGameObject* Owner = GetGameObject();
 	const Transform& WorldTransform = Owner->GetWorldTransform();
 	_DirectionalLight->SetWorldRotation(WorldTransform.Rotation);
 }

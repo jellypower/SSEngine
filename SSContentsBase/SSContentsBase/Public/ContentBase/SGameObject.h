@@ -35,6 +35,8 @@ public:
 	int32 GetChildCnt() const { return _Children.GetSize(); }
 	SGameObject* GetChild(int32 ChildIdx) const { return _Children[ChildIdx]; }
 	SGameObject* GetParent() const { return _Parent; }
+	SGameObject* FindChildOfName(SS::SHasherW Name, bool bIncludeHieararchy = false) const;
+	void ScrapAllDescendants(SS::PooledList<SGameObject*>& OutDescendants) const;
 
 	int32 GetComponentCnt() const { return _Components.GetSize(); }
 	SComponentBase* GetComponentByIdx(int32 ComponentIdx) const { return _Components[ComponentIdx]; }
@@ -63,6 +65,9 @@ public:
 
 	void OnEnterTheWorld(SObjHashCode WorldHashCode);
 	void OnExitTheWorld();
+
+private:
+	static void ScrapAllDescendant_Recursion(SS::PooledList<SGameObject*>& OutDescendants, const SGameObject* ParentToScrap);
 
 public:
 	void AddComponent(SComponentBase* InComponent);

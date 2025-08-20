@@ -7,6 +7,12 @@
 
 SObjHashCode::SObjHashCode(SObjectBase* InObject)
 {
+	if (InObject == nullptr)
+	{
+		_NativeValue = SOBJ_NATIVEVALUE_NULL;
+		return;
+	}
+
 	_NativeValue = InObject->GetHashCode()._NativeValue;
 }
 

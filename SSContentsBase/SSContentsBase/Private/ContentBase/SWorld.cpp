@@ -16,6 +16,7 @@
 
 SWorld::SWorld() :
 	_ObjectsByHashCode(WORLD_OBJECTMAP_HASHMAP_SIZE, WORLD_OBJECTMAP_HASHBUCKET_SIZE),
+	_FrameProcessComponents(WORLD_OBJECTMAP_HASHMAP_SIZE, WORLD_OBJECTMAP_HASHBUCKET_SIZE),
 	_TransformCommitNeededObjs(TRANSFORM_UPDATE_HASHMAP_SIZE, TRANSFORM_UPDATE_HASHBUCKET_SIZE)
 {
 }
@@ -45,6 +46,15 @@ void SWorld::PreDestruct()
 void SWorld::InitializeWorld(IRenderWorld* InRenderWorld)
 {
 	_RenderWorld = InRenderWorld;
+}
+
+void SWorld::PerFrame()
+{
+	for (SS::pair<SObjHashCode, SComponentBase*>& ComponentPairItem : _FrameProcessComponents)
+	{
+		SComponentBase* ComponentItem = ComponentPairItem.second;
+		ComponentItem->PerFrame();
+	}
 }
 
 bool SWorld::IsAnyObjectRemainInWorld() const
@@ -223,6 +233,11 @@ void SWorld::AddGameObjectItem(SGameObject* InNewObject)
 	for (int32 i = 0; i < CompCnt; i++)
 	{
 		SComponentBase* CompItem = InNewObject->GetComponentByIdx(i);
+
+		if (CompItem->ShouldProcessPerFrameInherently())
+		{
+			_FrameProcessComponents.Add(CompItem->GetHashCode(), CompItem);
+		}
 		CompItem->OnEnterTheWorld();
 
 		if (SRenderComponentBase* RenderComponent = dynamic_cast<SRenderComponentBase*>(CompItem))
@@ -245,6 +260,11 @@ void SWorld::RemoveGameObjectItem(SGameObject* InObjectToRemove)
 	for (int32 i = CompCnt - 1; i >= 0; i--)
 	{
 		SComponentBase* CompItem = InObjectToRemove->GetComponentByIdx(i);
+
+		if (CompItem->ShouldProcessPerFrameInherently())
+		{
+			_FrameProcessComponents.Remove(CompItem->GetHashCode());
+		}
 		CompItem->OnExitTheWorld();
 
 		if (SRenderComponentBase* RenderComponent = dynamic_cast<SRenderComponentBase*>(CompItem))

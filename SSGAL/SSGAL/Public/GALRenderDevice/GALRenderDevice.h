@@ -48,13 +48,16 @@ public:
 	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) = 0;
 	virtual GALRenderTarget* CreateDepthStencilView(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) = 0;
 	virtual GALCPUReadableTexture* CreateCPUReadableTexture(ERTColorFormat InColorFormat, Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName = nullptr) = 0;
-
 	virtual GALPPCDeferredShading* CreateDeferredShadingPostProcessContext() = 0;
+
+public:
+	virtual void SyncGALRIMetadataWithRI(IRenderInstance* RIToSync) = 0;
 
 	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) = 0;
 
 
 protected:
+
 	virtual void WaitForFence() = 0;
 	virtual void FenceFrame() = 0;
 

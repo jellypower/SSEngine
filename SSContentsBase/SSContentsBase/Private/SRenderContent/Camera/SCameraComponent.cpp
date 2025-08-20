@@ -18,7 +18,7 @@ void SCameraComponent::PostConstructHierarchy()
 
 void SCameraComponent::OnEnterTheWorld()
 {
-	SGameObject* Parent = GetParent();
+	SGameObject* Parent = GetGameObject();
 	SWorld* IncludedWorld = Parent->GetIncludedWorldRef();
 	IRenderWorld* RW = IncludedWorld->GetRenderWorld();
 
@@ -38,7 +38,7 @@ void SCameraComponent::PreDestructHierarchy()
 
 void SCameraComponent::OnGameObjectTransformCommited()
 {
-	const SGameObject* Parent = GetParent();
+	const SGameObject* Parent = GetGameObject();
 	const Transform& ParentTransform = Parent->GetTransform();
 
 	_RenderCamera->SetCameraTransform(ParentTransform);

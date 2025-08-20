@@ -133,7 +133,7 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 	outVertex.Normal.X = -normalVector.mData[0];
 	outVertex.Normal.Y = normalVector.mData[1];
 	outVertex.Normal.Z = normalVector.mData[2];
-	outVertex.Normal.W = normalVector.mData[3];
+	outVertex.Normal.W = 0;
 
 
 	// UV
@@ -495,7 +495,9 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 	return NewMeshAsset;
 }
 
-IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(FbxMesh* fbxMesh, SS::SHasherW NewAssetName,
+IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
+	FbxMesh* fbxMesh,
+	SS::SHasherW NewAssetName,
 	const utf16* InAssetPath)
 {
 	if (fbxMesh == nullptr)
@@ -614,7 +616,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(FbxMesh*
 	FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
 	SS_ASSERT(fbxSkin != nullptr);
 
-	ExtractOriginalBoneFromFbxSkin(NewSkinnedMeshRawData->_BoneOriginalPose, fbxSkin);
+	ExtractOriginalBoneFromFbxSkin(NewSkinnedMeshRawData, fbxSkin);
 	
 	uint32 ClusterCnt = fbxSkin->GetClusterCount();
 	for (int32 BoneIdx = 0; BoneIdx < ClusterCnt; BoneIdx++)
@@ -809,9 +811,11 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(FbxMesh*
 	return NewMeshAsset;
 }
 
-void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::PooledList<BonePlacement>& OutBones, FbxSkin* fbxSkin)
+void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(MeshRawDataSkinned* RawDataToSaveBone, FbxSkin* fbxSkin)
 {
 	uint32 ClusterCnt = fbxSkin->GetClusterCount();
+
+	SS::PooledList<BonePlacement>& OutBones = RawDataToSaveBone->_BoneOriginalPose;
 
 	OutBones.Reserve(ClusterCnt);
 
@@ -868,7 +872,11 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::PooledList<BonePlace
 		{
 			BoneTransformResult = ExtractTransformFromNode(CurNode); // 현재 노드의 Transform을 가지고온다.
 		}
-
+		else // Root 본이면
+		{
+			SS_ASSERT(RawDataToSaveBone->_RootBoneIdx == INVALID_IDX); // Root본이 2개 이상이면 안된다
+			RawDataToSaveBone->_RootBoneIdx = BoneItemIdx;
+		}
 
 		while (ParentBoneIdx != INVALID_IDX)
 		{
@@ -886,7 +894,7 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::PooledList<BonePlace
 				ParentTransform = ExtractTransformFromNode(ParentNode); // 부모의 상대좌표를 가져온다.
 			}
 
-			BoneTransformResult = ParentTransform * BoneTransformResult; // 곱해준다.
+			BoneTransformResult = BoneTransformResult * ParentTransform; // 곱해준다.
 
 			ParentBoneIdx = BoneParentIndices[ParentBoneIdx];
 		}

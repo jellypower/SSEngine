@@ -15,6 +15,9 @@ public:
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() override;
 
 public:
+	void SyncBonePose();
+
+public:
 	ID3D12Resource* _JointSBResource = nullptr;
 
 	AllocatedChunkHeader _JointSRVDescTableChunk;

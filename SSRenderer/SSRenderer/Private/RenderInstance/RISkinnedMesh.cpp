@@ -1,6 +1,12 @@
 ﻿#include "RISkinnedMesh.h"
 
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
+
+RISkinnedMesh::RISkinnedMesh():
+	_SkeletonPose(200)
+{
+}
 
 SObjHashCode RISkinnedMesh::GetGameObjectID() const
 {
@@ -89,7 +95,18 @@ void RISkinnedMesh::SetModelAsset(IModelAsset* InAsset)
 	_ModelRef = InAsset;
 }
 
-void RISkinnedMesh::UpdateSkeleton()
+const SS::PooledList<SBASkinningJointMatrix>& RISkinnedMesh::GetSkeletonPose() const
 {
-	SS_INTERRUPT(); // TODO: Implementation
+	return _SkeletonPose;
+}
+
+void RISkinnedMesh::UpdateSkeletonPose(int32 BoneIdx, const XMMATRIX& WMatrix, const XMMATRIX& RotMatrix)
+{
+	if (BoneIdx >= _SkeletonPose.GetSize())
+	{
+		_SkeletonPose.Resize(BoneIdx + 1);
+	}
+
+	_SkeletonPose[BoneIdx].WMatrix = WMatrix;
+	_SkeletonPose[BoneIdx].RotMatrix = RotMatrix;
 }

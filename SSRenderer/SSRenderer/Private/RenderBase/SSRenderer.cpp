@@ -308,6 +308,11 @@ void SSRenderer::PerFrame()
 	}
 
 
+	for (IRenderInstance* RIItem : _RenderInstancesToDraw)
+	{
+		_GALRenderDevice->SyncGALRIMetadataWithRI(RIItem);
+	}
+
 
 	_GALRenderDevice->BeginRender();
 	{

@@ -75,6 +75,11 @@ void SSEditor::StartupEngine()
 	}
 
 	{
+		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\DirectionMesh.fbx");
+		_FbxImporter->ImportCurrentFileToAssetManager();
+	}
+
+	{
 		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
 		_FbxImporter->ImportCurrentFileToAssetManager();
 	}
@@ -138,6 +143,8 @@ void SSEditor::EnginePerFrame()
 
 	Run_g_ImGuiInitializer__OnBeginFrameImGui();
 	ProcessImGUI();
+
+	_DefaultWorld->PerFrame();
 
 	_DefaultWorld->ProcessTransformCommit();
 
@@ -234,7 +241,7 @@ void SSEditor::TEMP_CreateAssets()
 void SSEditor::TEMP_ProcessContents()
 {
 	float DeltaTime = SSFrameInfo::GetDeltaTime();
-	SGameObject* CamGameObj = TEMP_Camera->GetParent();
+	SGameObject* CamGameObj = TEMP_Camera->GetGameObject();
 	Vector4f Forward = CamGameObj->GetTransform().GetForward();
 	Vector4f Right = CamGameObj->GetTransform().GetRight();
 	Vector4f Up = CamGameObj->GetTransform().GetUp();
@@ -392,7 +399,7 @@ void SSEditor::TEMP_ProcessContents()
 		constexpr float OBJ_ROT_SPEED = 3;
 		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
 		{
-			SGameObject* LightGO = TEMP_Light->GetParent();
+			SGameObject* LightGO = TEMP_Light->GetGameObject();
 			Quaternion CurRot = LightGO->GetTransform().Rotation;
 			const SGameObject* Parent = LightGO->GetParent();
 			Vector4f UpVector = Parent->GetTransform().GetUp();
@@ -403,7 +410,7 @@ void SSEditor::TEMP_ProcessContents()
 
 		if (SSInput::GetKey(EKeyCode::KEY_RIGHT))
 		{
-			SGameObject* LightGO = TEMP_Light->GetParent();
+			SGameObject* LightGO = TEMP_Light->GetGameObject();
 			Quaternion CurRot = LightGO->GetTransform().Rotation;
 			const SGameObject* Parent = LightGO->GetParent();
 			Vector4f UpVector = Parent->GetTransform().GetUp();
@@ -414,7 +421,7 @@ void SSEditor::TEMP_ProcessContents()
 
 		if (SSInput::GetKey(EKeyCode::KEY_UP))
 		{
-			SGameObject* LightGO = TEMP_Light->GetParent();
+			SGameObject* LightGO = TEMP_Light->GetGameObject();
 			Quaternion CurRot = LightGO->GetTransform().Rotation;
 			const SGameObject* Parent = LightGO->GetParent();
 			Vector4f RightVector = Parent->GetTransform().GetRight();
@@ -425,7 +432,7 @@ void SSEditor::TEMP_ProcessContents()
 
 		if (SSInput::GetKey(EKeyCode::KEY_DOWN))
 		{
-			SGameObject* LightGO = TEMP_Light->GetParent();
+			SGameObject* LightGO = TEMP_Light->GetGameObject();
 			Quaternion CurRot = LightGO->GetTransform().Rotation;
 			const SGameObject* Parent = LightGO->GetParent();
 			Vector4f RightVector = Parent->GetTransform().GetRight();

@@ -2,8 +2,11 @@
 
 #include "DX12GALRenderDevice.h"
 
+#include <SSRenderer/Public/RenderInstance/IRenderInstance.h>
+
 #include "DX12GALRenderDeviceContext.h"
 #include "Private/DX12/GALPostProcessContext/DX12GALPPCDeferredShading.h"
+#include "Private/DX12/GALRenderInstance/DX12GALRIMetadata_SKM.h"
 #include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
 #include "Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
@@ -341,6 +344,24 @@ GALPPCDeferredShading* DX12GALRenderDevice::CreateDeferredShadingPostProcessCont
 	DX12GALPPCDeferredShading* NewPostProcessContext = DBG_NEW DX12GALPPCDeferredShading(this);
 	return NewPostProcessContext;
 }
+
+void DX12GALRenderDevice::SyncGALRIMetadataWithRI(IRenderInstance* RIToSync)
+{
+	if (RIToSync->GetGALMetadata() == nullptr)
+	{
+		return;
+	}
+
+	ERenderInstanceType RIType = RIToSync->GetRIType();
+
+	if (RIType == ERenderInstanceType::SkinnedMesh)
+	{
+		DX12GALRIMetadata_SKM* GALRISkinned = static_cast<DX12GALRIMetadata_SKM*>(RIToSync->GetGALMetadata());
+		SS_ASSERT(GALRISkinned->GetMetadataRenderInstanceType() == ERenderInstanceType::SkinnedMesh);
+		GALRISkinned->SyncBonePose();
+	}
+}
+
 
 
 void DX12GALRenderDevice::WaitForFence()

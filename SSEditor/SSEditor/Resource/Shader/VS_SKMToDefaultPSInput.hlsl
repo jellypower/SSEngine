@@ -45,7 +45,7 @@ PS_INPUT_DEFAULT Main(VS_INPUT_SKINNED input)
         }
         float4 PosItem = mul(input.Pos, SkeletonJointInverse[JointIndices[i]].WMatrix);
         PosItem = mul(PosItem, CurrentJoint[JointIndices[i]].WMatrix);
-        PosAcc += (JointIndices[i] * PosItem);
+        PosAcc += (JointWeights[i] * PosItem);
     }
     input.Pos = PosAcc;
     

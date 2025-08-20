@@ -4,6 +4,7 @@
 
 #include "SSContentsBase/ModuleExportKeyword.h"
 
+class SComponentBase;
 class IRenderWorld;
 class RenderWorld;
 constexpr int32 WORLD_OBJECTMAP_HASHMAP_SIZE = 1024 * 16;
@@ -19,6 +20,7 @@ class SSCONTENTBASE_MODULE SWorld : public SObjectBase
 private:
 	SGameObject* _WorldRootObject = nullptr;
 	SS::HashMap<SObjHashCode, SGameObject*> _ObjectsByHashCode;
+	SS::HashMap<SObjHashCode, SComponentBase*> _FrameProcessComponents;
 	SS::HashMap<SObjHashCode, SGameObject*> _TransformCommitNeededObjs;
 
 	IRenderWorld* _RenderWorld = nullptr;
@@ -31,6 +33,8 @@ public:
 	virtual void InitializeWorld(IRenderWorld* InRenderWorld);
 
 public:
+	void PerFrame();
+
 	IRenderWorld* GetRenderWorld() const { return _RenderWorld; }
 	SGameObject* GetWorldRootObject() const { return _WorldRootObject; }
 	bool IsAnyObjectRemainInWorld() const;

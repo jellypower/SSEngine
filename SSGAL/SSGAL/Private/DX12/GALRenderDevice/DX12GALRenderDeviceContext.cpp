@@ -344,7 +344,8 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 	else if (RIType == ERenderInstanceType::SkinnedMesh)
 	{
 		IRISkinnedMesh* InIRIMesh = static_cast<IRISkinnedMesh*>(InRenderInstance);
-		DX12GALRIMetadata_SM* NewGALRI = DBG_NEW DX12GALRIMetadata_SKM(_OwnerRenderDevice, InIRIMesh);
+		DX12GALRIMetadata_SKM* NewGALRI = DBG_NEW DX12GALRIMetadata_SKM(_OwnerRenderDevice, InIRIMesh);
+		NewGALRI->SyncBonePose();
 		InIRIMesh->InjectGALMetadataXXX(NewGALRI);
 	}
 	else if (RIType == ERenderInstanceType::Light)

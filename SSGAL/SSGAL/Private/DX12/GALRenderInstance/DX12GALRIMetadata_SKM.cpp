@@ -135,3 +135,31 @@ ERenderInstanceType DX12GALRIMetadata_SKM::GetMetadataRenderInstanceType()
 {
 	return ERenderInstanceType::SkinnedMesh;
 }
+
+void DX12GALRIMetadata_SKM::SyncBonePose()
+{
+	IRISkinnedMesh* OwnerSkinnedMesh = (IRISkinnedMesh*)_OwnerRenderInstance;
+	const SS::PooledList<SBASkinningJointMatrix>&  BonePose = OwnerSkinnedMesh->GetSkeletonPose();
+	int32 BoneCnt = BonePose.GetSize();
+
+	// Mapping
+	{
+		CD3DX12_RANGE writeRange(0, 0);
+		void* pData = nullptr;
+		HRESULT hr = _JointSBResource->Map(0, &writeRange, reinterpret_cast<void**>(&pData));
+		if (FAILED(hr))
+		{
+			DEBUG_BREAK();
+			return;
+		}
+		SBASkinningJointMatrix* SBAJoints = (SBASkinningJointMatrix*)pData;
+
+		for (int32 i = 0; i < BoneCnt; i++)
+		{
+			SBAJoints[i].WMatrix = XMMatrixTranspose(BonePose[i].WMatrix);
+			SBAJoints[i].RotMatrix = XMMatrixTranspose(BonePose[i].RotMatrix);
+		}
+
+		_JointSBResource->Unmap(0, nullptr);
+	}
+}

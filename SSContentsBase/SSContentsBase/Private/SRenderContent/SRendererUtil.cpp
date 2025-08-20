@@ -98,6 +98,11 @@ void SRendererUtil::InstantiateModelObjTree_Recursion(const IModelCombinationAss
 				SS_ASSERT(false);
 			}
 		}
+		else
+		{
+			SRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SStaticMeshRenderComponent>(ChildAssetPlacement.PlacementName);
+			NewRenderComp->SetModelAsset("directionmesh/direction.mdl");
+		}
 		
 		InstantiateModelObjTree_Recursion(MdlcAsset, ChildIdx, NewChildObj);
 	}

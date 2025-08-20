@@ -20,7 +20,7 @@ void SStaticMeshRenderComponent::ConstructRenderInstance()
 	SS_ASSERT(_ModelAssetName.IsEmpty() == false);
 	IModelAsset* FoundModelRef = AssetManager->FindAssetByName<IModelAsset>(_ModelAssetName);
 
-	SGameObject* Parent = GetParent();
+	SGameObject* Parent = GetGameObject();
 	NewStaticMeshRI->SetModelAsset(FoundModelRef);
 	NewStaticMeshRI->SetGameObjectIDXXX(Parent->GetHashCode());
 }

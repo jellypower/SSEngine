@@ -30,7 +30,7 @@ void SRenderComponentBase::PreDestructHierarchy()
 
 void SRenderComponentBase::OnGameObjectTransformCommited()
 {
-	SGameObject* Owner = GetParent();
+	SGameObject* Owner = GetGameObject();
 	_RenderInstance->SetWorldTransformMatrix(Owner->GetCommittedWorldTransformMat());
 	_RenderInstance->SetWorldRotation(Owner->GetCommittedWorldRotation());
 }
