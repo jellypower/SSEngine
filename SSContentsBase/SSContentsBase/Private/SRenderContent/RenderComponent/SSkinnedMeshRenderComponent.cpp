@@ -23,13 +23,25 @@ bool SSkinnedMeshRenderComponent::ShouldProcessPerFrameInherently() const
 
 void SSkinnedMeshRenderComponent::PerFrame()
 {
-	SGameObject* Object = GetGameObject();
-	Object->MarkTransformCommitNeeded();
+	SGameObject* SkinnedMesh = GetGameObject();
+	if (SkinnedMesh != nullptr)
+	{
+		SkinnedMesh->MarkTransformCommitNeeded();
+	}
+}
+
+void SSkinnedMeshRenderComponent::OnGameObjectTransformCommited()
+{
+	// noop
 }
 
 void SSkinnedMeshRenderComponent::OnChildrenGameObjectTransformCommitted()
 {
 	__super::OnChildrenGameObjectTransformCommitted();
+
+	_RenderInstance->SetWorldTransformMatrix(XMMatrixIdentity());
+	_RenderInstance->SetWorldRotation(Quaternion());
+
 	UpdateRenderInstanceBonePose();
 }
 
@@ -74,8 +86,6 @@ void SSkinnedMeshRenderComponent::ConstructRenderInstance()
 	SGameObject* Parent = GetGameObject();
 	NewSkinnedMeshRI->SetModelAsset(FoundModelRef);
 	NewSkinnedMeshRI->SetGameObjectIDXXX(Parent->GetHashCode());
-
-
 }
 
 void SSkinnedMeshRenderComponent::DestructRenderInstance()
@@ -98,6 +108,8 @@ void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGa
 		SS_ASSERT(false);
 		return;
 	}
+
+	_RootBone = RootBoneGameObject;
 
 
 	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
@@ -148,10 +160,6 @@ void SSkinnedMeshRenderComponent::UpdateRenderInstanceBonePose()
 
 	IRISkinnedMesh* SkinnedRenderInstance = static_cast<IRISkinnedMesh*>(_RenderInstance);
 
-	SGameObject* ThisGameObject = GetGameObject();
-	XMMATRIX ThisWorldMatrixInv = ThisGameObject->GetCommittedWorldTransformMat();
-	ThisWorldMatrixInv = InverseRigid(ThisWorldMatrixInv);
-	Quaternion ThisRotInverse = ThisGameObject->GetCommittedWorldRotation().Inverse();
 
 	int32 BoneCnt = _BoneBindings.GetSize();
 	for (int32 i = 0; i < BoneCnt; i++)
@@ -163,20 +171,9 @@ void SSkinnedMeshRenderComponent::UpdateRenderInstanceBonePose()
 			continue;
 		}
 
-		XMMATRIX BoneRelativeWMat = BoneObjectItem->GetCommittedWorldTransformMat() * ThisWorldMatrixInv;
-
-		Quaternion Rotation = ThisRotInverse * BoneObjectItem->GetCommittedWorldRotation();
-		XMMATRIX BoneRelativeRotMat = Rotation.AsMatrix();
-//		XMMATRIX BoneRelativeWMat = BoneObjectItem->GetCommittedWorldTransformMat();
-//		XMMATRIX BoneRelativeRotMat = BoneObjectItem->GetCommittedWorldRotation().AsMatrix();
-
 		
 		SkinnedRenderInstance->UpdateSkeletonPose(i,
-			BoneRelativeWMat,
-			BoneRelativeRotMat);
-		
-//		SkinnedRenderInstance->UpdateSkeletonPose(i,
-//			XMMatrixIdentity(),
-//			XMMatrixIdentity());
+			BoneObjectItem->GetCommittedWorldTransformMat(),
+			BoneObjectItem->GetCommittedWorldRotation().AsMatrix());
 	}
 }

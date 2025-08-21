@@ -103,7 +103,7 @@ Quaternion SGameObject::GetWorldRot() const
 
 	SGameObject* Parent = GetParent();
 
-	return Parent->GetWorldRot() * _transform.Rotation;
+	return _transform.Rotation * Parent->GetWorldRot();
 }
 
 void SGameObject::SetTransform(const Transform& InTransform)
@@ -212,7 +212,7 @@ void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const
 {
 	XMMATRIX ThisTransformMat = _transform.AsMatrix();
 	_CommittedWorldTransformMat = ThisTransformMat * ParentWorldTransformMat;
-	_CommittedWorldRotation =  ParentRotation * _transform.Rotation;
+	_CommittedWorldRotation =  _transform.Rotation * ParentRotation;
 	_bTransformCommitReserved = false;
 	_TransformCommitedFrameCnt = SSFrameInfo::GetFrameCnt();
 

@@ -7,11 +7,13 @@ class SSkinnedMeshRenderComponent : public SRenderComponentBase
 {
 private:
 	SS::PooledList<SObjHashT<SGameObject>> _BoneBindings;
+	SObjHashT<SGameObject> _RootBone;
 
 protected:
 	virtual bool ShouldProcessPerFrameInherently() const override;
 	virtual void PerFrame() override;
 
+	virtual void OnGameObjectTransformCommited() override;
 	virtual void OnChildrenGameObjectTransformCommitted() override;
 
 	virtual void PostConstructHierarchy() override;;
