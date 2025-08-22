@@ -117,13 +117,19 @@ void SSFBXImporter::ImportCurrentFileToMaterialAsset()
 	SS::StringW TextureAssetName;
 
 
-
+	constexpr int32 STR_BUFFER_SIZE = 512;
+	wchar_t Utf16Buffer[STR_BUFFER_SIZE];
 
 	for (uint32 i = 0; i < MtlCnt; i++)
 	{
 		const FbxSurfaceMaterial* material = _currentScene->GetMaterial(i);
 
-		OriginalMtlNodeName = material->GetNameOnly().Buffer();
+		FbxString fStrName = material->GetNameOnly();
+		int32 StrLen = fStrName.GetLen();
+		char8_t* u8Name = reinterpret_cast<char8_t*>(fStrName.Buffer());
+		UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, Utf16Buffer, STR_BUFFER_SIZE);
+
+		OriginalMtlNodeName = Utf16Buffer;
 		SS::SHasherW MtlAssetName = _AssetManagerToImportAsset->GenerateAssetName(wsBoundFileName, OriginalMtlNodeName, EAssetType::Material);
 		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(MtlAssetName, _boundFileName);
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();

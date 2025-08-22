@@ -611,7 +611,11 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	}
 
 	uint32 deformerCnt = fbxMesh->GetDeformerCount();
-	assert(deformerCnt == 1);
+	if (deformerCnt > 1)
+	{
+		SS_ASSERT(false);
+		deformerCnt = 1;
+	}
 
 	FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
 	SS_ASSERT(fbxSkin != nullptr);
@@ -682,7 +686,12 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	{
 		NewSkinnedMeshRawData->_subMeshCnt = 1;
 	}
-	SS_ASSERT(NewSkinnedMeshRawData->_subMeshCnt < SUBMESH_COUNT_MAX);
+
+	if (NewSkinnedMeshRawData->_subMeshCnt > SUBMESH_COUNT_MAX)
+	{
+		SS_ASSERT(false);
+		NewSkinnedMeshRawData->_subMeshCnt = SUBMESH_COUNT_MAX;
+	}
 
 
 	FbxLayerElementArrayTemplate<int>* materialIndices = nullptr;

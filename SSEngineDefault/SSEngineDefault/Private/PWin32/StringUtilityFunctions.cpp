@@ -32,6 +32,15 @@ int32 CharStrToUTF16Str(const char* charStr, int32 charLen, utf16* outUtf16Str, 
 	return multibyteLen;
 }
 
+int32 UTF8StrToUTF16Str(const char* charStr, int32 charLen, utf16* outUtf16Str, int32 utf16StrBufferSize)
+{
+	int32 multibyteLen = MultiByteToWideChar(CP_UTF8, 0, charStr, charLen, nullptr, 0);
+	SS_ASSERT(multibyteLen < utf16StrBufferSize);
+	multibyteLen = MultiByteToWideChar(CP_UTF8, 0, charStr, charLen, outUtf16Str, utf16StrBufferSize);
+	outUtf16Str[multibyteLen] = L'\0';
+	return multibyteLen;
+}
+
 int32 UTF16StrToCharStr(const utf16* utf16Str, int32 utf16StrLen, char* outCharStr, int32 mbBufferSize)
 {
 	int32 writtenBytes = WideCharToMultiByte(CP_ACP, 0, utf16Str, utf16StrLen, NULL, 0, NULL, NULL);

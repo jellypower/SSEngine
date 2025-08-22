@@ -14,6 +14,9 @@ SSENGINEDEFAULT_MODULE int32 UTF16StrLenOfCharStr(const char* charStr, int32 cha
 SSENGINEDEFAULT_MODULE int32 CharStrToUTF16Str(const char* charStr, int32 charLen, utf16* outUtf16Str, int32 utf16StrBufferSize);
 
 // return: written string length
+SSENGINEDEFAULT_MODULE int32 UTF8StrToUTF16Str(const char* charStr, int32 charLen, utf16* outUtf16Str, int32 utf16StrBufferSize);
+
+// return: written string length
 SSENGINEDEFAULT_MODULE int32 UTF16StrToCharStr(const utf16* utf16Str, int32 utf16StrLen, char* outCharStr, int32 mbBufferSize);
 
 // return: written bytes num
