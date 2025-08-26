@@ -484,9 +484,22 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 				Vector2f duv1 = v1.Uv[0] - v0.Uv[0];
 				Vector2f duv2 = v2.Uv[0] - v0.Uv[0];
 
-				float detInverse = 1.0f / (duv1.X * duv2.Y - duv1.Y * duv2.X);
-				Vector4f tangent = (dv1 * duv2.Y - dv2 * duv1.Y) * detInverse;
-				v2.Tangent = v1.Tangent = v0.Tangent = tangent;
+				constexpr float EPSILON = 0.0001;
+				if (duv1.X * duv2.Y - duv1.Y * duv2.X > EPSILON)
+				{
+					float detInverse = 1.0f / (duv1.X * duv2.Y - duv1.Y * duv2.X);
+					Vector4f tangent = (dv1 * duv2.Y - dv2 * duv1.Y) * detInverse;
+
+
+					v2.Tangent = v1.Tangent = v0.Tangent = tangent;
+				}
+				else
+				{
+					Vector4f tangent = Vector4f(1,0,0,0);
+					v2.Tangent = v1.Tangent = v0.Tangent = tangent;
+				}
+
+
 			}
 		}
 	}
