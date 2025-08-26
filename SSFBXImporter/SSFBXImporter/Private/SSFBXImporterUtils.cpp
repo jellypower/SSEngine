@@ -644,13 +644,20 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 			}
 
 			constexpr float SKIN_WEIGHT_THRESHOLD = 0.03;
-			if (ctrlPointWeight <= SKIN_WEIGHT_THRESHOLD)
+			if (ctrlPointWeight <= SKIN_WEIGHT_THRESHOLD) // 만약에 바인딩하려는 본의 Weight가 너무 작으면 패스한다
 			{
 				for (uint32 ssIdx : ControlPointToSSIdxMap[ctrlPointIdx])
 				{
-					ssVertexBuffer[ssIdx].Weight[boneCnt] += ctrlPointWeight;
+					if (boneCnt == 0) // 처음 마주하는 bone이면 0번 인덱스에 해당 가중치를 더해준다.
+					{
+						ssVertexBuffer[ssIdx].Weight[0] += ctrlPointWeight;
+					}
+					else
+					{
+						ssVertexBuffer[ssIdx].Weight[boneCnt - 1] += ctrlPointWeight;
+					}
 				}
-				continue;
+				continue; // 그리고 다음 본으로 스킵
 			}
 
 			for (uint32 ssIdx : ControlPointToSSIdxMap[ctrlPointIdx])
