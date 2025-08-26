@@ -225,6 +225,13 @@ void SSEditor::TEMP_CreateAssets()
 				{L"Teeth_SSS_Color.tex", L"Resource/Texture/Teeth_SSS_Color.dds"},
 				{L"Teeth_reflection.tex", L"Resource/Texture/Teeth_reflection.dds"},
 				{L"Teeth_Bump.tex", L"Resource/Texture/Teeth_Bump.dds"},
+
+				{L"T_Manny_02_D.tex", L"Resource/Texture/T_Manny_02_D.DDS"},
+				{L"T_Manny_01_D.tex", L"Resource/Texture/T_Manny_01_D.DDS"},
+				{L"T_Manny_02_N.tex", L"Resource/Texture/T_Manny_02_N.DDS"},
+				{L"T_Manny_01_N.tex", L"Resource/Texture/T_Manny_01_N.DDS"},
+				{L"T_Manny_02_MSR_MSK.tex", L"Resource/Texture/T_Manny_02_MSR_MSK.DDS"},
+				{L"T_Manny_01_MSR_MSK.tex", L"Resource/Texture/T_Manny_01_MSR_MSK.DDS"},
 		};
 
 		for (int32 i=0;i<_countof(TextureAssetList);i++)
