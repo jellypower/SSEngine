@@ -63,14 +63,13 @@ PS_INPUT_DEFAULT Main(VS_INPUT_SKINNED input)
     input.Tangent = mul(input.Tangent, skinRotMat);
     
     
-    output.Pos = mul(input.Pos, WMatrix);
-    output.Pos = mul(output.Pos, VPMatrix);
+    output.Pos = mul(input.Pos, VPMatrix);
     output.Normal = mul(input.Normal, RotMatrix);
     output.Tangent = mul(input.Tangent, RotMatrix);
 
     output.UV0 = input.UV0;
     output.UV1 = input.UV1;
-    output.WorldPos = mul(input.Pos, WMatrix);
+    output.WorldPos = input.Pos;
     
     
     return output;
