@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class IRICubeMap;
 class GALRWMetaData;
 class GALPostProcessContextBase;
 struct PipelineDesc;
@@ -87,11 +88,11 @@ public:
 	virtual void EndDrawMesh() = 0;
 	// ~ERenderDeviceTaskPhase::DrawMesh
 
-	virtual void DrawSkyMap() = 0;
 
 
 	// ERenderDeviceTaskPhase::PostProcess
 	virtual void BeginPostProcessing() = 0;
+	virtual void DrawSkyMap(IRICubeMap* CubeMapToDraw) = 0;
 	virtual void ExecutePostProcessing(GALPostProcessContextBase* PostProcessContext) = 0;
 	virtual void EndPostProcessing() = 0;
 	// ~ERenderDeviceTaskPhase::PostProcess

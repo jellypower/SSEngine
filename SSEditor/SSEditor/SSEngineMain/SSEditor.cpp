@@ -14,6 +14,7 @@
 #include "SSContentsBase/Public/SRenderContent/SRendererUtil.h"
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
@@ -112,6 +113,15 @@ void SSEditor::StartupEngine()
 	}
 
 	{
+		SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");
+		SCubeMapRenderComponent* CubeMapComp = CubemapObject->CreateComponent<SCubeMapRenderComponent>(L"CubemapComponent");
+		CubeMapComp->SetCubeMapTextureAssetName("T_Skybox01.tex");
+		SGameObjectConstructor::FinishConstructHierarchy(CubemapObject);
+		_DefaultWorld->AddToWorld(CubemapObject);
+	}
+
+
+	{
 		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
 		SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
 		SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
@@ -190,34 +200,42 @@ void SSEditor::TEMP_CreateAssets()
 
 	// Texture List 구성하기
 	{
-		const SS::pair<const utf16*, const utf16*> TextureAssetList[]
+		struct STextureAssetList
+		{
+			const utf16* TextureName;
+			const utf16* TexturePath;
+			ETextureType Type;
+		};
+
+		const STextureAssetList TextureAssetList[]
 			= {
-				{L"rp_nathan_animated_003_dif.tex", L"Resource/Texture/rp_nathan_animated_003_dif.dds"},
+				{L"rp_nathan_animated_003_dif.tex", L"Resource/Texture/rp_nathan_animated_003_dif.dds", ETextureType::Texture2D},
 
-				{L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds"},
-				{L"Worm_reflection.tex", L"Resource/Texture/Worm_reflection.dds"},
-				{L"Worm_Bump.tex", L"Resource/Texture/Worm_Bump.dds"},
+				{L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds", ETextureType::Texture2D},
+				{L"Worm_reflection.tex", L"Resource/Texture/Worm_reflection.dds", ETextureType::Texture2D},
+				{L"Worm_Bump.tex", L"Resource/Texture/Worm_Bump.dds", ETextureType::Texture2D},
 
-				{L"Teeth_SSS_Color.tex", L"Resource/Texture/Teeth_SSS_Color.dds"},
-				{L"Teeth_reflection.tex", L"Resource/Texture/Teeth_reflection.dds"},
-				{L"Teeth_Bump.tex", L"Resource/Texture/Teeth_Bump.dds"},
+				{L"Teeth_SSS_Color.tex", L"Resource/Texture/Teeth_SSS_Color.dds", ETextureType::Texture2D},
+				{L"Teeth_reflection.tex", L"Resource/Texture/Teeth_reflection.dds", ETextureType::Texture2D},
+				{L"Teeth_Bump.tex", L"Resource/Texture/Teeth_Bump.dds", ETextureType::Texture2D},
 
-				{L"T_Manny_02_D.tex", L"Resource/Texture/T_Manny_02_D.DDS"},
-				{L"T_Manny_01_D.tex", L"Resource/Texture/T_Manny_01_D.DDS"},
-				{L"T_Manny_02_N.tex", L"Resource/Texture/T_Manny_02_N.DDS"},
-				{L"T_Manny_01_N.tex", L"Resource/Texture/T_Manny_01_N.DDS"},
-				{L"T_Manny_02_MSR_MSK.tex", L"Resource/Texture/T_Manny_02_MSR_MSK.DDS"},
-				{L"T_Manny_01_MSR_MSK.tex", L"Resource/Texture/T_Manny_01_MSR_MSK.DDS"},
+				{L"T_Manny_02_D.tex", L"Resource/Texture/T_Manny_02_D.DDS", ETextureType::Texture2D},
+				{L"T_Manny_01_D.tex", L"Resource/Texture/T_Manny_01_D.DDS", ETextureType::Texture2D},
+				{L"T_Manny_02_N.tex", L"Resource/Texture/T_Manny_02_N.DDS", ETextureType::Texture2D},
+				{L"T_Manny_01_N.tex", L"Resource/Texture/T_Manny_01_N.DDS", ETextureType::Texture2D},
+				{L"T_Manny_02_MSR_MSK.tex", L"Resource/Texture/T_Manny_02_MSR_MSK.DDS", ETextureType::Texture2D},
+				{L"T_Manny_01_MSR_MSK.tex", L"Resource/Texture/T_Manny_01_MSR_MSK.DDS", ETextureType::Texture2D},
 
-				{L"T_Skybox01.tex", L"Resource/Texture/T_Skybox01.dds"},
+				{L"T_Skybox01.tex", L"Resource/Texture/T_Skybox01.dds", ETextureType::CubeMap},
 		};
 
 		for (int32 i=0;i<_countof(TextureAssetList);i++)
 		{
-			const utf16* NameCStr = TextureAssetList[i].first;
-			const utf16* PathCStr = TextureAssetList[i].second;
-
-			ITextureAssetMutable* NewTex = AssetManager->CreateEmptyTextureAsset(NameCStr, PathCStr);
+			const utf16* NameCStr = TextureAssetList[i].TextureName;
+			const utf16* PathCStr = TextureAssetList[i].TexturePath;
+			ETextureType TexType = TextureAssetList[i].Type;
+			
+			ITextureAssetMutable* NewTex = AssetManager->CreateEmptyTextureAsset(NameCStr, PathCStr, TexType);
 			AssetManager->AddToAssetPool(NewTex);
 		}
 	}

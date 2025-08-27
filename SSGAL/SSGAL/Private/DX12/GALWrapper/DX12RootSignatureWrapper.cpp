@@ -206,6 +206,32 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 
 		}return rootSignatureDesc;
 	}
+	case ERootSignatureType::SkyMap:
+	{
+		static CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+		static bool Initialized = false;
+
+		if (Initialized == false) {
+			Initialized = true;
+
+			static CD3DX12_DESCRIPTOR_RANGE SkyMapTexture[1] = {}; 
+			SkyMapTexture[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);	// t6
+
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
+
+			rootParameters[0].InitAsConstantBufferView(0); // b0
+			rootParameters[1].InitAsConstantBufferView(1); // b1
+			rootParameters[2].InitAsDescriptorTable(_countof(SkyMapTexture), SkyMapTexture); // textures
+
+			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(ESSSamplerDescType::DefaultCubeMapSampler, 1);
+
+			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
+		}return rootSignatureDesc;
+	}
 
 	}
 
@@ -245,6 +271,24 @@ D3D12_STATIC_SAMPLER_DESC DX12RootSignatureWrapper::GetSamplerDescOfType(ESSSamp
 		newSampler.MipLODBias = 0.0f;
 		newSampler.MaxAnisotropy = 16;
 		newSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		newSampler.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
+		newSampler.MinLOD = -FLT_MAX;
+		newSampler.MaxLOD = D3D12_FLOAT32_MAX;
+		newSampler.ShaderRegister = registerIDX;
+		newSampler.RegisterSpace = 0;
+		newSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+		return newSampler;
+	}
+	case ESSSamplerDescType::DefaultCubeMapSampler:
+	{
+		D3D12_STATIC_SAMPLER_DESC newSampler = {};
+		newSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		newSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		newSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		newSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		newSampler.MipLODBias = 0.0f;
+		newSampler.MaxAnisotropy = 16;
+		newSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
 		newSampler.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
 		newSampler.MinLOD = -FLT_MAX;
 		newSampler.MaxLOD = D3D12_FLOAT32_MAX;

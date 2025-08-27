@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
+class IRICubeMap;
 class IRISkinnedMesh;
 class GALRIShadowMapMetadata;
 class DX12GALRWMetaData;
@@ -68,10 +69,10 @@ public:
 	virtual void EndDrawMesh() override;
 	// ERenderDeviceTaskPhase::~DrawMesh
 
-	virtual void DrawSkyMap() override;
 
 	// ERenderDeviceTaskPhase::PostProcess
 	virtual void BeginPostProcessing() override;
+	virtual void DrawSkyMap(IRICubeMap* CubeMapToDraw) override;
 	virtual void ExecutePostProcessing(GALPostProcessContextBase* PostProcessContext) override;
 	virtual void EndPostProcessing() override;
 	// ERenderDeviceTaskPhase::~PostProcess

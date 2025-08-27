@@ -14,8 +14,6 @@ public:
 	virtual ~DX12GALPPCDeferredShading();
 
 public:
-	virtual const PipelineDesc& GetPSODescToExecute() override;
-
 	virtual void SyncGALPPCParam() override;
 	virtual void ExecutePostProcess(GALRenderDeviceContext* Executor) override;
 

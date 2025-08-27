@@ -50,10 +50,6 @@ DX12GALPPCDeferredShading::~DX12GALPPCDeferredShading()
 	DesciptorHandleAllocator->ReleaseChunk(_GBuffersSRVDescTableChunk);
 }
 
-const PipelineDesc& DX12GALPPCDeferredShading::GetPSODescToExecute()
-{
-	return _PsoDescToExecute;
-}
 
 void DX12GALPPCDeferredShading::SyncGALPPCParam()
 {

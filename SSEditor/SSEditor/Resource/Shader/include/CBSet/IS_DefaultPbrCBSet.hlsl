@@ -46,7 +46,6 @@ cbuffer RenderLightParam : register(b3)
     DirectionalLight DirectionalLights[DIRECTIONAL_LIGHT_LIMIT];
     PointLight PointLights[POINT_LIGHT_LIMIT];
 };
-
 Texture2D<float> txSingleShadowMap : register(t5);
 
 

@@ -176,6 +176,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALSkinnedMeshAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp" />
     <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRICubeMap.cpp" />
     <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRIDirectionalLightShadowMapMetadata.cpp" />
     <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SKM.cpp" />
     <ClCompile Include="Private\DX12\GALRenderInstance\DX12GALRWMetaData.cpp" />
@@ -218,6 +219,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALSkinnedMeshAssetWrapper.h" />
     <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.h" />
     <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDeviceContext.h" />
+    <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRICubeMap.h" />
     <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRIDirectionalLightShadowMapMetadata.h" />
     <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRIMetadata_SKM.h" />
     <ClInclude Include="Private\DX12\GALRenderInstance\DX12GALRWMetaData.h" />

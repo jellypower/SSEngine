@@ -8,7 +8,8 @@ enum class ESSSamplerDescType
 	None = -1,
 
 	DefaultSampler,
-	ShadowCmpSmapler
+	ShadowCmpSmapler,
+	DefaultCubeMapSampler
 };
 
 

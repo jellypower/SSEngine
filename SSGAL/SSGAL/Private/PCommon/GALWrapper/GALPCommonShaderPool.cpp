@@ -39,6 +39,7 @@ void GALPCommonShaderPool::Initialize()
 
 			{L"PS_DeferredShading", L"Resource/Shader/PS_DeferredShading.hlsl", "Main", EShaderType::PixelShader},
 
+			{L"PS_SkyMap", L"Resource/Shader/PS_SkyMap.hlsl", "Main", EShaderType::PixelShader},	
 		};
 
 		for (const ShaderConstructDesc& DescItem : DescSet)

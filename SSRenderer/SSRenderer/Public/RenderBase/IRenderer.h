@@ -5,6 +5,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+class IRICubeMap;
 class IRISkinnedMesh;
 struct RenderLightDirectionalDesc;
 class IRenderLightDirectional;
@@ -39,6 +40,7 @@ public:
 	virtual IRIMesh* CreateRIStaticMesh() = 0;
 	virtual IRISkinnedMesh* CreateRISkinnedMesh() = 0;
 	virtual IRenderCamera* CreateRenderCamera() = 0;
+	virtual IRICubeMap* CreateRICubeMap() = 0;
 
 	virtual IRenderLightDirectional* CreateDirectionalLight(const RenderLightDirectionalDesc& InDesc) = 0;
 

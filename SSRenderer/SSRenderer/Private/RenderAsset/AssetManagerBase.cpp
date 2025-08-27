@@ -68,9 +68,9 @@ void AssetManagerBase::ReleaseAllAssets()
 	}
 }
 
-ITextureAssetMutable* AssetManagerBase::CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+ITextureAssetMutable* AssetManagerBase::CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
 {
-	return DBG_NEW TextureAsset(InAssetName, InAssetPath);
+	return DBG_NEW TextureAsset(InAssetName, InAssetPath, InType);
 }
 
 IMeshAssetMutable* AssetManagerBase::CreateEmptyMeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)

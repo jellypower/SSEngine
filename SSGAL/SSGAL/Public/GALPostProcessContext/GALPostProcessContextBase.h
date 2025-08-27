@@ -10,8 +10,6 @@ struct PipelineDesc;
 class GALPostProcessContextBase : public INoncopyable
 {
 public:
-	virtual const PipelineDesc& GetPSODescToExecute() = 0;
-
 	virtual void SyncGALPPCParam() = 0;
 	virtual void ExecutePostProcess(GALRenderDeviceContext* Executor) = 0;
 

@@ -33,3 +33,5 @@ PipelineDesc ConstructPSODescToDrawShadow(
 );
 
 PipelineDesc ConstructPSOToDeferredShading();
+
+PipelineDesc ConstructPSOToDrawSkyMap();

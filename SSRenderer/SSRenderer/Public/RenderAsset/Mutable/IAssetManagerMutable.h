@@ -1,6 +1,7 @@
 #pragma once
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 
+enum class ETextureType;
 class IMaterialAssetMutable;
 class ITextureAssetMutable;
 class IModelCombinationAssetMutable;
@@ -14,7 +15,7 @@ public:
 	virtual void AddToAssetPool(IAssetBase* newAsset) = 0;
 	virtual void ReleaseAllAssets() = 0;
 
-	virtual ITextureAssetMutable* CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) = 0;
+	virtual ITextureAssetMutable* CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType) = 0;
 	virtual IMeshAssetMutable* CreateEmptyMeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) = 0;
 	virtual IModelAssetMutable* CreateEmptyModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) = 0;
 	virtual IModelCombinationAssetMutable* CreateEmptyModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt) = 0;

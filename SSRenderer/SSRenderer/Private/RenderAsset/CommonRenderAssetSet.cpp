@@ -19,13 +19,13 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
 
-	_TexBLACK = AssetManager->CreateEmptyTextureAsset(L"BLACK.tex", L"Resource/Texture/BLACK.dds");
+	_TexBLACK = AssetManager->CreateEmptyTextureAsset(L"BLACK.tex", L"Resource/Texture/BLACK.dds", ETextureType::Texture2D);
 	AssetManager->AddToAssetPool(_TexBLACK);
-	_TexEMPTY = AssetManager->CreateEmptyTextureAsset(L"EMPTY.tex", L"Resource/Texture/EMPTY.dds");
+	_TexEMPTY = AssetManager->CreateEmptyTextureAsset(L"EMPTY.tex", L"Resource/Texture/EMPTY.dds", ETextureType::Texture2D);
 	AssetManager->AddToAssetPool(_TexEMPTY);
-	_TexEMPTYNORMAL = AssetManager->CreateEmptyTextureAsset(L"EMPTYNORMAL.tex", L"Resource/Texture/EMPTYNORMAL.dds");
+	_TexEMPTYNORMAL = AssetManager->CreateEmptyTextureAsset(L"EMPTYNORMAL.tex", L"Resource/Texture/EMPTYNORMAL.dds", ETextureType::Texture2D);
 	AssetManager->AddToAssetPool(_TexEMPTYNORMAL);
-	_TexWHITE = AssetManager->CreateEmptyTextureAsset(L"WHITE.tex", L"Resource/Texture/WHITE.dds");
+	_TexWHITE = AssetManager->CreateEmptyTextureAsset(L"WHITE.tex", L"Resource/Texture/WHITE.dds", ETextureType::Texture2D);
 	AssetManager->AddToAssetPool(_TexWHITE);
 
 	_EmptyPBRMaterial = AssetManager->CreateEmptyMaterialAsset(L"EMPTY.mtl", "__INTERNAL_ASSET__");

@@ -16,6 +16,7 @@
 #include "SSRenderer/Private/RenderAsset/CommonRenderAssetSet.h"
 #include "SSRenderer/Private/RenderInstance/RenderCamera.h"
 #include "SSRenderer/Private/RenderInstance/RenderLightDirectional.h"
+#include "SSRenderer/Private/RenderInstance/RICubeMap.h"
 #include "SSRenderer/Private/RenderInstance/RISkinnedMesh.h"
 #include "SSRenderer/Private/RenderInstance/RIStaticMesh.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
@@ -26,6 +27,7 @@
 
 
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
+#include "SSRenderer/Private/RenderInstance/RICubeMap.h"
 
 
 SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice) :
@@ -71,6 +73,11 @@ IRISkinnedMesh* SSRenderer::CreateRISkinnedMesh()
 IRenderCamera* SSRenderer::CreateRenderCamera()
 {
 	return DBG_NEW RenderCamera();
+}
+
+IRICubeMap* SSRenderer::CreateRICubeMap()
+{
+	return DBG_NEW RICubeMap();
 }
 
 IRenderLightDirectional* SSRenderer::CreateDirectionalLight(const RenderLightDirectionalDesc& InDesc)
@@ -304,7 +311,12 @@ void SSRenderer::PerFrame()
 
 		_RenderInstancesToDraw.Clear();
 		_RenderLightsToDraw.Clear();
-		ScrapRenderInstsances(_RenderInstancesToDraw, _RenderLightsToDraw ,_MainRenderCamera);
+		_CubeMapToDraw = nullptr;
+		ScrapRenderInstsances(
+			_RenderInstancesToDraw,
+			_RenderLightsToDraw,
+			_CubeMapToDraw,
+			_MainRenderCamera);
 	}
 
 
@@ -444,6 +456,12 @@ void SSRenderer::PerFrame()
 
 				_MainDeviceContext->ClearRenderTarget(_RTPostProcessResult, {0.5, 0.5, 0.5, 1});
 				_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
+
+				if (_CubeMapToDraw != nullptr)
+				{
+					_MainDeviceContext->DrawSkyMap(_CubeMapToDraw);
+				}
+
 				_MainDeviceContext->ExecutePostProcessing(_DeferredShadingContext);
 
 				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
@@ -568,8 +586,11 @@ void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 }
 
 
-void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw,
-	SS::PooledList<IRenderLight*>& OutRenderLightsToDraw, IRenderCamera* InCamera)
+void SSRenderer::ScrapRenderInstsances(
+	SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw,
+	SS::PooledList<IRenderLight*>& OutRenderLightsToDraw,
+	IRICubeMap*& OutCubeMapToDraw, 
+	IRenderCamera* InCamera)
 {
 	RenderWorld* WorldToRender = (RenderWorld*)InCamera->GetIcludedRenderWorld();
 	if (WorldToRender == nullptr)
@@ -591,6 +612,15 @@ void SSRenderer::ScrapRenderInstsances(SS::PooledList<IRenderInstance*>& OutRend
 				RIType == ERenderInstanceType::SkinnedMesh)
 		{
 			OutRenderInstancesToDraw.PushBack(InstanceItem);
+		}
+		else if (RIType == ERenderInstanceType::CubeMap)
+		{
+			if (OutCubeMapToDraw != nullptr)
+			{
+				SS_ASSERT(false, L"There are two or more Cubemap in one world.");
+				continue;
+			}
+			OutCubeMapToDraw = static_cast<IRICubeMap*>(InstanceItem);
 		}
 		else
 		{

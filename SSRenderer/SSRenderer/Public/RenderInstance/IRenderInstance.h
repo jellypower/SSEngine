@@ -16,6 +16,8 @@ enum class ERenderInstanceType : int32
 	SkinnedMesh,
 
 	Light,
+
+	CubeMap	
 };
 
 

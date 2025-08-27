@@ -6,9 +6,12 @@
 #include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
 
+#include <SSRenderer/Public/RenderInstance/IRICubeMap.h>
+
 
 #include "Private/DX12/GALPostProcessContext/DX12GALPPCDeferredShading.h"
 #include "Private/DX12/GALRenderAsset/DX12GALSkinnedMeshAssetWrapper.h"
+#include "Private/DX12/GALRenderInstance/DX12GALRICubeMap.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIDirectionalLightShadowMapMetadata.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIMetadata_SKM.h"
 #include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
@@ -243,7 +246,8 @@ bool DX12GALRenderDeviceContext::GenerateTextureGALAsset(ITextureAssetMutable* I
 	D3D12_RESOURCE_DESC textureDesc = {};
 	std::unique_ptr<uint8_t[]> ddsData;
 	std::vector<D3D12_SUBRESOURCE_DATA> subresouceData;
-	if (FAILED(LoadDDSTextureFromFile(D3DDevice, TexturePath, &pTexResource, ddsData, subresouceData)))
+	bool bIsCubeMap = false;
+	if (FAILED(LoadDDSTextureFromFile(D3DDevice, TexturePath, &pTexResource, ddsData, subresouceData, 0 ,nullptr, &bIsCubeMap)))
 	{
 		DEBUG_BREAK();
 		if (pTexResource != nullptr)
@@ -257,7 +261,12 @@ bool DX12GALRenderDeviceContext::GenerateTextureGALAsset(ITextureAssetMutable* I
 	const D3D12_SUBRESOURCE_DATA* SrcData = subresouceData.data();
 	UINT NumSubResources = (UINT)subresouceData.size();
 	UINT64 uploadBufferSize = GetRequiredIntermediateSize(pTexResource, 0, NumSubResources);
-	
+
+	if (bIsCubeMap)
+	{
+		SS_ASSERT(InTextureAsset->GetTextureType() == ETextureType::CubeMap);
+	}
+
 	
 	hr = DX12ResourceUpdater->UpdateTexture(
 		CurCommandList,
@@ -370,6 +379,14 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 		{
 			SS_ASSERT(false);
 		}
+	}
+	else if (RIType == ERenderInstanceType::CubeMap)
+	{
+		IRICubeMap* InCubeMap = static_cast<IRICubeMap*>(InRenderInstance);
+		DX12GALRICubeMap* NewGALRICubeMap =
+			DBG_NEW DX12GALRICubeMap(static_cast<DX12GALRenderDevice*>(_OwnerRenderDevice), InCubeMap);
+
+		InCubeMap->InjectGALMetadataXXX(NewGALRICubeMap);
 	}
 	else
 	{
@@ -827,41 +844,61 @@ void DX12GALRenderDeviceContext::EndDrawMesh()
 	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
 }
 
-void DX12GALRenderDeviceContext::DrawSkyMap()
+void DX12GALRenderDeviceContext::DrawSkyMap(IRICubeMap* CubeMapToDraw)
 {
-	/*
-	if (Executor->GetTaskPhase() != ERenderDeviceTaskPhase::PostProcess)
+	if (GetTaskPhase() != ERenderDeviceTaskPhase::PostProcess)
 	{
 		SS_INTERRUPT();
 		return;
 	}
 
-	DX12GALRenderDeviceContext* DX12Executor = (DX12GALRenderDeviceContext*)Executor;
-	ID3D12GraphicsCommandList* CurCommandList = DX12Executor->GetCurrentDrawWorkerCmdList();
-
-	DX12GALRWMetaData* CurGALRWMetaData = (DX12GALRWMetaData*)(Executor->GetCurRenderWorldGALMetaData());
-	ID3D12DescriptorHeap* DeferredShadingDescHeap = GetGBufferSRVDescHeap();
-	ID3D12DescriptorHeap* RenderLightDescHeap = CurGALRWMetaData->GetLightSettingDescHeap();
+	if (CubeMapToDraw->GetGALMetadata() == nullptr)
+	{
+		GenerateRenderInstanceMetadata(CubeMapToDraw);
+	}
 
 
-	DX12Executor->SetPSOAndRootSignature(_PsoDescToExecute);
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
+	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
 
-	_UniqueDescHeapWorkTable.Clear();
-	ListPushBackUnique(_UniqueDescHeapWorkTable, DeferredShadingDescHeap);
-	ListPushBackUnique(_UniqueDescHeapWorkTable, RenderLightDescHeap);
-	CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+	ITextureAsset* TextureAsset = CubeMapToDraw->GetCubemapTexture();
+	const DX12GALTextureAssetWrapper* DX12GALTexAsset = static_cast<const DX12GALTextureAssetWrapper*>(TextureAsset->GetGALTextureAsset());
+
+	IMeshAsset* CubeMeshAsset = g_CommonRenderAssetSet->GetCube1mMesh();
+	const DX12GALMeshAssetWrapper* DX12CubeMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(CubeMeshAsset->GetGALMeshAsset());
+	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(CubeMeshAsset->GetMeshRawData());
+	int32 IndexCnt = DefaultMeshRawData->_indexDataCnt[0];
+
+	DX12GALRICubeMap* DX12GALCubeMap = static_cast<DX12GALRICubeMap*>(CubeMapToDraw->GetGALMetadata());
+	ID3D12DescriptorHeap* CubemapDescHeap = DX12GALCubeMap->GetCubeMapDescHeap();
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CubemapDescTableCPU = DX12GALCubeMap->GetCubemapDescTableCPU();
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CubemapDescTableGPU = DX12GALCubeMap->GetCubemapDescTableGPU();
 
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GBufferDescTableHandle = GetGBufferSRVGPUDescTable();
-	D3D12_GPU_DESCRIPTOR_HANDLE ShadowMapDescTableHandle = CurGALRWMetaData->GetLightSeetingDescTable();
+	D3DDevice->CopyDescriptorsSimple(1, 
+		CubemapDescTableCPU, DX12GALTexAsset->_SRVHandle,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+
+
+	PipelineDesc SkyMapPSODesc = ConstructPSOToDrawSkyMap();
+	SetPSOAndRootSignature(SkyMapPSODesc);
+
+
+
 
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CurCommandList->SetGraphicsRootConstantBufferView(0, CurGALRWMetaData->GetRenderLightParamCB()); // RenderLight
-	CurCommandList->SetGraphicsRootConstantBufferView(1, CurGALRWMetaData->_RenderEnvCBGPUMemAddr); // RenderEnvParam
-	CurCommandList->SetGraphicsRootDescriptorTable(2, GBufferDescTableHandle); // G-Buffer
-	CurCommandList->SetGraphicsRootDescriptorTable(3, ShadowMapDescTableHandle); // ShadowMap
-	CurCommandList->DrawInstanced(3, 1, 0, 0);
-	*/
+	CurCommandList->IASetVertexBuffers(0, 1, &DX12CubeMeshAsset->_VertexBufferView);
+	CurCommandList->IASetIndexBuffer(DX12CubeMeshAsset->_IndexBufferView);
+
+	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12GALCubeMap->GetCubemapCBGPUMemAddr());
+	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+
+	CurCommandList->SetDescriptorHeaps(1, &CubemapDescHeap);
+	CurCommandList->SetGraphicsRootDescriptorTable(2, CubemapDescTableGPU);
+
+	CurCommandList->DrawIndexedInstanced(IndexCnt, 1, 0, 0, 0);
 }
 
 void DX12GALRenderDeviceContext::BeginPostProcessing()

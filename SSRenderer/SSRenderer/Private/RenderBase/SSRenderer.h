@@ -3,6 +3,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class IRICubeMap;
 class GALPPCDeferredShading;
 class CommonRenderAssetSet;
 class ITextureAssetMutable;
@@ -26,6 +27,7 @@ private:
 
 	SS::PooledList<IRenderInstance*> _RenderInstancesToDraw;
 	SS::PooledList<IRenderLight*> _RenderLightsToDraw;
+	IRICubeMap* _CubeMapToDraw = nullptr;
 
 	SS::PooledList<IMaterialAssetMutable*> _GALStateChangedMaterialAsset;
 	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
@@ -70,6 +72,7 @@ public:
 	virtual IRIMesh* CreateRIStaticMesh() override;
 	virtual IRISkinnedMesh* CreateRISkinnedMesh() override;
 	virtual IRenderCamera* CreateRenderCamera() override;
+	virtual IRICubeMap* CreateRICubeMap() override;
 
 	virtual IRenderLightDirectional* CreateDirectionalLight(const RenderLightDirectionalDesc& InDesc) override;
 
@@ -102,6 +105,7 @@ private:
 	void ScrapRenderInstsances(
 		SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw,
 		SS::PooledList<IRenderLight*>& OutRenderLightsToDraw,
+		IRICubeMap*& OutCubeMapToDraw,
 		IRenderCamera* InCamera);
 
 	

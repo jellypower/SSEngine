@@ -102,3 +102,16 @@ PipelineDesc ConstructPSOToDeferredShading()
 	NewPipelineDesc.DSColorFormat = ERTColorFormat::Unknown;
 	return NewPipelineDesc;
 }
+
+PipelineDesc ConstructPSOToDrawSkyMap()
+{
+	PipelineDesc NewPipelineDesc;
+	NewPipelineDesc.VSName = "VS_SMToDefaultPSInput";
+	NewPipelineDesc.PSName = "PS_SkyMap";
+	NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
+	NewPipelineDesc.RootSignatureType = ERootSignatureType::SkyMap;
+	NewPipelineDesc.NumRenderTarget = 1;
+	NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R8G8B8A8_UNORM;
+	NewPipelineDesc.DSColorFormat = ERTColorFormat::Unknown;
+	return NewPipelineDesc;
+}

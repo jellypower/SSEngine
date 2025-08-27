@@ -3,6 +3,14 @@
 
 class GALTextureAssetWrapperBase;
 
+enum class ETextureType
+{
+	None = -1,
+
+	Texture2D,
+	CubeMap
+};
+
 class ITextureAsset : public IAssetBase
 {
 public:
@@ -15,5 +23,7 @@ public:
 	GALTextureAssetWrapperBase* GetGALTextureAsset() const { return _GALTextureAsset; }
 
 public:
+	virtual ETextureType GetTextureType() const = 0;
+
 	virtual void ReleaseGALData() = 0;
 };

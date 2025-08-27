@@ -6,7 +6,9 @@
 #include "SSRenderer.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
+#include "SSRenderer/Public/RenderInstance/IRICubeMap.h"
 #include "SSRenderer/Public/RenderInstance/Light/IRenderLight.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 #include "SSRenderer/Public/RenderInstance/IRISkinnedMesh.h"
@@ -87,6 +89,18 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 	{
 		// noop
 	}
+	else if (RIType == ERenderInstanceType::CubeMap)
+	{
+		IRICubeMap* InCubeMap = static_cast<IRICubeMap*>(InRenderInstance);
+
+		AssetInstanceReferencer AssetReferencer;
+		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
+		AssetReferencer.ObjHashCode = GameObjectHashCode;
+
+		ITextureAsset* TextureAsset = InCubeMap->GetCubemapTexture();
+		SS_ASSERT(TextureAsset->GetTextureType() == ETextureType::CubeMap);
+		TextureAsset->AddAssetReference(AssetReferencer);
+	}
 	else
 	{
 		SS_ASSERT(false);
@@ -130,6 +144,17 @@ void RenderWorld::RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToR
 	else if (RIType == ERenderInstanceType::Light)
 	{
 		// noop
+	}
+	else if (RIType == ERenderInstanceType::CubeMap)
+	{
+		IRICubeMap* RICubemapToRemove = static_cast<IRICubeMap*>(RenderInstanceToRemove);
+
+		AssetInstanceReferencer AssetReferencer;
+		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
+		AssetReferencer.ObjHashCode = RICubemapToRemove->GetGameObjectID();
+
+		ITextureAsset* lTextureAsset = RICubemapToRemove->GetCubemapTexture();
+		lTextureAsset->RemoveAssetReference(AssetReferencer);
 	}
 	else
 	{

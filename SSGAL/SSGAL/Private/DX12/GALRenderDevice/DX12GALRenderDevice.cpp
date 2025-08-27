@@ -282,7 +282,7 @@ void DX12GALRenderDevice::ExecuteRenderContext(GALRenderDeviceContext* DeviceCon
 	ID3D12CommandList* CurCommandList = DX12DeviceContext->GetCurrentDrawWorkerCmdList();
 
 	// 실행
-	_D3DCommandQueue->ExecuteCommandLists(1, &CurCommandList);
+e	_D3DCommandQueue->ExecuteCommandLists(1, &CurCommandList);
 	_ExecutedDeviceContext.PushBack(DX12DeviceContext);
 }
 

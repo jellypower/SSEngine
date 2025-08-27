@@ -5,10 +5,11 @@
 #include "SSRenderer/Private/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 
-TextureAsset::TextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+TextureAsset::TextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
 {
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
+	_Type = InType;
 }
 
 EAssetType TextureAsset::GetAssetType() const
@@ -68,4 +69,9 @@ void TextureAsset::ReleaseGALData()
 {
 	delete _GALTextureAsset;
 	_GALTextureAsset = nullptr;
+}
+
+ETextureType TextureAsset::GetTextureType() const
+{
+	return _Type;
 }

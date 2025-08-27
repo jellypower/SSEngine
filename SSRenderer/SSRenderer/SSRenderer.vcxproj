@@ -173,6 +173,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RendererUtil\RawDataFactory.cpp" />
     <ClCompile Include="Private\RenderInstance\RenderCamera.cpp" />
     <ClCompile Include="Private\RenderInstance\RenderLightDirectional.cpp" />
+    <ClCompile Include="Private\RenderInstance\RICubeMap.cpp" />
     <ClCompile Include="Private\RenderInstance\RISkinnedMesh.cpp" />
     <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
     <ClCompile Include="Public\RenderCommon\SSBoneType.cpp" />
@@ -192,6 +193,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\RendererUtil\RawDataFactory.h" />
     <ClInclude Include="Private\RenderInstance\RenderCamera.h" />
     <ClInclude Include="Private\RenderInstance\RenderLightDirectional.h" />
+    <ClInclude Include="Private\RenderInstance\RICubeMap.h" />
     <ClInclude Include="Private\RenderInstance\RISkinnedMesh.h" />
     <ClInclude Include="Private\RenderInstance\RIStaticMesh.h" />
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h" />
@@ -223,6 +225,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderInstance\Descriptors\LightDesc.h" />
     <ClInclude Include="Public\RenderInstance\IRenderCamera.h" />
     <ClInclude Include="Public\RenderInstance\IRenderInstance.h" />
+    <ClInclude Include="Public\RenderInstance\IRICubeMap.h" />
     <ClInclude Include="Public\RenderInstance\IRISkinnedMesh.h" />
     <ClInclude Include="Public\RenderInstance\Light\IRenderLightDirectional.h" />
     <ClInclude Include="Public\RenderInstance\Light\IRenderLight.h" />

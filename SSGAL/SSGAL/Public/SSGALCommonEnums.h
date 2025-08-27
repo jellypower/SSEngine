@@ -22,6 +22,7 @@ enum class ERootSignatureType : int32
 	SS_DEFAULT_PBR,
 	Shadow,
 	DeferredShading,
+	SkyMap,
 	// CS_TEMP, // TODO: Implementation
 
 	COUNT
@@ -37,6 +38,7 @@ FORCEINLINE const utf16* ToUtf16Str(ERootSignatureType e)
 	case ERootSignatureType::SS_DEFAULT_PBR:	return L"ERootSignatureType::SS_DEFAULT_PBR";
 	case ERootSignatureType::Shadow:	return L"ERootSignatureType::Shadow";
 	case ERootSignatureType::DeferredShading:	return L"ERootSignatureType::ExecuteDeferredShading";
+	case ERootSignatureType::SkyMap:	return L"ERootSignatureType::SkyMap";
 	default:
 		SS_ASSERT(false);
 		return L"ERootSignatureType::unknown";

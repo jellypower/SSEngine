@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
-
-
 class AssetManagerBase : public IAssetManagerMutable
 {
 protected:
@@ -15,7 +13,7 @@ public:
 	virtual void AddToAssetPool(IAssetBase* newAsset) override;
 	virtual void ReleaseAllAssets() override;
 
-	virtual ITextureAssetMutable* CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
+	virtual ITextureAssetMutable* CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType) override;
 	virtual IMeshAssetMutable* CreateEmptyMeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
 	virtual IModelAssetMutable* CreateEmptyModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
 	virtual IModelCombinationAssetMutable* CreateEmptyModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt) override;
