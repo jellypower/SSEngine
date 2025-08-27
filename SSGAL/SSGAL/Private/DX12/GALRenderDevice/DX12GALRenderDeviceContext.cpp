@@ -827,6 +827,43 @@ void DX12GALRenderDeviceContext::EndDrawMesh()
 	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
 }
 
+void DX12GALRenderDeviceContext::DrawSkyMap()
+{
+	/*
+	if (Executor->GetTaskPhase() != ERenderDeviceTaskPhase::PostProcess)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	DX12GALRenderDeviceContext* DX12Executor = (DX12GALRenderDeviceContext*)Executor;
+	ID3D12GraphicsCommandList* CurCommandList = DX12Executor->GetCurrentDrawWorkerCmdList();
+
+	DX12GALRWMetaData* CurGALRWMetaData = (DX12GALRWMetaData*)(Executor->GetCurRenderWorldGALMetaData());
+	ID3D12DescriptorHeap* DeferredShadingDescHeap = GetGBufferSRVDescHeap();
+	ID3D12DescriptorHeap* RenderLightDescHeap = CurGALRWMetaData->GetLightSettingDescHeap();
+
+
+	DX12Executor->SetPSOAndRootSignature(_PsoDescToExecute);
+
+	_UniqueDescHeapWorkTable.Clear();
+	ListPushBackUnique(_UniqueDescHeapWorkTable, DeferredShadingDescHeap);
+	ListPushBackUnique(_UniqueDescHeapWorkTable, RenderLightDescHeap);
+	CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+
+
+	D3D12_GPU_DESCRIPTOR_HANDLE GBufferDescTableHandle = GetGBufferSRVGPUDescTable();
+	D3D12_GPU_DESCRIPTOR_HANDLE ShadowMapDescTableHandle = CurGALRWMetaData->GetLightSeetingDescTable();
+
+	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CurCommandList->SetGraphicsRootConstantBufferView(0, CurGALRWMetaData->GetRenderLightParamCB()); // RenderLight
+	CurCommandList->SetGraphicsRootConstantBufferView(1, CurGALRWMetaData->_RenderEnvCBGPUMemAddr); // RenderEnvParam
+	CurCommandList->SetGraphicsRootDescriptorTable(2, GBufferDescTableHandle); // G-Buffer
+	CurCommandList->SetGraphicsRootDescriptorTable(3, ShadowMapDescTableHandle); // ShadowMap
+	CurCommandList->DrawInstanced(3, 1, 0, 0);
+	*/
+}
+
 void DX12GALRenderDeviceContext::BeginPostProcessing()
 {
 	if (_TaskPhase != ERenderDeviceTaskPhase::TaskWaiting)

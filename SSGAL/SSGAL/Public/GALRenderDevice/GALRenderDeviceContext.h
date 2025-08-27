@@ -87,6 +87,7 @@ public:
 	virtual void EndDrawMesh() = 0;
 	// ~ERenderDeviceTaskPhase::DrawMesh
 
+	virtual void DrawSkyMap() = 0;
 
 
 	// ERenderDeviceTaskPhase::PostProcess

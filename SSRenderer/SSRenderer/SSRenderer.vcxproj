@@ -170,6 +170,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderAsset\RenderAssetType\TextureAsset.cpp" />
     <ClCompile Include="Private\RenderBase\RenderWorld.cpp" />
     <ClCompile Include="Private\RenderBase\SSRenderer.cpp" />
+    <ClCompile Include="Private\RendererUtil\RawDataFactory.cpp" />
     <ClCompile Include="Private\RenderInstance\RenderCamera.cpp" />
     <ClCompile Include="Private\RenderInstance\RenderLightDirectional.cpp" />
     <ClCompile Include="Private\RenderInstance\RISkinnedMesh.cpp" />
@@ -188,6 +189,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\RenderAsset\RenderAssetType\TextureAsset.h" />
     <ClInclude Include="Private\RenderBase\RenderWorld.h" />
     <ClInclude Include="Private\RenderBase\SSRenderer.h" />
+    <ClInclude Include="Private\RendererUtil\RawDataFactory.h" />
     <ClInclude Include="Private\RenderInstance\RenderCamera.h" />
     <ClInclude Include="Private\RenderInstance\RenderLightDirectional.h" />
     <ClInclude Include="Private\RenderInstance\RISkinnedMesh.h" />

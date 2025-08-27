@@ -63,6 +63,9 @@
     <ClCompile Include="Public\RenderCommon\SSBoneType.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\RendererUtil\RawDataFactory.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h">
@@ -210,6 +213,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\RenderCommon\SSBoneType.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\RendererUtil\RawDataFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

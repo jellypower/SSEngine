@@ -16,7 +16,7 @@ enum class EDefaultPBRMatTexTypes : int32
 	Count = 5
 };
 
-const char* to_string(EDefaultPBRMatTexTypes e)
+inline const char* to_string(EDefaultPBRMatTexTypes e)
 {
 	switch (e)
 	{

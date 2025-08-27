@@ -60,7 +60,9 @@ void SSEditor::StartupEngine()
 	_Renderer->StartUp();
 	g_ImGuiInitializer->StartupImGui(_Renderer);
 	_ImGUI_SelectedAssetManager_Type = EAssetType::Texture;
-	
+
+
+	_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
 	TEMP_CreateAssets(); // CommonAssetSet을 초기화
 
 
@@ -69,10 +71,6 @@ void SSEditor::StartupEngine()
 		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 	}
 
-	{
-		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\Cube1m.fbx");
-		_FbxImporter->ImportCurrentFileToAssetManager();
-	}
 
 	{
 		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\DirectionMesh.fbx");
@@ -91,9 +89,9 @@ void SSEditor::StartupEngine()
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
 	{
-		SGameObject* Floor = SRendererUtil::InstantiateModel(L"cube1m/cube__1_.mdl");
+		SGameObject* Floor = SRendererUtil::InstantiateModel(L"cube1m.mdl");
 		_DefaultWorld->AddToWorld(Floor);
-		Floor->SetPosition(Vector4f(0, -0.05,0, 1));
+		Floor->SetPosition(Vector4f(0, -0.1,0, 1));
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
 	}
 
@@ -133,8 +131,6 @@ void SSEditor::StartupEngine()
 
 		TEMP_Light = LightComp;
 	}
-
-	_Renderer->GetCommonRenderAssetSet()->AddRefCachedAssets();
 }
 
 void SSEditor::EnginePerFrame()
@@ -183,34 +179,7 @@ void SSEditor::CleanupEngine()
 void SSEditor::TEMP_CreateAssets()
 {
 	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
-
-	ITextureAssetMutable* BlackTex = AssetManager->CreateEmptyTextureAsset(L"BLACK.tex", L"Resource/Texture/BLACK.dds");
-	AssetManager->AddToAssetPool(BlackTex);
-	ITextureAssetMutable* EmptyTex = AssetManager->CreateEmptyTextureAsset(L"EMPTY.tex", L"Resource/Texture/EMPTY.dds");
-	AssetManager->AddToAssetPool(EmptyTex);
-	ITextureAssetMutable* EmptyNormalTex = AssetManager->CreateEmptyTextureAsset(L"EMPTYNORMAL.tex", L"Resource/Texture/EMPTYNORMAL.dds");
-	AssetManager->AddToAssetPool(EmptyNormalTex);
-	ITextureAssetMutable* WhiteTex = AssetManager->CreateEmptyTextureAsset(L"WHITE.tex", L"Resource/Texture/WHITE.dds");
-	AssetManager->AddToAssetPool(WhiteTex);
-
-	IMaterialAssetMutable* TempMtl = AssetManager->CreateEmptyMaterialAsset(L"EMPTY.mtl", "__EMPTY_PATH__");
-	MtlDataDefaultPBR* EmptyDefaultPBR = DBG_NEW MtlDataDefaultPBR();
-	EmptyDefaultPBR->_Type = EMaterialType::DefaultPBR;
-	EmptyDefaultPBR->_BaseColorScale = Vector4f::One;
-	EmptyDefaultPBR->_EmissiveScale = Vector4f::One;
-	EmptyDefaultPBR->_NormalTexScale = 1;
-	EmptyDefaultPBR->_Metallic = 0.5;
-	EmptyDefaultPBR->_Roughness = 0.5;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = EmptyTex;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] = EmptyNormalTex;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Metallic] = WhiteTex;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] = BlackTex;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] = BlackTex;
-	TempMtl->InjectRawDataXXX(EmptyDefaultPBR);
-	AssetManager->AddToAssetPool(TempMtl);
-
-	_Renderer->GetCommonRenderAssetSet()->CacheCommonRenderAssets();
-
+	
 
 	// Texture List 구성하기
 	{
@@ -232,6 +201,8 @@ void SSEditor::TEMP_CreateAssets()
 				{L"T_Manny_01_N.tex", L"Resource/Texture/T_Manny_01_N.DDS"},
 				{L"T_Manny_02_MSR_MSK.tex", L"Resource/Texture/T_Manny_02_MSR_MSK.DDS"},
 				{L"T_Manny_01_MSR_MSK.tex", L"Resource/Texture/T_Manny_01_MSR_MSK.DDS"},
+
+				{L"T_Skybox01.tex", L"Resource/Texture/T_Skybox01.dds"},
 		};
 
 		for (int32 i=0;i<_countof(TextureAssetList);i++)

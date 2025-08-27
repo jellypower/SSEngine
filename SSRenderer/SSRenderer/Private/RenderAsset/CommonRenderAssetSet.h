@@ -4,7 +4,6 @@
 class CommonRenderAssetSet : public ICommonRenderAssetSet
 {
 public:
-	virtual void CacheCommonRenderAssets() override;
-	virtual void AddRefCachedAssets() override;
+	virtual void InitializeCommonAssets() override;
 	virtual void ReleaseCachedAssets() override;
 };

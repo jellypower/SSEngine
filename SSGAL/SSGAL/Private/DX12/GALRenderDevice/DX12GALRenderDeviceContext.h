@@ -68,7 +68,7 @@ public:
 	virtual void EndDrawMesh() override;
 	// ERenderDeviceTaskPhase::~DrawMesh
 
-
+	virtual void DrawSkyMap() override;
 
 	// ERenderDeviceTaskPhase::PostProcess
 	virtual void BeginPostProcessing() override;
