@@ -55,8 +55,15 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMaterial(_EmptyPBRMaterial, 0);
 	AssetManager->AddToAssetPool(_Cube1mModel);
 
-	// IMeshAssetMutable* Sphere1mMesh = AssetManager->CreateEmptyMeshAsset("Sphere1m.mesh", "__INTERNAL_ASSET__");
+	_Sphere1mMesh = AssetManager->CreateEmptyMeshAsset("Sphere1m.mesh", "__INTERNAL_ASSET__");
+	MeshRawDataDefault* SphereRawData = CreateSphere1mRawData(8);
+	static_cast<IMeshAssetMutable*>(_Sphere1mMesh)->InjectRawDataXXX(SphereRawData);
+	AssetManager->AddToAssetPool(_Sphere1mMesh);
 
+	_Sphere1mModel = AssetManager->CreateEmptyModelAsset("Sphere1m.mdl", "__INTERNAL_ASSET__");
+	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMesh(_Sphere1mMesh);
+	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMaterial(_EmptyPBRMaterial, 0);
+	AssetManager->AddToAssetPool(_Sphere1mModel);
 
 
 	AssetInstanceReferencer Referencer;

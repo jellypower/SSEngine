@@ -96,6 +96,13 @@ void SSEditor::StartupEngine()
 	}
 
 	{
+		SGameObject* Floor = SRendererUtil::InstantiateModel(L"sphere1m.mdl");
+		_DefaultWorld->AddToWorld(Floor);
+		Floor->SetPosition(Vector4f(0, 1, 0, 1));
+		Floor->SetScale(Vector4f(1, 1, 1, 0));
+	}
+
+	{
 		
 		SS::StringW BoundFileName = _FbxImporter->GetBoundFileName().C_Str();
 		BoundFileName += ".mdlc";

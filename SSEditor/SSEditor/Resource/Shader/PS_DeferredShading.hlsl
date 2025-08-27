@@ -95,7 +95,7 @@ float4 Main(VS_OUTPUT_FULLSCREEN_QUAD input) : SV_Target
             
             for (int j = 0; j < 9; j++)
             {
-                const float THRESHOLD = 0.001;   
+                const float THRESHOLD = 0.01;   
                 float Result = g_TxSingleShadowMap.SampleCmpLevelZero(g_SamShadowMapCmp, ShadowMapUVs[i].xy, MeshShadowPoint.z - THRESHOLD);
                 ShadowProbability += Result;
             }
