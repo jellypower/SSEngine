@@ -1,5 +1,6 @@
 #include "SSEditor.h"
 
+#include "ImGUI_GameObjectDetailViewer.h"
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 #include "ModuleEntryScriptRunner.h"
@@ -453,7 +454,7 @@ void SSEditor::ProcessImGUI()
 
 	ImGUI_AssetManagerWindow();
 	ImGUI_FrameInfo();
-	ImGUI_PIckedObject();
+	ImGUI_ShowGameObjectDetail(_PickedObject);
 	ImGUI_DrawHierarchy();
 }
 
@@ -932,102 +933,6 @@ void SSEditor::ImGUI_FrameInfo()
 		ImGui::Text("Elapsed time: %f", SSFrameInfo::GetElapsedTime());
 		ImGui::Text("Delta time: %f", SSFrameInfo::GetDeltaTime());
 		ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
-	}
-	ImGui::End();
-}
-
-void SSEditor::ImGUI_PIckedObject()
-{
-	ImGui::Begin((utf8*)u8"선택된 오브젝트");
-	{
-		constexpr int32 BUFFER_SIZE = 512;
-		char PickedObjName[BUFFER_SIZE] = "EMPTY";
-		int64 ObjectID = 0;
-		SGameObject* PickedInstance = dynamic_cast<SGameObject*>(_PickedObject.GetSObject());
-
-		if (PickedInstance != nullptr)
-		{
-			SS::SHasherW sObjectName = PickedInstance->GetObjectName();
-			uint32 iObjNameLen = 0;
-			const utf16* u16ObjName = sObjectName.C_Str(&iObjNameLen);
-			UTF16StrToUtf8Str(u16ObjName, iObjNameLen, PickedObjName, BUFFER_SIZE);
-
-			ObjectID = PickedInstance->GetHashCode().GetNativeValue();
-		}
-
-		{
-			ImGui::Text((utf8*)u8"Name: %s", PickedObjName);
-			ImGui::Text((utf8*)u8"ID: %lld", ObjectID);
-			ImGui::Dummy(ImVec2(1, 7));
-		}
-
-		if (PickedInstance != nullptr)
-		{
-			const Transform& transform = PickedInstance->GetTransform();
-
-
-			// Set Scale
-			{
-				float PickedScale[3];
-				PickedScale[0] = transform.Scale.X;
-				PickedScale[1] = transform.Scale.Y;
-				PickedScale[2] = transform.Scale.Z;
-				if (ImGui::InputFloat3("Scale", PickedScale))
-				{
-					Vector4f NewScale;
-					NewScale.X = PickedScale[0];
-					NewScale.Y = PickedScale[1];
-					NewScale.Z = PickedScale[2];
-					NewScale.W = 1;
-
-					PickedInstance->SetScale(NewScale);
-				}
-			}
-
-			// Set Rotation
-			{
-				Vector4f EulerRotation = XMEulerFromQuaternion(transform.Rotation.SimdVec);
-
-				float PickedRotation[3];
-				PickedRotation[0] = SS::RadToDegrees(EulerRotation.X);
-				PickedRotation[1] = SS::RadToDegrees(EulerRotation.Y);
-				PickedRotation[2] = SS::RadToDegrees(EulerRotation.Z);
-
-				
-				ImGui::InputFloat3("Rotation", PickedRotation, "%.0f");
-				if (ImGui::IsItemDeactivatedAfterEdit())
-				{
-					Vector4f NewRot;
-					
-					NewRot.X = SS::DegToRadians(PickedRotation[0]);
-					NewRot.Y = SS::DegToRadians(PickedRotation[1]);
-					NewRot.Z = SS::DegToRadians(PickedRotation[2]);
-					NewRot.W = 0;
-
-					Quaternion NewQuatRot = Quaternion::FromEulerRotation(NewRot);
-					PickedInstance->SetRotation(NewQuatRot);
-				}
-			}
-
-			// Move Position
-			{
-				float PickedPosition[3];
-				PickedPosition[0] = transform.Position.X;
-				PickedPosition[1] = transform.Position.Y;
-				PickedPosition[2] = transform.Position.Z;
-				if (ImGui::InputFloat3("Position", PickedPosition))
-				{
-					Vector4f NewPos;
-					NewPos.X = PickedPosition[0];
-					NewPos.Y = PickedPosition[1];
-					NewPos.Z = PickedPosition[2];
-					NewPos.W = 1;
-
-					PickedInstance->SetPosition(NewPos);
-				}
-			}
-
-		}
 	}
 	ImGui::End();
 }

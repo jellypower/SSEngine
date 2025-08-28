@@ -53,7 +53,6 @@ private:
 
 	void ImGUI_FrameInfo();
 
-	void ImGUI_PIckedObject();
 
 	void ImGUI_DrawHierarchy();
 	void ImGUI_DrawHierarchy_Recursion(SGameObject* Object);

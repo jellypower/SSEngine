@@ -33,6 +33,9 @@
     <ClInclude Include="SSEngineMain\SSImGUIInitializer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SSEngineMain\ImGUI_GameObjectDetailViewer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SSEngineMain\SSEditor.cpp">
@@ -45,6 +48,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineMain\ImGUI_GameObjectDetailViewer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

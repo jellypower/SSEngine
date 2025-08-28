@@ -54,6 +54,9 @@
     <ClCompile Include="Private\SRenderContent\RenderComponent\SCubeMapRenderComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ContentBase\SComponentBase.h">
@@ -96,6 +99,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\SRenderContent\RenderComponent\SCubeMapRenderComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

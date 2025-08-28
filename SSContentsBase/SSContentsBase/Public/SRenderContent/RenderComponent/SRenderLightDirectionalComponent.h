@@ -1,18 +1,16 @@
 ﻿#pragma once
 #include "SRenderComponentBase.h"
+#include "SRenderLightComponent.h"
 
 #include "SSRenderer/Public/RenderInstance/Descriptors/LightDesc.h"
 
 
 class IRenderLightDirectional;
 
-class SSCONTENTBASE_MODULE SRenderLightDirectionalComponent : public SComponentBase
+class SSCONTENTBASE_MODULE SRenderLightDirectionalComponent : public SRenderLightComponent
 {
 public:
 	RenderLightDirectionalDesc _Desc;
-
-protected:
-	IRenderLightDirectional* _DirectionalLight = nullptr;
 
 public:
 	virtual void PostConstructHierarchy() override;

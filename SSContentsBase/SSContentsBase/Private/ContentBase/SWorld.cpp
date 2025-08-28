@@ -239,11 +239,6 @@ void SWorld::AddGameObjectItem(SGameObject* InNewObject)
 			_FrameProcessComponents.Add(CompItem->GetHashCode(), CompItem);
 		}
 		CompItem->OnEnterTheWorld();
-
-		if (SRenderComponentBase* RenderComponent = dynamic_cast<SRenderComponentBase*>(CompItem))
-		{
-			_RenderWorld->AddToWorld(RenderComponent->GetRenderInstance());
-		}
 	}
 }
 
@@ -266,13 +261,6 @@ void SWorld::RemoveGameObjectItem(SGameObject* InObjectToRemove)
 			_FrameProcessComponents.Remove(CompItem->GetHashCode());
 		}
 		CompItem->OnExitTheWorld();
-
-		if (SRenderComponentBase* RenderComponent = dynamic_cast<SRenderComponentBase*>(CompItem))
-		{
-			IRenderInstance* RenderInstance = RenderComponent->GetRenderInstance();
-			SObjHashCode GOID =  RenderInstance->GetGameObjectID();
-			_RenderWorld->RemoveRenderInstanceFromWorld(GOID);
-		}
 	}
 
 	InObjectToRemove->OnExitTheWorld();

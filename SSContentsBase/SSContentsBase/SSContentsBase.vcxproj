@@ -172,10 +172,12 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\SRenderContent\SRendererUtil.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SCubeMapRenderComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SCubeMapRenderComponent.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.h" />
     <ClInclude Include="Public\ContentBase\SComponentBase.h" />
     <ClInclude Include="Public\ContentBase\SGameObject.h" />

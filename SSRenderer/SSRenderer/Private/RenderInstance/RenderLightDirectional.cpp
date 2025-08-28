@@ -12,6 +12,7 @@
 RenderLightDirectional::RenderLightDirectional(const RenderLightDirectionalDesc& InDesc)
 {
 	_Desc = InDesc;
+	_LightIntensity = { 1,1,1,1 };
 }
 
 SObjHashCode RenderLightDirectional::GetGameObjectID() const
@@ -110,7 +111,12 @@ void RenderLightDirectional::SetEnableShadowMap(bool bEnable)
 
 XMVECTOR RenderLightDirectional::GetLightColor() const
 {
-	return { 1,1,1,1 };
+	return _LightIntensity;
+}
+
+void RenderLightDirectional::SetLightIntensity(const XMVECTOR& InLightIntensity)
+{
+	_LightIntensity = InLightIntensity;
 }
 
 const RenderLightDirectionalDesc& RenderLightDirectional::GetDirectionalLightDesc() const

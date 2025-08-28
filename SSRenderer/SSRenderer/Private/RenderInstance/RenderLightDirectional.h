@@ -34,6 +34,7 @@ public:
 	virtual void SetEnableShadowMap(bool bEnable) override;
 
 	virtual XMVECTOR GetLightColor() const override;
+	virtual void SetLightIntensity(const XMVECTOR& InLightIntensity) override;
 
 	virtual const RenderLightDirectionalDesc& GetDirectionalLightDesc() const override;
 	virtual XMVECTOR CalcDirectionalLightDirection() const override;
@@ -46,6 +47,7 @@ private:
 	SObjHashCode _GameObjectHashCode = nullptr;
 	IRenderWorld* _IncludedRenderWorld = nullptr;
 	GALRIMetadata* _ShadowMapMetaData = nullptr;
+	XMVECTOR _LightIntensity;
 
 	RenderLightDirectionalDesc _Desc;
 };

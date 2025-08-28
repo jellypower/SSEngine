@@ -18,9 +18,10 @@ void SRenderLightDirectionalComponent::PostConstructHierarchy()
 		_Desc.ShadowMapSize.Y = 1024.f;
 	}
 
-	_DirectionalLight = g_Renderer->CreateDirectionalLight(_Desc);
+	_RenderLight = g_Renderer->CreateDirectionalLight(_Desc);
 	SGameObject* Parent = GetGameObject();
-	_DirectionalLight->SetGameObjectIDXXX(Parent->GetHashCode());
+	_RenderLight->SetGameObjectIDXXX(Parent->GetHashCode());
+	_RenderLight->SetLightIntensity(GetLightIntensity().SimdVec);
 }
 
 void SRenderLightDirectionalComponent::OnEnterTheWorld()
@@ -29,7 +30,7 @@ void SRenderLightDirectionalComponent::OnEnterTheWorld()
 	SWorld* World = Parent->GetIncludedWorldRef();
 	IRenderWorld* RenderWorld = World->GetRenderWorld();
 
-	RenderWorld->AddToWorld(_DirectionalLight);
+	RenderWorld->AddToWorld(_RenderLight);
 }
 
 void SRenderLightDirectionalComponent::OnExitTheWorld()
@@ -44,14 +45,14 @@ void SRenderLightDirectionalComponent::OnExitTheWorld()
 
 void SRenderLightDirectionalComponent::PreDestructHierarchy()
 {
-	_DirectionalLight->ReleaseGALMetaData();
-	delete _DirectionalLight;
-	_DirectionalLight = nullptr;
+	_RenderLight->ReleaseGALMetaData();
+	delete _RenderLight;
+	_RenderLight = nullptr;
 }
 
 void SRenderLightDirectionalComponent::OnGameObjectTransformCommited()
 {
 	SGameObject* Owner = GetGameObject();
 	const Transform& WorldTransform = Owner->GetWorldTransform();
-	_DirectionalLight->SetWorldRotation(WorldTransform.Rotation);
+	_RenderLight->SetWorldRotation(WorldTransform.Rotation);
 }

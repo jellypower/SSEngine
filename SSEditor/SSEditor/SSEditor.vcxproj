@@ -144,6 +144,7 @@
     <ClInclude Include="ModuleEntryScriptRunner.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SSBuildSettings.h" />
+    <ClInclude Include="SSEngineMain\ImGUI_GameObjectDetailViewer.h" />
     <ClInclude Include="SSEngineMain\SSEditor.h" />
     <ClInclude Include="SSEngineMain\SSImGUIInitializer.h" />
     <ClInclude Include="targetver.h" />
@@ -151,6 +152,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModuleEntryScriptRunner.cpp" />
+    <ClCompile Include="SSEngineMain\ImGUI_GameObjectDetailViewer.cpp" />
     <ClCompile Include="SSEngineMain\SSEditor.cpp" />
     <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp" />
   </ItemGroup>
