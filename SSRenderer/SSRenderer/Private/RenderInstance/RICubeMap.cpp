@@ -2,6 +2,11 @@
 
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
 
+float RICubeMap::GetCubeMapSize() const
+{
+	return 50.f;
+}
+
 ITextureAsset* RICubeMap::GetCubemapTexture() const
 {
 	return _TextureAsset;
@@ -31,7 +36,8 @@ ERenderInstanceType RICubeMap::GetRIType() const
 const XMMATRIX& RICubeMap::GetWorldTransformMatrix() const
 {
 	static Transform CUBEMAP_TRANSFORM;
-	CUBEMAP_TRANSFORM.Scale = Vector4f(50, 50, 50, 0);
+	const float CubeMapSize = GetCubeMapSize();
+	CUBEMAP_TRANSFORM.Scale = Vector4f(CubeMapSize, CubeMapSize, CubeMapSize, 0);
 
 	return CUBEMAP_TRANSFORM.AsMatrix();
 }

@@ -3,12 +3,14 @@
 
 #include "Public/GALRenderAsset/GALTextureAssetWrapperBase.h"
 
+class ITextureAssetMutable;
+class DX12GALRenderDeviceContext;
 class DX12GALRenderDevice;
 
 class DX12GALTextureAssetWrapper : public GALTextureAssetWrapperBase
 {
 public:
-	DX12GALTextureAssetWrapper(ITextureAsset* OwnerAsset, DX12GALRenderDevice* InOwner);
+	DX12GALTextureAssetWrapper(ITextureAssetMutable* OwnerAsset, DX12GALRenderDeviceContext* InExecutor);
 	virtual ~DX12GALTextureAssetWrapper();
 
 public:

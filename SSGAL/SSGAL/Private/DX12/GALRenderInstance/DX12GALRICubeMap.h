@@ -3,6 +3,7 @@
 
 #include "Public/GALRenderInstance/GALRIMetadata.h"
 
+struct CBARenderEnvParam;
 struct CBAModelBuffer;
 class DX12GALRenderDevice;
 class IRICubeMap;
@@ -18,20 +19,28 @@ public:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCubemapDescTableCPU() const { return _CubemapDescTableCPU; }
 	CD3DX12_GPU_DESCRIPTOR_HANDLE GetCubemapDescTableGPU() const { return _CubemapDescTableGPU; }
 
-	D3D12_GPU_VIRTUAL_ADDRESS GetCubemapCBGPUMemAddr() const { return _CubemapCBGPUMemAddr; }
+	CBARenderEnvParam* GetCubemapCBRenderEnvParamSysmem() const { return _CubemapCBRenderEnvParamSysmem; }
+	CBAModelBuffer* GetCubemapCBModelSysmem() const { return _CubemapCBModelSysmem; }
+
+	D3D12_GPU_VIRTUAL_ADDRESS GetCubemapCBModelGPUMem() const { return _CubemapCBModelGPUMem; }
+	D3D12_GPU_VIRTUAL_ADDRESS GetCubemapCBRenderEnvParamGPUMem() const { return _CubemapCBRenderEnvParamGPUMem; }
 
 public:
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() override;
 
-public:
+private:
 	AllocatedChunkHeader _CubemapTextureDescTableChunk;
 	ID3D12DescriptorHeap* _CubemapDescHeap = nullptr;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE _CubemapDescTableCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE _CubemapDescTableGPU = {};
 
-	AllocatedChunkHeader _CubemapCBChunk;
-	CBAModelBuffer* _CubemapCBSysMemAddr = nullptr;
-	D3D12_GPU_VIRTUAL_ADDRESS _CubemapCBGPUMemAddr;
+	AllocatedChunkHeader _CubemapModelCBChunk;
+	CBAModelBuffer* _CubemapCBModelSysmem = nullptr;
+	D3D12_GPU_VIRTUAL_ADDRESS _CubemapCBModelGPUMem;
+
+	AllocatedChunkHeader _CubemapRenderEnvCBChunk;
+	CBARenderEnvParam* _CubemapCBRenderEnvParamSysmem = nullptr;
+	D3D12_GPU_VIRTUAL_ADDRESS _CubemapCBRenderEnvParamGPUMem;
 
 protected:
 	DX12GALRenderDevice* _OwnerRenderDevice = nullptr;

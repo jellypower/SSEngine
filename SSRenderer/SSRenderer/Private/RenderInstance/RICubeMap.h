@@ -10,6 +10,7 @@ private:
 	IRenderWorld* _IncludedRenderWorld = nullptr;
 
 public:
+	virtual float GetCubeMapSize() const override;
 	virtual ITextureAsset* GetCubemapTexture() const override;
 	virtual void SetCubemapTexture(ITextureAsset* InAsset) override;
 

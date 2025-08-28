@@ -229,85 +229,7 @@ bool DX12GALRenderDeviceContext::GenerateTextureGALAsset(ITextureAssetMutable* I
 		return false;
 	}
 
-	DX12GALTextureAssetWrapper* NewTextureAsset = nullptr;
-	HRESULT hr = S_OK;
-
-	DX12GALResourceUpdater* DX12ResourceUpdater = (DX12GALResourceUpdater*)_ResourceUpdater;
-	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
-	SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = OwnerDX12RenderDevice->GetDescriptorTableAllocatorForTex();
-	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
-	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
-
-	const utf16* TexturePath = InTextureAsset->GetAssetPath().C_Str();
-	const utf16* TextureName = InTextureAsset->GetAssetName().C_Str();
-
-
-	ID3D12Resource* pTexResource = nullptr;
-	D3D12_RESOURCE_DESC textureDesc = {};
-	std::unique_ptr<uint8_t[]> ddsData;
-	std::vector<D3D12_SUBRESOURCE_DATA> subresouceData;
-	bool bIsCubeMap = false;
-	if (FAILED(LoadDDSTextureFromFile(D3DDevice, TexturePath, &pTexResource, ddsData, subresouceData, 0 ,nullptr, &bIsCubeMap)))
-	{
-		DEBUG_BREAK();
-		if (pTexResource != nullptr)
-		{
-			pTexResource->Release();
-		}
-		return false;
-	}
-	textureDesc = pTexResource->GetDesc();
-
-	const D3D12_SUBRESOURCE_DATA* SrcData = subresouceData.data();
-	UINT NumSubResources = (UINT)subresouceData.size();
-	UINT64 uploadBufferSize = GetRequiredIntermediateSize(pTexResource, 0, NumSubResources);
-
-	if (bIsCubeMap)
-	{
-		SS_ASSERT(InTextureAsset->GetTextureType() == ETextureType::CubeMap);
-	}
-
-	
-	hr = DX12ResourceUpdater->UpdateTexture(
-		CurCommandList,
-		pTexResource,
-		SrcData,
-		NumSubResources,
-		uploadBufferSize,
-		D3D12_RESOURCE_STATE_COMMON,
-		D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
-	if (FAILED(hr))
-	{
-		DEBUG_BREAK();
-		if (pTexResource != nullptr)
-		{
-			pTexResource->Release();
-		}
-		return false;
-	}
-	pTexResource->SetName(TextureName);
-
-	AllocatedChunkHeader SRVDescriptorChunk = DescriptorTableAllocatorForTex->AllocChunk(1, InTextureAsset->GetAssetName());
-	ID3D12DescriptorHeap* AllocatedDescHeap = (ID3D12DescriptorHeap*)SRVDescriptorChunk.PageContent;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE SRVHandle(
-		AllocatedDescHeap->GetCPUDescriptorHandleForHeapStart(),
-		SRVDescriptorChunk.ChunkOffset,
-		D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
-	SRVDesc.Format = textureDesc.Format;
-	SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	SRVDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-	D3DDevice->CreateShaderResourceView(pTexResource, &SRVDesc, SRVHandle);
-
-
-	NewTextureAsset = DBG_NEW DX12GALTextureAssetWrapper(InTextureAsset, OwnerDX12RenderDevice);
-	NewTextureAsset->_TexResource = pTexResource;
-	NewTextureAsset->_DescriptorTableChunk = SRVDescriptorChunk;
-	NewTextureAsset->_SRVHandle = SRVHandle;
-
+	DX12GALTextureAssetWrapper* NewTextureAsset = DBG_NEW DX12GALTextureAssetWrapper(InTextureAsset, this);
 	InTextureAsset->InjectGALTextureAsset(NewTextureAsset);
 
 	return true;
@@ -886,14 +808,42 @@ void DX12GALRenderDeviceContext::DrawSkyMap(IRICubeMap* CubeMapToDraw)
 	SetPSOAndRootSignature(SkyMapPSODesc);
 
 
+	{
+		const Transform& CamTransform = _CurRenderCamera->GetCameraTransform();
+		const Vector4f& CamPos = CamTransform.Position;
+		const float CubeMapSize = CubeMapToDraw->GetCubeMapSize();
+
+
+		DX12GALCubeMap->GetCubemapCBModelSysmem()->ObjectID = 0; // 일단 사용 안함
+		DX12GALCubeMap->GetCubemapCBModelSysmem()->RotMatrix = XMMatrixIdentity();
+		Transform CubemapModelTransform;
+		CubemapModelTransform.Position = Vector4f(CamPos.X, CamPos.Y - CubeMapSize * 0.5f, CamPos.Z, 1);
+		CubemapModelTransform.Scale = Vector4f(CubeMapSize, CubeMapSize, CubeMapSize, 0);
+		DX12GALCubeMap->GetCubemapCBModelSysmem()->WMatrix = XMMatrixTranspose(CubemapModelTransform.AsMatrix());
+
+
+		const float CamAspectRatio = _CurRenderCamera->GetAspectRatio();
+		const float CamFOV = _CurRenderCamera->GetFOVWithRadians();
+		XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(CamFOV, CamAspectRatio, 0.001, CubeMapSize * 2);
+
+
+		XMVECTOR EyePos = CamTransform.Position.SimdVec;
+		XMVECTOR Direction = CamTransform.GetForward().SimdVec;
+		XMVECTOR Up = CamTransform.GetUp().SimdVec;
+		XMMATRIX ViewMat = XMMatrixLookToLH(EyePos, Direction, Up);
+
+		DX12GALCubeMap->GetCubemapCBRenderEnvParamSysmem()->ViewerPos = CamTransform.Position.SimdVec;
+		const XMMATRIX VPMatrix = ViewMat * ProjMat;
+		DX12GALCubeMap->GetCubemapCBRenderEnvParamSysmem()->VPMatrix = XMMatrixTranspose(VPMatrix);
+	}
 
 
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CurCommandList->IASetVertexBuffers(0, 1, &DX12CubeMeshAsset->_VertexBufferView);
 	CurCommandList->IASetIndexBuffer(DX12CubeMeshAsset->_IndexBufferView);
 
-	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12GALCubeMap->GetCubemapCBGPUMemAddr());
-	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12GALCubeMap->GetCubemapCBModelGPUMem());
+	CurCommandList->SetGraphicsRootConstantBufferView(1, DX12GALCubeMap->GetCubemapCBRenderEnvParamGPUMem());
 
 	CurCommandList->SetDescriptorHeaps(1, &CubemapDescHeap);
 	CurCommandList->SetGraphicsRootDescriptorTable(2, CubemapDescTableGPU);

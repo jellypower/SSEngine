@@ -7,6 +7,7 @@
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
+#include "Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
 #include "SSRenderer/Public/RenderInstance/IRICubeMap.h"
 
 DX12GALRICubeMap::DX12GALRICubeMap(DX12GALRenderDevice* InOwnerRenderDevice, IRICubeMap* InOwnerCubeMap)
@@ -17,7 +18,7 @@ DX12GALRICubeMap::DX12GALRICubeMap(DX12GALRenderDevice* InOwnerRenderDevice, IRI
 
 	ITextureAsset* Texture = _OwnerCubeMap->GetCubemapTexture();
 	SS::SHasherW TextureName = Texture->GetAssetName();
-	Texture->GetTextureType();
+	SS_ASSERT(Texture->GetTextureType() == ETextureType::CubeMap);
 
 	ID3D12Device5* D3DDevice = _OwnerRenderDevice->GetD3DDevice();
 
@@ -40,17 +41,22 @@ DX12GALRICubeMap::DX12GALRICubeMap(DX12GALRenderDevice* InOwnerRenderDevice, IRI
 			DescriptorIncrementalSize);
 	}
 
-	// Alloc ConstantBuffer
+	// Alloc Model CBBuffer
 	{
 		SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
-		_CubemapCBChunk = ConstantBufferAllocator->AllocChunk(sizeof(CBAModelBuffer), "__CUBEMAP__");
-		DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)_CubemapCBChunk.PageContent;
-		_CubemapCBSysMemAddr = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + _CubemapCBChunk.ChunkOffset);
-		_CubemapCBGPUMemAddr = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + _CubemapCBChunk.ChunkOffset;
+		_CubemapModelCBChunk = ConstantBufferAllocator->AllocChunk(sizeof(CBAModelBuffer), "__CUBEMAP__");
+		DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)_CubemapModelCBChunk.PageContent;
+		_CubemapCBModelSysmem = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + _CubemapModelCBChunk.ChunkOffset);
+		_CubemapCBModelGPUMem = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + _CubemapModelCBChunk.ChunkOffset;
+	}
 
-		_CubemapCBSysMemAddr->ObjectID = 0; // 일단 사용 안함
-		_CubemapCBSysMemAddr->RotMatrix = XMMatrixIdentity();
-		_CubemapCBSysMemAddr->WMatrix = InOwnerCubeMap->GetWorldTransformMatrix();
+	// Alloc VPMatrix Buffer for Cubemap
+	{
+		SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
+		_CubemapRenderEnvCBChunk = ConstantBufferAllocator->AllocChunk(sizeof(CBARenderEnvParam), "__CUBEMAP__");
+		DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)_CubemapRenderEnvCBChunk.PageContent;
+		_CubemapCBRenderEnvParamSysmem = reinterpret_cast<CBARenderEnvParam*>(ModelCBPage->ResourceSysMem + _CubemapRenderEnvCBChunk.ChunkOffset);
+		_CubemapCBRenderEnvParamGPUMem = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + _CubemapRenderEnvCBChunk.ChunkOffset;
 	}
 }
 
@@ -58,7 +64,8 @@ DX12GALRICubeMap::~DX12GALRICubeMap()
 {
 	{
 		SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
-		ConstantBufferAllocator->ReleaseChunk(_CubemapCBChunk);
+		ConstantBufferAllocator->ReleaseChunk(_CubemapRenderEnvCBChunk);
+		ConstantBufferAllocator->ReleaseChunk(_CubemapModelCBChunk);
 	}
 
 	{

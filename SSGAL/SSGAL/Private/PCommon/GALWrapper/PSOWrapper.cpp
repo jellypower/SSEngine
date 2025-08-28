@@ -113,5 +113,6 @@ PipelineDesc ConstructPSOToDrawSkyMap()
 	NewPipelineDesc.NumRenderTarget = 1;
 	NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R8G8B8A8_UNORM;
 	NewPipelineDesc.DSColorFormat = ERTColorFormat::Unknown;
+	NewPipelineDesc.bUseTwoSideRender = true;
 	return NewPipelineDesc;
 }
