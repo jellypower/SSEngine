@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
-#include "SObject/Public/SObjectBase.h"
 
 #include "SSContentsBase/ModuleExportKeyword.h"
 

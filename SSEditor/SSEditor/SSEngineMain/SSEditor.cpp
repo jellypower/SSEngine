@@ -357,47 +357,58 @@ void SSEditor::TEMP_ProcessContents()
 	Quaternion::FromEulerRotation(Vector4f(45, 45, 90, 0));
 
 
-	if (SGameObject* PickedInstance = dynamic_cast<SGameObject*>(_PickedObject.GetSObject()))
+	SObjectBase* PickedObject = _PickedObject.GetSObject();
+	SGameObject* PickedGameObject = nullptr;
+	if (SComponentBase* PickedComponent = dynamic_cast<SComponentBase*>(PickedObject))
+	{
+		PickedGameObject = PickedComponent->GetGameObject();
+	}
+	else if (SGameObject* CastedPickedGameObject = dynamic_cast<SGameObject*>(PickedObject))
+	{
+		PickedGameObject = CastedPickedGameObject;
+	}
+
+	if (PickedGameObject != nullptr)
 	{
 		constexpr float OBJ_ROT_SPEED = 3;
 		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
 		{
-			Quaternion CurRot = PickedInstance->GetTransform().Rotation;
-			const SGameObject* Parent = PickedInstance->GetParent();
+			Quaternion CurRot = PickedGameObject->GetTransform().Rotation;
+			const SGameObject* Parent = PickedGameObject->GetParent();
 			Vector4f UpVector = Parent->GetTransform().GetUp();
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * OBJ_ROT_SPEED);
-			PickedInstance->SetRotation(CurRot);
+			PickedGameObject->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_RIGHT))
 		{
-			Quaternion CurRot = PickedInstance->GetTransform().Rotation;
-			const SGameObject* Parent = PickedInstance->GetParent();
+			Quaternion CurRot = PickedGameObject->GetTransform().Rotation;
+			const SGameObject* Parent = PickedGameObject->GetParent();
 			Vector4f UpVector = Parent->GetTransform().GetUp();
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * -OBJ_ROT_SPEED);
-			PickedInstance->SetRotation(CurRot);
+			PickedGameObject->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_UP))
 		{
-			Quaternion CurRot = PickedInstance->GetTransform().Rotation;
-			const SGameObject* Parent = PickedInstance->GetParent();
+			Quaternion CurRot = PickedGameObject->GetTransform().Rotation;
+			const SGameObject* Parent = PickedGameObject->GetParent();
 			Vector4f RightVector = Parent->GetTransform().GetRight();
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * OBJ_ROT_SPEED);
-			PickedInstance->SetRotation(CurRot);
+			PickedGameObject->SetRotation(CurRot);
 		}
 
 		if (SSInput::GetKey(EKeyCode::KEY_DOWN))
 		{
-			Quaternion CurRot = PickedInstance->GetTransform().Rotation;
-			const SGameObject* Parent = PickedInstance->GetParent();
+			Quaternion CurRot = PickedGameObject->GetTransform().Rotation;
+			const SGameObject* Parent = PickedGameObject->GetParent();
 			Vector4f RightVector = Parent->GetTransform().GetRight();
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -OBJ_ROT_SPEED);
-			PickedInstance->SetRotation(CurRot);
+			PickedGameObject->SetRotation(CurRot);
 		}
 	}
 	else

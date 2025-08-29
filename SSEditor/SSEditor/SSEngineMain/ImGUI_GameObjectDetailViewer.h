@@ -7,7 +7,7 @@ class SComponentBase;
 class SObjHashCode;
 class SGameObject;
 
-void ImGUI_ShowGameObjectDetail(const SObjHashCode& GOToShow);
+void ImGUI_ShowGameObjectDetail(const SObjHashCode& PickedHashCode);
 
 void ImGUI_ShowGameObjectTransform(SGameObject* PickedInstance);
 void ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow);

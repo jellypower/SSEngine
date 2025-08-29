@@ -59,52 +59,6 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 
 	_RenderInstanceByHashCode.Add(GameObjectHashCode, InRenderInstance);
 	InRenderInstance->SetIncludedRenderWorldXXX(this);
-
-	ERenderInstanceType RIType = InRenderInstance->GetRIType();
-
-	if (RIType == ERenderInstanceType::StaticMesh) // TODO: ContentsLayer쪽으로 빼기
-	{
-		IRIMesh* InRIMesh = (IRIMesh*)InRenderInstance;
-
-		AssetInstanceReferencer AssetReferencer;
-		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
-		AssetReferencer.ObjHashCode = GameObjectHashCode;
-
-		IModelAsset* ModelAsest = InRIMesh->GetModelAsset();
-		ModelAsest->AddAssetReference(AssetReferencer);
-	}
-	else if (RIType == ERenderInstanceType::SkinnedMesh) // TODO: ContentsLayer쪽으로 빼기
-	{
-		IRISkinnedMesh* InRIMesh = (IRISkinnedMesh*)InRenderInstance;
-
-		AssetInstanceReferencer AssetReferencer;
-		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
-		AssetReferencer.ObjHashCode = GameObjectHashCode;
-
-		IModelAsset* ModelAsest = InRIMesh->GetModelAsset();
-		ModelAsest->AddAssetReference(AssetReferencer);
-		
-	}
-	else if (RIType == ERenderInstanceType::Light) // TODO: ContentsLayer쪽으로 빼기
-	{
-		// noop
-	}
-	else if (RIType == ERenderInstanceType::CubeMap) // TODO: ContentsLayer쪽으로 빼기
-	{
-		IRICubeMap* InCubeMap = static_cast<IRICubeMap*>(InRenderInstance);
-
-		AssetInstanceReferencer AssetReferencer;
-		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
-		AssetReferencer.ObjHashCode = GameObjectHashCode;
-
-		ITextureAsset* TextureAsset = InCubeMap->GetCubemapTexture();
-		SS_ASSERT(TextureAsset->GetTextureType() == ETextureType::CubeMap);
-		TextureAsset->AddAssetReference(AssetReferencer);
-	}
-	else
-	{
-		SS_ASSERT(false);
-	}
 }
 
 
@@ -126,41 +80,6 @@ void RenderWorld::RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToR
 
 	_RenderInstanceByHashCode.Remove(RenderInstanceIDToRemove);
 	RenderInstanceToRemove->SetIncludedRenderWorldXXX(nullptr);
-
-
-	ERenderInstanceType RIType = RenderInstanceToRemove->GetRIType();
-	if (RIType == ERenderInstanceType::StaticMesh ||
-		RIType == ERenderInstanceType::SkinnedMesh)
-	{
-		IRIMesh* RIMeshToRemove = (IRIMesh*)RenderInstanceToRemove;
-
-		AssetInstanceReferencer AssetReferencer;
-		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
-		AssetReferencer.ObjHashCode = RIMeshToRemove->GetGameObjectID();
-
-		IModelAsset* ModelAsset = RIMeshToRemove->GetModelAsset();
-		ModelAsset->RemoveAssetReference(AssetReferencer);
-	}
-	else if (RIType == ERenderInstanceType::Light)
-	{
-		// noop
-	}
-	else if (RIType == ERenderInstanceType::CubeMap)
-	{
-		IRICubeMap* RICubemapToRemove = static_cast<IRICubeMap*>(RenderInstanceToRemove);
-
-		AssetInstanceReferencer AssetReferencer;
-		AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
-		AssetReferencer.ObjHashCode = RICubemapToRemove->GetGameObjectID();
-
-		ITextureAsset* lTextureAsset = RICubemapToRemove->GetCubemapTexture();
-		lTextureAsset->RemoveAssetReference(AssetReferencer);
-	}
-	else
-	{
-		SS_ASSERT(false);
-	}
-
 }
 
 GALRWMetaData* RenderWorld::GetGALMetadata() const

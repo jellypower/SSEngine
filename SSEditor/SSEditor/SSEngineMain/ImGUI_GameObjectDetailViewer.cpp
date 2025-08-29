@@ -12,18 +12,29 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "imgui.h"
 
-void ImGUI_ShowGameObjectDetail(const SObjHashCode& GOToShow)
+void ImGUI_ShowGameObjectDetail(const SObjHashCode& PickedHashCode)
 {
 	ImGui::Begin((utf8*)u8"Object Detail");
 	{
 		constexpr int32 BUFFER_SIZE = 512;
 		char PickedObjName[BUFFER_SIZE] = "EMPTY";
-		int64 ObjectID = GOToShow.GetNativeValue();
-		SGameObject* PickedInstance = dynamic_cast<SGameObject*>(GOToShow.GetSObject());
+		int64 ObjectID = PickedHashCode.GetNativeValue();
 
-		if (PickedInstance != nullptr)
+
+		SObjectBase* PickedObject = PickedHashCode.GetSObject();
+		SGameObject* PickedGameObject = nullptr;
+		if (SComponentBase* PickedComponent = dynamic_cast<SComponentBase*>(PickedObject))
 		{
-			SS::SHasherW sObjectName = PickedInstance->GetObjectName();
+			PickedGameObject = PickedComponent->GetGameObject();
+		}
+		else if (SGameObject* CastedPickedGameObject = dynamic_cast<SGameObject*>(PickedObject))
+		{
+			PickedGameObject = CastedPickedGameObject;
+		}
+
+		if (PickedGameObject != nullptr)
+		{
+			SS::SHasherW sObjectName = PickedGameObject->GetObjectName();
 			uint32 iObjNameLen = 0;
 			const utf16* u16ObjName = sObjectName.C_Str(&iObjNameLen);
 			UTF16StrToUtf8Str(u16ObjName, iObjNameLen, PickedObjName, BUFFER_SIZE);
@@ -35,14 +46,14 @@ void ImGUI_ShowGameObjectDetail(const SObjHashCode& GOToShow)
 			ImGui::Dummy(ImVec2(1, 7));
 		}
 
-		if (PickedInstance != nullptr)
+		if (PickedGameObject != nullptr)
 		{
-			ImGUI_ShowGameObjectTransform(PickedInstance);
+			ImGUI_ShowGameObjectTransform(PickedGameObject);
 
-			int32 CompCnt = PickedInstance->GetComponentCnt();
+			int32 CompCnt = PickedGameObject->GetComponentCnt();
 			for (int32 i=0;i<CompCnt;i++)
 			{
-				SComponentBase* Comp = PickedInstance->GetComponentByIdx(i);
+				SComponentBase* Comp = PickedGameObject->GetComponentByIdx(i);
 				ImGUI_ShowComponentDetailInfo(Comp);
 			}
 		}

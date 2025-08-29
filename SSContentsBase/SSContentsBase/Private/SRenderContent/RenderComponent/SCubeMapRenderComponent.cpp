@@ -51,6 +51,38 @@ void SCubeMapRenderComponent::ConstructRenderInstance()
 	NewCubeMapRI->SetCubemapTexture(FoundTexture);
 }
 
+void SCubeMapRenderComponent::OnEnterTheWorld()
+{
+	SS_ASSERT(_RenderInstance->GetRIType() == ERenderInstanceType::CubeMap);
+	IRICubeMap* InCubeMap = static_cast<IRICubeMap*>(_RenderInstance);
+
+	AssetInstanceReferencer AssetReferencer;
+	AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	AssetReferencer.ObjHashCode = GetHashCode();
+
+	ITextureAsset* TextureAsset = InCubeMap->GetCubemapTexture();
+	SS_ASSERT(TextureAsset->GetTextureType() == ETextureType::CubeMap);
+	TextureAsset->AddAssetReference(AssetReferencer);
+
+	__super::OnEnterTheWorld();
+}
+
+void SCubeMapRenderComponent::OnExitTheWorld()
+{
+	__super::OnExitTheWorld();
+
+	SS_ASSERT(_RenderInstance->GetRIType() == ERenderInstanceType::CubeMap);
+	IRICubeMap* InCubeMap = static_cast<IRICubeMap*>(_RenderInstance);
+
+	AssetInstanceReferencer AssetReferencer;
+	AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	AssetReferencer.ObjHashCode = GetHashCode();
+
+	ITextureAsset* TextureAsset = InCubeMap->GetCubemapTexture();
+	SS_ASSERT(TextureAsset->GetTextureType() == ETextureType::CubeMap);
+	TextureAsset->RemoveAssetReference(AssetReferencer);
+}
+
 void SCubeMapRenderComponent::DestructRenderInstance()
 {
 	if (_RenderInstance == nullptr)

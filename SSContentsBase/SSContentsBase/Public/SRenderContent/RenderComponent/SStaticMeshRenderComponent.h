@@ -7,5 +7,9 @@ class SSCONTENTBASE_MODULE SStaticMeshRenderComponent : public SRenderComponentB
 {
 protected:
 	virtual void ConstructRenderInstance() override;
+
+	virtual void OnEnterTheWorld() override;
+	virtual void OnExitTheWorld() override;
+
 	virtual void DestructRenderInstance() override;
 };
