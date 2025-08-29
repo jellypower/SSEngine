@@ -80,10 +80,31 @@ void RIStaticMesh::SetModelAsset(IModelAsset* InAsset)
 	_ModelRef = InAsset;
 }
 
-void RIStaticMesh::SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld)
+void RIStaticMesh::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)
 {
-	SS_ASSERT(InRenderWorld == nullptr || _IncludedRenderWorld == nullptr);
+	if (InRenderWorld == nullptr || _IncludedRenderWorld != nullptr)
+	{
+		SS_INTERRUPT();
+	}
+
 	_IncludedRenderWorld = InRenderWorld;
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+	_ModelRef->AddAssetReference(ThisAssetRef);
+}
+
+void RIStaticMesh::OnExitFromRenderWorldXXX()
+{
+	_IncludedRenderWorld = nullptr;
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+	_ModelRef->RemoveAssetReference(ThisAssetRef);
 }
 
 IRenderWorld* RIStaticMesh::GetIncludedRenderWorld() const

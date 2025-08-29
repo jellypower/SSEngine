@@ -15,29 +15,22 @@ ITextureAsset* RICubeMap::GetCubemapTexture() const
 
 void RICubeMap::SetCubemapTexture(ITextureAsset* InAsset)
 {
-	_TEMP_PrevTextureAsset = _TextureAsset;
+	if (_IncludedRenderWorld == nullptr)
+	{
+		_TextureAsset = InAsset;
+		return;
+	}
+
+	AssetInstanceReferencer AssetReferencer;
+	AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	AssetReferencer.ObjHashCode = _OwnerHashCode;
+
+
+	_TextureAsset->RemoveAssetReference(AssetReferencer);
+	InAsset->AddAssetReference(AssetReferencer);
 	_TextureAsset = InAsset;
 }
 
-void RICubeMap::SyncCubeMapTexture() // TODO: 함수 없애기
-{
-	if (_TEMP_PrevTextureAsset != _TextureAsset)
-	{
-		AssetInstanceReferencer ThisAssetRef;
-		ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
-		ThisAssetRef.ObjHashCode = _OwnerHashCode;
-
-		if (_TEMP_PrevTextureAsset != nullptr)
-		{
-			_TEMP_PrevTextureAsset->RemoveAssetReference(ThisAssetRef);
-		}
-
-		if (_TextureAsset != nullptr)
-		{
-			_TextureAsset->AddAssetReference(ThisAssetRef);
-		}
-	}
-}
 
 
 SObjHashCode RICubeMap::GetGameObjectID() const
@@ -96,9 +89,33 @@ void RICubeMap::ReleaseGALMetaData()
 	_MetaData = nullptr;
 }
 
-void RICubeMap::SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld)
+void RICubeMap::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)
 {
+	if (InRenderWorld == nullptr || _IncludedRenderWorld != nullptr)
+	{
+		SS_INTERRUPT();
+	}
+
 	_IncludedRenderWorld = InRenderWorld;
+
+	AssetInstanceReferencer AssetReferencer;
+	AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	AssetReferencer.ObjHashCode = _OwnerHashCode;
+	_TextureAsset->AddAssetReference(AssetReferencer);
+}
+
+void RICubeMap::OnExitFromRenderWorldXXX()
+{
+	if (_IncludedRenderWorld == nullptr)
+	{
+		SS_INTERRUPT();
+	}
+	_IncludedRenderWorld = nullptr;
+
+	AssetInstanceReferencer AssetReferencer;
+	AssetReferencer.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	AssetReferencer.ObjHashCode = _OwnerHashCode;
+	_TextureAsset->RemoveAssetReference(AssetReferencer);
 }
 
 IRenderWorld* RICubeMap::GetIncludedRenderWorld() const

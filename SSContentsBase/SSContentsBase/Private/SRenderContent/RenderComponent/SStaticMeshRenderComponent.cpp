@@ -24,34 +24,6 @@ void SStaticMeshRenderComponent::ConstructRenderInstance()
 	NewStaticMeshRI->SetGameObjectIDXXX(GetHashCode());
 }
 
-void SStaticMeshRenderComponent::OnEnterTheWorld()
-{
-	__super::OnEnterTheWorld();
-
-	AssetInstanceReferencer ThisAssetRef;
-	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
-	ThisAssetRef.ObjHashCode = GetHashCode();
-
-	IRIMesh* RIMesh = static_cast<IRIMesh*>(_RenderInstance);
-	SS_ASSERT(_RenderInstance->GetRIType() == ERenderInstanceType::StaticMesh);
-	IModelAsset* Model = RIMesh->GetModelAsset();
-	Model->AddAssetReference(ThisAssetRef);
-}
-
-void SStaticMeshRenderComponent::OnExitTheWorld()
-{
-	AssetInstanceReferencer ThisAssetRef;
-	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
-	ThisAssetRef.ObjHashCode = GetHashCode();
-
-	IRIMesh* RIMesh = static_cast<IRIMesh*>(_RenderInstance);
-	SS_ASSERT(_RenderInstance->GetRIType() == ERenderInstanceType::StaticMesh);
-	IModelAsset* Model = RIMesh->GetModelAsset();
-	Model->RemoveAssetReference(ThisAssetRef);
-
-	__super::OnExitTheWorld();
-}
-
 void SStaticMeshRenderComponent::DestructRenderInstance()
 {
 	if (_RenderInstance == nullptr)

@@ -19,8 +19,6 @@ protected:
 	virtual void PostConstructHierarchy() override;;
 
 	virtual void ConstructRenderInstance() override;
-	virtual void OnEnterTheWorld() override;
-	virtual void OnExitTheWorld() override;
 	virtual void DestructRenderInstance() override;
 
 public:

@@ -87,34 +87,6 @@ void SSkinnedMeshRenderComponent::ConstructRenderInstance()
 	NewSkinnedMeshRI->SetGameObjectIDXXX(GetHashCode());
 }
 
-void SSkinnedMeshRenderComponent::OnEnterTheWorld()
-{
-	__super::OnEnterTheWorld();
-
-	AssetInstanceReferencer ThisAssetRef;
-	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
-	ThisAssetRef.ObjHashCode = GetHashCode();
-
-	SS_ASSERT(_RenderInstance->GetRIType() == ERenderInstanceType::SkinnedMesh);
-	IRISkinnedMesh* RIMesh = static_cast<IRISkinnedMesh*>(_RenderInstance);
-	IModelAsset* Model = RIMesh->GetModelAsset();
-	Model->AddAssetReference(ThisAssetRef);
-}
-
-void SSkinnedMeshRenderComponent::OnExitTheWorld()
-{
-	AssetInstanceReferencer ThisAssetRef;
-	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
-	ThisAssetRef.ObjHashCode = GetHashCode();
-
-	IRISkinnedMesh* RIMesh = static_cast<IRISkinnedMesh*>(_RenderInstance);
-	SS_ASSERT(_RenderInstance->GetRIType() == ERenderInstanceType::SkinnedMesh);
-	IModelAsset* Model = RIMesh->GetModelAsset();
-	Model->RemoveAssetReference(ThisAssetRef);
-
-	__super::OnExitTheWorld();
-}
-
 void SSkinnedMeshRenderComponent::DestructRenderInstance()
 {
 	if (_RenderInstance == nullptr)

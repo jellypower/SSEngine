@@ -78,10 +78,16 @@ void RenderLightDirectional::ReleaseGALMetaData()
 	_ShadowMapMetaData = nullptr;
 }
 
-void RenderLightDirectional::SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld)
+void RenderLightDirectional::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)
 {
-	SS_ASSERT(InRenderWorld == nullptr || _IncludedRenderWorld == nullptr);
+	SS_ASSERT(InRenderWorld != nullptr && _IncludedRenderWorld == nullptr);
 	_IncludedRenderWorld = InRenderWorld;
+}
+
+void RenderLightDirectional::OnExitFromRenderWorldXXX()
+{
+	SS_ASSERT(_IncludedRenderWorld != nullptr);
+	_IncludedRenderWorld = nullptr;
 }
 
 IRenderWorld* RenderLightDirectional::GetIncludedRenderWorld() const

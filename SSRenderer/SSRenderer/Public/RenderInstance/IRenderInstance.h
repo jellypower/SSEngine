@@ -28,6 +28,7 @@ enum class ERenderInstanceType : int32
 class IRenderInstance : public INoncopyable
 {
 public:
+
 	virtual SObjHashCode GetGameObjectID() const = 0;
 	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) = 0;
 
@@ -42,7 +43,9 @@ public:
 	virtual GALRIMetadata* GetGALMetadata() const = 0;
 	virtual void ReleaseGALMetaData() = 0;
 
-	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) = 0;
+	virtual void OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld) = 0;
+	virtual void OnExitFromRenderWorldXXX() = 0;
+
 	virtual IRenderWorld* GetIncludedRenderWorld() const = 0;
 };
 

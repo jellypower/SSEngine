@@ -58,7 +58,7 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 	}
 
 	_RenderInstanceByHashCode.Add(GameObjectHashCode, InRenderInstance);
-	InRenderInstance->SetIncludedRenderWorldXXX(this);
+	InRenderInstance->OnEnterTheRenderWorldXXX(this);
 }
 
 
@@ -79,7 +79,7 @@ void RenderWorld::RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToR
 	}
 
 	_RenderInstanceByHashCode.Remove(RenderInstanceIDToRemove);
-	RenderInstanceToRemove->SetIncludedRenderWorldXXX(nullptr);
+	RenderInstanceToRemove->OnExitFromRenderWorldXXX();
 }
 
 GALRWMetaData* RenderWorld::GetGALMetadata() const

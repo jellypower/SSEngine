@@ -74,10 +74,31 @@ void RISkinnedMesh::ReleaseGALMetaData()
 	}
 }
 
-void RISkinnedMesh::SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld)
+void RISkinnedMesh::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)
 {
-	SS_ASSERT(InRenderWorld == nullptr || _IncludedRenderWorld == nullptr);
+	if (InRenderWorld == nullptr || _IncludedRenderWorld != nullptr)
+	{
+		SS_INTERRUPT();
+	}
+
 	_IncludedRenderWorld = InRenderWorld;
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+	_ModelRef->AddAssetReference(ThisAssetRef);
+}
+
+void RISkinnedMesh::OnExitFromRenderWorldXXX()
+{
+	_IncludedRenderWorld = nullptr;
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+	_ModelRef->RemoveAssetReference(ThisAssetRef);
 }
 
 IRenderWorld* RISkinnedMesh::GetIncludedRenderWorld() const

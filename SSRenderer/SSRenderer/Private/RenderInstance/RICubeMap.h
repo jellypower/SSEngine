@@ -5,7 +5,6 @@ class RICubeMap : public IRICubeMap
 {
 private:
 	SObjHashCode _OwnerHashCode;
-	ITextureAsset* _TEMP_PrevTextureAsset = nullptr;;
 	ITextureAsset* _TextureAsset = nullptr;
 	GALRIMetadata* _MetaData = nullptr;
 	IRenderWorld* _IncludedRenderWorld = nullptr;
@@ -15,7 +14,6 @@ public:
 	virtual ITextureAsset* GetCubemapTexture() const override;
 	virtual void SetCubemapTexture(ITextureAsset* InAsset) override;
 
-	virtual void SyncCubeMapTexture() override;  // TODO: 함수 없애기
 
 public:
 	virtual SObjHashCode GetGameObjectID() const override;
@@ -32,7 +30,9 @@ public:
 	virtual GALRIMetadata* GetGALMetadata() const override;
 	virtual void ReleaseGALMetaData() override;
 
-	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) override;
+	virtual void OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld) override;
+	virtual void OnExitFromRenderWorldXXX() override;
+	
 	virtual IRenderWorld* GetIncludedRenderWorld() const override;
 
 };

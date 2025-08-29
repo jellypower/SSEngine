@@ -23,7 +23,9 @@ public:
 	virtual GALRIMetadata* GetGALMetadata() const override;
 	virtual void ReleaseGALMetaData() override;
 
-	virtual void SetIncludedRenderWorldXXX(IRenderWorld* InRenderWorld) override;
+	virtual void OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld) override;
+	virtual void OnExitFromRenderWorldXXX() override;
+
 	virtual IRenderWorld* GetIncludedRenderWorld() const override;
 
 
