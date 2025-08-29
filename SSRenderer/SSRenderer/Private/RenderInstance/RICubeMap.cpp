@@ -1,6 +1,7 @@
 ﻿#include "RICubeMap.h"
 
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
 
 float RICubeMap::GetCubeMapSize() const
 {
@@ -14,7 +15,28 @@ ITextureAsset* RICubeMap::GetCubemapTexture() const
 
 void RICubeMap::SetCubemapTexture(ITextureAsset* InAsset)
 {
+	_TEMP_PrevTextureAsset = _TextureAsset;
 	_TextureAsset = InAsset;
+}
+
+void RICubeMap::SyncCubeMapTexture() // TODO: 함수 없애기
+{
+	if (_TEMP_PrevTextureAsset != _TextureAsset)
+	{
+		AssetInstanceReferencer ThisAssetRef;
+		ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+		ThisAssetRef.ObjHashCode = _OwnerHashCode;
+
+		if (_TEMP_PrevTextureAsset != nullptr)
+		{
+			_TEMP_PrevTextureAsset->RemoveAssetReference(ThisAssetRef);
+		}
+
+		if (_TextureAsset != nullptr)
+		{
+			_TextureAsset->AddAssetReference(ThisAssetRef);
+		}
+	}
 }
 
 

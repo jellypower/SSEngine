@@ -1,6 +1,11 @@
 ﻿#include "ImGUI_GameObjectDetailViewer.h"
 
+#include <SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h>
 #include <SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightComponent.h>
+#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
+#include <SSRenderer/Public/RenderAsset/IAssetManager.h>
+#include <SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h>
+#include <SSRenderer/Public/RenderBase/IRenderer.h>
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 
@@ -119,6 +124,10 @@ void ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow)
 	{
 		ImGUI_ShowLightCompDetail(RenderLight);
 	}
+	else if (SCubeMapRenderComponent* CubemapComp = dynamic_cast<SCubeMapRenderComponent*>(ComponentToShow))
+	{
+		ImGUI_ShowCubemapCompDetail(CubemapComp);
+	}
 }
 
 void ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow)
@@ -146,6 +155,70 @@ void ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow)
 				NewPos.W = PickedPosition[3];
 
 				CompToShow->SetLightIntensity(NewPos);
+			}
+		}
+		ImGui::PopID();
+	}
+}
+
+void ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow)
+{
+	const utf8* u8CompName = (utf8*)u8"CubeMapComp";
+	if (ImGui::CollapsingHeader(u8CompName))
+	{
+		ImGui::PushID(u8CompName);
+		{
+			
+			IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+			const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
+
+			constexpr int32 BUFFER_SIZE = 256;
+
+
+			SS::SHasherW EquippedTexName = CubemapToShow->GetCubeMapTextureAssetName();
+			utf8 u8EquippedTexName[BUFFER_SIZE] = "EMPTY";
+			if (EquippedTexName.IsEmpty() == false)
+			{
+				uint32 EquippedTexNameCStrLen = 0;
+				const utf16* EquippedTexNameCStr = EquippedTexName.C_Str(&EquippedTexNameCStrLen);
+				UTF16StrToUtf8Str(EquippedTexNameCStr, EquippedTexNameCStrLen, u8EquippedTexName, BUFFER_SIZE);
+			}
+
+			if (ImGui::BeginCombo("Cubemap Textures", u8EquippedTexName, ImGuiComboFlags_WidthFitPreview))
+			{
+				for (const SS::pair<SS::SHasherW, IAssetBase*>& TexturePairItem : TextureList)
+				{
+					
+					ITextureAsset* TextureItem = static_cast<ITextureAsset*>(TexturePairItem.second);
+					if (TextureItem->GetTextureType() != ETextureType::CubeMap)
+					{
+						continue;
+					}
+
+					SS::SHasherW SelectTexItemName = TextureItem->GetAssetName();
+					uint32 SelectTexItemCStrLen = 0;
+					const utf16* SelectTexItemCStr = SelectTexItemName.C_Str(&SelectTexItemCStrLen);
+
+					utf8 u8SelectTexItemName[BUFFER_SIZE];
+					UTF16StrToUtf8Str(SelectTexItemCStr, SelectTexItemCStrLen, u8SelectTexItemName, BUFFER_SIZE);
+
+					bool bIsSelected = false;
+					if (EquippedTexName == SelectTexItemName)
+					{
+						bIsSelected = true;
+					}
+
+					if (ImGui::Selectable(u8SelectTexItemName, bIsSelected))
+					{
+						CubemapToShow->SetCubeMapTextureAssetName(SelectTexItemName);
+					}
+
+					if (bIsSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
 			}
 		}
 		ImGui::PopID();

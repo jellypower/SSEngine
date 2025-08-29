@@ -62,7 +62,7 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 
 	ERenderInstanceType RIType = InRenderInstance->GetRIType();
 
-	if (RIType == ERenderInstanceType::StaticMesh)
+	if (RIType == ERenderInstanceType::StaticMesh) // TODO: ContentsLayer쪽으로 빼기
 	{
 		IRIMesh* InRIMesh = (IRIMesh*)InRenderInstance;
 
@@ -73,7 +73,7 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 		IModelAsset* ModelAsest = InRIMesh->GetModelAsset();
 		ModelAsest->AddAssetReference(AssetReferencer);
 	}
-	else if (RIType == ERenderInstanceType::SkinnedMesh)
+	else if (RIType == ERenderInstanceType::SkinnedMesh) // TODO: ContentsLayer쪽으로 빼기
 	{
 		IRISkinnedMesh* InRIMesh = (IRISkinnedMesh*)InRenderInstance;
 
@@ -85,11 +85,11 @@ void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
 		ModelAsest->AddAssetReference(AssetReferencer);
 		
 	}
-	else if (RIType == ERenderInstanceType::Light)
+	else if (RIType == ERenderInstanceType::Light) // TODO: ContentsLayer쪽으로 빼기
 	{
 		// noop
 	}
-	else if (RIType == ERenderInstanceType::CubeMap)
+	else if (RIType == ERenderInstanceType::CubeMap) // TODO: ContentsLayer쪽으로 빼기
 	{
 		IRICubeMap* InCubeMap = static_cast<IRICubeMap*>(InRenderInstance);
 

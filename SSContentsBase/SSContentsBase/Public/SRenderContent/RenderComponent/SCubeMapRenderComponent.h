@@ -8,6 +8,7 @@ private:
 
 
 public:
+	SS::SHasherW GetCubeMapTextureAssetName() const;
 	void SetCubeMapTextureAssetName(SS::SHasherW InTexName);
 
 protected:

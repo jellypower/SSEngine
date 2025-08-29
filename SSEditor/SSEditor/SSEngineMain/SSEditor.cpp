@@ -228,6 +228,8 @@ void SSEditor::TEMP_CreateAssets()
 				{L"T_Manny_01_MSR_MSK.tex", L"Resource/Texture/T_Manny_01_MSR_MSK.DDS", ETextureType::Texture2D},
 
 				{L"T_Skybox01.tex", L"Resource/Texture/T_Skybox01.dds", ETextureType::CubeMap},
+				{L"T_Skybox02.tex", L"Resource/Texture/T_Skybox02.dds", ETextureType::CubeMap},
+				{L"T_Skybox03.tex", L"Resource/Texture/T_Skybox03.dds", ETextureType::CubeMap},
 		};
 
 		for (int32 i=0;i<_countof(TextureAssetList);i++)

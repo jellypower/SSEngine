@@ -8,9 +8,34 @@
 
 #include "SSRenderer/Public/RenderInstance/IRICubeMap.h"
 
+SS::SHasherW SCubeMapRenderComponent::GetCubeMapTextureAssetName() const
+{
+	return _TextureAssetName;
+}
+
 void SCubeMapRenderComponent::SetCubeMapTextureAssetName(SS::SHasherW InTexName)
 {
-	_TextureAssetName = InTexName;
+	if (_RenderInstance != nullptr)
+	{
+		IRICubeMap* RICubeMap = static_cast<IRICubeMap*>(_RenderInstance);
+
+		IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+
+		ITextureAsset* FoundTexture = AssetManager->FindAssetByName<ITextureAsset>(InTexName);
+		if (FoundTexture == nullptr)
+		{
+			SS_ASSERT(false);
+			_TextureAssetName = SS::SHasherW::GetEmpty();
+			return;
+		}
+		RICubeMap->SetCubemapTexture(FoundTexture);
+		RICubeMap->SyncCubeMapTexture();
+		_TextureAssetName = InTexName;
+	}
+	else
+	{
+		_TextureAssetName = InTexName;
+	}
 }
 
 void SCubeMapRenderComponent::ConstructRenderInstance()
