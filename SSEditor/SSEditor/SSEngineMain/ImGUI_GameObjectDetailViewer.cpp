@@ -1,12 +1,12 @@
 ﻿#include "ImGUI_GameObjectDetailViewer.h"
 
-#include <SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h>
-#include <SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightComponent.h>
-#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
-#include <SSRenderer/Public/RenderAsset/IAssetManager.h>
-#include <SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h>
-#include <SSRenderer/Public/RenderBase/IRenderer.h>
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 
 #include "SSEngineDefault/Public/SSEngineDefault.h"
