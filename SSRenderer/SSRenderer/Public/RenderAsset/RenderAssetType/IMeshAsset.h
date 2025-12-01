@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "IAssetBase.h"
 #include "MeshData/MeshRawDataBase.h"
 

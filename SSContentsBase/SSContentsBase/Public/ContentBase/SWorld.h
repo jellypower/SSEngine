@@ -4,6 +4,8 @@
 
 #include "SSContentsBase/ModuleExportKeyword.h"
 
+class IAnimWorker;
+class SAnimatorBaseComponent;
 class SComponentBase;
 class IRenderWorld;
 class RenderWorld;
@@ -24,6 +26,7 @@ private:
 	SS::HashMap<SObjHashCode, SGameObject*> _TransformCommitNeededObjs;
 
 	IRenderWorld* _RenderWorld = nullptr;
+	IAnimWorker* _AnimWorker = nullptr;
 
 public:
 	SWorld();
@@ -33,7 +36,8 @@ public:
 	virtual void InitializeWorld(IRenderWorld* InRenderWorld);
 
 public:
-	void PerFrame();
+	void PerFrameContents();
+	void PerFrameAnim();
 
 	IRenderWorld* GetRenderWorld() const { return _RenderWorld; }
 	SGameObject* GetWorldRootObject() const { return _WorldRootObject; }

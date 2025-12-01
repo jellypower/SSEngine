@@ -52,7 +52,7 @@ private:
 
 	void ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset);
 
-	void ImportCurrentFileToAnimAsset();
+	void ImportCurrentFileToRenderAnimAsset();
 
 	void PrintFbxNodeInfo(FbxNode* node);
 

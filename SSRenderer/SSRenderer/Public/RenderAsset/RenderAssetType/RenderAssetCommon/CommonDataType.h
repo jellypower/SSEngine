@@ -11,7 +11,7 @@ enum class EAssetType : int32
 	ModelCombination,
 	Texture,
 	Skeleton,
-	SkeletonAnim,
+	RenderAnim,
 
 	Count
 };
@@ -26,8 +26,7 @@ inline const char* GetAssetSuffix(EAssetType InAssetType)
 	case EAssetType::Model: return ".mdl";
 	case EAssetType::ModelCombination: return ".mdlc";
 	case EAssetType::Texture: return ".tex";
-	case EAssetType::Skeleton: return ".skl";
-	case EAssetType::SkeletonAnim: return ".sanim";
+	case EAssetType::RenderAnim: return ".ranim";
 		break;
 	}
 

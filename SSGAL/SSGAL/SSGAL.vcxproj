@@ -199,6 +199,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClCompile Include="Private\PCommon\GALPrivateGlobals.cpp" />
     <ClCompile Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.cpp" />
     <ClCompile Include="Private\PCommon\GALResourceUpdater\GALResourceUpdater.cpp" />
+    <ClCompile Include="Private\DX12\TestCodes\GALTestCodesDX12.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\GALPCommonShaderPool.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\PSOPool.cpp" />
     <ClCompile Include="Private\PCommon\GALWrapper\PSOWrapper.cpp" />
@@ -241,6 +242,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClInclude Include="Private\PCommon\GALPrivateGlobals.h" />
     <ClInclude Include="Private\PCommon\GALRenderDevice\PCommonGALRenderDevice.h" />
     <ClInclude Include="Private\PCommon\GALResourceUpdater\GALResourceUpdater.h" />
+    <ClInclude Include="Private\PCommon\TestCodes\GALTestCodes.h" />
     <ClInclude Include="Private\PCommon\GALWrapper\GALPCommonShaderPool.h" />
     <ClInclude Include="Private\PCommon\GALWrapper\PSOPool.h" />
     <ClInclude Include="Private\PCommon\GALWrapper\PSOWrapper.h" />

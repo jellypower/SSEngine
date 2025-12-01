@@ -1,6 +1,7 @@
 #pragma once
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 
+class IRenderAnimAssetMutable;
 enum class ETextureType;
 class IMaterialAssetMutable;
 class ITextureAssetMutable;
@@ -20,6 +21,7 @@ public:
 	virtual IModelAssetMutable* CreateEmptyModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) = 0;
 	virtual IModelCombinationAssetMutable* CreateEmptyModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt) = 0;
 	virtual IMaterialAssetMutable* CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) = 0;
+	virtual IRenderAnimAssetMutable* CreateEmptyRenderAnimAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) = 0;
 
 
 	/// <param name="fileName">임포트할 에셋의 원본 "파일" 이름</param>

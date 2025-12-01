@@ -159,7 +159,9 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Private\AnimWorker\AnimWorkerBase.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Private\AnimComponents\SAnimatorBaseComponent.cpp" />
     <ClCompile Include="Private\ContentBase\SComponentBase.cpp" />
     <ClCompile Include="Private\ContentBase\SGameObject.cpp" />
     <ClCompile Include="Private\ContentBase\SGameObjectConstructor.cpp" />
@@ -173,9 +175,13 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SCubeMapRenderComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightComponent.cpp" />
+    <ClCompile Include="Private\AnimComponents\SSimpleAnimatorTestComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Private\AnimWorker\AnimWorkerBase.h" />
     <ClInclude Include="BuildSettings.h" />
+    <ClInclude Include="Public\AnimComponents\SAnimatorBaseComponent.h" />
+    <ClInclude Include="Public\AnimWorker\IAnimWorker.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SCubeMapRenderComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.h" />
@@ -190,6 +196,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SRenderContent\RenderComponent\SStaticMeshRenderComponent.h" />
     <ClInclude Include="Public\SRenderContent\SRendererUtil.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Public\AnimComponents\SSimpleAnimatorTestComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

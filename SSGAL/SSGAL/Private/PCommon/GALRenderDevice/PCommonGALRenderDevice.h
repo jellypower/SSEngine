@@ -8,6 +8,9 @@ class PSOPool;
 class PCommonGALRenderDevice : public GALRenderDevice
 {
 public:
+	PCommonGALRenderDevice(bool EnableDebugLayer);
+
+public:
 	RootSignaturePool* GetRootSignaturePool() const { return _rootSignaturePool; }
 	PSOPool* GetPSOPool() const { return _PSOPool; }
 

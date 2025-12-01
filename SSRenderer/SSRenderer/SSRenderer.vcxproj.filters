@@ -69,6 +69,12 @@
     <ClCompile Include="Private\RenderInstance\RICubeMap.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderAnimAsset.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h">
@@ -225,6 +231,30 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Private\RenderInstance\RICubeMap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\IRenderAnimAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderAnimData.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemTransform.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\ERKFTrackItemType.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IRenderAnimAssetMutable.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\RenderAsset\RenderAssetType\RenderAnimAsset.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

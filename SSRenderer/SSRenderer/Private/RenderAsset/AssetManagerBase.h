@@ -18,6 +18,7 @@ public:
 	virtual IModelAssetMutable* CreateEmptyModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
 	virtual IModelCombinationAssetMutable* CreateEmptyModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt) override;
 	virtual IMaterialAssetMutable* CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
+	virtual IRenderAnimAssetMutable* CreateEmptyRenderAnimAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath) override;
 
 	virtual SS::SHasherW GenerateAssetName(const SS::StringW& fileName, const SS::StringW& nodeName, EAssetType InAssetType) const override;
 

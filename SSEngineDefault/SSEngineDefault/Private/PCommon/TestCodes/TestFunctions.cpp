@@ -183,16 +183,20 @@ void ContainerTest_HashMap()
 	}
 
 
-	constexpr int32 RESERVE_SIZE = ITER_CNT;
 
-	std::unordered_map<SS::StringW, int32, Hasher> UMap;
-	UMap.reserve(RESERVE_SIZE * 2);
-
-	SS::HashMap<SS::StringW, int32> HashMap(RESERVE_SIZE, RESERVE_SIZE);
 
 
 	// Test01: 속도 테스트 
 	{
+		constexpr int32 RESERVE_SIZE = ITER_CNT * 2;
+
+		std::unordered_map<SS::StringW, int32, Hasher> UMap;
+		UMap.reserve(RESERVE_SIZE);
+		UMap.rehash(RESERVE_SIZE);
+
+
+		SS::HashMap<SS::StringW, int32> HashMap(RESERVE_SIZE, RESERVE_SIZE);
+
 		uint64 freqStart, freqEnd;
 
 		freqStart = GetPerofrmanceCounter();
@@ -200,6 +204,19 @@ void ContainerTest_HashMap()
 		{
 			UMap.insert(std::make_pair(StrList[i], i));
 		}
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			std::unordered_map<SS::StringW, int32, Hasher>::iterator iter = UMap.find(StrList[i]);
+			SS_ASSERT(iter != UMap.end());
+		}
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			int Result = UMap.erase(StrList[i]);
+			SS_ASSERT(Result > 0);
+		}
+
 		freqEnd = GetPerofrmanceCounter();
 
 		uint64 eTime1 = freqEnd - freqStart;
@@ -208,20 +225,111 @@ void ContainerTest_HashMap()
 		freqStart = GetPerofrmanceCounter();
 		for (int32 i = 0; i < ITER_CNT; i++)
 		{
-			const SS::StringW StrItem = StrList[i];
-			HashMap.Add(StrItem, i);
+			HashMap.Add(StrList[i], i);
 		}
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			int* Result = HashMap.Find(StrList[i]);
+			SS_ASSERT(Result != nullptr);
+		}
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			bool bResult = HashMap.Remove(StrList[i]);
+			SS_ASSERT(bResult);
+		}
+
 		freqEnd = GetPerofrmanceCounter();
 
 		int64 eTime2 = freqEnd - freqStart;
 
-		int64 TimeDiff = eTime1 - eTime2;
+		double TimeScale = (double)eTime1 / (double)eTime2;
+		int a = 0;
+	}
+
+	// Test02: 속도 테스트 2
+	{
+		struct HasherInt
+		{
+			std::size_t operator()(int32 InValue) const
+			{
+				return HashValue(InValue);
+			}
+		};
+
+		constexpr int32 RESERVE_SIZE = ITER_CNT * 2;
+
+		std::unordered_map<int32, SS::StringW, HasherInt> UMap;
+		UMap.reserve(RESERVE_SIZE);
+		UMap.rehash(RESERVE_SIZE);
+
+
+		SS::HashMap<int32, SS::StringW> HashMap(RESERVE_SIZE, RESERVE_SIZE);
+
+		uint64 freqStart, freqEnd;
+
+		freqStart = GetPerofrmanceCounter();
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			UMap.insert(std::make_pair(i, StrList[i]));
+		}
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			std::unordered_map<int32, SS::StringW>::iterator iter = UMap.find(i);
+			SS_ASSERT(iter != UMap.end());
+		}
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			int Result = UMap.erase(i);
+			SS_ASSERT(Result > 0);
+		}
+
+		freqEnd = GetPerofrmanceCounter();
+
+		uint64 eTime1 = freqEnd - freqStart;
+
+
+		freqStart = GetPerofrmanceCounter();
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			HashMap.Add(i, StrList[i]);
+		}
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			SS::StringW* Result = HashMap.Find(i);
+			SS_ASSERT(Result != nullptr);
+		}
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			bool bResult = HashMap.Remove(i);
+			SS_ASSERT(bResult);
+		}
+
+		freqEnd = GetPerofrmanceCounter();
+
+		int64 eTime2 = freqEnd - freqStart;
+
+		double TimeScale = (double)eTime1 / (double)eTime2;
 		int a = 0;
 	}
 
 
-	// Test02: 찾기 지우기 테스트
+	// Test03: 찾기 지우기 테스트
 	{
+		constexpr int32 RESERVE_SIZE = ITER_CNT;
+
+		SS::HashMap<SS::StringW, int32> HashMap(RESERVE_SIZE, RESERVE_SIZE);
+
+		for (int32 i = 0; i < ITER_CNT; i++)
+		{
+			HashMap.Add(StrList[i], i);
+		}
+
 
 		for (int32 i = 0; i < ITER_CNT; i++)
 		{
@@ -457,37 +565,29 @@ void SHasherPoolTest()
 	{
 
 		utf16 TempStr[500];
-		swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
-		utf16 LoweredStr[500];
+		int32 strLen = swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
+		
+		int32 HashedValue = CityHash32(reinterpret_cast<const char*>(TempStr), strLen * (sizeof(utf16) / sizeof(char)));
 
-		LowerStr(TempStr, LoweredStr);
-
-		int32 strLen = wcslen(LoweredStr);
-		int32 HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
-
-		PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
+		PoolForTest->FindOrAddHasherValue(TempStr, strLen, HashedValue);
 	}
 
 	for (int32 i = 0; i < 5000; i++)
 	{
 
 		utf16 TempStr[500];
-		swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
-		utf16 LoweredStr[500];
+		int32 strLen = swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
+		
 
-		LowerStr(TempStr, LoweredStr);
+		uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(TempStr), strLen * (sizeof(utf16) / sizeof(char)));
 
-		uint32 strLen = wcslen(LoweredStr);
-		uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
-
-		uint64 Value1 = PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
-		uint64 Value2 = PoolForTest->FindOrAddHasherValue(LoweredStr, strLen, HashedValue);
+		uint64 Value1 = PoolForTest->FindOrAddHasherValue(TempStr, strLen, HashedValue);
+		uint64 Value2 = PoolForTest->FindOrAddHasherValue(TempStr, strLen, HashedValue);
 
 		wcscpy(TempStr, L"MyStr");
-		LowerStr(TempStr, LoweredStr);
-		strLen = wcslen(LoweredStr);
-		HashedValue = CityHash32(reinterpret_cast<const char*>(LoweredStr), strLen * (sizeof(utf16) / sizeof(char)));
-		uint64 Value3 = PoolForTest->FindOrAddHasherValue(LoweredStr, 5, HashedValue);
+		strLen = wcslen(TempStr);
+		HashedValue = CityHash32(reinterpret_cast<const char*>(TempStr), strLen * (sizeof(utf16) / sizeof(char)));
+		uint64 Value3 = PoolForTest->FindOrAddHasherValue(TempStr, 5, HashedValue);
 
 		SS_ASSERT(Value1 == Value2);
 		SS_ASSERT(Value1 != Value3);

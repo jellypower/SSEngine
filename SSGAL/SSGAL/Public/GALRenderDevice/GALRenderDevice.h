@@ -73,6 +73,7 @@ protected:
 
 	GALRenderTarget* _DefaultViewportRenderTarget = nullptr;
 
+	bool _EnableDebug = false;
 	int32 _NestedFrameCnt = SWAP_CHAIN_FRAME_COUNT;
 
 	uint64 _CurFrameCnt = 0;

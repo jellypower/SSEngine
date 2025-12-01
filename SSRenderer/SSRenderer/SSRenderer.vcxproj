@@ -167,6 +167,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MeshAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\ModelAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\ModelCombinationAsset.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderAnimAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\TextureAsset.cpp" />
     <ClCompile Include="Private\RenderBase\RenderWorld.cpp" />
     <ClCompile Include="Private\RenderBase\SSRenderer.cpp" />
@@ -176,6 +177,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderInstance\RICubeMap.cpp" />
     <ClCompile Include="Private\RenderInstance\RISkinnedMesh.cpp" />
     <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.cpp" />
     <ClCompile Include="Public\RenderCommon\SSBoneType.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -187,6 +189,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MeshAsset.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\ModelAsset.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\ModelCombinationAsset.h" />
+    <ClInclude Include="Private\RenderAsset\RenderAssetType\RenderAnimAsset.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\TextureAsset.h" />
     <ClInclude Include="Private\RenderBase\RenderWorld.h" />
     <ClInclude Include="Private\RenderBase\SSRenderer.h" />
@@ -203,13 +206,20 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IMeshAssetMutable.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IModelAssetMutable.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IModelCombinationAssetMutable.h" />
+    <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IRenderAnimAssetMutable.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\ITextureAssetMutable.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\IRenderAnimAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IAssetBase.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IMaterialAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IMeshAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\ITextureAsset.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderAnimData.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\ERKFTrackItemType.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemBase.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemTransform.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataSkinned.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataBase.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshDataDefault.h" />

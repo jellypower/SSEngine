@@ -2,6 +2,7 @@
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
 
+#include "SSContentsBase/Private/AnimWorker/AnimWorkerBase.h"
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 
@@ -39,6 +40,12 @@ void SWorld::PostConstruct()
 
 void SWorld::PreDestruct()
 {
+	if (_AnimWorker != nullptr)
+	{
+		delete _AnimWorker;
+		_AnimWorker = nullptr;
+	}
+
 	DelSObject(_WorldRootObject);
 	_WorldRootObject = nullptr;
 }
@@ -46,15 +53,22 @@ void SWorld::PreDestruct()
 void SWorld::InitializeWorld(IRenderWorld* InRenderWorld)
 {
 	_RenderWorld = InRenderWorld;
+
+	_AnimWorker = DBG_NEW AnimWorkerBase();
 }
 
-void SWorld::PerFrame()
+void SWorld::PerFrameContents()
 {
 	for (SS::pair<SObjHashCode, SComponentBase*>& ComponentPairItem : _FrameProcessComponents)
 	{
 		SComponentBase* ComponentItem = ComponentPairItem.second;
 		ComponentItem->PerFrame();
 	}
+}
+
+void SWorld::PerFrameAnim()
+{
+	_AnimWorker->PerFrameUpdateAnimation();
 }
 
 bool SWorld::IsAnyObjectRemainInWorld() const

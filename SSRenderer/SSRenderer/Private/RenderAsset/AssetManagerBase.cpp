@@ -4,6 +4,7 @@
 #include "RenderAssetType/MeshAsset.h"
 #include "RenderAssetType/ModelAsset.h"
 #include "RenderAssetType/ModelCombinationAsset.h"
+#include "RenderAssetType/RenderAnimAsset.h"
 #include "RenderAssetType/TextureAsset.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
@@ -92,6 +93,12 @@ IModelCombinationAssetMutable* AssetManagerBase::CreateEmptyModelCombinationAsse
 IMaterialAssetMutable* AssetManagerBase::CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
 	return DBG_NEW MaterialAsset(InAssetName, InAssetPath);
+}
+
+IRenderAnimAssetMutable* AssetManagerBase::CreateEmptyRenderAnimAsset(SS::SHasherW InAssetName,
+	SS::SHasherW InAssetPath)
+{
+	return DBG_NEW RenderAnimAsset(InAssetName, InAssetPath);
 }
 
 

@@ -10,6 +10,7 @@
 #include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
 #include "Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
+#include "Private/PCommon/TestCodes/GALTestCodes.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourceAllocator.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12DescriptorHeapCustomAllocator.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDefaultRenderTarget.h"
@@ -21,7 +22,8 @@
 
 
 
-DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool EnableDebugLayer, bool EnableGPUBaseValidataion)
+DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool EnableDebugLayer, bool EnableGPUBaseValidataion):
+	PCommonGALRenderDevice(EnableDebugLayer)
 {
 	_hInst = InhInst;
 	_hWnd = InhWnd;
@@ -205,6 +207,11 @@ lb_loop:
 	_ShaderPool->Initialize();
 
 	_PSOPool = DBG_NEW DX12PSOPool(this);
+
+	if (_EnableDebug)
+	{
+		TestCustomChunkAllocator(this);
+	}
 }
 
 DX12GALRenderDevice::~DX12GALRenderDevice()

@@ -91,14 +91,14 @@ void SSEditor::StartupEngine()
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
 	{
-		SGameObject* Floor = SRendererUtil::InstantiateModel(L"cube1m.mdl");
+		SGameObject* Floor = SRendererUtil::InstantiateModel(L"Cube1m.mdl");
 		_DefaultWorld->AddToWorld(Floor);
 		Floor->SetPosition(Vector4f(0, -0.1,0, 1));
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
 	}
 
 	{
-		SGameObject* Floor = SRendererUtil::InstantiateModel(L"sphere1m.mdl");
+		SGameObject* Floor = SRendererUtil::InstantiateModel(L"Sphere1m.mdl");
 		_DefaultWorld->AddToWorld(Floor);
 		Floor->SetPosition(Vector4f(0, 1, 0, 1));
 		Floor->SetScale(Vector4f(1, 1, 1, 0));
@@ -158,7 +158,8 @@ void SSEditor::EnginePerFrame()
 	Run_g_ImGuiInitializer__OnBeginFrameImGui();
 	ProcessImGUI();
 
-	_DefaultWorld->PerFrame();
+	_DefaultWorld->PerFrameContents();
+	_DefaultWorld->PerFrameAnim();
 
 	_DefaultWorld->ProcessTransformCommit();
 

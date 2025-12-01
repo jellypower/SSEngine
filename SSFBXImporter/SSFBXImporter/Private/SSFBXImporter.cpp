@@ -6,8 +6,14 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IRenderAnimAssetMutable.h"
+
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
+
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
+
 #include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
+
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
@@ -104,6 +110,7 @@ void SSFBXImporter::ImportCurrentFileToAssetManager()
 {
 	ImportCurrentFileToMaterialAsset();
 	ImportCurrentFileToModelAsset();
+	ImportCurrentFileToRenderAnimAsset();
 }
 
 void SSFBXImporter::ImportCurrentFileToMaterialAsset()
@@ -397,6 +404,9 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 	}
 
 	NewAssetPlacementRef.PlacementName = node->GetName();
+
+	const char* Name = node->GetName();
+
 	NewAssetPlacementRef.Transform = SSFBXImporterUtils::ExtractTransformFromNode(node);
 	NewAssetPlacementRef.ParentIdx = parentReferenceIdx;
 	int32 ThisAssetPlacementIdx = MdlcAsset->GetChildCnt();
@@ -408,6 +418,118 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 	{
 		ImportCurrentFileToModelAsset_Recursion(node->GetChild(i), ThisAssetPlacementIdx, MdlcAsset);
 	}
+}
+
+void SSFBXImporter::ImportCurrentFileToRenderAnimAsset()
+{
+	if (_currentScene == nullptr)
+	{
+		SS_ASSERT_MSG(false, L"No scene to load");
+		return;
+	}
+
+
+	FbxAnimStack* currAnimStack = _currentScene->GetCurrentAnimationStack();
+	if (currAnimStack == nullptr)
+	{
+		return;
+	}		
+
+
+	SS::StringW OriginalMdlcAssetNameOnly;
+	OriginalMdlcAssetNameOnly = _boundFileName.C_Str();
+
+	SS::StringW OriginalMdlcAssetName = OriginalMdlcAssetNameOnly;
+	OriginalMdlcAssetName += L".mdlc";
+
+
+
+	FbxString animStackName = currAnimStack->GetName();
+	SS::StringW NewRenderAnimNameOnly = OriginalMdlcAssetNameOnly;
+	NewRenderAnimNameOnly += L"/";
+	NewRenderAnimNameOnly += animStackName.Buffer();
+
+	SS::SHasherW NewRenderAnimName =
+		_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NewRenderAnimNameOnly, EAssetType::RenderAnim);
+
+
+	IModelCombinationAsset* OriginalMdlcAsset = _AssetManagerToImportAsset->FindAssetByName<IModelCombinationAsset>(OriginalMdlcAssetName.C_Str());
+	int ChildCnt = OriginalMdlcAsset->GetChildCnt();
+
+	IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(NewRenderAnimName, _boundFileName);
+
+	// ========================================================================================================================
+	FbxTakeInfo* takeInfo = _currentScene->GetTakeInfo(animStackName);
+	FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+	FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+
+
+	double frameStartSeconds = start.GetSecondDouble();
+	double frameEndSeconds = end.GetSecondDouble();
+
+	int64 frameStart = start.GetFrameCount(FbxTime::eFrames24);
+	int64 frameEnd = end.GetFrameCount(FbxTime::eFrames24);
+	int64 frameCnt = frameEnd - frameStart + 1;
+
+
+	RenderAnimRawData* NewRawData = DBG_NEW RenderAnimRawData();
+	NewRawData->_Tracks.Reserve(frameCnt);
+	NewRawData->_KeyFrameDuration = frameEndSeconds - frameStartSeconds;
+
+
+	NewRenderAnimAsset->SetOriginMdlcAsset(OriginalMdlcAsset);
+	NewRenderAnimAsset->InjectRawDataXXX(NewRawData);
+
+
+	SS::SHasherW NameRoot = SS::SHasherW("root");
+
+	for (int32 i = 0; i < ChildCnt; i++)
+	{
+		const AssetPlacementReference& ChildItem = OriginalMdlcAsset->GetChildAt(i);
+
+		uint32 ChildNodeNameLen = 0;
+		const utf16* ChildNodeName = ChildItem.PlacementName.C_Str(&ChildNodeNameLen);
+
+		RKFTrack NewTrack;
+
+		if ((ChildNodeNameLen <= 0 || NameRoot == ChildItem.PlacementName) == false)
+		{
+			char ChildNodeNameStr[PATH_LEN_MAX];
+
+			int32 writtenBytes = UTF16StrToCharStr(ChildNodeName, ChildNodeNameLen, ChildNodeNameStr, PATH_LEN_MAX);
+			FbxNode* currentNode = _currentScene->FindNodeByName(ChildNodeNameStr);
+			
+			FbxNode* TempNode = _currentScene->FindNodeByName("direction");
+			SS_ASSERT(currentNode != nullptr);
+
+			NewTrack._TrackItemCnt = frameCnt;
+			NewTrack._Type = ERKFTrackItemType::BoneTransform;
+			NewTrack._TrackName = ChildItem.AssetName;
+
+			RKFTrackItemTransform* NewTrackItems = (RKFTrackItemTransform*)DBG_MALLOC(sizeof(RKFTrackItemTransform) * frameCnt);
+			NewTrack._TrackItems = NewTrackItems;
+
+
+			for (int64 CurFrameIdx = frameStart; CurFrameIdx <= frameEnd; ++CurFrameIdx)
+			{
+				FbxTime currTime;
+				currTime.SetFrame(CurFrameIdx, FbxTime::eFrames24);
+
+				int32 FrameIdx = CurFrameIdx - frameStart;
+				float CurTimeRatio = (float)FrameIdx / (float)frameCnt;
+				NewTrackItems[FrameIdx]._TimeRatio = CurTimeRatio;
+				NewTrackItems[FrameIdx]._Transform = SSFBXImporterUtils::ExtractTransformFromNode(currentNode, currTime);
+
+				int a = 0;
+			}
+		}
+
+
+		NewRawData->_Tracks.PushBack(NewTrack);
+	}
+
+	_AssetManagerToImportAsset->AddToAssetPool(NewRenderAnimAsset);
+
 }
 
 void SSFBXImporter::PrintFbxNodeInfo(FbxNode* node)

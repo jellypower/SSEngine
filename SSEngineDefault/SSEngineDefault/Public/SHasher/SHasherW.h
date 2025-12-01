@@ -50,10 +50,8 @@ namespace SS {
 				SS_INTERRUPT();
 			}
 
-			utf16 loweredStr[SHASHER_STRLEN_MAX + 1];
-			LowerStr(inStr, loweredStr);
-			uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(loweredStr), StrLen * (sizeof(utf16) / sizeof(char)));
-			_hashX = g_HasherPool->FindOrAddHasherValue(loweredStr, StrLen, HashedValue);
+			uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(inStr), StrLen * (sizeof(utf16) / sizeof(char)));
+			_hashX = g_HasherPool->FindOrAddHasherValue(inStr, StrLen, HashedValue);
 		}
 
 		SHasherW(const char* inStr)

@@ -57,6 +57,15 @@
     <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\AnimComponents\SSimpleAnimatorTestComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\AnimComponents\SAnimatorBaseComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\AnimWorker\AnimWorkerBase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ContentBase\SComponentBase.h">
@@ -102,6 +111,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\AnimComponents\SSimpleAnimatorTestComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\AnimComponents\SAnimatorBaseComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\AnimWorker\IAnimWorker.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\AnimWorker\AnimWorkerBase.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
