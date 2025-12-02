@@ -1,17 +1,37 @@
 ﻿#include "SSContentsBase/Public/AnimComponents/SAnimatorBaseComponent.h"
 
+#include "SSContentsBase/Public/AnimWorker/IAnimWorker.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IRenderAnimAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
+#include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
+
+bool SAnimatorBaseComponent::ShouldUpdateAnimation() const
+{
+	if (_RenderAnimAssetName.IsEmpty())
+	{
+		return false;
+	}
+
+	return
+		_bIsOneTimeUpdateRequested ||
+		_bIsOnPause == false;
+}
 
 void SAnimatorBaseComponent::SetPauseAnim(bool bIsPause)
 {
 	_bIsOnPause = bIsPause;
+}
+
+void SAnimatorBaseComponent::SetWholeFrameTime(float Time)
+{
+	_WholeFrameTime = Time;
+	_bIsOneTimeUpdateRequested = true;;
 }
 
 void SAnimatorBaseComponent::SetRenderAnimAsset(SS::SHasherW RenderAnimAssetName)
@@ -74,6 +94,15 @@ void SAnimatorBaseComponent::ReconstructBoneBinding()
 	int32 a = 0;
 }
 
+void SAnimatorBaseComponent::OnEnterTheWorld()
+{
+	SGameObject* OwnerGameObject = GetGameObject();
+	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
+	IAnimWorker* Worker = IncludedWorld->GetAnimWorker();
+
+	Worker->AddToWorker(this);
+}
+
 void SAnimatorBaseComponent::PostConstructHierarchy()
 {
 	ReconstructBoneBinding();
@@ -82,5 +111,15 @@ void SAnimatorBaseComponent::PostConstructHierarchy()
 
 void SAnimatorBaseComponent::UpdateAnimation()
 {
+	_bIsOneTimeUpdateRequested = false;
 	_WholeFrameTime += SSFrameInfo::GetDeltaTime();
+}
+
+void SAnimatorBaseComponent::OnExitTheWorld()
+{
+	SGameObject* OwnerGameObject = GetGameObject();
+	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
+	IAnimWorker* Worker = IncludedWorld->GetAnimWorker();
+
+	Worker->RemoveFromWorker(this);
 }

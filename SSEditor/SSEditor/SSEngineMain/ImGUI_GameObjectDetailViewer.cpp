@@ -3,10 +3,13 @@
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IRenderAnimAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightComponent.h"
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SSkinnedMeshRenderComponent.h"
+#include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 
 #include "SSEngineDefault/Public/SSEngineDefault.h"
@@ -139,6 +142,14 @@ void ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow)
 	{
 		ImGUI_ShowCubemapCompDetail(CubemapComp);
 	}
+	else if (SSkinnedMeshRenderComponent* SkinnedMeshComp = dynamic_cast<SSkinnedMeshRenderComponent*>(ComponentToShow))
+	{
+		ImGUI_ShowSkinnedMeshCompDetail(SkinnedMeshComp);
+	}
+	else if (SSimpleAnimatorTestComponent* AnimatorComp = dynamic_cast<SSimpleAnimatorTestComponent*>(ComponentToShow))
+	{
+		ImGUI_ShowSimpleAnimTestComp(AnimatorComp);
+	}
 }
 
 void ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow)
@@ -230,6 +241,113 @@ void ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow)
 					}
 				}
 				ImGui::EndCombo();
+			}
+		}
+		ImGui::PopID();
+	}
+}
+
+void ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderComponent* SkinnedMeshToShow)
+{
+	const utf8* u8CompName = (utf8*)u8"SSkinnedMeshRenderComponent";
+	if (ImGui::CollapsingHeader(u8CompName))
+	{
+		ImGui::PushID(u8CompName);
+		{
+			constexpr int32 BUFFER_SIZE = 256;
+
+
+			SS::SHasherW ModelName = SkinnedMeshToShow->GetModelAssetName();
+			utf8 u8ModelName[BUFFER_SIZE] = "EMPTY";
+			if (ModelName.IsEmpty() == false)
+			{
+				uint32 EquippedTexNameCStrLen = 0;
+				const utf16* EquippedTexNameCStr = ModelName.C_Str(&EquippedTexNameCStrLen);
+				UTF16StrToUtf8Str(EquippedTexNameCStr, EquippedTexNameCStrLen, u8ModelName, BUFFER_SIZE);
+			}
+
+			ImGui::Text("Model Name: %s", u8ModelName);
+
+
+		}
+		ImGui::PopID();
+	}
+}
+
+void ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp)
+{
+	const utf8* u8CompName = (utf8*)u8"SSimpleAnimatorTestComponent";
+	if (ImGui::CollapsingHeader(u8CompName))
+	{
+		ImGui::PushID(u8CompName);
+		{
+
+			IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+			const SS::HashMap<SS::SHasherW, IAssetBase*>& RenderAnimList = AssetManager->GetAssetMap(EAssetType::RenderAnim);
+
+			constexpr int32 BUFFER_SIZE = 256;
+
+
+			SS::SHasherW EquippedAnimAssetName = AnimComp->GetRenderAnimAssetName();
+			utf8 u8EquippedAnimName[BUFFER_SIZE] = "EMPTY";
+			if (EquippedAnimAssetName.IsEmpty() == false)
+			{
+				uint32 EquippedAnimNameCStrLen = 0;
+				const utf16* EquippedAnimNameCStr = EquippedAnimAssetName.C_Str(&EquippedAnimNameCStrLen);
+				UTF16StrToUtf8Str(EquippedAnimNameCStr, EquippedAnimNameCStrLen, u8EquippedAnimName, BUFFER_SIZE);
+			}
+
+			if (ImGui::BeginCombo("Anim Assets", u8EquippedAnimName, ImGuiComboFlags_WidthFitPreview))
+			{
+				for (const SS::pair<SS::SHasherW, IAssetBase*>& AnimPairItem : RenderAnimList)
+				{
+					IRenderAnimAsset* RenderAnimItem = static_cast<IRenderAnimAsset*>(AnimPairItem.second);
+					
+					SS::SHasherW SelectAnimItemName = RenderAnimItem->GetAssetName();
+					uint32 SelectAnimItemCStrLen = 0;
+					const utf16* SelectAnimItemCStr = SelectAnimItemName.C_Str(&SelectAnimItemCStrLen);
+
+					utf8 u8SelectTexItemName[BUFFER_SIZE];
+					UTF16StrToUtf8Str(SelectAnimItemCStr, SelectAnimItemCStrLen, u8SelectTexItemName, BUFFER_SIZE);
+
+					bool bIsSelected = false;
+					if (EquippedAnimAssetName == SelectAnimItemName)
+					{
+						bIsSelected = true;
+					}
+
+					if (ImGui::Selectable(u8SelectTexItemName, bIsSelected))
+					{
+						AnimComp->SetRenderAnimAsset(SelectAnimItemName);
+					}
+
+					if (bIsSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+
+			if (AnimComp->GetRenderAnimAssetName().IsEmpty() == false)
+			{
+				bool bIsPlaying = AnimComp->IsOnPause() == false;
+				const char* BtnLabel = bIsPlaying ? "Playing" : "Play";
+				if (ImGui::Button(BtnLabel))
+				{
+					bool bPause = bIsPlaying;
+					AnimComp->SetPauseAnim(bPause);
+				}
+
+				float Duration = AnimComp->GetAnimDuration();
+				float FrameTime = AnimComp->GetWholeFrameTime();
+				FrameTime = fmodf(FrameTime, Duration);
+				if (ImGui::SliderFloat("float", &FrameTime, 0.0f, Duration))
+				{
+					AnimComp->SetPauseAnim(true);
+					AnimComp->SetWholeFrameTime(FrameTime);
+				}
 			}
 		}
 		ImGui::PopID();

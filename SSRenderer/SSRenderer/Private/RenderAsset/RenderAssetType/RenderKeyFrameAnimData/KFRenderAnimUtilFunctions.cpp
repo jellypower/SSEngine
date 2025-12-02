@@ -20,27 +20,38 @@ Transform EvaluateRenderKFTransform(const RenderAnimRawData* AnimRawData, int32 
 
 
 	RKFTrackItemTransform* TransformTrack = static_cast<RKFTrackItemTransform*>(Track._TrackItems);
-	for (int32 i = 0; i < Track._TrackItemCnt - 1; i++)
+
+	int32 i = 0;
+	float T1TimeRatio = 0;
+	float T2TimeRatio = 0;
+	float TimeSpan = 0;
+	for (;i < Track._TrackItemCnt - 1; i++)
 	{
-		float T1TimeRatio = TransformTrack[i]._TimeRatio;
-		float T2TimeRatio = TransformTrack[i + 1]._TimeRatio;
-		float TimeSpan = T2TimeRatio - T1TimeRatio;
+		T1TimeRatio = TransformTrack[i]._TimeRatio;
+		T2TimeRatio = TransformTrack[i + 1]._TimeRatio;
+		TimeSpan = T2TimeRatio - T1TimeRatio;
 
-
-		if (TransformTrack[i]._TimeRatio > CurTimeRatio ||
-			TransformTrack[i + 1]._TimeRatio < CurTimeRatio )
+		if (T1TimeRatio < CurTimeRatio && CurTimeRatio < T2TimeRatio)
 		{
-			continue;
+			break;
 		}
-
-		float CurTimeRatioAlphaInRange = (CurTimeRatio - T1TimeRatio) / TimeSpan;
-
-		const Transform& T1 = TransformTrack[i]._Transform;
-		const Transform& T2 = TransformTrack[i + 1]._Transform;
-
-		Result = SS::Lerp(T1, T2, CurTimeRatioAlphaInRange);
-		break;
 	}
+
+	if (i >= Track._TrackItemCnt - 1)
+	{
+		i = Track._TrackItemCnt - 2;
+		T1TimeRatio = TransformTrack[i]._TimeRatio;
+		T2TimeRatio = TransformTrack[i + 1]._TimeRatio;
+		TimeSpan = T2TimeRatio - T1TimeRatio;
+	}
+
+	float CurTimeRatioAlphaInRange = (CurTimeRatio - T1TimeRatio) / TimeSpan;
+	CurTimeRatioAlphaInRange = CurTimeRatioAlphaInRange > 1 ? 1 : CurTimeRatioAlphaInRange;
+
+	const Transform& T1 = TransformTrack[i]._Transform;
+	const Transform& T2 = TransformTrack[i + 1]._Transform;
+
+	Result = SS::Lerp(T1, T2, CurTimeRatioAlphaInRange);
 
 
 	return Result;

@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-
+class SAnimatorBaseComponent;
+class SSimpleAnimatorTestComponent;
+class SSkinnedMeshRenderComponent;
 class SCubeMapRenderComponent;
 class SRenderLightComponent;
 class SComponentBase;
@@ -14,3 +16,5 @@ void ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow);
 
 void ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow);
 void ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow);
+void ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderComponent* SkinnedMeshToShow);
+void ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp);

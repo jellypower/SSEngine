@@ -469,7 +469,7 @@ void SSFBXImporter::ImportCurrentFileToRenderAnimAsset()
 
 	int64 frameStart = start.GetFrameCount(FbxTime::eFrames24);
 	int64 frameEnd = end.GetFrameCount(FbxTime::eFrames24);
-	int64 frameCnt = frameEnd - frameStart + 1;
+	int64 frameCnt = frameEnd - frameStart;
 
 
 	RenderAnimRawData* NewRawData = DBG_NEW RenderAnimRawData();
@@ -504,13 +504,13 @@ void SSFBXImporter::ImportCurrentFileToRenderAnimAsset()
 
 			NewTrack._TrackItemCnt = frameCnt;
 			NewTrack._Type = ERKFTrackItemType::BoneTransform;
-			NewTrack._TrackName = ChildItem.AssetName;
+			NewTrack._TrackName = ChildItem.PlacementName;
 
 			RKFTrackItemTransform* NewTrackItems = (RKFTrackItemTransform*)DBG_MALLOC(sizeof(RKFTrackItemTransform) * frameCnt);
 			NewTrack._TrackItems = NewTrackItems;
 
 
-			for (int64 CurFrameIdx = frameStart; CurFrameIdx <= frameEnd; ++CurFrameIdx)
+			for (int64 CurFrameIdx = frameStart; CurFrameIdx < frameEnd; ++CurFrameIdx)
 			{
 				FbxTime currTime;
 				currTime.SetFrame(CurFrameIdx, FbxTime::eFrames24);

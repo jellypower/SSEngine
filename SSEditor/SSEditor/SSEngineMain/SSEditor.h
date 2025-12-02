@@ -50,6 +50,7 @@ private:
 	void ImGUI_AssetManager_Mesh();
 	void ImGUI_AssetManager_Material();
 	void ImGUI_AssetManager_Model();
+	void ImGUI_AssetManager_RenderAnim();
 
 	void ImGUI_FrameInfo();
 

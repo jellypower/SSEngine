@@ -30,7 +30,7 @@ void AnimWorkerBase::PerFrameUpdateAnimation()
 	for (SS::pair<SObjHashCode, SAnimatorBaseComponent*> AnimatorItemPair : _AnimComponents)
 	{
 		SAnimatorBaseComponent* AnimatorItem = AnimatorItemPair.second;
-		if (AnimatorItem->IsOnPause())
+		if (AnimatorItem->ShouldUpdateAnimation() == false)
 		{
 			continue;
 		}

@@ -17,6 +17,8 @@
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 
+#include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
+
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
@@ -110,6 +112,7 @@ void SSEditor::StartupEngine()
 		BoundFileName += ".mdlc";
 
 		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
+		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
 	}
 
@@ -500,6 +503,10 @@ void SSEditor::ImGUI_AssetManagerWindow()
 		{
 			_ImGUI_SelectedAssetManager_Type = EAssetType::Model;
 		}
+		else if (ImGui::TabItemButton("RenderAnim"))
+		{
+			_ImGUI_SelectedAssetManager_Type = EAssetType::RenderAnim;
+		}
 		ImGui::EndTabBar();
 
 		switch (_ImGUI_SelectedAssetManager_Type)
@@ -508,6 +515,7 @@ void SSEditor::ImGUI_AssetManagerWindow()
 		case EAssetType::Mesh: ImGUI_AssetManager_Mesh(); break;
 		case EAssetType::Material: ImGUI_AssetManager_Material(); break;
 		case EAssetType::Model: ImGUI_AssetManager_Model(); break;
+		case EAssetType::RenderAnim: ImGUI_AssetManager_RenderAnim(); break;
 		default:
 			SS_ASSERT(false);
 			break;
@@ -936,6 +944,64 @@ void SSEditor::ImGUI_AssetManager_Model()
 			ImGui::PopID();
 		}
 
+	}
+
+}
+
+void SSEditor::ImGUI_AssetManager_RenderAnim()
+{
+	IAssetManager* AssetManager = _Renderer->GetAssetManager();
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& RenderAnimList = AssetManager->GetAssetMap(EAssetType::RenderAnim);
+
+	if (ImGui::BeginTable("Anims", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
+	{
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Name");
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Mesh Path");
+		ImGui::TableNextColumn();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ref Cnt");
+
+		for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshItemPair : RenderAnimList)
+		{
+			IAssetBase* AnimItem = MeshItemPair.second;
+			ImGui::TableNextColumn();
+
+			uint32 AssetStrLen = 0;
+			const utf16* AssetCstr = nullptr;
+
+			{
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 Converter[BUFFER_SIZE];
+				AssetCstr = AnimItem->GetAssetName().C_Str(&AssetStrLen);
+				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+				ImGui::Text(Converter);
+			}
+
+			{
+				ImGui::TableNextColumn();
+
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 Converter[BUFFER_SIZE];
+				AssetCstr = AnimItem->GetAssetPath().C_Str(&AssetStrLen);
+				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
+
+				ImGui::Text(Converter);
+			}
+
+			{
+				ImGui::TableNextColumn();
+
+				constexpr int32 BUFFER_SIZE = 256;
+				utf8 StrBuffer[BUFFER_SIZE];
+
+				int32 RefCnt = AnimItem->GetAssetInstanceReferenceCnt();
+				_itoa(RefCnt, StrBuffer, 10);
+				ImGui::Text(StrBuffer);
+			}
+		}
+		ImGui::EndTable();
 	}
 
 }

@@ -22,8 +22,9 @@ protected:
 	virtual void DestructRenderInstance() override;
 
 public:
-	void ReconstructBoneBinding(SGameObject* RootBoneGameObject);
+	SS::SHasherW GetModelAssetName() const { return _ModelAssetName; }
 
 private:
+	void ReconstructBoneBinding(SGameObject* RootBoneGameObject);
 	void UpdateRenderInstanceBonePose();
 };

@@ -39,6 +39,7 @@ public:
 	void PerFrameContents();
 	void PerFrameAnim();
 
+	IAnimWorker* GetAnimWorker() const { return _AnimWorker; }
 	IRenderWorld* GetRenderWorld() const { return _RenderWorld; }
 	SGameObject* GetWorldRootObject() const { return _WorldRootObject; }
 	bool IsAnyObjectRemainInWorld() const;

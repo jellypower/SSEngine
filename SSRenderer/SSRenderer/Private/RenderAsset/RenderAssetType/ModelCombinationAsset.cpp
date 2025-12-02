@@ -1,5 +1,9 @@
 ﻿#include "ModelCombinationAsset.h"
 
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
+
 ModelCombinationAsset::ModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt)
 {
 	_childs.Reserve(ReservedChildCnt);
@@ -23,25 +27,56 @@ void ModelCombinationAsset::AddAssetReference(const AssetInstanceReferencer& Ref
 		}
 	}
 
+	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
 	_AssetInstanceReferencers.PushBack(Referencer);
 
-	// TODO: AssetCount가 0에서 올라오면 본인이 레퍼런스하고있는 에셋들에게 레프카운트 올려주기
+	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+
+	if (PrevReferencerCnt == 0)
+	{
+		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
+		for (const AssetPlacementReference& ChildItem: _childs)
+		{
+			IModelAsset* ModelAssetItem = AssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
+			ModelAssetItem->AddAssetReference(ThisAssetReferencer);
+		}
+	}
+
+	_AssetInstanceReferencers.PushBack(Referencer);
 }
 
 void ModelCombinationAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerName)
 {
+	bool bReferencerEverRemoved = false;
+
 	for (int32 i = 0; i < _AssetInstanceReferencers.GetSize(); i++)
 	{
 		if (_AssetInstanceReferencers[i] == ReferencerName)
 		{
 			_AssetInstanceReferencers.RemoveAtAndFillLast(i);
-			return;
+			bReferencerEverRemoved = true;
+			break;
 		}
 	}
 
-	SS_ASSERT_MSG(false, L"Reference does not exist.");
+	if (bReferencerEverRemoved == false)
+	{
+		SS_ASSERT_MSG(false, L"Reference do not exist.");
+		return;
+	}
 
-	// TODO: AssetCount가 0으로 떨어지면 본인이 레퍼런스하고있는 에셋들에게 레프카운트 올려주기
+	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
+	if (ReferencerCnt == 0)
+	{
+		IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
+
+		for (const AssetPlacementReference& ChildItem : _childs)
+		{
+			IModelAsset* ModelAssetItem = AssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
+			ModelAssetItem->RemoveAssetReference(ThisAssetReferencer);
+		}
+	}
 }
 
 void ModelCombinationAsset::AddNewChild(const AssetPlacementReference& newReference)

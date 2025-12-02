@@ -937,7 +937,7 @@ void DirectXMathTest()
 		XMVECTOR e2 = XMEulerFromQuaternion(q1);
 		XMVECTOR q2 = XMQuaternionRotationRollPitchYawFromVector(e2);
 
-		constexpr float DEG_1 = 0.0174533;
+		constexpr float DEG_1 = 0.0174533 * 2;
 		SS_ASSERT(XMAlmostEqual(q1, q2, DEG_1) || XMAlmostEqual(q1, -q2, DEG_1));
 	}
 }

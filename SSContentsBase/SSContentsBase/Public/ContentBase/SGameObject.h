@@ -7,6 +7,8 @@
 class SWorld;
 class SComponentBase;
 
+// TODO: StrongBind라는 개념 만들기 -> SkinnedMesh나 스크립트를 통해 만들어진 게임오브젝트들은 라이프사이클을 무조건 통일 할 수 있게
+
 class SSCONTENTBASE_MODULE SGameObject : public SObjectBase
 {
 private:

@@ -8,6 +8,8 @@ private:
 	void UpdateNodesAnimation();
 
 public:
+	float GetAnimDuration() const;
+
 	virtual void UpdateAnimation() override;
 
 };

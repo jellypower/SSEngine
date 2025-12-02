@@ -44,6 +44,9 @@ void SSimpleAnimatorTestComponent::UpdateNodesAnimation()
 
 	const SS::PooledList<SObjHashT<SGameObject>>& Bindings = GetBoneBindings();
 	int32 BindingCnt = Bindings.GetSize();
+	int32 KFTrackCnt = AnimRawData->_Tracks.GetSize();
+
+	int32 IterCnt = BindingCnt < KFTrackCnt ? BindingCnt : KFTrackCnt;
 
 	for (int32 i = 0; i < BindingCnt; i++)
 	{
@@ -57,4 +60,30 @@ void SSimpleAnimatorTestComponent::UpdateNodesAnimation()
 		Transform Result = EvaluateRenderKFTransform(AnimRawData, i, Time);
 		Item->SetTransform(Result);
 	}
+}
+
+float SSimpleAnimatorTestComponent::GetAnimDuration() const
+{
+	if (GetRenderAnimAssetName().IsEmpty())
+	{
+		SS_ASSERT(false);
+		return 0;
+	}
+
+	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+	IRenderAnimAsset* FoundRenderAnimAsset = AssetManager->FindAssetByName<IRenderAnimAsset>(GetRenderAnimAssetName());
+	if (FoundRenderAnimAsset == nullptr)
+	{
+		SS_ASSERT(false);
+		return 0;
+	}
+
+	const RenderAnimRawData* AnimRawData = FoundRenderAnimAsset->GetKeyFrameAnimData();
+	if (AnimRawData == nullptr)
+	{
+		SS_ASSERT(false);
+		return 0;
+	}
+
+	return AnimRawData->_KeyFrameDuration;
 }
