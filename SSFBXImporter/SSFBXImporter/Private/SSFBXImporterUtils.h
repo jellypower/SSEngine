@@ -3,7 +3,6 @@
 
 #define FBXSDK_SHARED
 #include <fbxsdk.h>
-#include <SSRenderer/Public/RenderCommon/SSBoneType.h>
 
 class MeshRawDataSkinned;
 class IMeshAsset;
@@ -17,5 +16,5 @@ public:
 	static IMeshAsset* GenerateNewSkinnedMeshAssestFromFbxMesh(FbxMesh* fbxMesh, SS::SHasherW NewAssetName, const utf16* InAssetPath);
 
 private:
-	static void ExtractOriginalBoneFromFbxSkin(MeshRawDataSkinned* RawDataToSaveBone, FbxSkin* fbxSkin);
+	static void ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneName, MeshRawDataSkinned* RawDataToSaveBone, FbxSkin* fbxSkin);
 };

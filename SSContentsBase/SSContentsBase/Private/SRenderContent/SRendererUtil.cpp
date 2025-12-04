@@ -45,7 +45,8 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 	}
 	else
 	{
-		InstantiateModelObjTree_Recursion(MdlcAsset, MDLC_PLACEMENTREF_ROOT_IDX, NewGameObj);
+		NewGameObj->SetStrongBindAncestor(NewGameObj);
+		InstantiateModelObjTree_Recursion(MdlcAsset, MDLC_PLACEMENTREF_ROOT_IDX, NewGameObj, NewGameObj);
 		SGameObjectConstructor::FinishConstructHierarchy(NewGameObj);
 		return NewGameObj;
 	}
@@ -70,7 +71,7 @@ SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 }
 
 void SRendererUtil::InstantiateModelObjTree_Recursion(const IModelCombinationAsset* MdlcAsset, int32 CurAssetIdx,
-                                                      SGameObject* CurGameObject)
+                                                      SGameObject* ParentObject, SGameObject* StrongBindAncestor)
 {
 	const AssetPlacementReference& ThisAssetPlacement = MdlcAsset->GetChildAt(CurAssetIdx);
 
@@ -78,7 +79,8 @@ void SRendererUtil::InstantiateModelObjTree_Recursion(const IModelCombinationAss
 	{
 		const AssetPlacementReference& ChildAssetPlacement = MdlcAsset->GetChildAt(ChildIdx);
 		SGameObject* NewChildObj = NewSObject<SGameObject>(ChildAssetPlacement.PlacementName);
-		NewChildObj->SetParent(CurGameObject);
+		NewChildObj->SetParent(ParentObject);
+		NewChildObj->SetStrongBindAncestor(StrongBindAncestor);
 		NewChildObj->SetTransform(ChildAssetPlacement.Transform);
 
 		if(ChildAssetPlacement.AssetName.IsEmpty() == false)
@@ -104,7 +106,7 @@ void SRendererUtil::InstantiateModelObjTree_Recursion(const IModelCombinationAss
 //			NewRenderComp->SetModelAsset("directionmesh/direction.mdl");
 		}
 		
-		InstantiateModelObjTree_Recursion(MdlcAsset, ChildIdx, NewChildObj);
+		InstantiateModelObjTree_Recursion(MdlcAsset, ChildIdx, NewChildObj, StrongBindAncestor);
 	}
 
 }

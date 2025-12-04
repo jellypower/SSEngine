@@ -2,8 +2,8 @@
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
 
-constexpr uint32 SUBMESH_COUNT_MAX = 8;
-constexpr uint32 VERTEX_UV_MAP_COUNT_MAX = 2;
+constexpr uint32 SUBMESH_COUNT_MAX = 32;
+constexpr uint32 DEFAULT_VERTEX_UV_TYPE_CNT_MAX = 2;
 constexpr uint32 VERTEX_SKINNING_BONE_COUNT_MAX = 8;
 
 

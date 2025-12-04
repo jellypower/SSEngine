@@ -7,7 +7,7 @@ struct alignas(16) SSDefaultVertex {
 	Vector4f Pos;
 	Vector4f Normal;
 	Vector4f Tangent;
-	Vector2f Uv[VERTEX_UV_MAP_COUNT_MAX];
+	Vector2f Uv[DEFAULT_VERTEX_UV_TYPE_CNT_MAX];
 };
 
 struct alignas(16) SSSkinnedVertex : SSDefaultVertex

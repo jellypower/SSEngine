@@ -138,10 +138,10 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 
 	// UV
 	uint32 uvChannelCnt = fbxMesh->GetUVLayerCount();
-	if (uvChannelCnt > VERTEX_UV_MAP_COUNT_MAX)
+	if (uvChannelCnt > DEFAULT_VERTEX_UV_TYPE_CNT_MAX)
 	{
 		// SS_ASSERT_MSG(false, L"Too many uv channel");
-		uvChannelCnt = VERTEX_UV_MAP_COUNT_MAX;
+		uvChannelCnt = DEFAULT_VERTEX_UV_TYPE_CNT_MAX;
 	}
 
 	for (uint32 i = 0; i < uvChannelCnt; i++)
@@ -288,11 +288,11 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 
 
 	uint32 uvChannelCnt = fbxMesh->GetUVLayerCount();
-	const FbxGeometryElementUV* fbxUV[VERTEX_UV_MAP_COUNT_MAX];
-	if (uvChannelCnt > VERTEX_UV_MAP_COUNT_MAX)
+	const FbxGeometryElementUV* fbxUV[DEFAULT_VERTEX_UV_TYPE_CNT_MAX];
+	if (uvChannelCnt > DEFAULT_VERTEX_UV_TYPE_CNT_MAX)
 	{
 		// SS_ASSERT_MSG(false, L"Too many uv channel");
-		uvChannelCnt = VERTEX_UV_MAP_COUNT_MAX;
+		uvChannelCnt = DEFAULT_VERTEX_UV_TYPE_CNT_MAX;
 	}
 	for (uint32 i = 0; i < uvChannelCnt; i++)
 	{
@@ -519,6 +519,9 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 		return nullptr;
 	}
 
+	const utf16* AssetStr = NewAssetName.C_Str();
+
+
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
 	MeshRawDataSkinned* NewSkinnedMeshRawData = DBG_NEW MeshRawDataSkinned();
@@ -547,11 +550,11 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	// i번째 Polygon에 해당되는 FBXControlPointIdx와 SSVertexBufferIdx의 리스트를 담고있음
 
 	uint32 uvChannelCnt = fbxMesh->GetUVLayerCount();
-	FbxGeometryElementUV* fbxUV[VERTEX_UV_MAP_COUNT_MAX];
-	if (uvChannelCnt > VERTEX_UV_MAP_COUNT_MAX)
+	FbxGeometryElementUV* fbxUV[DEFAULT_VERTEX_UV_TYPE_CNT_MAX];
+	if (uvChannelCnt > DEFAULT_VERTEX_UV_TYPE_CNT_MAX)
 	{
-		SS_ASSERT_MSG(false, L"Too many uv channel");
-		uvChannelCnt = VERTEX_UV_MAP_COUNT_MAX;
+		// SS_ASSERT_MSG(false, L"Too many uv channel");
+		uvChannelCnt = DEFAULT_VERTEX_UV_TYPE_CNT_MAX;
 	}
 	for (uint32 i = 0; i < uvChannelCnt; i++)
 	{
@@ -623,7 +626,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 		boneCntArr[i] = 0;
 	}
 
-	uint32 deformerCnt = fbxMesh->GetDeformerCount();
+	uint32 deformerCnt = fbxMesh->GetDeformerCount(FbxDeformer::eSkin);
 	if (deformerCnt > 1)
 	{
 		SS_ASSERT(false);
@@ -633,7 +636,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
 	SS_ASSERT(fbxSkin != nullptr);
 
-	ExtractOriginalBoneFromFbxSkin(NewSkinnedMeshRawData, fbxSkin);
+	ExtractOriginalBoneFromFbxSkin(NewAssetName, NewSkinnedMeshRawData, fbxSkin);
 	
 	uint32 ClusterCnt = fbxSkin->GetClusterCount();
 	for (int32 BoneIdx = 0; BoneIdx < ClusterCnt; BoneIdx++)
@@ -840,41 +843,51 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	return NewMeshAsset;
 }
 
-void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(MeshRawDataSkinned* RawDataToSaveBone, FbxSkin* fbxSkin)
+void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneName, MeshRawDataSkinned* RawDataToSaveBone, FbxSkin* fbxSkin)
 {
 	uint32 ClusterCnt = fbxSkin->GetClusterCount();
 
 	SS::PooledList<BonePlacement>& OutBones = RawDataToSaveBone->_BoneOriginalPose;
 
 	OutBones.Reserve(ClusterCnt);
+	SS::PooledList<int32> BoneParentIndices(ClusterCnt);
+	SS::PooledList<FbxNode*> BoneMatchingNodes(ClusterCnt);
 
-	SS::PooledList<int32> BoneParentIndices;
-	BoneParentIndices.Reserve(ClusterCnt);
+	
+	constexpr int32 STR_BUFFER_SIZE = 512;
+	wchar_t Utf16Buffer[STR_BUFFER_SIZE];
 
 	for (int32 BoneIdx = 0; BoneIdx < ClusterCnt; BoneIdx++)
 	{
 		FbxCluster* CurCluster = fbxSkin->GetCluster(BoneIdx);
 		FbxNode* CurBoneNode = CurCluster->GetLink();
 
-		SS::SHasherW CurBoneName = CurBoneNode->GetName();
+
+		FbxString fStrName = CurBoneNode->GetNameOnly();
+		int32 StrLen = fStrName.GetLen();
+		char8_t* u8Name = reinterpret_cast<char8_t*>(fStrName.Buffer());
+		UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, Utf16Buffer, STR_BUFFER_SIZE);
+
+		
+		SS::SHasherW CurBoneName = Utf16Buffer;
 
 		BonePlacement NewBonePlacement;
 		NewBonePlacement.BoneName = CurBoneName;
+
 		OutBones.PushBack(NewBonePlacement);
+		BoneMatchingNodes.PushBack(CurBoneNode);
 	}
 
 
 	for (int32 i = 0; i < ClusterCnt; i++)
 	{
-		FbxCluster* CurCluster = fbxSkin->GetCluster(i);
-		FbxNode* CurNode = CurCluster->GetLink();
-		SS::SHasherW ParentNodeName = CurNode->GetParent()->GetName();
-		int32 ParentNodeIdx = INVALID_IDX;
+		FbxNode* CurNode = BoneMatchingNodes[i];
+		FbxNode* ParentNode = CurNode->GetParent();
 
-		int32 FindIdx = 0;
-		for (; FindIdx < ClusterCnt; FindIdx++)
+		int32 ParentNodeIdx = INVALID_IDX;
+		for (int32 FindIdx = 0; FindIdx < ClusterCnt; FindIdx++)
 		{
-			if (OutBones[FindIdx].BoneName == ParentNodeName)
+			if (BoneMatchingNodes[FindIdx] == ParentNode)
 			{
 				ParentNodeIdx = FindIdx;
 				break;
@@ -884,8 +897,7 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(MeshRawDataSkinned* RawD
 		BoneParentIndices.PushBack(ParentNodeIdx); // 부모노드의 인덱스를 찾는다
 	}
 
-	// 전에 드래곤 모델처럼 리깅포인트의 Root가 2개 이상일 수 있음
-
+	
 
 	for (int32 BoneItemIdx = 0; BoneItemIdx < ClusterCnt; BoneItemIdx++)
 	{
@@ -896,15 +908,11 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(MeshRawDataSkinned* RawD
 		FbxNode* CurNode = CurCluster->GetLink();
 
 		Transform BoneTransformResult;
-		SS::SHasherW FORDEBUG_CurNodeName = CurNode->GetName();
+		const char8_t* FORDEBUG_CurNodeName = (char8_t*)CurNode->GetName();
+		// SS::SHasherW FORDEBUG_CurNodeName = CurNode->GetName();
 		if (ParentBoneIdx != INVALID_IDX) // Root본이 아니면
 		{
 			BoneTransformResult = ExtractTransformFromNode(CurNode); // 현재 노드의 Transform을 가지고온다.
-		}
-		else // Root 본이면
-		{
-			SS_ASSERT(RawDataToSaveBone->_RootBoneIdx == INVALID_IDX); // Root본이 2개 이상이면 안된다
-			RawDataToSaveBone->_RootBoneIdx = BoneItemIdx;
 		}
 
 		while (ParentBoneIdx != INVALID_IDX)

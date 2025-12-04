@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "SObject/Public/SObjectBase.h"
+#include "SObject/Public/SObjHashT.h"
 #include "SObject/Public/ModuleEntry/SObjectFactory.h"
 
 #include "SSContentsBase/ModuleExportKeyword.h"
@@ -18,6 +19,8 @@ private:
 
 	SS::PooledList<SGameObject*, SS::InlineAllocator<8>> _Children;
 	SS::PooledList<SComponentBase*, SS::InlineAllocator<8>> _Components;
+
+	SObjHashT<SGameObject> _StrongBindAncestor;
 
 	SObjHashCode _IncludedWorldHash = nullptr;
 	SGameObject* _Parent = nullptr;
@@ -39,6 +42,11 @@ public:
 	SGameObject* GetParent() const { return _Parent; }
 	SGameObject* FindChildOfName(SS::SHasherW Name, bool bIncludeHieararchy = false) const;
 	void ScrapAllDescendants(SS::PooledList<SGameObject*>& OutDescendants) const;
+
+	SGameObject* GetStrongBindAncestor() const { return _StrongBindAncestor.Get(); }
+	bool IsStronglyBound() const { return _StrongBindAncestor.Get() != nullptr; }
+	bool IsStrongBindAncestor() const { return _StrongBindAncestor.Get() == this; }
+
 
 	int32 GetComponentCnt() const { return _Components.GetSize(); }
 	SComponentBase* GetComponentByIdx(int32 ComponentIdx) const { return _Components[ComponentIdx]; }
@@ -64,6 +72,8 @@ public:
 
 	void SetParent(SGameObject* InNewParent);
 	void MarkHierarchyInitialized() { _bIsHierarchyInitialized = true; }
+
+	void SetStrongBindAncestor(SGameObject* InAncestor);
 
 	void OnEnterTheWorld(SObjHashCode WorldHashCode);
 	void OnExitTheWorld();

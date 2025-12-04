@@ -16,6 +16,7 @@
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SStaticMeshRenderComponent.h"
 
 #include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
 
@@ -112,8 +113,12 @@ void SSEditor::StartupEngine()
 		BoundFileName += ".mdlc";
 
 		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
-		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
+
+
+//		SGameObject* LowerBody = TEMP_MdlcObj->FindChildOfName(L"ù»Úâãó", true);
+//		SStaticMeshRenderComponent* SM = LowerBody->CreateComponent<SStaticMeshRenderComponent>(L"StaticMesh");
+//		SM->SetModelAsset(_Renderer->GetCommonRenderAssetSet()->GetCube1mModel()->GetAssetName());
 	}
 
 	{
@@ -1049,6 +1054,14 @@ void SSEditor::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
 	utf8 u8ObjectName[SHASHER_STRLEN_MAX];
 	UTF16StrToUtf8Str(u16ObjectName, iObjectNameLen, u8ObjectName, SHASHER_STRLEN_MAX);
 
+
+	bool bColorNode = _HieararchyPickedObject == Object->GetHashCode();
+
+	if (bColorNode)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+	}
+
 	if (ImGui::TreeNodeEx(u8ObjectName, 
 		ImGuiTreeNodeFlags_SpanLabelWidth |
 		ImGuiTreeNodeFlags_OpenOnArrow |
@@ -1066,5 +1079,11 @@ void SSEditor::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
 		}
 		
 		ImGui::TreePop();
+	}
+
+
+	if (bColorNode)
+	{
+		ImGui::PopStyleColor(); // Pop the green text color
 	}
 }

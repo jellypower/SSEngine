@@ -291,8 +291,17 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 
 	uint32 childCount = node->GetChildCount();
 
+	constexpr int32 STR_BUFFER_SIZE = 512;
+	wchar_t NodeNameBuffer[STR_BUFFER_SIZE];
+	FbxString fStrName = node->GetNameOnly();
+	int32 StrLen = fStrName.GetLen();
+	char8_t* u8Name = reinterpret_cast<char8_t*>(fStrName.Buffer());
+	UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, NodeNameBuffer, STR_BUFFER_SIZE);
+	SS::StringW NodeNameString = NodeNameBuffer;
+
 	AssetPlacementReference NewAssetPlacementRef;
-	if (node->GetNodeAttribute() != nullptr) {
+	if (node->GetNodeAttribute() != nullptr)
+	{
 
 		FbxNodeAttribute::EType nodeAttribute = node->GetNodeAttribute()->GetAttributeType();
 
@@ -319,7 +328,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			if (bIsMeshAssetAlreadyImported == false)
 			{
 				NewMeshName =
-					_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), EAssetType::Mesh);
+					_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NodeNameString, EAssetType::Mesh);
 
 
 				if (fbxMesh->GetDeformerCount() == 0)
@@ -344,7 +353,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			NewAssetPlacementRef.MeshType = newMeshAsset->GetMeshRawData()->_MeshType;
 
 			SS::SHasherW NewModelAssetName = 
-				_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), fbxMesh->GetNode()->GetName(), EAssetType::Model);
+				_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NodeNameString, EAssetType::Model);
 
 			
 			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(NewModelAssetName, _boundFileName);
@@ -403,10 +412,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 
 	}
 
-	NewAssetPlacementRef.PlacementName = node->GetName();
-
-	const char* Name = node->GetName();
-
+	NewAssetPlacementRef.PlacementName = NodeNameString.C_Str();
 	NewAssetPlacementRef.Transform = SSFBXImporterUtils::ExtractTransformFromNode(node);
 	NewAssetPlacementRef.ParentIdx = parentReferenceIdx;
 	int32 ThisAssetPlacementIdx = MdlcAsset->GetChildCnt();
@@ -444,10 +450,17 @@ void SSFBXImporter::ImportCurrentFileToRenderAnimAsset()
 
 
 
-	FbxString animStackName = currAnimStack->GetName();
+	constexpr int32 STR_BUFFER_SIZE = 512;
+	wchar_t Utf16Buffer[STR_BUFFER_SIZE];
+	FbxString fStrName = currAnimStack->GetNameOnly();
+	int32 StrLen = fStrName.GetLen();
+	char8_t* u8Name = reinterpret_cast<char8_t*>(fStrName.Buffer());
+	UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, Utf16Buffer, STR_BUFFER_SIZE);
+
+
 	SS::StringW NewRenderAnimNameOnly = OriginalMdlcAssetNameOnly;
 	NewRenderAnimNameOnly += L"/";
-	NewRenderAnimNameOnly += animStackName.Buffer();
+	NewRenderAnimNameOnly += Utf16Buffer;
 
 	SS::SHasherW NewRenderAnimName =
 		_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NewRenderAnimNameOnly, EAssetType::RenderAnim);
@@ -459,7 +472,7 @@ void SSFBXImporter::ImportCurrentFileToRenderAnimAsset()
 	IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(NewRenderAnimName, _boundFileName);
 
 	// ========================================================================================================================
-	FbxTakeInfo* takeInfo = _currentScene->GetTakeInfo(animStackName);
+	FbxTakeInfo* takeInfo = _currentScene->GetTakeInfo(fStrName);
 	FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
 	FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
 

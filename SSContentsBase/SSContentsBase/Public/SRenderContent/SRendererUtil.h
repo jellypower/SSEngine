@@ -13,5 +13,5 @@ public:
 	static SGameObject* InstantiateModel(SS::SHasherW ModelAssetName);
 
 private:
-	static void InstantiateModelObjTree_Recursion(const IModelCombinationAsset* MdlcAsset, int32 CurAssetIdx, SGameObject* CurGameObject);
+	static void InstantiateModelObjTree_Recursion(const IModelCombinationAsset* MdlcAsset, int32 CurAssetIdx, SGameObject* CurGameObject, SGameObject* StrongBindAncestor);
 };

@@ -173,6 +173,25 @@ void SGameObject::AddComponent(SComponentBase* InComponent)
 }
 
 
+void SGameObject::SetStrongBindAncestor(SGameObject* InAncestor)
+{
+	if (InAncestor == this)
+	{
+		_StrongBindAncestor = InAncestor;
+		return;
+	}
+
+	SGameObject* Parent = GetParent();
+
+	if (Parent->GetStrongBindAncestor() != InAncestor)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	_StrongBindAncestor = InAncestor;
+}
+
 void SGameObject::OnEnterTheWorld(SObjHashCode WorldHashCode)
 {
 	_IncludedWorldHash = WorldHashCode;

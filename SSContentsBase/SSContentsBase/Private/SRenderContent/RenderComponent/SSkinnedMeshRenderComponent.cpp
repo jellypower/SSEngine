@@ -49,27 +49,10 @@ void SSkinnedMeshRenderComponent::PostConstructHierarchy()
 {
 	__super::PostConstructHierarchy();
 
-	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-	IModelAsset* FoundModelRef = AssetManager->FindAssetByName<IModelAsset>(_ModelAssetName);
-	IMeshAsset* BoundMesh = FoundModelRef->GetMeshAsset();
-	if (BoundMesh->GetMeshType() != EMeshType::Skinned)
-	{
-		SS_INTERRUPT();
-		return;
-	}
 
-	const MeshRawDataSkinned* SkinnedRawMesh = (MeshRawDataSkinned*)BoundMesh->GetMeshRawData();
-	SS::SHasherW RootBoneName = SkinnedRawMesh->_BoneOriginalPose[SkinnedRawMesh->_RootBoneIdx].BoneName;
-
-
-	SGameObject* OutmostGameObject = GetGameObject();
-	while (OutmostGameObject->GetParent() != nullptr)
-	{
-		OutmostGameObject = OutmostGameObject->GetParent();
-	}
-
-	SGameObject* SkeletonRootGameObject = OutmostGameObject->FindChildOfName(RootBoneName, true);
-	ReconstructBoneBinding(SkeletonRootGameObject);
+	SGameObject* GameObject = GetGameObject();
+	SGameObject* BoneAncestor = GameObject->GetStrongBindAncestor();
+	ReconstructBoneBinding(BoneAncestor);
 }
 
 void SSkinnedMeshRenderComponent::ConstructRenderInstance()
@@ -128,7 +111,7 @@ void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGa
 	ScrapedDecendants.PushBack(RootBoneGameObject);
 	RootBoneGameObject->ScrapAllDescendants(ScrapedDecendants);
 
-
+	_BoneBindings.Clear();
 	_BoneBindings.Reserve(200);
 	const SS::PooledList<BonePlacement>& OriginalBones = SkinnedRawMesh->_BoneOriginalPose;
 	for (int32 i = 0; i < NewBoneCnt; i++)

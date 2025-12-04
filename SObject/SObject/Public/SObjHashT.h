@@ -14,7 +14,7 @@ public:
 	}
 
 public:
-	T* Get()
+	T* Get() const
 	{
 		SObjectBase* SObject = _HashCode.GetSObject();
 		return static_cast<T*>(SObject);

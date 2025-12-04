@@ -176,6 +176,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\SRenderContent\RenderComponent\SCubeMapRenderComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightComponent.cpp" />
     <ClCompile Include="Private\AnimComponents\SSimpleAnimatorTestComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SMeshRenderComponentBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Private\AnimWorker\AnimWorkerBase.h" />
@@ -197,6 +198,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SRenderContent\SRendererUtil.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Public\AnimComponents\SSimpleAnimatorTestComponent.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SMeshRenderComponentBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

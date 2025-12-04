@@ -66,6 +66,13 @@ void SGameObjectConstructor::PreDestructHierarchy_Recursive(SGameObject* ObjToDe
 
 void SGameObjectConstructor::DestroyAll(SGameObject* RootObjToDestroy)
 {
+	if (RootObjToDestroy->IsStronglyBound() &&
+		RootObjToDestroy->IsStrongBindAncestor() == false)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
 	PreDestructHierarchy_Recursive(RootObjToDestroy);
 	Destroy_Recursive(RootObjToDestroy);
 }
