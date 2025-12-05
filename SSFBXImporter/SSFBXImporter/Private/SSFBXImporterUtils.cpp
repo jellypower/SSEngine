@@ -936,24 +936,14 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 
 		while (ParentBoneIdx != INVALID_IDX)
 		{
-			Transform ParentTransform;
+			FbxNode* ParentNode = BoneMatchingNodes[ParentBoneIdx];
+			Transform ParentTransform = ExtractTransformFromNode(ParentNode);
 
-			if (BoneParentIndices[ParentBoneIdx] == INVALID_IDX) // 부모가 Root 본이면
-			{
-				ParentTransform = Transform::Identity; // 부모의 Transform은 원점이어야 한다.
-			}
-			else // 부모가 Root 본이 아니면 
-			{
-				FbxCluster* ParentCluster = fbxSkin->GetCluster(ParentBoneIdx);
-				FbxNode* ParentNode = ParentCluster->GetLink();
 
-				ParentTransform = ExtractTransformFromNode(ParentNode); // 부모의 상대좌표를 가져온다.
-			}
-
-			BoneTransformResult = BoneTransformResult * ParentTransform; // 곱해준다.
+			BoneTransformResult = BoneTransformResult * ParentTransform; 
 
 			ParentBoneIdx = BoneParentIndices[ParentBoneIdx];
-		}
+		} // 스켈레톤의 루트 기준으로 뻗어나가는 월드 좌표계를 계산해준다.
 
 		OutBones[BoneItemIdx].BoneTransform = BoneTransformResult;
 	}
