@@ -52,7 +52,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 	}
 }
 
-SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
+SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName, SS::SHasherW ObjectNameOverride)
 {
 	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 	const IModelAsset* lModelAsset = AssetManager->FindAssetByName<IModelAsset>(ModelAssetName);
@@ -62,7 +62,16 @@ SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName)
 		return nullptr;
 	}
 
-	SGameObject* NewGameObj = NewSObject<SGameObject>(ModelAssetName);
+	SGameObject* NewGameObj = nullptr;
+	if (ObjectNameOverride.IsEmpty())
+	{
+		NewGameObj = NewSObject<SGameObject>(ModelAssetName);
+	}
+	else
+	{
+		NewGameObj = NewSObject<SGameObject>(ObjectNameOverride);
+	}
+
 	SStaticMeshRenderComponent* NewStaticMeshComp = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(lModelAsset->GetAssetName());
 	NewStaticMeshComp->SetModelAsset(lModelAsset->GetAssetName());
 	NewStaticMeshComp->PostConstructHierarchy();

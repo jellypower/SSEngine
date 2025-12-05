@@ -93,6 +93,7 @@ void SSEditor::StartupEngine()
 	_DefaultWorld = NewSObject<SWorld>(L"World");
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
+	// Floor
 	{
 		SGameObject* Floor = SRendererUtil::InstantiateModel(L"Cube1m.mdl");
 		_DefaultWorld->AddToWorld(Floor);
@@ -100,18 +101,25 @@ void SSEditor::StartupEngine()
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
 	}
 
+	// Arrow
 	{
-		SGameObject* Floor = SRendererUtil::InstantiateModel(L"Sphere1m.mdl");
-		_DefaultWorld->AddToWorld(Floor);
-		Floor->SetPosition(Vector4f(0, 1, 0, 1));
-		Floor->SetScale(Vector4f(1, 1, 1, 0));
-	}
-
-	{
-		SGameObject* DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl");
+		// X
+		SGameObject* DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-X");
 		_DefaultWorld->AddToWorld(DirectionObject);
+		DirectionObject->SetRotation(Quaternion::FromLookDirect(Vector4f(1, 0, 0, 0)));
+		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
 
-		DirectionObject->SetRotation(Quaternion::FromLookDirect(Vector4f(1, 0, 1, 0)));
+		// Y
+		DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-Y");
+		_DefaultWorld->AddToWorld(DirectionObject);
+		DirectionObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 1, 0, 0)));
+		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
+
+		// Z
+		DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-Z");
+		_DefaultWorld->AddToWorld(DirectionObject);
+		DirectionObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 0, 1, 0)));
+		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
 	}
 
 	{
