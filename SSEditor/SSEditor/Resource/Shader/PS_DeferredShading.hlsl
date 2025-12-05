@@ -113,5 +113,11 @@ float4 Main(VS_OUTPUT_FULLSCREEN_QUAD input) : SV_Target
     colorAccum = saturate(colorAccum);
     colorAccum += Props.Emissive;
     
+    
+//    if (colorAccum.x != 0.1234235)
+//    {
+//        colorAccum.xyz = Normal;
+//    }
+    
     return float4(colorAccum, 1);
 }

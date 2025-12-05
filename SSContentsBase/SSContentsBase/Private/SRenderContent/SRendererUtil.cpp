@@ -32,7 +32,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 
 		if (AssetPlacement.MeshType == EMeshType::Rigid)
 		{
-			SRenderComponentBase* NewRenderComponent = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(MdlcAsset->GetAssetName());
+			SMeshRenderComponentBase* NewRenderComponent = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(MdlcAsset->GetAssetName());
 			NewRenderComponent->SetModelAsset(AssetPlacement.AssetName);
 			NewRenderComponent->PostConstructHierarchy();
 		}
@@ -87,12 +87,12 @@ void SRendererUtil::InstantiateModelObjTree_Recursion(const IModelCombinationAss
 		{
 			if (ChildAssetPlacement.MeshType == EMeshType::Rigid)
 			{
-				SRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SStaticMeshRenderComponent>(ChildAssetPlacement.PlacementName);
+				SMeshRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SStaticMeshRenderComponent>(ChildAssetPlacement.PlacementName);
 				NewRenderComp->SetModelAsset(ChildAssetPlacement.AssetName);
 			}
 			else if (ChildAssetPlacement.MeshType == EMeshType::Skinned)
 			{
-				SRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SSkinnedMeshRenderComponent>(ChildAssetPlacement.PlacementName);
+				SMeshRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SSkinnedMeshRenderComponent>(ChildAssetPlacement.PlacementName);
 				NewRenderComp->SetModelAsset(ChildAssetPlacement.AssetName);
 			}
 			else

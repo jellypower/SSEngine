@@ -48,11 +48,10 @@ Transform SSFBXImporterUtils::ExtractTransformFromNode(FbxNode* node, FbxTime fb
 	transform.Scale.W = 0;
 
 	const FbxQuaternion fbxRotation = fbxMat.GetQ(); // pitch yaw roll 으로 바꿔줘야 함
-	transform.Rotation.X = fbxRotation.mData[0];
-	transform.Rotation.Y = -fbxRotation.mData[1];
-	transform.Rotation.Z = -fbxRotation.mData[2];
-	transform.Rotation.W = fbxRotation.mData[3];
-
+	transform.Rotation.X = -fbxRotation.mData[0];
+	transform.Rotation.Y = fbxRotation.mData[1];
+	transform.Rotation.Z = fbxRotation.mData[2];
+	transform.Rotation.W = -fbxRotation.mData[3];
 
 	//	transform.Rotation = Quaternion::RotateAxisAngle(transform.Rotation, Vector4f::Right, SS::DegToRadians(fbxRotation.mData[1]));
 	//	transform.Rotation = Quaternion::RotateAxisAngle(transform.Rotation, Vector4f::Forward, -SS::DegToRadians(fbxRotation.mData[2]));
@@ -108,10 +107,22 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 	FbxVector4 normalVector;
 	int32 fbxNormalIdx;
 
-	if (fbxNormal->GetMappingMode() == FbxLayerElement::eByPolygonVertex) fbxNormalIdx = fbxMesh->GetPolygonVertexIndex(polygonIdx) + positionInPolygon;
-	else fbxNormalIdx = fbxMesh->GetPolygonVertex(polygonIdx, positionInPolygon);
 
-	switch (fbxNormal->GetReferenceMode())
+
+	FbxLayerElement::EMappingMode NormalMappingMode = fbxNormal->GetMappingMode();
+	if (NormalMappingMode == FbxLayerElement::eByPolygonVertex)
+	{
+		fbxNormalIdx = fbxMesh->GetPolygonVertexIndex(polygonIdx) + positionInPolygon;
+	}
+	else 
+	{
+		fbxNormalIdx = fbxMesh->GetPolygonVertex(polygonIdx, positionInPolygon); 
+	}
+
+	bool bResult;
+
+	FbxLayerElement::EReferenceMode ReferenceMode = fbxNormal->GetReferenceMode();
+	switch (ReferenceMode)
 	{
 	case FbxLayerElement::eDirect:
 
@@ -121,8 +132,11 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 	case FbxLayerElement::eIndex:
 	case FbxLayerElement::eIndexToDirect:
 
-		fbxNormalIdx = fbxNormal->GetIndexArray().GetAt(outControlPointIdx);
-		normalVector = fbxNormal->GetDirectArray().GetAt(fbxNormalIdx);
+		bResult = fbxMesh->GetPolygonVertexNormal(polygonIdx, positionInPolygon, normalVector);
+		SS_ASSERT(bResult);
+
+//		fbxNormalIdx = fbxNormal->GetIndexArray().GetAt(outControlPointIdx); // TODO: 여기가 문제다
+//		normalVector = fbxNormal->GetDirectArray().GetAt(fbxNormalIdx);
 
 		break;
 	default:
@@ -151,7 +165,9 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 		uint32 polygonVertexIdx;
 		uint32 directIdx;
 		const FbxGeometryElementUV* fbxUV = fbxMesh->GetElementUV(i);
-		SS_ASSERT(fbxUV != nullptr);
+		const char* UVName = fbxUV->GetName();
+
+		bool bUnmapped = false;
 
 		switch (fbxUV->GetMappingMode())
 		{
@@ -167,8 +183,11 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 			case FbxLayerElement::eIndex:
 			case FbxLayerElement::eIndexToDirect:
 
-				uvIdx = fbxUV->GetIndexArray().GetAt(outControlPointIdx);
-				uvVector = fbxUV->GetDirectArray().GetAt(uvIdx);
+				fbxMesh->GetPolygonVertexUV(polygonIdx, positionInPolygon, UVName, uvVector, bUnmapped);
+				SS_ASSERT(bResult && bUnmapped == false);
+
+//				uvIdx = fbxUV->GetIndexArray().GetAt(outControlPointIdx);
+//				uvVector = fbxUV->GetDirectArray().GetAt(uvIdx);
 
 				break;
 			default:

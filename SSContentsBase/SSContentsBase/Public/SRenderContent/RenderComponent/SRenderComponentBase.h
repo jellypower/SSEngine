@@ -9,14 +9,11 @@ class SRenderComponentBase;
 class SSCONTENTBASE_MODULE SRenderComponentBase : public SComponentBase
 {
 protected:
-	SS::SHasherW _ModelAssetName;
 	IRenderInstance* _RenderInstance = nullptr;
 
 
 public:
 	IRenderInstance* GetRenderInstance() const { return _RenderInstance; }
-
-	void SetModelAsset(SS::SHasherW ModelAssetName);
 
 	// virtual void PostConstruct() override;
 	virtual void PostConstructHierarchy() override;

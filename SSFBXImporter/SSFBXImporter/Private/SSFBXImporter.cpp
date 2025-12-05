@@ -80,6 +80,27 @@ bool SSFBXImporter::BindFbxSceneFile(const utf16* inFilePath)
 	_importedMeshNames.Clear();
 	_importedMeshNames.Reserve(100);
 
+
+	FbxGlobalSettings& Settings = _currentScene->GetGlobalSettings();
+	FbxAxisSystem AxisSystem = Settings.GetAxisSystem();
+
+	int32 FVSign = 0;
+	FbxAxisSystem::EFrontVector FV = AxisSystem.GetFrontVector(FVSign);
+
+	int32 UVSign = 0;
+	FbxAxisSystem::EUpVector UV = AxisSystem.GetUpVector(UVSign);
+	
+	FbxAxisSystem::ECoordSystem CS = AxisSystem.GetCoorSystem();
+
+	int32 Up = Settings.GetOriginalUpAxis();
+	FbxSystemUnit Unit = Settings.GetOriginalSystemUnit();
+	
+	// fbx파일을 기본적으로 import하면 나오는 좌표계
+	// UpVector (카메라의 윗 방향): Y+
+	// FrontVector(카메라가 바라보는 방향): Z+
+	// RightVector (카메라의 오른쪽): X-
+	// 왼손/오른손: 오른손
+	
 	return true;
 }
 

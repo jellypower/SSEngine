@@ -78,7 +78,7 @@ void SSEditor::StartupEngine()
 
 
 	{
-		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\DirectionMesh.fbx");
+		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\Arrow.fbx");
 		_FbxImporter->ImportCurrentFileToAssetManager();
 	}
 
@@ -108,11 +108,19 @@ void SSEditor::StartupEngine()
 	}
 
 	{
+		SGameObject* DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl");
+		_DefaultWorld->AddToWorld(DirectionObject);
+
+		DirectionObject->SetRotation(Quaternion::FromLookDirect(Vector4f(1, 0, 1, 0)));
+	}
+
+	{
 		
 		SS::StringW BoundFileName = _FbxImporter->GetBoundFileName().C_Str();
 		BoundFileName += ".mdlc";
 
 		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
+		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
 
 
@@ -141,15 +149,22 @@ void SSEditor::StartupEngine()
 		CameraComp->SetNearZ(0.01f);
 		CameraComp->SetFarZ(20.f);
 		CameraObject->SetPosition(Vector4f(0,0,-10.f,0));
-		CameraObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 0, 1, 0)));
+
+		Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));
+		CameraObject->SetRotation(StartRot);
 		TEMP_Camera = CameraComp;
+
+		Vector4f RotEuler = XMEulerFromQuaternion(StartRot.SimdVec);
+		TEMP_CamXRot = RotEuler.X;
+		TEMP_CamYRot = RotEuler.Y;
+
 		_Renderer->SetMainRenderCamera(CameraComp->GetRenderCamera());
 	}
 
 
 	{
 		SGameObject* LightObject = NewSObject<SGameObject>(L"GlobalLight");
-		SRenderLightDirectionalComponent* LightComp = LightObject->CreateComponent<SRenderLightDirectionalComponent>(L"CameraComponent");
+		SRenderLightDirectionalComponent* LightComp = LightObject->CreateComponent<SRenderLightDirectionalComponent>(L"SRenderLightDirectionalComponent");
 		LightComp->_Desc.ShadowMapSize = Vector2f(4096.f, 4096.f);
 		LightComp->_Desc.bEnableShadowMap = true;
 		SGameObjectConstructor::FinishConstructHierarchy(LightObject);
@@ -239,6 +254,14 @@ void SSEditor::TEMP_CreateAssets()
 				{L"T_Skybox01.tex", L"Resource/Texture/T_Skybox01.dds", ETextureType::CubeMap},
 				{L"T_Skybox02.tex", L"Resource/Texture/T_Skybox02.dds", ETextureType::CubeMap},
 				{L"T_Skybox03.tex", L"Resource/Texture/T_Skybox03.dds", ETextureType::CubeMap},
+
+				{L"T_Vivian_Body_D.tex", L"Resource/Texture/T_Vivian_Body_D.dds", ETextureType::Texture2D},
+				{L"T_Vivian_Crystal_D.tex", L"Resource/Texture/T_Vivian_Crystal_D.dds", ETextureType::Texture2D},
+				{L"T_Vivian_spa_h.tex", L"Resource/Texture/T_Vivian_spa_h.dds", ETextureType::Texture2D},
+				{L"T_Vivian_Weapon_D.tex", L"Resource/Texture/T_Vivian_Weapon_D.dds", ETextureType::Texture2D},
+				{L"T_Vivian_Weapon_Metallic.tex", L"Resource/Texture/T_Vivian_Weapon_Metallic.dds", ETextureType::Texture2D},
+				{L"T_VivianHair_D.tex", L"Resource/Texture/T_VivianHair_D.dds", ETextureType::Texture2D},
+				{L"T_Vivian_Face_D.tex", L"Resource/Texture/T_Vivian_Face_D.dds", ETextureType::Texture2D},
 		};
 
 		for (int32 i=0;i<_countof(TextureAssetList);i++)

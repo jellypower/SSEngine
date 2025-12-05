@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include "SRenderComponentBase.h"
+#include "SMeshRenderComponentBase.h"
 
 #include "SSContentsBase/ModuleExportKeyword.h"
 
-class SSCONTENTBASE_MODULE SStaticMeshRenderComponent : public SRenderComponentBase
+class SSCONTENTBASE_MODULE SStaticMeshRenderComponent : public SMeshRenderComponentBase
 {
 protected:
 	virtual void ConstructRenderInstance() override;

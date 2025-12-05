@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "SObject/Public/SObjHashT.h"
+#include "SMeshRenderComponentBase.h"
 
-#include "SRenderComponentBase.h"
 
-class SSkinnedMeshRenderComponent : public SRenderComponentBase
+class SSkinnedMeshRenderComponent : public SMeshRenderComponentBase
 {
 private:
 	SS::PooledList<SObjHashT<SGameObject>> _BoneBindings;

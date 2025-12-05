@@ -116,8 +116,15 @@ Quaternion Quaternion::FromEulerRotation(Vector4f eulerRotation)
 
 Quaternion Quaternion::FromLookDirect(Vector4f lookDirection, Vector4f upDirection)
 {
+	lookDirection.X = -lookDirection.X;
+	lookDirection.Y = -lookDirection.Y;
+
 	return XMQuaternionRotationMatrix(
-		XMMatrixLookToLH(Vector4f::Zero.SimdVec, lookDirection.SimdVec, upDirection.SimdVec));
+		XMMatrixLookToLH(
+			{ 0.0f, 0.0f, 0.0f, 1.0f },
+			lookDirection.SimdVec,
+			upDirection.SimdVec)
+	);
 }
 
 Quaternion Quaternion::RotateAxisAngle(Quaternion CurRotation, Vector4f Axis, float angle)

@@ -7,11 +7,6 @@
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
-void SRenderComponentBase::SetModelAsset(SS::SHasherW ModelAssetName)
-{
-	_ModelAssetName = ModelAssetName;
-}
-
 
 void SRenderComponentBase::PostConstructHierarchy()
 {
