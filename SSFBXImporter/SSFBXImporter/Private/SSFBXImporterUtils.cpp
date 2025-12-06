@@ -62,6 +62,32 @@ Transform SSFBXImporterUtils::ExtractTransformFromNode(FbxNode* node, FbxTime fb
 
 }
 
+Transform SSFBXImporterUtils::ExtractBoneRootRelativeTransform(FbxNode* InNode, FbxTime fbxTime)
+{
+	Transform Result;
+
+	FbxNodeAttribute::EType nodeAttribute = InNode->GetNodeAttribute()->GetAttributeType();
+	if (nodeAttribute != FbxNodeAttribute::eSkeleton)
+	{
+		SS_ASSERT(false);
+		return Result;
+	}
+
+	
+	FbxNode* NodeItem = InNode;
+	Result = ExtractTransformFromNode(NodeItem, fbxTime);
+
+	while (NodeItem->GetSkeleton()->IsSkeletonRoot() == false)
+	{
+		NodeItem = NodeItem->GetParent();
+
+		Transform TransformItem = ExtractTransformFromNode(NodeItem, fbxTime);
+		Result = Result * TransformItem;
+	} 
+
+	return Result;
+}
+
 constexpr float POS_SQR_THRESHOLD = 0.0001;
 constexpr float DEG_COS_THRESHOLD = 0.001;
 constexpr float UV_DIST_THRESHOlD = 0.0001;
@@ -923,28 +949,12 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 		int32 ParentBoneIdx = BoneParentIndices[BoneItemIdx];
 
 
-		FbxCluster* CurCluster = fbxSkin->GetCluster(BoneItemIdx);
-		FbxNode* CurNode = CurCluster->GetLink();
+		FbxNode* CurNode = BoneMatchingNodes[BoneItemIdx];
 
 		Transform BoneTransformResult;
 		const char8_t* FORDEBUG_CurNodeName = (char8_t*)CurNode->GetName();
-		// SS::SHasherW FORDEBUG_CurNodeName = CurNode->GetName();
-		if (ParentBoneIdx != INVALID_IDX) // Root본이 아니면
-		{
-			BoneTransformResult = ExtractTransformFromNode(CurNode); // 현재 노드의 Transform을 가지고온다.
-		}
 
-		while (ParentBoneIdx != INVALID_IDX)
-		{
-			FbxNode* ParentNode = BoneMatchingNodes[ParentBoneIdx];
-			Transform ParentTransform = ExtractTransformFromNode(ParentNode);
-
-
-			BoneTransformResult = BoneTransformResult * ParentTransform; 
-
-			ParentBoneIdx = BoneParentIndices[ParentBoneIdx];
-		} // 스켈레톤의 루트 기준으로 뻗어나가는 월드 좌표계를 계산해준다.
-
+		BoneTransformResult = ExtractBoneRootRelativeTransform(CurNode); // 현재 노드의 Transform을 가지고온다.
 		OutBones[BoneItemIdx].BoneTransform = BoneTransformResult;
 	}
 
