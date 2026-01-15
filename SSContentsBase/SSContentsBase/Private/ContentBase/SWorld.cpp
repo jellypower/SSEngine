@@ -54,7 +54,7 @@ void SWorld::InitializeWorld(IRenderWorld* InRenderWorld)
 {
 	_RenderWorld = InRenderWorld;
 
-	_AnimWorker = DBG_NEW AnimWorkerBase();
+	_AnimWorker = DBG_NEW AnimWorkerBase(this);
 }
 
 void SWorld::PerFrameContents()
@@ -68,7 +68,8 @@ void SWorld::PerFrameContents()
 
 void SWorld::PerFrameAnim()
 {
-	_AnimWorker->PerFrameUpdateAnimation();
+	_AnimWorker->BeginUpdateAnimation();
+	_AnimWorker->EndUpdateAnimation();
 }
 
 bool SWorld::IsAnyObjectRemainInWorld() const
@@ -132,7 +133,7 @@ void SWorld::ProcessTransformCommit()
 		}
 		else
 		{
-			ParentWorldTransform = TransformCommitStartParent->GetWorldTransformMatrix();
+			ParentWorldTransform = TransformCommitStartParent->CalcWorldTransformMatrix();
 			ParentWorldRotation = TransformCommitStartParent->GetWorldRot();
 		}
 

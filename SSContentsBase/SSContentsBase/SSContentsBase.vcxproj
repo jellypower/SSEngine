@@ -159,6 +159,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.cpp" />
     <ClCompile Include="Private\AnimWorker\AnimWorkerBase.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\AnimComponents\SAnimatorBaseComponent.cpp" />
@@ -179,6 +180,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\SRenderContent\RenderComponent\SMeshRenderComponentBase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Public\AnimWorker\AnimWorkee\IAnimWorkee.h" />
+    <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.h" />
     <ClInclude Include="Private\AnimWorker\AnimWorkerBase.h" />
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="Public\AnimComponents\SAnimatorBaseComponent.h" />

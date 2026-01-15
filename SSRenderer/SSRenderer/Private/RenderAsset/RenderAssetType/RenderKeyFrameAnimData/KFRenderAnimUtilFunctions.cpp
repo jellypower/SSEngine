@@ -31,7 +31,7 @@ Transform EvaluateRenderKFTransform(const RenderAnimRawData* AnimRawData, int32 
 		T2TimeRatio = TransformTrack[i + 1]._TimeRatio;
 		TimeSpan = T2TimeRatio - T1TimeRatio;
 
-		if (T1TimeRatio < CurTimeRatio && CurTimeRatio < T2TimeRatio)
+		if (T1TimeRatio <= CurTimeRatio && CurTimeRatio < T2TimeRatio)
 		{
 			break;
 		}

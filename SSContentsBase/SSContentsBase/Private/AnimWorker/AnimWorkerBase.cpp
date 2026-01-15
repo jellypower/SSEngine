@@ -1,12 +1,17 @@
 #include "AnimWorkerBase.h"
 
-#include "SSContentsBase/Public/AnimComponents/SAnimatorBaseComponent.h"
+#include <SSEngineDefault/Public/RawProfiler/SSFrameInfo.h>
 
-AnimWorkerBase::AnimWorkerBase():
-	_AnimComponents(512, 512)
+#include "SSContentsBase/Public/AnimComponents/SAnimatorBaseComponent.h"
+#include "SSContentsBase/Public/AnimWorker/AnimWorkee/IAnimWorkee.h"
+
+AnimWorkerBase::AnimWorkerBase(SWorld* InWorld) :
+	_AnimComponents(512, 512),
+	_WorldToAnimate(InWorld)
 
 {
 }
+
 
 void AnimWorkerBase::AddToWorker(SAnimatorBaseComponent* InAnimator)
 {
@@ -25,16 +30,47 @@ void AnimWorkerBase::RemoveFromWorker(SAnimatorBaseComponent* InAnimator)
 	SS_ASSERT(bResult);
 }
 
-void AnimWorkerBase::PerFrameUpdateAnimation()
+void AnimWorkerBase::BeginUpdateAnimation()
 {
 	for (SS::pair<SObjHashCode, SAnimatorBaseComponent*> AnimatorItemPair : _AnimComponents)
 	{
 		SAnimatorBaseComponent* AnimatorItem = AnimatorItemPair.second;
-		if (AnimatorItem->ShouldUpdateAnimation() == false)
+		IAnimWorkee* AnimWorkee = AnimatorItem->GetAnimWorkee();
+		if (AnimWorkee == nullptr)
 		{
 			continue;
 		}
 
-		AnimatorItem->UpdateAnimation();
+		if (AnimWorkee->ShouldUpdateAnim() == false)
+		{
+			continue;
+		}
+
+		// TODO: 나중에 DeltaTime에 TimeScale 적용하기
+		float DeltaTime = SSFrameInfo::GetDeltaTime();
+		AnimWorkee->UpdateAnimation(DeltaTime);
+	}
+}
+
+void AnimWorkerBase::EndUpdateAnimation()
+{
+	uint64 ThisFrameCnt = SSFrameInfo::GetFrameCnt();
+
+	for (SS::pair<SObjHashCode, SAnimatorBaseComponent*> AnimatorItemPair : _AnimComponents)
+	{
+		SAnimatorBaseComponent* AnimatorItem = AnimatorItemPair.second;
+		IAnimWorkee* AnimWorkee = AnimatorItem->GetAnimWorkee();
+		if (AnimWorkee == nullptr)
+		{
+			continue;
+		}
+
+		if (AnimWorkee->GetLastUpdateFrame() != ThisFrameCnt)
+		{
+			continue;
+		}
+
+
+		AnimatorItem->ApplyAnimWorkeeTransform();
 	}
 }

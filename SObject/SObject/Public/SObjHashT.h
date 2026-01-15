@@ -20,6 +20,11 @@ public:
 		return static_cast<T*>(SObject);
 	}
 
+	SObjHashCode GetHashCode() const
+	{
+		return _HashCode;
+	}
+
 private:
 	SObjHashCode _HashCode;
 };

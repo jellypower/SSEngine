@@ -349,6 +349,18 @@ void SSEditor::TEMP_ProcessContents()
 		CamGameObj->SetPosition(Pos);
 	}
 
+	if (SSInput::GetKeyDown(EKeyCode::KEY_G))
+	{
+		SObjectBase* PickedObject = _PickedObject.GetSObject();
+		SGameObject* PickedGameObject = dynamic_cast<SGameObject*>(PickedObject);
+		if (PickedGameObject != nullptr)
+		{
+			PickedGameObject->SetWorldTransform(Transform::Identity);
+		}
+
+		Transform WorldTransform =  PickedGameObject->CalcWorldTransform();
+		int a = 0;
+	}
 
 	if (SSInput::GetMouse(EMouseCode::MOUSE_RIGHT))
 	{	

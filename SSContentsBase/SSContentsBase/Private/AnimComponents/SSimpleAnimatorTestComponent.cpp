@@ -1,5 +1,6 @@
 #include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
 
+#include "SSContentsBase/Private/AnimWorker/AnimWorkee/AnimWorkeeSimplePlayer.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/KFRenderAnimUtilFunctions.h"
@@ -9,57 +10,75 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
-void SSimpleAnimatorTestComponent::UpdateAnimation()
+void SSimpleAnimatorTestComponent::SetWholeFrameTime(float Time)
 {
-	__super::UpdateAnimation();
-	UpdateNodesAnimation();
+	if (_AnimWorkee == nullptr)
+	{
+		return;
+	}
+
+	_AnimWorkee->SetWholeFrameTime(Time);
 }
 
-void SSimpleAnimatorTestComponent::UpdateNodesAnimation()
+void SSimpleAnimatorTestComponent::SetPauseAnim(bool bIsPause)
 {
-	if (GetRenderAnimAssetName().IsEmpty())
+	if (_AnimWorkee == nullptr)
 	{
-		SS_ASSERT(false);
 		return;
 	}
 
-	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-	IRenderAnimAsset* FoundRenderAnimAsset = AssetManager->FindAssetByName<IRenderAnimAsset>(GetRenderAnimAssetName());
-	if (FoundRenderAnimAsset == nullptr)
+	_AnimWorkee->SetPauseAnim(bIsPause);
+}
+
+void SSimpleAnimatorTestComponent::SetRenderAnimAsset(SS::SHasherW RenderAnimAssetName)
+{
+	_RenderAnimAssetName = RenderAnimAssetName;
+
+	if (_AnimWorkee != nullptr)
 	{
-		SS_ASSERT(false);
-		return;
+		_AnimWorkee->SetRenderAnimAsset(RenderAnimAssetName);
+	}
+}
+
+
+IAnimWorkee* SSimpleAnimatorTestComponent::GetAnimWorkee() const
+{
+	return _AnimWorkee;
+}
+
+void SSimpleAnimatorTestComponent::ReconstructBoneBinding()
+{
+	SAnimatorBaseComponent::ReconstructBoneBinding();
+
+	if (_AnimWorkee != nullptr)
+	{
+		delete _AnimWorkee;
 	}
 
-	const RenderAnimRawData* AnimRawData = FoundRenderAnimAsset->GetKeyFrameAnimData();
-	if (AnimRawData == nullptr)
+	_AnimWorkee = DBG_NEW AnimWorkeeSimplePlayer(this);
+}
+
+void SSimpleAnimatorTestComponent::PreDestructHierarchy()
+{
+	if (_AnimWorkee != nullptr)
 	{
-		SS_ASSERT(false);
-		return;
+		delete _AnimWorkee;
+	}
+}
+
+bool SSimpleAnimatorTestComponent::IsOnPause() const
+{
+	if (_AnimWorkee == nullptr)
+	{
+		return true;
 	}
 
+	return _AnimWorkee->IsOnPause();
+}
 
-	float Time = GetWholeFrameTime();
-	Time = fmod(Time, AnimRawData->_KeyFrameDuration);
-
-	const SS::PooledList<SObjHashT<SGameObject>>& Bindings = GetBoneBindings();
-	int32 BindingCnt = Bindings.GetSize();
-	int32 KFTrackCnt = AnimRawData->_Tracks.GetSize();
-
-	int32 IterCnt = BindingCnt < KFTrackCnt ? BindingCnt : KFTrackCnt;
-
-	for (int32 i = 0; i < BindingCnt; i++)
-	{
-		SObjHashT<SGameObject> ItemHashPtr = Bindings[i];
-		SGameObject* Item = ItemHashPtr.Get();
-		if (Item == nullptr)
-		{
-			continue;
-		}
-
-		Transform Result = EvaluateRenderKFTransform(AnimRawData, i, Time);
-		Item->SetTransform(Result);
-	}
+SS::SHasherW SSimpleAnimatorTestComponent::GetRenderAnimAssetName() const
+{
+	return _RenderAnimAssetName;
 }
 
 float SSimpleAnimatorTestComponent::GetAnimDuration() const
@@ -86,4 +105,14 @@ float SSimpleAnimatorTestComponent::GetAnimDuration() const
 	}
 
 	return AnimRawData->_KeyFrameDuration;
+}
+
+double SSimpleAnimatorTestComponent::GetWholeFrameTime() const
+{
+	if (_AnimWorkee == nullptr)
+	{
+		return 0;
+	}
+
+	return _AnimWorkee->GetWholeFrameTime();
 }

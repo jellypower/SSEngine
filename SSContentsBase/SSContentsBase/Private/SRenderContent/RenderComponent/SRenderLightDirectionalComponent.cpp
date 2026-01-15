@@ -53,6 +53,6 @@ void SRenderLightDirectionalComponent::PreDestructHierarchy()
 void SRenderLightDirectionalComponent::OnGameObjectTransformCommited()
 {
 	SGameObject* Owner = GetGameObject();
-	const Transform& WorldTransform = Owner->GetWorldTransform();
+	const Transform& WorldTransform = Owner->CalcWorldTransform();
 	_RenderLight->SetWorldRotation(WorldTransform.Rotation);
 }

@@ -66,7 +66,7 @@ void SGameObject::ScrapAllDescendants(SS::PooledList<SGameObject*>& OutDescendan
 	ScrapAllDescendant_Recursion(OutDescendants, this);
 }
 
-Transform SGameObject::GetWorldTransform() const
+Transform SGameObject::CalcWorldTransform() const
 {
 	if (IsRootInWorld())
 	{
@@ -74,12 +74,12 @@ Transform SGameObject::GetWorldTransform() const
 	}
 
 	SGameObject* Parent = GetParent();
-	Transform ParentTransform = Parent->GetWorldTransform();
+	Transform ParentTransform = Parent->CalcWorldTransform();
 
 	return _transform * ParentTransform;
 }
 
-XMMATRIX SGameObject::GetWorldTransformMatrix() const
+XMMATRIX SGameObject::CalcWorldTransformMatrix() const
 {
 	XMMATRIX TransformMat = _transform.AsMatrix();
 
@@ -89,7 +89,7 @@ XMMATRIX SGameObject::GetWorldTransformMatrix() const
 	}
 
 	SGameObject* Parent = GetParent();
-	XMMATRIX ParentWorldTransformMat = Parent->GetWorldTransformMatrix();
+	XMMATRIX ParentWorldTransformMat = Parent->CalcWorldTransformMatrix();
 
 	return TransformMat * ParentWorldTransformMat;
 }
@@ -111,6 +111,23 @@ void SGameObject::SetTransform(const Transform& InTransform)
 	_transform = InTransform;
 	_transform.Position.W = 1.f;
 	MarkTransformCommitNeeded();
+}
+
+void SGameObject::SetWorldTransform(const Transform& InWorldTransform)
+{
+	const SGameObject* Parent = GetParent();
+	if (Parent == nullptr)
+	{
+		SetTransform(InWorldTransform);
+		return;
+	}
+
+	Transform ParentWorldTransform = Parent->CalcWorldTransform();
+	Transform ParentWorldInverseTransform = ParentWorldTransform.Inverse();
+
+	Transform TransformToApply = InWorldTransform * ParentWorldInverseTransform;
+
+	SetTransform(TransformToApply);
 }
 
 void SGameObject::SetPosition(const Vector4f& InPosition)
@@ -229,11 +246,19 @@ void SGameObject::MarkTransformCommitNeeded()
 
 void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const Quaternion& ParentRotation)
 {
+	uint64 ThisFrameCnt = SSFrameInfo::GetFrameCnt();
+	if (ThisFrameCnt == _TransformCommitedFrameCnt)
+	{
+		// 이미 커밋된 트랜스폼은 패스한다.
+		// 커밋은 모든 움직임이 끝나고 게임오브젝트당 1번 만 하는게 목표.
+		return;
+	}
+
 	XMMATRIX ThisTransformMat = _transform.AsMatrix();
 	_CommittedWorldTransformMat = ThisTransformMat * ParentWorldTransformMat;
 	_CommittedWorldRotation =  _transform.Rotation * ParentRotation;
 	_bTransformCommitReserved = false;
-	_TransformCommitedFrameCnt = SSFrameInfo::GetFrameCnt();
+	_TransformCommitedFrameCnt = ThisFrameCnt;
 
 	for (SComponentBase* ComponentItem : _Components)
 	{

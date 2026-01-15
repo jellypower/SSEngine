@@ -2,15 +2,32 @@
 #include "SAnimatorBaseComponent.h"
 
 
+class AnimWorkeeSimplePlayer;
+
 class SSCONTENTBASE_MODULE SSimpleAnimatorTestComponent : public SAnimatorBaseComponent
 {
 private:
-	void UpdateNodesAnimation();
+	AnimWorkeeSimplePlayer* _AnimWorkee = nullptr;
+	SS::SHasherW _RenderAnimAssetName;
+
+
 
 public:
-	float GetAnimDuration() const;
 
-	virtual void UpdateAnimation() override;
+
+	virtual IAnimWorkee* GetAnimWorkee() const override;
+	virtual void ReconstructBoneBinding() override;
+	virtual void PreDestructHierarchy() override;
+
+public:
+	bool IsOnPause() const;
+	SS::SHasherW GetRenderAnimAssetName() const;
+	float GetAnimDuration() const;
+	double GetWholeFrameTime() const;
+
+	void SetWholeFrameTime(float Time);
+	void SetPauseAnim(bool bIsPause);
+	void SetRenderAnimAsset(SS::SHasherW RenderAnimAssetName);
 
 };
 

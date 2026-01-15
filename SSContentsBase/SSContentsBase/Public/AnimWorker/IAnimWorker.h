@@ -11,5 +11,7 @@ class IAnimWorker : public INoncopyable
 public:
 	virtual void AddToWorker(SAnimatorBaseComponent* InAnimator) = 0;
 	virtual void RemoveFromWorker(SAnimatorBaseComponent* InAnimator) = 0;
-	virtual void PerFrameUpdateAnimation() = 0;
+
+	virtual void BeginUpdateAnimation() = 0;
+	virtual void EndUpdateAnimation() = 0;
 };

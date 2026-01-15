@@ -1,96 +1,38 @@
 ﻿#include "SSContentsBase/Public/AnimComponents/SAnimatorBaseComponent.h"
 
+#include "SSContentsBase/Private/AnimWorker/AnimWorkee/AnimWorkeeSimplePlayer.h"
 #include "SSContentsBase/Public/AnimWorker/IAnimWorker.h"
-#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
-#include "SSRenderer/Public/RenderBase/IRenderer.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IRenderAnimAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
 
-bool SAnimatorBaseComponent::ShouldUpdateAnimation() const
-{
-	if (_RenderAnimAssetName.IsEmpty())
-	{
-		return false;
-	}
-
-	return
-		_bIsOneTimeUpdateRequested ||
-		_bIsOnPause == false;
-}
-
-void SAnimatorBaseComponent::SetPauseAnim(bool bIsPause)
-{
-	_bIsOnPause = bIsPause;
-}
-
-void SAnimatorBaseComponent::SetWholeFrameTime(float Time)
-{
-	_WholeFrameTime = Time;
-	_bIsOneTimeUpdateRequested = true;;
-}
-
-void SAnimatorBaseComponent::SetRenderAnimAsset(SS::SHasherW RenderAnimAssetName)
-{
-	_RenderAnimAssetName = RenderAnimAssetName;
-	ReconstructBoneBinding();
-}
 
 
 void SAnimatorBaseComponent::ReconstructBoneBinding()
 {
-	const SGameObject* GO = GetGameObject();
-	
+	SGameObject* GO = GetGameObject();
+
 	if (GO == nullptr || GO->GetIsHierarchyInitialized() == false)
 	{
 		return;
 	}
 
-	if (_RenderAnimAssetName.IsEmpty())
-	{
-		return;
-	}
-
-	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-	IRenderAnimAsset* FoundRenderAnimAsset = AssetManager->FindAssetByName<IRenderAnimAsset>(_RenderAnimAssetName);
-	if (FoundRenderAnimAsset == nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
-
-	const RenderAnimRawData* AnimData = FoundRenderAnimAsset->GetKeyFrameAnimData();
-	if (AnimData == nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
 
 	SS::PooledList<SGameObject*> ScrapedDecendants(200);
 	GO->ScrapAllDescendants(ScrapedDecendants);
+	_BoneBindings.Clear();
 	_BoneBindings.Reserve(200);
 
-	for (const RKFTrack& TrackItem : AnimData->_Tracks)
+	SGameObject* MatchingObject = nullptr;
+
+	for (SGameObject* Item : ScrapedDecendants)
 	{
-		SGameObject* MatchingObject = nullptr;
-
-		for (SGameObject* Item : ScrapedDecendants)
-		{
-			if (TrackItem._TrackName.IsEmpty() == false &&
-				TrackItem._TrackName == Item->GetObjectName())
-			{
-				MatchingObject = Item;
-				break;
-			}
-		}
-
-		_BoneBindings.PushBack(MatchingObject); // nullptr도 들어감
+		_BoneBindings.PushBack(Item); // nullptr도 가능
 	}
-	
+
+
 	int32 a = 0;
 }
 
@@ -109,10 +51,28 @@ void SAnimatorBaseComponent::PostConstructHierarchy()
 }
 
 
-void SAnimatorBaseComponent::UpdateAnimation()
+
+void SAnimatorBaseComponent::ApplyAnimWorkeeTransform()
 {
-	_bIsOneTimeUpdateRequested = false;
-	_WholeFrameTime += SSFrameInfo::GetDeltaTime();
+	IAnimWorkee* AnimWorkee = GetAnimWorkee();
+	if (AnimWorkee == nullptr)
+	{
+		return;
+	}
+
+	const PoseSlot& ResultPose = AnimWorkee->GetResultPose();
+
+	int32 BoneCnt = _BoneBindings.GetSize();
+	for (int32 i = 0; i < BoneCnt; i++)
+	{
+		SGameObject* GOItem = _BoneBindings[i].Get();
+		if (GOItem == nullptr)
+		{
+			continue;
+		}
+
+		GOItem->SetTransform(ResultPose.BoneTransforms[i]);
+	}
 }
 
 void SAnimatorBaseComponent::OnExitTheWorld()

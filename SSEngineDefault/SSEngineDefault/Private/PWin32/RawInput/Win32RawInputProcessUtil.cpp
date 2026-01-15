@@ -9,6 +9,7 @@ EKeyCode WindowsVKCodeToSSKeyCode(WPARAM wParam)
 	case 'C': return EKeyCode::KEY_C;
 	case 'D': return EKeyCode::KEY_D;
 	case 'E': return EKeyCode::KEY_E;
+	case 'G': return EKeyCode::KEY_G;
 	case 'Q': return EKeyCode::KEY_Q;
 	case 'S': return EKeyCode::KEY_S;
 	case 'W': return EKeyCode::KEY_W;

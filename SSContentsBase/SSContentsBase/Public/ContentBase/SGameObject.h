@@ -52,8 +52,8 @@ public:
 	SComponentBase* GetComponentByIdx(int32 ComponentIdx) const { return _Components[ComponentIdx]; }
 
 	const Transform& GetTransform() const { return _transform; }
-	Transform GetWorldTransform() const;
-	XMMATRIX GetWorldTransformMatrix() const;
+	Transform CalcWorldTransform() const;
+	XMMATRIX CalcWorldTransformMatrix() const;
 	Quaternion GetWorldRot() const;
 
 	uint64 GetTransformCommittedFrameCnt() const { return _TransformCommitedFrameCnt; }
@@ -63,6 +63,7 @@ public:
 
 public:
 	void SetTransform(const Transform& InTransform);
+	void SetWorldTransform(const Transform& InWorldTransform);
 	void SetPosition(const Vector4f& InPosition);
 	void SetRotation(const Quaternion& InRotation);
 	void SetScale(const Vector4f& InScale);

@@ -6,19 +6,24 @@
 
 #include "SSContentsBase/Public/AnimWorker/IAnimWorker.h"
 
+class SWorld;
 class SAnimatorBaseComponent;
 
 class AnimWorkerBase : public IAnimWorker
 {
 private:
 	SS::HashMap<SObjHashCode, SAnimatorBaseComponent*> _AnimComponents;
+	SWorld* _WorldToAnimate = nullptr;
 
 public:
-	AnimWorkerBase();
+	AnimWorkerBase(SWorld* InWorld);
 
 public:
 	virtual void AddToWorker(SAnimatorBaseComponent* InAnimator) override;
 	virtual void RemoveFromWorker(SAnimatorBaseComponent* InAnimator) override;
-	virtual void PerFrameUpdateAnimation() override;
+
+	virtual void BeginUpdateAnimation() override;
+	virtual void EndUpdateAnimation() override;
+
 };
 

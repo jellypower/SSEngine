@@ -515,7 +515,7 @@ void SSFBXImporter::ImportCurrentFileToRenderAnimAsset()
 	NewRenderAnimAsset->InjectRawDataXXX(NewRawData);
 
 
-	SS::SHasherW NameRoot = SS::SHasherW("root");
+	static const SS::SHasherW NameRoot = SS::SHasherW("root");
 
 	for (int32 i = 0; i < ChildCnt; i++)
 	{
@@ -526,7 +526,7 @@ void SSFBXImporter::ImportCurrentFileToRenderAnimAsset()
 
 		RKFTrack NewTrack;
 
-		if ((ChildNodeNameLen <= 0 || NameRoot == ChildItem.PlacementName) == false)
+		if (ChildNodeNameLen > 0 && NameRoot != ChildItem.PlacementName)
 		{
 			char ChildNodeNameStr[PATH_LEN_MAX];
 
@@ -556,10 +556,10 @@ void SSFBXImporter::ImportCurrentFileToRenderAnimAsset()
 
 				int a = 0;
 			}
+
+			NewRawData->_Tracks.PushBack(NewTrack);
+
 		}
-
-
-		NewRawData->_Tracks.PushBack(NewTrack);
 	}
 
 	_AssetManagerToImportAsset->AddToAssetPool(NewRenderAnimAsset);
