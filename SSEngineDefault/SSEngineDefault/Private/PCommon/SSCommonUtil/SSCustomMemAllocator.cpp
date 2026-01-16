@@ -215,7 +215,7 @@ void SSCustomMemChunkAllocator::ReleaseChunk(const AllocatedChunkHeader& ChunkTo
 				AvailableMemspace NewMemspace;
 				NewMemspace.Offset = ChunkToRelease.ChunkOffset;
 				NewMemspace.Size = ChunkToRelease.Size;
-				AvailableChunks.InsertBack(iter, NewMemspace);
+				AvailableChunks.PushBack(NewMemspace);
 			}
 		}
 		// 4. 두 청크 사이에 있는 경우

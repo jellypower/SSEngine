@@ -17,8 +17,27 @@ void TestCustomChunkAllocator(PCommonGALRenderDevice* GALDevice)
 	SSCustomMemChunkAllocator* CustomDescTbleAllocator = GALDevice->GetDescriptorTableAllocator();
 	ID3D12Device5* DX12Device = ((DX12GALRenderDevice*)GALDevice)->GetD3DDevice();
 
-	constexpr int32 EACH_CHUNK_SIZE = 128;
-	constexpr int32 TEST_CHUNK_CNT = 100;
+	constexpr int32 EACH_CHUNK_SIZE = 1024;
+	constexpr int32 TEST_CHUNK_CNT = 2048;
+
+	SS::PooledList<int32> RandReleaseIdx(TEST_CHUNK_CNT);
+
+	for (int32 i = 0; i < TEST_CHUNK_CNT; i++)
+	{
+		RandReleaseIdx.PushBack(i);
+	}
+
+	srand(time(NULL));
+	srand(time(NULL));
+	for (int32 i = 0; i < TEST_CHUNK_CNT; i++)
+	{
+		int32 RandIdx1 = rand() % TEST_CHUNK_CNT;
+		int32 RandIdx2 = rand() % TEST_CHUNK_CNT;
+
+		int32 Tmp = RandReleaseIdx[RandIdx2];
+		RandReleaseIdx[RandIdx2] = RandReleaseIdx[RandIdx1];
+		RandReleaseIdx[RandIdx1] = Tmp;
+	}
 
 	uint64 CustomAllocatorTickCnt = 0;
 	{
@@ -32,7 +51,8 @@ void TestCustomChunkAllocator(PCommonGALRenderDevice* GALDevice)
 
 		for (int32 i=0;i<TEST_CHUNK_CNT;i++)
 		{
-			CustomCBAllocator->ReleaseChunk(DescSets[i]);
+			int32 ReleaseIdx = RandReleaseIdx[i];
+			CustomCBAllocator->ReleaseChunk(DescSets[ReleaseIdx]);
 		}
 		uint64 EndTickCnt = GetPerofrmanceCounter();
 
@@ -41,6 +61,7 @@ void TestCustomChunkAllocator(PCommonGALRenderDevice* GALDevice)
 		free(DescSets);
 	}
 
+	SS_ASSERT(CustomCBAllocator->IsAnyChunkInUse() == false);
 
 	uint64 CommittedResourecTickCnt = 0;
 	{
@@ -72,7 +93,9 @@ void TestCustomChunkAllocator(PCommonGALRenderDevice* GALDevice)
 
 		for (int32 i = 0; i < TEST_CHUNK_CNT; i++)
 		{
-			Resources[i]->Release();
+			int32 ReleaseIdx = RandReleaseIdx[i];
+
+			Resources[ReleaseIdx]->Release();
 		}
 		uint64 EndTickCnt = GetPerofrmanceCounter();
 
@@ -82,6 +105,5 @@ void TestCustomChunkAllocator(PCommonGALRenderDevice* GALDevice)
 	}
 
 	double TimeScale = (double)CommittedResourecTickCnt / (double)CustomAllocatorTickCnt;
-
 	int a = 0;
 }
