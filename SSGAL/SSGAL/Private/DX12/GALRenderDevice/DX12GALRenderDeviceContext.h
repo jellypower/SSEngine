@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
+class DX12TransientConstantBufferAllocator;
 class IRICubeMap;
 class IRISkinnedMesh;
 class GALRIShadowMapMetadata;
@@ -128,4 +129,6 @@ private:
 	PipelineDesc _LastSetPSO;
 
 	SS::PooledList<ID3D12DescriptorHeap*, SS::InlineAllocator<10>> _UniqueDescHeapWorkTable;
+
+
 };

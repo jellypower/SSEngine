@@ -36,6 +36,8 @@ public:
 	GALRenderTarget* GetDefaultViewportRenderTarget() const { return _DefaultViewportRenderTarget; }
 	uint64 GetCurFrameCnt() const { return _CurFrameCnt; }
 
+	bool IsDebugEnabled() const { return _EnableDebug; }
+
 	virtual ERenderDevicePlatnform GetRenderDevicePlatform() const = 0;
 
 public:

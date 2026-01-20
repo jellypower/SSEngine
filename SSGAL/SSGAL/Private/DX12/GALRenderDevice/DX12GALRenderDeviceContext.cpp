@@ -9,12 +9,14 @@
 #include <SSRenderer/Public/RenderInstance/IRICubeMap.h>
 
 
+#include "Private/DX12/DX12CommonUtils/DX12TransientConstantBufferAllocator.h"
 #include "Private/DX12/GALPostProcessContext/DX12GALPPCDeferredShading.h"
 #include "Private/DX12/GALRenderAsset/DX12GALSkinnedMeshAssetWrapper.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRICubeMap.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIDirectionalLightShadowMapMetadata.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIMetadata_SKM.h"
 #include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
+#include "Private/PCommon/TestCodes/GALTestCodes.h"
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "SSGAL/Private/PCommon/GALPrivateGlobals.h"
@@ -115,7 +117,19 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 		_PostProcessCommandLists.PushBack(NewCommandList);
 	}
 
+	_TransientCBAllocator = DBG_NEW DX12TransientConstantBufferAllocator(
+		this,
+		GAL_RESOURCE_DEFAULT_ALIGNMENT_SIZE,
+		GAL_CONSTANTBUFFER_MIN_SIZE,
+		256,
+		L"DX12GALRenderDevice::_TransientConstantBufferAllocator");
+
 	_ResourceUpdater = DBG_NEW DX12GALResourceUpdater(InRenderDevice, this);
+
+	if (_OwnerRenderDevice->IsDebugEnabled())
+	{
+		TestTransientAllocator(this);
+	}
 
 	return;
 
@@ -170,6 +184,9 @@ DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 	_DrawWorkerCommandAllocators.Resize(0);
 
 	delete _ResourceUpdater;
+
+	_TransientCBAllocator->ReleaseDefaultPages();
+	delete _TransientCBAllocator;
 }
 
 bool DX12GALRenderDeviceContext::IsValid() const
@@ -1277,6 +1294,8 @@ ID3D12CommandAllocator* DX12GALRenderDeviceContext::GetCurrentPostProcessCmdAllo
 
 void DX12GALRenderDeviceContext::ResetRenderState()
 {
+	_TransientCBAllocator->ResetAllChunksXXX();
+
 	_ResourceUpdater->ResetUpdateBuffer();
 	ResetCommandList();
 

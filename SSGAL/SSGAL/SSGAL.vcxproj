@@ -169,6 +169,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClCompile Include="Private\DX12\DX12CommonUtils\DDSTextureLoader12\DDSTextureLoader12.cpp" />
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.cpp" />
     <ClCompile Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.cpp" />
+    <ClCompile Include="Private\DX12\DX12CommonUtils\DX12TransientConstantBufferAllocator.cpp" />
     <ClCompile Include="Private\DX12\GALPostProcessContext\DX12GALPPCDeferredShading.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALDefaultPBRMaterialAsset.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.cpp" />
@@ -213,6 +214,7 @@ xcopy "$(OutDir)D3D12\*" "$(SolutionDir)..\SSEditor\$(IntDir)D3D12\*" /ysd</Comm
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourceAllocator.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12ConstantBufferResourcePage.h" />
     <ClInclude Include="Private\DX12\DX12CommonUtils\DX12DescriptorHeapCustomAllocator.h" />
+    <ClInclude Include="Private\DX12\DX12CommonUtils\DX12TransientConstantBufferAllocator.h" />
     <ClInclude Include="Private\DX12\GALPostProcessContext\DX12GALPPCDeferredShading.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALDefaultPBRMaterialAsset.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.h" />

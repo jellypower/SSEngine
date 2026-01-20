@@ -176,6 +176,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SHasher\IHasherPool.h" />
     <ClInclude Include="Public\SSCommonUtil\AllocatedChunkHeader.h" />
     <ClInclude Include="Public\SSCommonUtil\SSCustomMemAllocator.h" />
+    <ClInclude Include="Public\SSCommonUtil\SSTransientMemAllocator.h" />
+    <ClInclude Include="Public\SSCommonUtil\TransientChunkHeader.h" />
     <ClInclude Include="Public\SSContainer\Allocators\HeapAllocator.h" />
     <ClInclude Include="Public\SSContainer\Allocators\InlineAllocator.h" />
     <ClInclude Include="Public\SSContainer\BasicHashFunctionCollection.h" />
@@ -225,6 +227,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PCommon\RawInput\SSRawInputProcessorBase.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestFunctions.cpp" />
+    <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

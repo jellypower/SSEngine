@@ -162,6 +162,12 @@
     <ClInclude Include="Public\SSContainer\ContainerUtil\ContainerUtil.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Public\SSCommonUtil\SSTransientMemAllocator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SSCommonUtil\TransientChunkHeader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -213,6 +219,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PCommon\TestCodes\TestFunctions.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

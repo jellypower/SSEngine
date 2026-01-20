@@ -35,3 +35,6 @@ PipelineDesc ConstructPSODescToDrawShadow(
 PipelineDesc ConstructPSOToDeferredShading();
 
 PipelineDesc ConstructPSOToDrawSkyMap();
+
+PipelineDesc ConstructPSOToDrawDebugWire(
+	EMeshType InMeshType);

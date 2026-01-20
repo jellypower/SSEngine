@@ -5,6 +5,7 @@
 #include <SSRenderer/Public/RenderInstance/IRenderInstance.h>
 
 #include "DX12GALRenderDeviceContext.h"
+#include "Private/DX12/DX12CommonUtils/DX12TransientConstantBufferAllocator.h"
 #include "Private/DX12/GALPostProcessContext/DX12GALPPCDeferredShading.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIMetadata_SKM.h"
 #include "Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"

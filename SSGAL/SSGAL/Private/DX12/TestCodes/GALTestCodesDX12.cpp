@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 
+#include <SSEngineDefault/Public/SSCommonUtil/SSTransientMemAllocator.h>
+
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "Private/PCommon/GALRenderDevice/PCommonGALRenderDevice.h"
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
@@ -27,7 +29,6 @@ void TestCustomChunkAllocator(PCommonGALRenderDevice* GALDevice)
 		RandReleaseIdx.PushBack(i);
 	}
 
-	srand(time(NULL));
 	srand(time(NULL));
 	for (int32 i = 0; i < TEST_CHUNK_CNT; i++)
 	{
@@ -106,4 +107,26 @@ void TestCustomChunkAllocator(PCommonGALRenderDevice* GALDevice)
 
 	double TimeScale = (double)CommittedResourecTickCnt / (double)CustomAllocatorTickCnt;
 	int a = 0;
+}
+
+void TestTransientAllocator(GALRenderDeviceContext* GALDeviceContext)
+{
+	constexpr int32 EACH_CHUNK_SIZE = 1024;
+	constexpr int32 TEST_CHUNK_CNT = 2048;
+
+	{
+		SSTransientMemAllocator* TransientCBAllocator = GALDeviceContext->GetTransientCBAllocator();
+		TransientChunkHeader* DescSets = (TransientChunkHeader*)DBG_MALLOC(sizeof(TransientChunkHeader) * TEST_CHUNK_CNT);
+
+		for (int32 i = 0; i < TEST_CHUNK_CNT; i++)
+		{
+			DescSets[i] = TransientCBAllocator->AllocChunk(EACH_CHUNK_SIZE);
+
+			int a = 0;
+		}
+
+		TransientCBAllocator->ResetAllChunksXXX();
+
+		delete DescSets;
+	}
 }

@@ -446,15 +446,14 @@ void SSRenderer::PerFrame()
 				}
 			}
 
+			_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::Common, EResourceStateType::RenderTarget);
+			_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::CopyDest);
+
 			// Post Processing
-
-
 			_MainDeviceContext->BeginPostProcessing();
 			{
-				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::Common, EResourceStateType::RenderTarget);
-				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::CopyDest);
 
-				_MainDeviceContext->ClearRenderTarget(_RTPostProcessResult, {0.5, 0.5, 0.5, 1});
+				_MainDeviceContext->ClearRenderTarget(_RTPostProcessResult, { 0.5, 0.5, 0.5, 1 });
 				_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
 
 				if (_CubeMapToDraw != nullptr)
@@ -463,15 +462,21 @@ void SSRenderer::PerFrame()
 				}
 
 				_MainDeviceContext->ExecutePostProcessing(_DeferredShadingContext);
-
-				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
-				_MainDeviceContext->CopyRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget(), _RTPostProcessResult);
-
-				_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::CopyDest, EResourceStateType::Present);
-				_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::CopySrc, EResourceStateType::Common);
 			}
 			_MainDeviceContext->EndPostProcessing();
-			
+
+			// DrawDebug
+			{
+				
+			}
+
+			_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
+			_MainDeviceContext->CopyRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget(), _RTPostProcessResult);
+
+			_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::CopyDest, EResourceStateType::Present);
+			_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::CopySrc, EResourceStateType::Common);
+
+
 			// Copy to Pixel Picker RenderTarget
 			{
 				_MainDeviceContext->CopyRenderTarget(_PixelPickerCPUReadableTex, _PixelPickerRenderTarget);

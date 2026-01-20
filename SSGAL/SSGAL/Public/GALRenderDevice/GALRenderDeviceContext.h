@@ -19,7 +19,7 @@ class GALRenderTarget;
 class IRenderInstance;
 class GALResourceUpdater;
 class GALRenderDevice;
-
+class SSTransientMemAllocator;
 
 enum class ERenderDeviceTaskPhase
 {
@@ -45,6 +45,7 @@ public:
 
 	GALRenderDevice* GetOwnerRenderDevice() const { return _OwnerRenderDevice; }
 	GALResourceUpdater* GetResourceUpdater() const { return _ResourceUpdater; }
+	SSTransientMemAllocator* GetTransientCBAllocator() const { return _TransientCBAllocator; }
 
 public:
 	virtual void BeginRender() = 0;
@@ -97,6 +98,7 @@ public:
 	virtual void EndPostProcessing() = 0;
 	// ~ERenderDeviceTaskPhase::PostProcess
 
+
 protected:
 	virtual void ResetRenderState() = 0;
 
@@ -104,4 +106,5 @@ protected:
 protected:
 	GALRenderDevice* _OwnerRenderDevice = nullptr;
 	GALResourceUpdater* _ResourceUpdater = nullptr;
+	SSTransientMemAllocator* _TransientCBAllocator = nullptr;
 };
