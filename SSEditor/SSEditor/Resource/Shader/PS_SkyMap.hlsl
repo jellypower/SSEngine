@@ -1,9 +1,9 @@
-#include "include/CBSet/IS_DefaultPbrCBSet.hlsl"
+#include "include/CBSet/IS_DefaultMeshCBSet.hlsl"
 
-sampler g_SamCubeMap : register(s1);
+sampler g_SamCubeMap : register(s0);
 
 
-TextureCube<float4> g_CubeTexture : register(t6);
+TextureCube<float4> g_CubeTexture : register(t0);
 
 float4 Main(PS_INPUT_DEFAULT input) : SV_Target
 {

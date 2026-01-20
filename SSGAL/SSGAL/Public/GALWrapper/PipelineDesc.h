@@ -49,6 +49,7 @@ struct PipelineDesc
 	int32				NumRenderTarget = 0;
 	ERTColorFormat		RTColorFormats[RT_NUM_MAX] = { ERTColorFormat::None, }; // RenderTargetColorFormat
 	bool				bUseTwoSideRender = false;
+	bool				bUseWireFrame = false;
 };
 
 inline bool operator==(const PipelineDesc& lhs, const PipelineDesc& rhs)
@@ -60,6 +61,7 @@ inline bool operator==(const PipelineDesc& lhs, const PipelineDesc& rhs)
 	bResult = bResult && lhs.RootSignatureType == rhs.RootSignatureType;
 	bResult = bResult && lhs.DSColorFormat == rhs.DSColorFormat;
 	bResult = bResult && lhs.bUseTwoSideRender == rhs.bUseTwoSideRender;
+	bResult = bResult && lhs.bUseWireFrame == rhs.bUseWireFrame;
 
 	if (bResult == false)
 	{
@@ -84,6 +86,7 @@ inline uint32 HashValue(const PipelineDesc& inValue)
 	uint32 RootsignatureTypeHashValue = (uint32)inValue.RootSignatureType;
 	uint32 ui32DSColorFormat = (uint32)inValue.DSColorFormat;
 	uint32 uiUseTwoSideRender = inValue.bUseTwoSideRender ? 1 : 0;
+	uint32 uiUseWireFrame = inValue.bUseWireFrame ? 1 : 0;
 
 
 	uint32 RTColorFormatHashValue = inValue.NumRenderTarget;
@@ -94,7 +97,7 @@ inline uint32 HashValue(const PipelineDesc& inValue)
 
 	int64 HashResult = (PSHashValue ^ VSHashValue ^ CSHashValue) >> 1 +
 		LayoutTypeHashValue + RootsignatureTypeHashValue + RTColorFormatHashValue + ui32DSColorFormat +
-		uiUseTwoSideRender;
+		uiUseTwoSideRender + uiUseWireFrame;
 
 	union {
 		struct {

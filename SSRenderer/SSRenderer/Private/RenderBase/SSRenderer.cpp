@@ -466,9 +466,44 @@ void SSRenderer::PerFrame()
 			_MainDeviceContext->EndPostProcessing();
 
 			// DrawDebug
+			_MainDeviceContext->BeginDrawDebug();
 			{
-				
+				if (_DebugDrawItemsWithDepth.GetSize() > 0)
+				{
+					_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, _DSVRenderTarget);
+
+					for (const DebugDrawDesc& DescItem : _DebugDrawItemsWithDepth)
+					{
+						_MainDeviceContext->DrawDebugWire(
+							DescItem.MeshAsset,
+							DescItem.WMatrix,
+							DescItem.RotMatrix,
+							DescItem.DrawColor,
+							true);
+					}
+
+
+					_DebugDrawItemsWithDepth.Clear();
+				}
+
+				if (_DebugDrawItemsWithoutDepth.GetSize() > 0)
+				{
+					_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
+
+					for (const DebugDrawDesc& DescItem : _DebugDrawItemsWithoutDepth)
+					{
+						_MainDeviceContext->DrawDebugWire(
+							DescItem.MeshAsset,
+							DescItem.WMatrix,
+							DescItem.RotMatrix,
+							DescItem.DrawColor,
+							false);
+					}
+
+					_DebugDrawItemsWithoutDepth.Clear();
+				}
 			}
+			_MainDeviceContext->EndDrawDebug();
 
 			_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 			_MainDeviceContext->CopyRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget(), _RTPostProcessResult);
@@ -485,6 +520,7 @@ void SSRenderer::PerFrame()
 		_MainDeviceContext->EndRender();
 		_GALRenderDevice->ExecuteRenderContext(_MainDeviceContext);
 	}
+
 
 	Before_GALRenderDevice_EndRender();
 	_GALRenderDevice->EndRender();
@@ -541,6 +577,18 @@ void SSRenderer::CleanUp()
 void SSRenderer::ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* InCallback)())
 {
 	_OneTimeCallback_BeforeGALRenderDeviceEndRender.PushBack(InCallback);
+}
+
+void SSRenderer::DrawWireFrame(const DebugDrawDesc& Desc)
+{
+	if (Desc.bUseDepth)
+	{
+		_DebugDrawItemsWithDepth.PushBack(Desc);
+	}
+	else
+	{
+		_DebugDrawItemsWithoutDepth.PushBack(Desc);
+	}
 }
 
 void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)

@@ -5,6 +5,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+struct DebugDrawDesc;
 class IRICubeMap;
 class IRISkinnedMesh;
 struct RenderLightDirectionalDesc;
@@ -18,6 +19,7 @@ class IRenderWorld;
 class IRenderCamera;
 class GALRenderDevice;
 class GALRenderDeviceContext;
+
 
 
 
@@ -61,4 +63,7 @@ public:
 public:
 	virtual void ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void (*InCallback)()) = 0;
 
+
+public:
+	virtual void DrawWireFrame(const DebugDrawDesc& Desc) = 0;
 };

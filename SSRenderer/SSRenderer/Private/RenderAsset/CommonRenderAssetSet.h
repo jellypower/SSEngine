@@ -5,5 +5,6 @@ class CommonRenderAssetSet : public ICommonRenderAssetSet
 {
 public:
 	virtual void InitializeCommonAssets() override;
+	virtual void TEMP_CacheCommonAssetFromFBX() override;
 	virtual void ReleaseCachedAssets() override;
 };

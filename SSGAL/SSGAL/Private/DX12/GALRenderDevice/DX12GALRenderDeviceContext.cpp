@@ -9,6 +9,7 @@
 #include <SSRenderer/Public/RenderInstance/IRICubeMap.h>
 
 
+#include "Private/DX12/DX12CommonUtils/DX12ConstantBufferResourcePage.h"
 #include "Private/DX12/DX12CommonUtils/DX12TransientConstantBufferAllocator.h"
 #include "Private/DX12/GALPostProcessContext/DX12GALPPCDeferredShading.h"
 #include "Private/DX12/GALRenderAsset/DX12GALSkinnedMeshAssetWrapper.h"
@@ -93,30 +94,6 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 		_DrawWorkerCommandLists.PushBack(NewCommandList);
 	}
 
-	for (int32 i = 0; i < SwapChainFrameCnt; i++)
-	{
-		ID3D12CommandAllocator* NewCommandAllocator = nullptr;
-		ID3D12GraphicsCommandList* NewCommandList = nullptr;
-		if (FAILED(D3DDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&NewCommandAllocator))))
-		{
-			DEBUG_BREAK();
-			goto lb_cleanup;
-		}
-
-		if (FAILED(D3DDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, NewCommandAllocator, nullptr, IID_PPV_ARGS(&NewCommandList))))
-		{
-			NewCommandAllocator->Release();
-			DEBUG_BREAK();
-			goto lb_cleanup;
-		}
-
-
-		NewCommandList->Close();
-
-		_PostProcessCommandAllocators.PushBack(NewCommandAllocator);
-		_PostProcessCommandLists.PushBack(NewCommandList);
-	}
-
 	_TransientCBAllocator = DBG_NEW DX12TransientConstantBufferAllocator(
 		this,
 		GAL_RESOURCE_DEFAULT_ALIGNMENT_SIZE,
@@ -156,20 +133,6 @@ lb_cleanup:
 
 DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 {
-	for (ID3D12CommandList* CommandListItem : _PostProcessCommandLists)
-	{
-		CommandListItem->Release();
-	}
-
-	for (ID3D12CommandAllocator* AllocatorItem : _PostProcessCommandAllocators)
-	{
-		AllocatorItem->Release();
-	}
-
-	_PostProcessCommandLists.Clear();
-	_PostProcessCommandAllocators.Clear();
-
-
 	for (ID3D12CommandList* CommandListItem : _DrawWorkerCommandLists)
 	{
 		CommandListItem->Release();
@@ -749,6 +712,13 @@ void DX12GALRenderDeviceContext::BeginDrawMesh()
 
 void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 {
+	if (_TaskPhase != ERenderDeviceTaskPhase::DrawMesh)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+
 	if (InRenderInstance->GetGALMetadata() == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
@@ -874,17 +844,8 @@ void DX12GALRenderDeviceContext::BeginPostProcessing()
 	{
 		SS_INTERRUPT();
 	}
+
 	_TaskPhase = ERenderDeviceTaskPhase::PostProcess;
-
-
-	HRESULT hr;
-	ID3D12CommandAllocator* CurPostProcessCommandAllcator = GetCurrentPostProcessCmdAllocator();
-	hr = CurPostProcessCommandAllcator->Reset();
-	if (FAILED(hr)) SS_INTERRUPT();
-
-	ID3D12GraphicsCommandList* CurPostProcessCmdList = GetCurrentPostProcessCmdList();
-	hr = CurPostProcessCmdList->Reset(CurPostProcessCommandAllcator, nullptr);
-	if (FAILED(hr)) SS_INTERRUPT();
 }
 
 void DX12GALRenderDeviceContext::ExecutePostProcessing(
@@ -906,12 +867,87 @@ void DX12GALRenderDeviceContext::EndPostProcessing()
 		SS_INTERRUPT();
 	}
 
+	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
+}
 
-	ID3D12GraphicsCommandList* CurCommandList = GetCurrentPostProcessCmdList();
-	HRESULT hr;
-	hr = CurCommandList->Close();
-	if (FAILED(hr)) SS_INTERRUPT();
 
+void DX12GALRenderDeviceContext::BeginDrawDebug()
+{
+	if (_TaskPhase != ERenderDeviceTaskPhase::TaskWaiting)
+	{
+		SS_INTERRUPT();
+	}
+
+	_TaskPhase = ERenderDeviceTaskPhase::DrawDebug;
+}
+
+void DX12GALRenderDeviceContext::DrawDebugWire(
+	const IMeshAsset* InMesh,
+	const XMMATRIX& TransformMatrix,
+	const XMMATRIX& RotMatrix, 
+	const Vector4f& InColor,
+	bool bUseDepth)
+{
+	if (_TaskPhase != ERenderDeviceTaskPhase::DrawDebug)
+	{
+		SS_INTERRUPT();
+	}
+
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+	SSTransientMemAllocator* TransientMemAllocator = GetTransientCBAllocator();
+
+
+	GALRenderTarget* RTDepth = nullptr;
+	if (bUseDepth)
+	{
+		RTDepth = GetThisFrameBoundDSV();
+	}
+	PipelineDesc Desc = ConstructPSOToDrawDebugWire(RTDepth);
+	SetPSOAndRootSignature(Desc);
+
+
+
+	TransientChunkHeader MeshTransformCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(CBAModelBuffer)));
+	DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)MeshTransformCBChunk.PageContent;
+	CBAModelBuffer* ModelCBSystemAddr = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + MeshTransformCBChunk.ChunkOffset);
+	D3D12_GPU_VIRTUAL_ADDRESS ModelCBGPUAdddr = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + MeshTransformCBChunk.ChunkOffset;
+	ModelCBSystemAddr->WMatrix = XMMatrixTranspose(TransformMatrix);
+	ModelCBSystemAddr->RotMatrix = XMMatrixTranspose(RotMatrix);
+	CurCommandList->SetGraphicsRootConstantBufferView(0, ModelCBGPUAdddr);
+	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+
+
+
+	TransientChunkHeader DrawColorCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(Vector4f)));
+	DX12ConstantBufferResourcePage* ColorCBPage = (DX12ConstantBufferResourcePage*)DrawColorCBChunk.PageContent;
+	Vector4f* ColorCBSystemAddr = reinterpret_cast<Vector4f*>(ColorCBPage->ResourceSysMem + DrawColorCBChunk.ChunkOffset);
+	D3D12_GPU_VIRTUAL_ADDRESS ColorCBGPUAdddr = ColorCBPage->D3D12Resource->GetGPUVirtualAddress() + DrawColorCBChunk.ChunkOffset;
+	(*ColorCBSystemAddr) = InColor;
+	CurCommandList->SetGraphicsRootConstantBufferView(2, ColorCBGPUAdddr);
+
+
+
+	int32 SubMeshCnt = InMesh->GetSubMeshCnt();
+	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(InMesh->GetGALMeshAsset());
+	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
+	const MeshRawDataDefault* RawData = static_cast<const MeshRawDataDefault*>(InMesh->GetMeshRawData());
+
+	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+
+	for (int32 i = 0; i < SubMeshCnt; i++)
+	{
+		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
+		int32 CurIdxDataCnt = RawData->_indexDataCnt[i];
+		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
+	}
+}
+
+void DX12GALRenderDeviceContext::EndDrawDebug()
+{
+	if (_TaskPhase != ERenderDeviceTaskPhase::DrawDebug)
+	{
+		SS_INTERRUPT();
+	}
 
 	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
 }
@@ -1268,28 +1304,6 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 	}
-}
-
-ID3D12GraphicsCommandList* DX12GALRenderDeviceContext::GetCurrentPostProcessCmdList() const
-{
-	if (_TaskPhase != ERenderDeviceTaskPhase::PostProcess)
-	{
-		SS_INTERRUPT();
-		return nullptr;
-	}
-
-	return _PostProcessCommandLists[_CurCommandListIdx]; 
-}
-
-ID3D12CommandAllocator* DX12GALRenderDeviceContext::GetCurrentPostProcessCmdAllocator() const
-{
-	if (_TaskPhase != ERenderDeviceTaskPhase::PostProcess)
-	{
-		SS_INTERRUPT();
-		return nullptr;
-	}
-
-	return _PostProcessCommandAllocators[_CurCommandListIdx];
 }
 
 void DX12GALRenderDeviceContext::ResetRenderState()

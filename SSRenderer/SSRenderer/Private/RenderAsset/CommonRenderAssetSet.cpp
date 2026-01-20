@@ -76,6 +76,18 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	_EmptyPBRMaterial->AddAssetReference(Referencer);
 
 	_Cube1mModel->AddAssetReference(Referencer);
+	_Sphere1mModel->AddAssetReference(Referencer);
+}
+
+void CommonRenderAssetSet::TEMP_CacheCommonAssetFromFBX()
+{
+	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
+
+	_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>("Arrow/Arrow.mesh");
+	AssetInstanceReferencer Referencer;
+	Referencer.Type = EAssetInstanceReferenceType::AssetName;
+	Referencer.AssetName = L"__COMMON_ASSET_REFERENCER__";
+	_ArrowMesh->AddAssetReference(Referencer);
 }
 
 void CommonRenderAssetSet::ReleaseCachedAssets()
@@ -91,4 +103,6 @@ void CommonRenderAssetSet::ReleaseCachedAssets()
 	_EmptyPBRMaterial->RemoveAssetReference(Referencer);
 
 	_Cube1mModel->RemoveAssetReference(Referencer);
+	_Sphere1mModel->RemoveAssetReference(Referencer);
+	_ArrowMesh->RemoveAssetReference(Referencer);
 }

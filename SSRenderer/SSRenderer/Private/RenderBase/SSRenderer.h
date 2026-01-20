@@ -1,5 +1,8 @@
 #pragma once
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
+
+#include "SSRenderer/Public/DEBUG/\DebugDrawDesc.h"
+
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
@@ -34,6 +37,9 @@ private:
 	SS::PooledList<ITextureAssetMutable*> _GALStateChangedTextureAsset;
 
 	SS::PooledList<void(*)()> _OneTimeCallback_BeforeGALRenderDeviceEndRender;
+
+	SS::PooledList<DebugDrawDesc> _DebugDrawItemsWithoutDepth;
+	SS::PooledList<DebugDrawDesc> _DebugDrawItemsWithDepth;
 
 private:
 	IRenderCamera* _MainRenderCamera = nullptr;
@@ -92,6 +98,10 @@ public:
 
 public:
 	void ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* InCallback)()) override;
+
+
+public:
+	void DrawWireFrame(const DebugDrawDesc& Desc) override;
 
 public:
 	void AddGALStateChangedAsset(IAssetBase* AssetToChange);

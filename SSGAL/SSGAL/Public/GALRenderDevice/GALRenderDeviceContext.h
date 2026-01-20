@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
+class IMeshAsset;
 class IRICubeMap;
 class GALRWMetaData;
 class GALPostProcessContextBase;
@@ -30,6 +31,7 @@ enum class ERenderDeviceTaskPhase
 	DrawShadow,
 	DrawMesh,
 	PostProcess, // Including DeferredShadowing
+	DrawDebug,
 
 	TaskDenial,
 
@@ -98,6 +100,17 @@ public:
 	virtual void EndPostProcessing() = 0;
 	// ~ERenderDeviceTaskPhase::PostProcess
 
+
+	// ERenderDeviceTaskPhase::DrawDebug
+	virtual void BeginDrawDebug() = 0;
+	virtual void DrawDebugWire(
+		const IMeshAsset* InMesh,
+		const XMMATRIX& TransformMatrix,
+		const XMMATRIX& RotMatrix,
+		const Vector4f& InColor,
+		bool bUseDepth = false) = 0;
+	virtual void EndDrawDebug() = 0;
+	// ERenderDeviceTaskPhase::~DrawDebug
 
 protected:
 	virtual void ResetRenderState() = 0;

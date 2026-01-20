@@ -23,6 +23,8 @@ enum class ERootSignatureType : int32
 	Shadow,
 	DeferredShading,
 	SkyMap,
+	DebugWire,
+
 	// CS_TEMP, // TODO: Implementation
 
 	COUNT
@@ -39,6 +41,7 @@ FORCEINLINE const utf16* ToUtf16Str(ERootSignatureType e)
 	case ERootSignatureType::Shadow:	return L"ERootSignatureType::Shadow";
 	case ERootSignatureType::DeferredShading:	return L"ERootSignatureType::ExecuteDeferredShading";
 	case ERootSignatureType::SkyMap:	return L"ERootSignatureType::SkyMap";
+	case ERootSignatureType::DebugWire:	return L"ERootSignatureType::DebugWire";
 	default:
 		SS_ASSERT(false);
 		return L"ERootSignatureType::unknown";

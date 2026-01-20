@@ -116,3 +116,18 @@ PipelineDesc ConstructPSOToDrawSkyMap()
 	NewPipelineDesc.bUseTwoSideRender = true;
 	return NewPipelineDesc;
 }
+
+PipelineDesc ConstructPSOToDrawDebugWire(GALRenderTarget* InDSV)
+{
+	PipelineDesc NewPipelineDesc;
+	NewPipelineDesc.VSName = "VS_SMToDefaultPSInput";
+	NewPipelineDesc.PSName = "PS_DrawSimpleColor";
+	NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
+	NewPipelineDesc.RootSignatureType = ERootSignatureType::DebugWire;
+	NewPipelineDesc.NumRenderTarget = 1;
+	NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R8G8B8A8_UNORM;
+	NewPipelineDesc.DSColorFormat = InDSV == nullptr ? ERTColorFormat::Unknown : InDSV->GetRTColorFormat();
+	NewPipelineDesc.bUseTwoSideRender = true;
+	NewPipelineDesc.bUseWireFrame = true;
+	return NewPipelineDesc;
+}

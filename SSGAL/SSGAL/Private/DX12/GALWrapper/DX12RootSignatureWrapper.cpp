@@ -215,7 +215,7 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 			Initialized = true;
 
 			static CD3DX12_DESCRIPTOR_RANGE SkyMapTexture[1] = {}; 
-			SkyMapTexture[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);	// t6
+			SkyMapTexture[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);	// t0
 
 
 			static CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
@@ -227,12 +227,34 @@ const CD3DX12_ROOT_SIGNATURE_DESC& DX12RootSignatureWrapper::GetRootSignatureDes
 			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(ESSSamplerDescType::DefaultCubeMapSampler, 1);
+			static D3D12_STATIC_SAMPLER_DESC sampler = GetSamplerDescOfType(ESSSamplerDescType::DefaultCubeMapSampler, 0);
 
 			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
 		}return rootSignatureDesc;
 	}
+	case ERootSignatureType::DebugWire:
+	{
+		static CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+		static bool Initialized = false;
 
+		if (Initialized == false) {
+			Initialized = true;
+
+
+
+			static CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
+
+			rootParameters[0].InitAsConstantBufferView(0); // b0
+			rootParameters[1].InitAsConstantBufferView(1); // b1
+			rootParameters[2].InitAsConstantBufferView(2); // b2
+
+			static D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+
+			rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+		}return rootSignatureDesc;
+	}
 	}
 
 	SS_INTERRUPT();

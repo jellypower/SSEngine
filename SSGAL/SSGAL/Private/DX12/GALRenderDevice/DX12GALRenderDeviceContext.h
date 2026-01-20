@@ -79,6 +79,18 @@ public:
 	// ERenderDeviceTaskPhase::~PostProcess
 
 
+	// ERenderDeviceTaskPhase::DrawDebug
+	virtual void BeginDrawDebug() override;
+	virtual void DrawDebugWire(
+		const IMeshAsset* InMesh,
+		const XMMATRIX& TransformMatrix,
+		const XMMATRIX& RotMatrix,
+		const Vector4f& InColor,
+		bool bUseDepth = false) override;
+	virtual void EndDrawDebug() override;
+	// ERenderDeviceTaskPhase::~DrawDebug
+
+
 private:
 	void DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 	void DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
@@ -91,8 +103,6 @@ public:
 	ID3D12GraphicsCommandList* GetCurrentDrawWorkerCmdList() const { return _DrawWorkerCommandLists[_CurCommandListIdx]; }
 	const SS::PooledList<ID3D12GraphicsCommandList*>& GetDrawWorkerCommandLists() const { return _DrawWorkerCommandLists; }
 
-	ID3D12GraphicsCommandList* GetCurrentPostProcessCmdList() const;
-	ID3D12CommandAllocator* GetCurrentPostProcessCmdAllocator() const;
 
 protected:
 	virtual void ResetRenderState() override;
@@ -112,8 +122,6 @@ private:
 	SS::PooledList <ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
 	// TODO: Shadow용 CommandList 없애기
 
-	SS::PooledList<ID3D12CommandAllocator*> _PostProcessCommandAllocators;
-	SS::PooledList <ID3D12GraphicsCommandList*> _PostProcessCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
 
 	int32 _CurCommandListIdx = 0;
 

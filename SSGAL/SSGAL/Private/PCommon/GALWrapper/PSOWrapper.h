@@ -37,4 +37,4 @@ PipelineDesc ConstructPSOToDeferredShading();
 PipelineDesc ConstructPSOToDrawSkyMap();
 
 PipelineDesc ConstructPSOToDrawDebugWire(
-	EMeshType InMeshType);
+	GALRenderTarget* InDSV = nullptr);
