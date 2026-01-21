@@ -1,6 +1,8 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
+#include <SSRenderer/Public/RenderBase/IRenderer.h>
+
 
 #include "SSContentsBase/Private/AnimWorker/AnimWorkerBase.h"
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
@@ -134,7 +136,7 @@ void SWorld::ProcessTransformCommit()
 		else
 		{
 			ParentWorldTransform = TransformCommitStartParent->CalcWorldTransformMatrix();
-			ParentWorldRotation = TransformCommitStartParent->GetWorldRot();
+			ParentWorldRotation = TransformCommitStartParent->CalcWorldRot();
 		}
 
 		TransformCommitStartObject->CommitTransform(ParentWorldTransform, ParentWorldRotation);
@@ -287,4 +289,39 @@ void SWorld::AddWorldRootObject(SGameObject* InWorldRootObject)
 	_WorldRootObject = InWorldRootObject;
 	_WorldRootObject->MarkHierarchyInitialized();
 	_WorldRootObject->OnEnterTheWorld(GetHashCode());
+}
+
+void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
+{
+	for (int i=0;i<_MeshDebugDrawTasks.GetSize();i++)
+	{
+		InRenderer->DrawWireFrame(_MeshDebugDrawTasks[i].RenderDesc);
+
+		// TODO: 나중에 World별 DeltaTime으로 바꿀 수 있음
+		_MeshDebugDrawTasks[i].Time -= SSFrameInfo::GetDeltaTime();
+
+		if (_MeshDebugDrawTasks[i].Time < 0)
+		{
+			_MeshDebugDrawTasks.RemoveAtAndFillLast(i);
+		}
+	}
+}
+
+void SWorld::DebugDrawMesh(
+	const XMMATRIX& WMatrix,
+	const XMMATRIX& RotMatrix,
+	IMeshAsset* MeshToDraw,
+	bool bUseDepth,
+	const Vector4f& Color,
+	float Time)
+{
+	TimedDebugDrawMeshDesc NewDesc;
+	NewDesc.RenderDesc.WMatrix = WMatrix;
+	NewDesc.RenderDesc.RotMatrix = RotMatrix;
+	NewDesc.RenderDesc.MeshAsset = MeshToDraw;
+	NewDesc.RenderDesc.bUseDepth = bUseDepth;
+	NewDesc.RenderDesc.DrawColor = Color;
+	NewDesc.Time = Time;
+
+	_MeshDebugDrawTasks.PushBack(NewDesc);
 }

@@ -94,7 +94,7 @@ XMMATRIX SGameObject::CalcWorldTransformMatrix() const
 	return TransformMat * ParentWorldTransformMat;
 }
 
-Quaternion SGameObject::GetWorldRot() const
+Quaternion SGameObject::CalcWorldRot() const
 {
 	if (IsRootInWorld())
 	{
@@ -103,7 +103,7 @@ Quaternion SGameObject::GetWorldRot() const
 
 	SGameObject* Parent = GetParent();
 
-	return _transform.Rotation * Parent->GetWorldRot();
+	return _transform.Rotation * Parent->CalcWorldRot();
 }
 
 void SGameObject::SetTransform(const Transform& InTransform)

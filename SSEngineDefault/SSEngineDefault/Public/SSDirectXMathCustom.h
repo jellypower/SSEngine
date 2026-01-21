@@ -118,3 +118,16 @@ FORCEINLINE bool XMAlmostEqual(const XMVECTOR& v1, const XMVECTOR& v2, float thr
 		BitWise.m128_u32[3];
 	return bResult;
 }
+
+// Return QuaternionRotation
+// 원본 메시가 Z방향을 바라보는 경우에 해당 함수에 Dir을 넣으면 메시가 그 방향으로 회전한다.
+FORCEINLINE XMVECTOR XMPitchYawRotFromDir(const XMVECTOR& InDir)
+{
+	float Yaw = atan2(InDir.m128_f32[0], InDir.m128_f32[2]);
+	float FloorLen = sqrt(InDir.m128_f32[2] * InDir.m128_f32[2] + InDir.m128_f32[0] * InDir.m128_f32[0]);
+	float Pitch = -atan2(InDir.m128_f32[1], FloorLen);
+
+	// <Pitch, Yaw, Roll, 0>
+	XMVECTOR Euler = { Pitch, Yaw, 0, 0 };
+	return XMQuaternionRotationRollPitchYawFromVector(Euler);
+}

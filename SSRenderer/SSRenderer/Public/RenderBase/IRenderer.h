@@ -5,7 +5,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
-struct DebugDrawDesc;
+struct DebugDrawMeshDesc;
 class IRICubeMap;
 class IRISkinnedMesh;
 struct RenderLightDirectionalDesc;
@@ -65,5 +65,5 @@ public:
 
 
 public:
-	virtual void DrawWireFrame(const DebugDrawDesc& Desc) = 0;
+	virtual void DrawWireFrame(const DebugDrawMeshDesc& Desc) = 0;
 };

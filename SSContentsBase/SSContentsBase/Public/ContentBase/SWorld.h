@@ -3,7 +3,9 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 #include "SSContentsBase/ModuleExportKeyword.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/TimedDebugDrawDesc.h"
 
+class IRenderer;
 class IAnimWorker;
 class SAnimatorBaseComponent;
 class SComponentBase;
@@ -60,4 +62,23 @@ private:
 
 private:
 	void AddWorldRootObject(SGameObject* InWorldRootObject);
+
+
+
+	// DEBUG
+private:
+	SS::PooledList<TimedDebugDrawMeshDesc> _MeshDebugDrawTasks;
+
+
+public:
+	void ProcessDebugDraw(IRenderer* InRenderer);
+
+	void DebugDrawMesh(
+		const XMMATRIX& WMatrix,
+		const XMMATRIX& RotMatrix,
+		IMeshAsset* MeshToDraw,
+		bool bUseDepth,
+		const Vector4f& Color,
+		float Time);
+	// ~DEBUG
 };

@@ -19,12 +19,12 @@ public:
 	virtual IAnimWorkee* GetAnimWorkee() const = 0;
 
 
+	virtual void ReconstructBoneBinding();
 	virtual void ApplyAnimWorkeeTransform();
 
 
 
 	
-	virtual void ReconstructBoneBinding();
 
 
 public:

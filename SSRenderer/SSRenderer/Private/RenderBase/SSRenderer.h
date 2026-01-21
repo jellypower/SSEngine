@@ -1,7 +1,7 @@
 #pragma once
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
-#include "SSRenderer/Public/DEBUG/\DebugDrawDesc.h"
+#include "SSRenderer/Public/DEBUG/DebugDrawDesc.h"
 
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
@@ -38,8 +38,8 @@ private:
 
 	SS::PooledList<void(*)()> _OneTimeCallback_BeforeGALRenderDeviceEndRender;
 
-	SS::PooledList<DebugDrawDesc> _DebugDrawItemsWithoutDepth;
-	SS::PooledList<DebugDrawDesc> _DebugDrawItemsWithDepth;
+	SS::PooledList<DebugDrawMeshDesc> _DebugDrawItemsWithoutDepth;
+	SS::PooledList<DebugDrawMeshDesc> _DebugDrawItemsWithDepth;
 
 private:
 	IRenderCamera* _MainRenderCamera = nullptr;
@@ -101,7 +101,7 @@ public:
 
 
 public:
-	void DrawWireFrame(const DebugDrawDesc& Desc) override;
+	void DrawWireFrame(const DebugDrawMeshDesc& Desc) override;
 
 public:
 	void AddGALStateChangedAsset(IAssetBase* AssetToChange);

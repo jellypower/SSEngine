@@ -13,6 +13,7 @@
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/SRenderContent/SRendererUtil.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
@@ -108,19 +109,19 @@ void SSEditor::StartupEngine()
 		// X
 		SGameObject* DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-X");
 		_DefaultWorld->AddToWorld(DirectionObject);
-		DirectionObject->SetRotation(Quaternion::FromLookDirect(Vector4f(1, 0, 0, 0)));
+		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(1, 0, 0, 0)));
 		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
 
 		// Y
 		DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-Y");
 		_DefaultWorld->AddToWorld(DirectionObject);
-		DirectionObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 1, 0, 0)));
+		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(0, 1, 0, 0)));
 		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
 
 		// Z
 		DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-Z");
 		_DefaultWorld->AddToWorld(DirectionObject);
-		DirectionObject->SetRotation(Quaternion::FromLookDirect(Vector4f(0, 0, 1, 0)));
+		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(0, 0, 1, 0)));
 		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
 	}
 
@@ -195,6 +196,22 @@ void SSEditor::EnginePerFrame()
 	_DefaultWorld->PerFrameAnim();
 
 	_DefaultWorld->ProcessTransformCommit();
+
+
+	// DEBUG
+	{
+		ICommonRenderAssetSet* AssetSet = _Renderer->GetCommonRenderAssetSet();
+		IMeshAsset* ArrowMeshAsset = AssetSet->GetArrowMesh();
+		SRenderDebugUtil::DrawDirectionalMesh(
+			_DefaultWorld,
+			{1, 1, 1, 0},
+			{3, 2, 4, 0},
+			ArrowMeshAsset,
+			false);
+	}
+	// ~DEBUG
+
+	_DefaultWorld->ProcessDebugDraw(_Renderer);
 
 	_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
 	_Renderer->PerFrame();

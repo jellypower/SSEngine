@@ -54,7 +54,7 @@ public:
 	const Transform& GetTransform() const { return _transform; }
 	Transform CalcWorldTransform() const;
 	XMMATRIX CalcWorldTransformMatrix() const;
-	Quaternion GetWorldRot() const;
+	Quaternion CalcWorldRot() const;
 
 	uint64 GetTransformCommittedFrameCnt() const { return _TransformCommitedFrameCnt; }
 	bool IsTransformCommitReserved() const { return _bTransformCommitReserved; }

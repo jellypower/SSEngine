@@ -106,11 +106,12 @@ struct SSENGINEDEFAULT_MODULE Quaternion
 	FORCEINLINE static Quaternion FromEulerRotation(Vector4f eulerRotation);
 	FORCEINLINE static Quaternion FromLookDirect(Vector4f lookDirection, Vector4f upDirection = Vector4f::Up);
 	FORCEINLINE static Quaternion RotateAxisAngle(Quaternion CurRotation, Vector4f Axis, float angle);
+	FORCEINLINE static Quaternion CalcPitchYawRotationFromDir(const Vector4f& InDir);
 };
 
 Quaternion Quaternion::FromEulerRotation(Vector4f eulerRotation)
 {
-	//	<Pitch, Yaw, Roll, 0>
+	//	입력 순서는: <Pitch, Yaw, Roll, 0>
 	return XMQuaternionRotationRollPitchYawFromVector(eulerRotation.SimdVec);
 }
 
@@ -132,6 +133,10 @@ Quaternion Quaternion::RotateAxisAngle(Quaternion CurRotation, Vector4f Axis, fl
 	return XMQuaternionMultiply(CurRotation.SimdVec, XMQuaternionRotationAxis(Axis.SimdVec, angle));
 }
 
+Quaternion Quaternion::CalcPitchYawRotationFromDir(const Vector4f& InDir)
+{
+	return XMPitchYawRotFromDir(InDir.SimdVec);
+}
 
 struct SSENGINEDEFAULT_MODULE Vector2i32 {
 	int32 X;

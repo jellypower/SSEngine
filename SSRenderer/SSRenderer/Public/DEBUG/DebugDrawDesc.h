@@ -3,7 +3,7 @@
 
 class IMeshAsset;
 
-struct DebugDrawDesc
+struct DebugDrawMeshDesc
 {
 	IMeshAsset* MeshAsset = nullptr;
 	bool bUseDepth = false;

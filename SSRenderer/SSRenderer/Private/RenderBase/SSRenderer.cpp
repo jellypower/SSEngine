@@ -472,7 +472,7 @@ void SSRenderer::PerFrame()
 				{
 					_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, _DSVRenderTarget);
 
-					for (const DebugDrawDesc& DescItem : _DebugDrawItemsWithDepth)
+					for (const DebugDrawMeshDesc& DescItem : _DebugDrawItemsWithDepth)
 					{
 						_MainDeviceContext->DrawDebugWire(
 							DescItem.MeshAsset,
@@ -482,7 +482,6 @@ void SSRenderer::PerFrame()
 							true);
 					}
 
-
 					_DebugDrawItemsWithDepth.Clear();
 				}
 
@@ -490,7 +489,7 @@ void SSRenderer::PerFrame()
 				{
 					_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
 
-					for (const DebugDrawDesc& DescItem : _DebugDrawItemsWithoutDepth)
+					for (const DebugDrawMeshDesc& DescItem : _DebugDrawItemsWithoutDepth)
 					{
 						_MainDeviceContext->DrawDebugWire(
 							DescItem.MeshAsset,
@@ -579,7 +578,7 @@ void SSRenderer::ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* In
 	_OneTimeCallback_BeforeGALRenderDeviceEndRender.PushBack(InCallback);
 }
 
-void SSRenderer::DrawWireFrame(const DebugDrawDesc& Desc)
+void SSRenderer::DrawWireFrame(const DebugDrawMeshDesc& Desc)
 {
 	if (Desc.bUseDepth)
 	{

@@ -178,8 +178,10 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightComponent.cpp" />
     <ClCompile Include="Private\AnimComponents\SSimpleAnimatorTestComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SMeshRenderComponentBase.cpp" />
+    <ClCompile Include="Private\SRenderContent\_DEBUG\SRenderDebugUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Public\SRenderContent\_DEBUG\TimedDebugDrawDesc.h" />
     <ClInclude Include="Public\AnimWorker\AnimWorkee\IAnimWorkee.h" />
     <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.h" />
     <ClInclude Include="Private\AnimWorker\AnimWorkerBase.h" />
@@ -198,6 +200,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderComponentBase.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SStaticMeshRenderComponent.h" />
+    <ClInclude Include="Public\SRenderContent\_DEBUG\SRenderDebugUtil.h" />
     <ClInclude Include="Public\SRenderContent\SRendererUtil.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Public\AnimComponents\SSimpleAnimatorTestComponent.h" />
