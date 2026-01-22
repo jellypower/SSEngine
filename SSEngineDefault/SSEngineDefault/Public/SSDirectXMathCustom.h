@@ -127,6 +127,7 @@ FORCEINLINE XMVECTOR XMPitchYawRotFromDir(const XMVECTOR& InDir)
 	float FloorLen = sqrt(InDir.m128_f32[2] * InDir.m128_f32[2] + InDir.m128_f32[0] * InDir.m128_f32[0]);
 	float Pitch = -atan2(InDir.m128_f32[1], FloorLen);
 
+
 	// <Pitch, Yaw, Roll, 0>
 	XMVECTOR Euler = { Pitch, Yaw, 0, 0 };
 	return XMQuaternionRotationRollPitchYawFromVector(Euler);

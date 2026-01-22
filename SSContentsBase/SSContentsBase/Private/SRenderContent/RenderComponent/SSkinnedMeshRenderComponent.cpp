@@ -26,6 +26,8 @@ void SSkinnedMeshRenderComponent::PerFrame()
 	SGameObject* SkinnedMesh = GetGameObject();
 	if (SkinnedMesh != nullptr)
 	{
+		// 스켈레톤에 따라서 스킨드 메시의 렌더인스턴스를 업데이트 하는 과정은 게임오브젝트의 트랜스폼 커밋이 진행된 이후에 해야함
+		// 그래서 여기서 트랜스폼 커밋이 필요하다고 마킹해주고 실제 렌더 인스턴스 업데이트는 UpdateRenderInstanceBonePose 에서 진행
 		SkinnedMesh->MarkTransformCommitNeeded();
 	}
 }

@@ -42,8 +42,9 @@ public:
 	static void DrawDebugPose(
 		SWorld* WorldToDraw,
 		const XMMATRIX& PoseOriginMatrix,
-		const PoseSlot& ResultPose,
+		const PoseSlot& InPose,
 		bool bUseDepth,
+		float Thickness = 0.5,
 		const Vector4f& Color = Vector4f::Zero,
 		float Time = 0);
 };

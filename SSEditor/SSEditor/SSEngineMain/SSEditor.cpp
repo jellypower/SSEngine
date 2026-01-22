@@ -197,20 +197,6 @@ void SSEditor::EnginePerFrame()
 
 	_DefaultWorld->ProcessTransformCommit();
 
-
-	// DEBUG
-	{
-		ICommonRenderAssetSet* AssetSet = _Renderer->GetCommonRenderAssetSet();
-		IMeshAsset* ArrowMeshAsset = AssetSet->GetArrowMesh();
-		SRenderDebugUtil::DrawDirectionalMesh(
-			_DefaultWorld,
-			{1, 1, 1, 0},
-			{3, 2, 4, 0},
-			ArrowMeshAsset,
-			false);
-	}
-	// ~DEBUG
-
 	_DefaultWorld->ProcessDebugDraw(_Renderer);
 
 	_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
