@@ -59,17 +59,20 @@ void AnimWorkerBase::EndUpdateAnimation()
 	for (SS::pair<SObjHashCode, SAnimatorBaseComponent*> AnimatorItemPair : _AnimComponents)
 	{
 		SAnimatorBaseComponent* AnimatorItem = AnimatorItemPair.second;
+		AnimatorItem->OnAnimWorkerUpdateAnimationEnded();
+
+
 		IAnimWorkee* AnimWorkee = AnimatorItem->GetAnimWorkee();
 		if (AnimWorkee == nullptr)
 		{
 			continue;
 		}
 
+
 		if (AnimWorkee->GetLastUpdateFrame() != ThisFrameCnt)
 		{
 			continue;
 		}
-
 
 		AnimatorItem->ApplyAnimWorkeeTransform();
 	}

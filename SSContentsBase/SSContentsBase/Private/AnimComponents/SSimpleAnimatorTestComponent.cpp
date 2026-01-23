@@ -2,6 +2,7 @@
 
 #include "SSContentsBase/Private/AnimWorker/AnimWorkee/AnimWorkeeSimplePlayer.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/KFRenderAnimUtilFunctions.h"
 
@@ -44,6 +45,27 @@ void SSimpleAnimatorTestComponent::SetRenderAnimAsset(SS::SHasherW RenderAnimAss
 IAnimWorkee* SSimpleAnimatorTestComponent::GetAnimWorkee() const
 {
 	return _AnimWorkee;
+}
+
+void SSimpleAnimatorTestComponent::OnAnimWorkerUpdateAnimationEnded()
+{
+	IAnimWorkee* AnimWorkee = GetAnimWorkee();
+	if (AnimWorkee == nullptr)
+	{
+		return;
+	}
+
+	if (_bDrawDebugResultPose == false)
+	{
+		return;
+	}
+
+	const PoseSlot& ResultPose = AnimWorkee->GetResultPose();
+	SGameObject* OwnerGameObject = GetGameObject();
+	XMMATRIX WorldTransformOrigin = OwnerGameObject->CalcWorldTransformMatrix();
+	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
+
+	SRenderDebugUtil::DrawDebugPose(IncludedWorld, WorldTransformOrigin, ResultPose, false, 0.5);
 }
 
 void SSimpleAnimatorTestComponent::ReconstructBoneBinding()

@@ -293,18 +293,24 @@ void SWorld::AddWorldRootObject(SGameObject* InWorldRootObject)
 
 void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
 {
-	for (int i=0;i<_MeshDebugDrawTasks.GetSize();i++)
+	for (int i = 0; i < _MeshDebugDrawTasks.GetSize(); i++)
 	{
 		InRenderer->DrawWireFrame(_MeshDebugDrawTasks[i].RenderDesc);
+	}
 
+	for (int i = 0; i < _MeshDebugDrawTasks.GetSize(); i++)
+	{
 		// TODO: 나중에 World별 DeltaTime으로 바꿀 수 있음
 		_MeshDebugDrawTasks[i].Time -= SSFrameInfo::GetDeltaTime();
 
 		if (_MeshDebugDrawTasks[i].Time < 0)
 		{
 			_MeshDebugDrawTasks.RemoveAtAndFillLast(i);
+			i--;
 		}
 	}
+
+	int a = 0;
 }
 
 void SWorld::DebugDrawMesh(

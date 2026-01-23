@@ -59,8 +59,8 @@ void SRenderDebugUtil::DrawDirectionalMesh(
 
 	Vector4f Scale;
 	Scale.Z = Dist;
-	Scale.X = Thickness;
-	Scale.Y = Thickness;
+	Scale.X = Dist * Thickness;
+	Scale.Y = Dist * Thickness;
 
 	Transform Transform;
 	Transform.Scale = Scale;
@@ -89,6 +89,7 @@ void SRenderDebugUtil::DrawDebugPose(
 	SS::PooledList<XMMATRIX> WorldTransformMatrices;
 
 	int BoneCnt = InPose.BoneTransforms.GetSize();
+	WorldTransformMatrices.Reserve(BoneCnt);
 	for (int i = 0; i < BoneCnt; i++)
 	{
 		int ParentIdx = InPose.ParentBoneIdx[i];

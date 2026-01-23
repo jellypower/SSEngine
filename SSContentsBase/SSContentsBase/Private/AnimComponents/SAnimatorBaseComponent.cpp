@@ -78,13 +78,6 @@ void SAnimatorBaseComponent::ApplyAnimWorkeeTransform()
 
 		GOItem->SetTransform(ResultPose.BoneTransforms[i]);
 	}
-
-
-	SGameObject* OwnerGameObject = GetGameObject();
-	XMMATRIX WorldTransformOrigin = OwnerGameObject->CalcWorldTransformMatrix();
-	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
-
-	SRenderDebugUtil::DrawDebugPose(IncludedWorld, WorldTransformOrigin, ResultPose, false, 0.25);
 }
 
 void SAnimatorBaseComponent::OnExitTheWorld()

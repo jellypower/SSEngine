@@ -17,14 +17,12 @@ public:
 
 public:
 	virtual IAnimWorkee* GetAnimWorkee() const = 0;
-
+	virtual void OnAnimWorkerUpdateAnimationEnded() { }
 
 	virtual void ReconstructBoneBinding();
 	virtual void ApplyAnimWorkeeTransform();
 
 
-
-	
 
 
 public:

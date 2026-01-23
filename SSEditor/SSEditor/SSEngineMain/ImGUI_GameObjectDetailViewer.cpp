@@ -349,6 +349,13 @@ void ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp)
 					AnimComp->SetWholeFrameTime(FrameTime);
 				}
 			}
+
+			{
+				bool bDrawDebug = AnimComp->GetDrawDebugResultPose();
+				ImGui::Checkbox("Draw Debug Pose", &bDrawDebug);
+				AnimComp->SetDrawDebugResultPose(bDrawDebug);
+			}
+
 		}
 		ImGui::PopID();
 	}
