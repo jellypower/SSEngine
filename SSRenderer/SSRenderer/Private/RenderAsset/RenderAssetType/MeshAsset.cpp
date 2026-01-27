@@ -17,7 +17,7 @@ void MeshAsset::InjectRawDataXXX(MeshRawDataBase* InRawData)
 {
 	_MeshRawData = InRawData;
 
-	_CachedMeshType = _MeshRawData->_MeshType;
+	_CachedMeshType = _MeshRawData->GetMeshType();
 }
 
 const MeshRawDataBase* MeshAsset::GetMeshRawData() const
@@ -37,11 +37,11 @@ EAssetType MeshAsset::GetAssetType() const
 
 int32 MeshAsset::GetSubMeshCnt() const
 {
-	if (_MeshRawData->_MeshType == EMeshType::Rigid || 
-		_MeshRawData->_MeshType == EMeshType::Skinned)
+	if (_CachedMeshType == EMeshType::Rigid ||
+		_CachedMeshType == EMeshType::Skinned)
 	{
 		MeshRawDataDefault* DefaultMeshRawData = (MeshRawDataDefault*)_MeshRawData;
-		return DefaultMeshRawData->_subMeshCnt;
+		return DefaultMeshRawData->_VertexHeader.subMeshCnt;
 	}
 	else
 	{
@@ -93,7 +93,7 @@ void MeshAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerNa
 	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
 	if (ReferencerCnt == 0)
 	{
-		SSRenderer* Renderer = (SSRenderer*)g_Renderer;
+		SSRenderer* Renderer = static_cast<SSRenderer*>(g_Renderer);
 		Renderer->AddGALStateChangedAsset(this);
 	}
 
@@ -101,6 +101,7 @@ void MeshAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerNa
 
 void MeshAsset::ReleaseSystemData()
 {
+	_MeshRawData->ReleaseData();
 	delete _MeshRawData;
 	_MeshRawData = nullptr;
 }

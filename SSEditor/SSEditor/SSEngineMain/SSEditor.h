@@ -45,7 +45,6 @@ private:
 private:
 	void ProcessImGUI();
 
-	void DRAW_DEBUG();
 
 	void ImGUI_AssetManagerWindow();
 	void ImGUI_AssetManagerWindow_Texture();

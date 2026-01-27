@@ -1,10 +1,29 @@
 ﻿#pragma once
 #include "MeshDataDefault.h"
-#include "SSRenderer/Public/RenderCommon/SSBoneType.h"
 
+
+struct alignas(16) BonePlacement
+{
+	SS::SHasherW BoneName;
+	Transform BoneTransform;
+};
 
 class MeshRawDataSkinned : public MeshRawDataDefault
 {
 public:
-	SS::PooledList<BonePlacement> _BoneOriginalPose;
+	MeshRawDataBoneHeader _BoneHeader;
+
+	SS::PooledList<BonePlacement> _BonePlacements;
+	
+
+public:
+	virtual EMeshType GetMeshType() const override
+	{
+		return EMeshType::Skinned;
+	}
+
+	virtual void ReleaseData() override
+	{
+		__super::ReleaseData();
+	}
 };

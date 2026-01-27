@@ -9,8 +9,9 @@ enum class EMeshType
 };
 
 
-// 날것으로 쓰기 위한 
 struct MeshRawDataBase : public INoncopyable
 {
-	EMeshType _MeshType = EMeshType::None;
+public:
+	virtual EMeshType GetMeshType() const = 0;
+	virtual void ReleaseData() = 0;
 };

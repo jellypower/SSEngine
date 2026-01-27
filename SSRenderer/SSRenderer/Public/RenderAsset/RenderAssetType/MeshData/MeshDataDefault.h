@@ -1,25 +1,36 @@
 ﻿#pragma once
 #include "MeshRawDataBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RAFileOutline/MeshRawDataHeaders.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
+
 
 
 class MeshRawDataDefault : public MeshRawDataBase
 {
 public:
+	MeshRawDataVertexHeader _VertexHeader;
+
 	void* _vertexData = nullptr;
-	int32 _eachVertexSize = 0;
-	int32 _vertexCnt = 0;
-
-	uint8 _subMeshCnt = 0;
-
 	uint32* _indexData = nullptr;
-	int32 _indexDataCnt[SUBMESH_COUNT_MAX] = { 0, };
-	int32 _indexDataStartIndex[SUBMESH_COUNT_MAX] = { 0, };
-	int32 _wholeIndexDataCnt = 0;
 
-	virtual ~MeshRawDataDefault()
+
+	virtual EMeshType GetMeshType() const override
 	{
-		free(_indexData);
-		free(_vertexData);
+		return EMeshType::Rigid;
+	}
+
+	virtual void ReleaseData() override
+	{
+		if (_indexData != nullptr)
+		{
+			free(_indexData);
+			_indexData = nullptr;
+		}
+
+		if (_vertexData != nullptr)
+		{
+			free(_vertexData);
+			_vertexData = nullptr;
+		}
 	}
 };

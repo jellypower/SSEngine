@@ -107,7 +107,7 @@ void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGa
 	}
 
 	const MeshRawDataSkinned* SkinnedRawMesh = (MeshRawDataSkinned*)BoundMesh->GetMeshRawData();
-	int32 NewBoneCnt = SkinnedRawMesh->_BoneOriginalPose.GetSize();
+	int32 NewBoneCnt = SkinnedRawMesh->_BoneHeader._BoneCnt;
 
 	SS::PooledList<SGameObject*> ScrapedDecendants(200);
 	ScrapedDecendants.PushBack(RootBoneGameObject);
@@ -115,7 +115,7 @@ void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGa
 
 	_BoneBindings.Clear();
 	_BoneBindings.Reserve(200);
-	const SS::PooledList<BonePlacement>& OriginalBones = SkinnedRawMesh->_BoneOriginalPose;
+	const SS::PooledList<BonePlacement>& OriginalBones = SkinnedRawMesh->_BonePlacements;
 	for (int32 i = 0; i < NewBoneCnt; i++)
 	{
 		SGameObject* MatchingObject = nullptr;

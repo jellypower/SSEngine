@@ -285,10 +285,10 @@ MeshRawDataDefault* CreateCube1mRawData()
 
 
 	CubeRawData->_vertexData = Vertices;
-	CubeRawData->_eachVertexSize = sizeof(SSDefaultVertex);
-	CubeRawData->_vertexCnt = 24;
+	CubeRawData->_VertexHeader.eachVertexSize = sizeof(SSDefaultVertex);
+	CubeRawData->_VertexHeader.vertexCnt = 24;
 
-	CubeRawData->_subMeshCnt = 1;
+	CubeRawData->_VertexHeader.subMeshCnt = 1;
 
 	uint32* Indices = (uint32*)DBG_MALLOC(sizeof(uint32) * 36);
 	Indices[0] = 0; // ¾Æ·¡¸é
@@ -345,11 +345,10 @@ MeshRawDataDefault* CreateCube1mRawData()
 	Indices[35] = 23;
 
 	CubeRawData->_indexData = Indices;
-	CubeRawData->_indexDataCnt[0] = 36;
-	CubeRawData->_indexDataStartIndex[0] = 0;
-	CubeRawData->_wholeIndexDataCnt = 36;
+	CubeRawData->_VertexHeader.indexDataCnt[0] = 36;
+	CubeRawData->_VertexHeader.indexDataStartIndex[0] = 0;
+	CubeRawData->_VertexHeader.wholeIndexDataCnt = 36;
 
-	CubeRawData->_MeshType = EMeshType::Rigid;
 
 	return CubeRawData;
 }
@@ -499,18 +498,17 @@ MeshRawDataDefault* CreateSphere1mRawData(int32 DetailLevel)
 
 	MeshRawDataDefault* SphereRawData = DBG_NEW MeshRawDataDefault();
 
-	SphereRawData->_MeshType = EMeshType::Rigid;
 
 	SphereRawData->_vertexData = Vertices;
-	SphereRawData->_eachVertexSize = sizeof(SSDefaultVertex);
-	SphereRawData->_vertexCnt = VertexCnt;
+	SphereRawData->_VertexHeader.eachVertexSize = sizeof(SSDefaultVertex);
+	SphereRawData->_VertexHeader.vertexCnt = VertexCnt;
 
-	SphereRawData->_subMeshCnt = 1;
+	SphereRawData->_VertexHeader.subMeshCnt = 1;
 
 	SphereRawData->_indexData = Indices;
-	SphereRawData->_indexDataCnt[0] = CurIndexCnt;
-	SphereRawData->_indexDataStartIndex[0] = 0;
-	SphereRawData->_wholeIndexDataCnt = CurIndexCnt;
+	SphereRawData->_VertexHeader.indexDataCnt[0] = CurIndexCnt;
+	SphereRawData->_VertexHeader.indexDataStartIndex[0] = 0;
+	SphereRawData->_VertexHeader.wholeIndexDataCnt = CurIndexCnt;
 
 
 	return SphereRawData;

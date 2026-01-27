@@ -21,14 +21,14 @@ DX12GALSkinnedMeshAssetWrapper::DX12GALSkinnedMeshAssetWrapper(IMeshAsset* owner
 	const MeshRawDataBase* MeshRawData = _OwnerMeshAsset->GetMeshRawData();
 	SS::SHasherW MeshName = _OwnerMeshAsset->GetAssetName();
 
-	if (MeshRawData->_MeshType != EMeshType::Skinned)
+	if (MeshRawData->GetMeshType() != EMeshType::Skinned)
 	{
 		SS_INTERRUPT();
 		return;
 	}
 	const MeshRawDataSkinned* SkinnedMeshData = static_cast<const MeshRawDataSkinned*>(MeshRawData);
 
-	int32 BoneCnt = SkinnedMeshData->_BoneOriginalPose.GetSize();
+	int32 BoneCnt = SkinnedMeshData->_BoneHeader._BoneCnt;
 
 
 	// Create Resource
@@ -89,8 +89,8 @@ DX12GALSkinnedMeshAssetWrapper::DX12GALSkinnedMeshAssetWrapper(IMeshAsset* owner
 
 		for (int32 i = 0; i < BoneCnt; i++)
 		{
-			JointInverseData[i].WMatrix = XMMatrixTranspose(SkinnedMeshData->_BoneOriginalPose[i].BoneTransform.AsInverseMatrix());
-			JointInverseData[i].RotMatrix = XMMatrixTranspose(SkinnedMeshData->_BoneOriginalPose[i].BoneTransform.Rotation.AsInverseMatrix());
+			JointInverseData[i].WMatrix = XMMatrixTranspose(SkinnedMeshData->_BonePlacements[i].BoneTransform.AsInverseMatrix());
+			JointInverseData[i].RotMatrix = XMMatrixTranspose(SkinnedMeshData->_BonePlacements[i].BoneTransform.Rotation.AsInverseMatrix());
 		}
 
 		_OriginalJointInverseResource->Unmap(0, nullptr);

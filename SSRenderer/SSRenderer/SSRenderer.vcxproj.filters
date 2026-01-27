@@ -60,9 +60,6 @@
     <ClCompile Include="Private\RenderInstance\RISkinnedMesh.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Public\RenderCommon\SSBoneType.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\RendererUtil\RawDataFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -221,9 +218,6 @@
     <ClInclude Include="Public\RenderInstance\IRISkinnedMesh.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderCommon\SSBoneType.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Private\RendererUtil\RawDataFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -258,6 +252,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\DEBUG\DebugDrawDesc.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RAFileOutline\MeshRawDataHeaders.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

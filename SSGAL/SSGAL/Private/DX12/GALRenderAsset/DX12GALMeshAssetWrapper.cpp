@@ -26,7 +26,8 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 	const MeshRawDataBase* MeshRawData = _OwnerMeshAsset->GetMeshRawData();
 	SS::SHasherW MeshName = _OwnerMeshAsset->GetAssetName();
 
-	if (MeshRawData->_MeshType != EMeshType::Rigid && MeshRawData->_MeshType != EMeshType::Skinned)
+	EMeshType MeshType = MeshRawData->GetMeshType();
+	if (MeshType != EMeshType::Rigid && MeshType != EMeshType::Skinned)
 	{
 		SS_INTERRUPT();
 		return;
@@ -36,8 +37,8 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 
 	// Create Vertex buffer and Update
 	{
-		int32 EachVertexSize = DefaultMeshRawData->_eachVertexSize;
-		int32 VertexCnt = DefaultMeshRawData->_vertexCnt;
+		int32 EachVertexSize = DefaultMeshRawData->_VertexHeader.eachVertexSize;
+		int32 VertexCnt = DefaultMeshRawData->_VertexHeader.vertexCnt;
 		uint64 VertexBufferSize = VertexCnt * EachVertexSize;
 		const void* VertexData = DefaultMeshRawData->_vertexData;
 
@@ -80,9 +81,9 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 	// Create Index buffer and Update
 	{
 
-		int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
+		int32 SubMeshCnt = DefaultMeshRawData->_VertexHeader.subMeshCnt;
 		_SubMeshCnt = SubMeshCnt;
-		int32 WholeIdxDataCnt = DefaultMeshRawData->_wholeIndexDataCnt;
+		int32 WholeIdxDataCnt = DefaultMeshRawData->_VertexHeader.wholeIndexDataCnt;
 		const uint32* IndexData = DefaultMeshRawData->_indexData;
 		int32 WholeIndexBufferSize = sizeof(uint32) * WholeIdxDataCnt;
 
@@ -118,7 +119,7 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 		int32 Offset = 0;
 		for (int32 i = 0; i < SubMeshCnt; i++)
 		{
-			CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
+			CurIdxDataCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[i];
 
 			D3D12_INDEX_BUFFER_VIEW NewIndexBufferView;
 			NewIndexBufferView.BufferLocation = NewIndexBuffer->GetGPUVirtualAddress() + (sizeof(uint32) * Offset);

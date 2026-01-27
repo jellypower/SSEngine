@@ -417,6 +417,8 @@ void SSEditor::TEMP_ProcessContents()
 
 	if (PickedGameObject != nullptr)
 	{
+		XMMATRIX Mat = PickedGameObject->CalcWorldTransformMatrix();
+
 		constexpr float OBJ_ROT_SPEED = 3;
 		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
 		{
@@ -516,13 +518,6 @@ void SSEditor::ProcessImGUI()
 	ImGUI_FrameInfo();
 	ImGUI_ShowGameObjectDetail(_PickedObject);
 	ImGUI_DrawHierarchy();
-}
-
-void SSEditor::DRAW_DEBUG()
-{
-	// TODO: 여기서부터 계속하기. -> PointA랑 PointB주고 애로우 메시같은거 그리는 기능 만들기
-
-
 }
 
 void SSEditor::ImGUI_AssetManagerWindow()

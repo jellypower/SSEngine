@@ -26,7 +26,7 @@ public:
 	virtual void ReleaseGALData() override;
 
 private:
-	const MeshRawDataBase* _MeshRawData = nullptr;
+	MeshRawDataBase* _MeshRawData = nullptr;
 
 	EMeshType _CachedMeshType = EMeshType::None;
 };

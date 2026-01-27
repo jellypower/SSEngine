@@ -28,14 +28,14 @@ DX12GALRIMetadata_SKM::DX12GALRIMetadata_SKM(GALRenderDevice* InRenderDevice, co
 	IMeshAsset* OwnerMesh = InOwnerRenderInstance->GetModelAsset()->GetMeshAsset();
 	SS::SHasherW MeshAssetName = OwnerMesh->GetAssetName();
 	const MeshRawDataBase* MeshRawData = OwnerMesh->GetMeshRawData();
-	if (MeshRawData->_MeshType != EMeshType::Skinned)
+	if (MeshRawData->GetMeshType() != EMeshType::Skinned)
 	{
 		SS_INTERRUPT();
 		return;
 	}
 
 	const MeshRawDataSkinned* SkinnedMeshRawData = (const MeshRawDataSkinned*)MeshRawData;
-	int32 BoneCnt = SkinnedMeshRawData->_BoneOriginalPose.GetSize();
+	int32 BoneCnt = SkinnedMeshRawData->_BoneHeader._BoneCnt;
 	const DX12GALSkinnedMeshAssetWrapper* GALSkinnedMesh = static_cast<const DX12GALSkinnedMeshAssetWrapper*>(OwnerMesh->GetGALMeshAsset());
 
 

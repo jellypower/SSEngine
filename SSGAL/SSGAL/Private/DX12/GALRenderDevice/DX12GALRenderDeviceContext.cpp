@@ -777,7 +777,7 @@ void DX12GALRenderDeviceContext::DrawSkyMap(IRICubeMap* CubeMapToDraw)
 	IMeshAsset* CubeMeshAsset = g_CommonRenderAssetSet->GetCube1mMesh();
 	const DX12GALMeshAssetWrapper* DX12CubeMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(CubeMeshAsset->GetGALMeshAsset());
 	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(CubeMeshAsset->GetMeshRawData());
-	int32 IndexCnt = DefaultMeshRawData->_indexDataCnt[0];
+	int32 IndexCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[0];
 
 	DX12GALRICubeMap* DX12GALCubeMap = static_cast<DX12GALRICubeMap*>(CubeMapToDraw->GetGALMetadata());
 	ID3D12DescriptorHeap* CubemapDescHeap = DX12GALCubeMap->GetCubeMapDescHeap();
@@ -937,7 +937,7 @@ void DX12GALRenderDeviceContext::DrawDebugWire(
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = RawData->_indexDataCnt[i];
+		int32 CurIdxDataCnt = RawData->_VertexHeader.indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 	}
 }
@@ -996,13 +996,13 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
 
 
-	if (MeshRawData->_MeshType != EMeshType::Rigid)
+	if (MeshRawData->GetMeshType() != EMeshType::Rigid)
 	{
 		SS_INTERRUPT(false);
 		return;
 	}
 	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(MeshRawData);
-	int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
+	int32 SubMeshCnt = DefaultMeshRawData->_VertexHeader.subMeshCnt;
 
 
 	{
@@ -1070,7 +1070,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 		} // RenderEnv
 
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
+		int32 CurIdxDataCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
 	}
@@ -1088,13 +1088,13 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 	// Scrap Mesh Asset
 	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
-	if (MeshRawData->_MeshType != EMeshType::Skinned)
+	if (MeshRawData->GetMeshType() != EMeshType::Skinned)
 	{
 		SS_INTERRUPT();
 		return;
 	}
 	const MeshRawDataSkinned* SkinnedMeshRawData = static_cast<const MeshRawDataSkinned*>(MeshRawData);
-	int32 SubMeshCnt = SkinnedMeshRawData->_subMeshCnt;
+	int32 SubMeshCnt = SkinnedMeshRawData->_VertexHeader.subMeshCnt;
 
 	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(lMeshAsset->GetGALMeshAsset());
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
@@ -1172,7 +1172,7 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 		} // Skinning
 
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = SkinnedMeshRawData->_indexDataCnt[i];
+		int32 CurIdxDataCnt = SkinnedMeshRawData->_VertexHeader.indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
 	}
@@ -1193,14 +1193,14 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
 
-	if(MeshRawData->_MeshType != EMeshType::Rigid)
+	if(MeshRawData->GetMeshType() != EMeshType::Rigid)
 	{
 		SS_INTERRUPT();
 		return;
 	}
 
 	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(MeshRawData);
-	int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
+	int32 SubMeshCnt = DefaultMeshRawData->_VertexHeader.subMeshCnt;
 
 
 	{
@@ -1234,7 +1234,7 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
+		int32 CurIdxDataCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 	}
 }
@@ -1254,14 +1254,14 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
 
-	if (MeshRawData->_MeshType != EMeshType::Skinned)
+	if (MeshRawData->GetMeshType() != EMeshType::Skinned)
 	{
 		SS_INTERRUPT();
 		return;
 	}
 
 	const MeshRawDataSkinned* DefaultMeshRawData = static_cast<const MeshRawDataSkinned*>(MeshRawData);
-	int32 SubMeshCnt = DefaultMeshRawData->_subMeshCnt;
+	int32 SubMeshCnt = DefaultMeshRawData->_VertexHeader.subMeshCnt;
 
 
 	{
@@ -1301,7 +1301,7 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = DefaultMeshRawData->_indexDataCnt[i];
+		int32 CurIdxDataCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 	}
 }

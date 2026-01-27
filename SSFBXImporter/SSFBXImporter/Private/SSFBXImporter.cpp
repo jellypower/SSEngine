@@ -371,7 +371,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 				newMeshAsset = _AssetManagerToImportAsset->FindAssetByName<IMeshAsset>(NewMeshName);
 			}
 
-			NewAssetPlacementRef.MeshType = newMeshAsset->GetMeshRawData()->_MeshType;
+			NewAssetPlacementRef.MeshType = newMeshAsset->GetMeshRawData()->GetMeshType();
 
 			SS::SHasherW NewModelAssetName = 
 				_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NodeNameString, EAssetType::Model);

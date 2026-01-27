@@ -308,8 +308,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 
 	
 	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
-	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataSkinned();
-	NewMeshRawData->_MeshType = EMeshType::Rigid;
+	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
 
 	// - Load num
 	const uint32 layerNum = fbxMesh->GetLayerCount();
@@ -397,9 +396,9 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 
 
 	// - alloc vertex memory
-	NewMeshRawData->_vertexCnt = ssVertexBuffer.GetSize();
-	NewMeshRawData->_eachVertexSize = sizeof(SSDefaultVertex);
-	uint32 validVertexBufferSize = NewMeshRawData->_eachVertexSize * NewMeshRawData->_vertexCnt;
+	NewMeshRawData->_VertexHeader.vertexCnt = ssVertexBuffer.GetSize();
+	NewMeshRawData->_VertexHeader.eachVertexSize = sizeof(SSDefaultVertex);
+	uint32 validVertexBufferSize = NewMeshRawData->_VertexHeader.eachVertexSize * NewMeshRawData->_VertexHeader.vertexCnt;
 	NewMeshRawData->_vertexData = DBG_MALLOC(validVertexBufferSize);
 	SSDefaultVertex* ssVertex = (SSDefaultVertex*)NewMeshRawData->_vertexData;
 
@@ -409,10 +408,10 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 
 	// - alloc index memory
 	if (fbxMesh->GetNode()->GetMaterial(0) != nullptr)
-		NewMeshRawData->_subMeshCnt = fbxMesh->GetNode()->GetMaterialCount();
+		NewMeshRawData->_VertexHeader.subMeshCnt = fbxMesh->GetNode()->GetMaterialCount();
 	else
-		NewMeshRawData->_subMeshCnt = 1;
-	SS_ASSERT(NewMeshRawData->_subMeshCnt < SUBMESH_COUNT_MAX);
+		NewMeshRawData->_VertexHeader.subMeshCnt = 1;
+	SS_ASSERT(NewMeshRawData->_VertexHeader.subMeshCnt < SUBMESH_COUNT_MAX);
 
 	FbxGeometryElementMaterial* fbxElementMaterial = fbxMesh->GetElementMaterial();
 
@@ -428,26 +427,26 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 		for (uint32 i = 0; i < PolygonCount; i++) // 메테리얼이 1개 이상이니까 SubGeomtry별로 나눔
 		{
 			uint8 matIdx = materialIndices->GetAt(i);
-			NewMeshRawData->_indexDataCnt[matIdx] += ((fbxMesh->GetPolygonSize(i) - 2) * 3);
+			NewMeshRawData->_VertexHeader.indexDataCnt[matIdx] += ((fbxMesh->GetPolygonSize(i) - 2) * 3);
 		}
 	}
 	else
 	{
 		for (uint32 i = 0; i < PolygonCount; i++) // 메테리얼 1개 고정이니까 그냥 다 더함
 		{
-			NewMeshRawData->_indexDataCnt[0] += (fbxMesh->GetPolygonSize(i) - 2);
+			NewMeshRawData->_VertexHeader.indexDataCnt[0] += (fbxMesh->GetPolygonSize(i) - 2);
 		}
-		NewMeshRawData->_indexDataCnt[0] *= 3;
+		NewMeshRawData->_VertexHeader.indexDataCnt[0] *= 3;
 	}
 
 	uint32 idxAcc = 0;
-	for (uint32 i = 0; i < NewMeshRawData->_subMeshCnt; i++)
+	for (uint32 i = 0; i < NewMeshRawData->_VertexHeader.subMeshCnt; i++)
 	{
-		NewMeshRawData->_indexDataStartIndex[i] = idxAcc;
-		idxAcc += NewMeshRawData->_indexDataCnt[i];
+		NewMeshRawData->_VertexHeader.indexDataStartIndex[i] = idxAcc;
+		idxAcc += NewMeshRawData->_VertexHeader.indexDataCnt[i];
 	}
-	NewMeshRawData->_wholeIndexDataCnt = idxAcc;
-	NewMeshRawData->_indexData = (uint32*)DBG_MALLOC(sizeof(uint32) * NewMeshRawData->_wholeIndexDataCnt);
+	NewMeshRawData->_VertexHeader.wholeIndexDataCnt = idxAcc;
+	NewMeshRawData->_indexData = (uint32*)DBG_MALLOC(sizeof(uint32) * NewMeshRawData->_VertexHeader.wholeIndexDataCnt);
 
 
 	// 5. load index memory
@@ -459,7 +458,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 		{
 			uint32 PolygonVertexCount = fbxMesh->GetPolygonSize(i);
 			uint32 matIdx = materialIndices->GetAt(i);
-			uint32 idxDataStart = NewMeshRawData->_indexDataStartIndex[matIdx];
+			uint32 idxDataStart = NewMeshRawData->_VertexHeader.indexDataStartIndex[matIdx];
 			for (uint32 j = 1; j < PolygonVertexCount - 1; j++)
 			{
 				SS::pair<uint32, int32> CtrlPointIdx = PolygonVertexToCtrlPointMap[i][j + 1];
@@ -502,8 +501,8 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 		}
 	}
 
-	for (uint32 i = 0; i < NewMeshRawData->_subMeshCnt; i++)
-		SS_ASSERT(NewMeshRawData->_indexDataCnt[i] == subMaterialIdxDataCounter[i]);
+	for (uint32 i = 0; i < NewMeshRawData->_VertexHeader.subMeshCnt; i++)
+		SS_ASSERT(NewMeshRawData->_VertexHeader.indexDataCnt[i] == subMaterialIdxDataCounter[i]);
 
 
 
@@ -511,10 +510,10 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 	FbxGeometryElementTangent* fbxTangent = fbxMesh->GetElementTangent();
 	if (fbxTangent == nullptr)
 	{
-		for (uint32 subGeomIdx = 0; subGeomIdx < NewMeshRawData->_subMeshCnt; subGeomIdx++)
+		for (uint32 subGeomIdx = 0; subGeomIdx < NewMeshRawData->_VertexHeader.subMeshCnt; subGeomIdx++)
 		{
-			uint32* thisIdxData = NewMeshRawData->_indexData + NewMeshRawData->_indexDataStartIndex[subGeomIdx];
-			int32 thisIdxDataNum = NewMeshRawData->_indexDataCnt[subGeomIdx];
+			uint32* thisIdxData = NewMeshRawData->_indexData + NewMeshRawData->_VertexHeader.indexDataStartIndex[subGeomIdx];
+			int32 thisIdxDataNum = NewMeshRawData->_VertexHeader.indexDataCnt[subGeomIdx];
 			SS_ASSERT(thisIdxDataNum % 3 == 0);
 
 			for (uint32 i = 0; i < thisIdxDataNum; i += 3)
@@ -570,7 +569,6 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
 	MeshRawDataSkinned* NewSkinnedMeshRawData = DBG_NEW MeshRawDataSkinned();
-	NewSkinnedMeshRawData->_MeshType = EMeshType::Skinned;
 
 	// 1. Load num
 	const uint32 layerNum = fbxMesh->GetLayerCount();
@@ -735,9 +733,9 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 
 
 	// 2. alloc vertex memory
-	NewSkinnedMeshRawData->_vertexCnt = ssVertexBuffer.GetSize();
-	NewSkinnedMeshRawData->_eachVertexSize = sizeof(SSSkinnedVertex);
-	uint32 validVertexBufferSize = NewSkinnedMeshRawData->_eachVertexSize * NewSkinnedMeshRawData->_vertexCnt;
+	NewSkinnedMeshRawData->_VertexHeader.vertexCnt = ssVertexBuffer.GetSize();
+	NewSkinnedMeshRawData->_VertexHeader.eachVertexSize = sizeof(SSSkinnedVertex);
+	uint32 validVertexBufferSize = NewSkinnedMeshRawData->_VertexHeader.eachVertexSize * NewSkinnedMeshRawData->_VertexHeader.vertexCnt;
 	NewSkinnedMeshRawData->_vertexData = DBG_MALLOC(validVertexBufferSize);
 	SSSkinnedVertex* ssSkinnedVertex = (SSSkinnedVertex*)NewSkinnedMeshRawData->_vertexData;
 
@@ -748,17 +746,17 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	// 4. alloc index memory
 	if (fbxMesh->GetNode()->GetMaterial(0) != nullptr)
 	{
-		NewSkinnedMeshRawData->_subMeshCnt = fbxMesh->GetNode()->GetMaterialCount();
+		NewSkinnedMeshRawData->_VertexHeader.subMeshCnt = fbxMesh->GetNode()->GetMaterialCount();
 	}
 	else
 	{
-		NewSkinnedMeshRawData->_subMeshCnt = 1;
+		NewSkinnedMeshRawData->_VertexHeader.subMeshCnt = 1;
 	}
 
-	if (NewSkinnedMeshRawData->_subMeshCnt > SUBMESH_COUNT_MAX)
+	if (NewSkinnedMeshRawData->_VertexHeader.subMeshCnt > SUBMESH_COUNT_MAX)
 	{
 		SS_ASSERT(false);
-		NewSkinnedMeshRawData->_subMeshCnt = SUBMESH_COUNT_MAX;
+		NewSkinnedMeshRawData->_VertexHeader.subMeshCnt = SUBMESH_COUNT_MAX;
 	}
 
 
@@ -770,26 +768,26 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 		for (uint32 i = 0; i < PolygonCount; i++)
 		{
 			uint8 matIdx = materialIndices->GetAt(i);
-			NewSkinnedMeshRawData->_indexDataCnt[matIdx] += ((fbxMesh->GetPolygonSize(i) - 2) * 3);
+			NewSkinnedMeshRawData->_VertexHeader.indexDataCnt[matIdx] += ((fbxMesh->GetPolygonSize(i) - 2) * 3);
 		}
 	}
 	else
 	{
 		for (uint32 i = 0; i < PolygonCount; i++)
 		{
-			NewSkinnedMeshRawData->_indexDataCnt[0] += (fbxMesh->GetPolygonSize(i) - 2);
+			NewSkinnedMeshRawData->_VertexHeader.indexDataCnt[0] += (fbxMesh->GetPolygonSize(i) - 2);
 		}
-		NewSkinnedMeshRawData->_indexDataCnt[0] *= 3;
+		NewSkinnedMeshRawData->_VertexHeader.indexDataCnt[0] *= 3;
 	}
 
 	uint32 idxAcc = 0;
-	for (uint8 i = 0; i < NewSkinnedMeshRawData->_subMeshCnt; i++)
+	for (uint8 i = 0; i < NewSkinnedMeshRawData->_VertexHeader.subMeshCnt; i++)
 	{
-		NewSkinnedMeshRawData->_indexDataStartIndex[i] = idxAcc;
-		idxAcc += NewSkinnedMeshRawData->_indexDataCnt[i];
+		NewSkinnedMeshRawData->_VertexHeader.indexDataStartIndex[i] = idxAcc;
+		idxAcc += NewSkinnedMeshRawData->_VertexHeader.indexDataCnt[i];
 	}
-	NewSkinnedMeshRawData->_wholeIndexDataCnt = idxAcc;
-	NewSkinnedMeshRawData->_indexData = (uint32*)DBG_MALLOC(sizeof(uint32) * NewSkinnedMeshRawData->_wholeIndexDataCnt);
+	NewSkinnedMeshRawData->_VertexHeader.wholeIndexDataCnt = idxAcc;
+	NewSkinnedMeshRawData->_indexData = (uint32*)DBG_MALLOC(sizeof(uint32) * NewSkinnedMeshRawData->_VertexHeader.wholeIndexDataCnt);
 
 
 	// 5. load index memory
@@ -801,7 +799,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 		{
 			uint32 PolygonVertexCount = fbxMesh->GetPolygonSize(i);
 			uint32 matIdx = materialIndices->GetAt(i);
-			uint32 idxDataStart = NewSkinnedMeshRawData->_indexDataStartIndex[matIdx];
+			uint32 idxDataStart = NewSkinnedMeshRawData->_VertexHeader.indexDataStartIndex[matIdx];
 			for (uint32 j = 1; j < PolygonVertexCount - 1; j++)
 			{
 				SS::pair<uint32, int32> CtrlPointIdx = PolygonVertexToCtrlPointMap[i][0];
@@ -844,9 +842,9 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 		}
 	}
 
-	for (uint32 i = 0; i < NewSkinnedMeshRawData->_subMeshCnt; i++)
+	for (uint32 i = 0; i < NewSkinnedMeshRawData->_VertexHeader.subMeshCnt; i++)
 	{
-		if (NewSkinnedMeshRawData->_indexDataCnt[i] != subMaterialIdxDataCounter[i])
+		if (NewSkinnedMeshRawData->_VertexHeader.indexDataCnt[i] != subMaterialIdxDataCounter[i])
 		{
 			SS_INTERRUPT();
 			return nullptr;
@@ -859,10 +857,10 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	FbxGeometryElementTangent* fbxTangent = fbxMesh->GetElementTangent();
 	if (fbxTangent == nullptr)
 	{
-		for (uint32 subGeomIdx = 0; subGeomIdx < NewSkinnedMeshRawData->_subMeshCnt; subGeomIdx++)
+		for (uint32 subGeomIdx = 0; subGeomIdx < NewSkinnedMeshRawData->_VertexHeader.subMeshCnt; subGeomIdx++)
 		{
-			uint32* thisIdxData = NewSkinnedMeshRawData->_indexData + NewSkinnedMeshRawData->_indexDataStartIndex[subGeomIdx];
-			uint32 thisIdxDataNum = NewSkinnedMeshRawData->_indexDataCnt[subGeomIdx];
+			uint32* thisIdxData = NewSkinnedMeshRawData->_indexData + NewSkinnedMeshRawData->_VertexHeader.indexDataStartIndex[subGeomIdx];
+			uint32 thisIdxDataNum = NewSkinnedMeshRawData->_VertexHeader.indexDataCnt[subGeomIdx];
 			SS_ASSERT(thisIdxDataNum % 3 == 0);
 
 			for (uint32 i = 0; i < thisIdxDataNum; i += 3)
@@ -892,15 +890,16 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 {
 	uint32 ClusterCnt = fbxSkin->GetClusterCount();
 
-	SS::PooledList<BonePlacement>& OutBones = RawDataToSaveBone->_BoneOriginalPose;
-
+	RawDataToSaveBone->_BoneHeader._BoneCnt = ClusterCnt;
+	SS::PooledList<BonePlacement>& OutBones = RawDataToSaveBone->_BonePlacements;
 	OutBones.Reserve(ClusterCnt);
-	SS::PooledList<int32> BoneParentIndices(ClusterCnt);
-	SS::PooledList<FbxNode*> BoneMatchingNodes(ClusterCnt);
+
+	SS::PooledList<int32, SS::InlineAllocator<200>> BoneParentIndices(ClusterCnt);
+	SS::PooledList<FbxNode*, SS::InlineAllocator<200>> BoneMatchingNodes(ClusterCnt);
 
 	
 	constexpr int32 STR_BUFFER_SIZE = 512;
-	wchar_t Utf16Buffer[STR_BUFFER_SIZE];
+	utf16 Utf16Buffer[STR_BUFFER_SIZE];
 
 	for (int32 BoneIdx = 0; BoneIdx < ClusterCnt; BoneIdx++)
 	{
