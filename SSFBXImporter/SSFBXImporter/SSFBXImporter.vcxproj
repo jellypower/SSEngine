@@ -166,12 +166,14 @@ copy "$(SolutionDir)..\ExternLibs\FBXSDK\lib\$(IntDir)libfbxsdk.dll" "$(Solution
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\ModuleEntry\SSFBXImporterFactory.cpp" />
     <ClCompile Include="Private\SSFBXImporter.cpp" />
+    <ClCompile Include="Private\SSFBXImporterDEBUGUtils.cpp" />
     <ClCompile Include="Private\SSFBXImporterUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Private\SSFBXImporter.h" />
+    <ClInclude Include="Private\SSFBXImporterDEBUGUtils.h" />
     <ClInclude Include="Private\SSFBXImporterUtils.h" />
     <ClInclude Include="Public\ISSFBXImporter.h" />
     <ClInclude Include="Public\ModuleEntry\SSFBXImporterFactory.h" />

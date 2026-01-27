@@ -27,6 +27,9 @@
     <ClCompile Include="Private\SSFBXImporterUtils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\SSFBXImporterDEBUGUtils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Private\SSFBXImporter.h">
@@ -45,6 +48,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ModuleExportKeyword.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\SSFBXImporterDEBUGUtils.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

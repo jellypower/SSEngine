@@ -80,12 +80,14 @@ void SSEditor::StartupEngine()
 
 	{
 		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\Arrow.fbx");
-		_FbxImporter->ImportCurrentFileToAssetManager();
+		_FbxImporter->GenerateImportedAssets();
+		_FbxImporter->RelocateImportedAssetsToAssetManager();
 	}
 
 	{
 		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
-		_FbxImporter->ImportCurrentFileToAssetManager();
+		_FbxImporter->GenerateImportedAssets();
+		_FbxImporter->RelocateImportedAssetsToAssetManager();
 	}
 
 	_Renderer->GetCommonRenderAssetSet()->TEMP_CacheCommonAssetFromFBX();

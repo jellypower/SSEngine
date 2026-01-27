@@ -7,6 +7,7 @@
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 
+enum class EAssetType;
 class IMaterialAsset;
 class IModelCombinationAssetMutable;
 class IRenderer;
@@ -39,6 +40,7 @@ public:
 public:
 	virtual SS::SHasherW GetBoundFilePath() const override;
 	virtual SS::SHasherW GetBoundFileName() const override;
+	virtual SS::PooledList<IAssetBase*> GetImportedAssets() const override;
 
 	virtual bool BindFbxSceneFile(const utf16* inFilePath) override;
 	virtual void ClearFbxSceneFile() override;
@@ -46,19 +48,31 @@ public:
 	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* inCommonRenderAssetSet = nullptr) override;
 	virtual void ClearRendererToImportAsset() override;
 
-	virtual void ImportCurrentFileToAssetManager() override;
+	virtual void RelocateImportedAssetsToAssetManager() override;
+
+	virtual void GenerateImportedAssets() override;
 
 private:
-	void ImportCurrentFileToMaterialAsset();
-	void ImportCurrentFileToModelAsset();
+	IAssetBase* FindImportedAssetByName(SS::SHasherW InAssetName, EAssetType InAssetType) const;
+
+	template<typename TAsset>
+	TAsset* FindImportedAssetByName(SS::SHasherW InAssetName) const
+	{
+		static_assert(std::derived_from<TAsset, IAssetBase>);
+		return static_cast<TAsset*>(FindImportedAssetByName(InAssetName, TAsset::ThisAssetType));
+	}
+
+private:
+	void GenerateImportedMaterialAssets();
+	void GenerateImportedMdlcAsset();
 
 	void ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset);
 
-	void ImportCurrentFileToRenderAnimAsset();
+	void GenerateImportedRenderAnimAssets();
 
-	void PrintFbxNodeInfo(FbxNode* node);
 
 private:
 	SS::HashMap<uint64, IMaterialAsset*> _FbxUniqueIDToMtlAsset;
 
+	SS::PooledList<IAssetBase*> _ImportedAssets;
 };
