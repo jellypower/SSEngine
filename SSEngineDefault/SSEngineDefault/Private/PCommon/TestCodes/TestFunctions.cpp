@@ -1079,6 +1079,7 @@ void CommonStringSerializerTest()
 	Strings.PushBack(L"ABCDEFGHIJKLMNOPWQRSTUVWXYZ");
 	Strings.PushBack(SS::move(LemonPhrase));
 	Strings.PushBack(L"ABCDEFGHIJKLMNOPWQRSTUVWXYZ");
+	Strings.PushBack(SS::StringW());
 	Strings.PushBack(SS::move(BanDPhrase));
 	Strings.PushBack(L"ABCDEFGHIJKLMNOPWQRSTUVWXYZ");
 
