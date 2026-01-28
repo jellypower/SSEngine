@@ -17,13 +17,9 @@ public:
 	
 
 public:
-	virtual EMeshType GetMeshType() const override
-	{
-		return EMeshType::Skinned;
-	}
-
 	virtual void ReleaseData() override
 	{
+		_BonePlacements.FlushMem();
 		__super::ReleaseData();
 	}
 };

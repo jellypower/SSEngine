@@ -1,10 +1,30 @@
 ﻿#pragma once
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
+#include "SSRenderer/Public/RenderCommon/SSVertexType.h"
+
+
+enum class EMeshType : int32
+{
+	None = 0,
+	Rigid = 1,
+	Skinned = 2,
+};
+
+
+constexpr int32 EachVertexSizeOfType(EMeshType InType)
+{
+	switch (InType)
+	{
+	case EMeshType::None: return 0;
+	case EMeshType::Rigid: return sizeof(SSDefaultVertex);
+	case EMeshType::Skinned: return sizeof(SSSkinnedVertex);
+	}
+}
 
 
 struct alignas(16) MeshRawDataVertexHeader
 {
-	int32 eachVertexSize = 0;
+	EMeshType MeshType = EMeshType::None;
 	int32 vertexCnt = 0;
 
 	int32 subMeshCnt = 0;
@@ -16,5 +36,4 @@ struct alignas(16) MeshRawDataVertexHeader
 struct alignas(16) MeshRawDataBoneHeader
 {
 	int32 _BoneCnt = 0;
-	int32 _EachBoneNameCapacity = 0;
 };

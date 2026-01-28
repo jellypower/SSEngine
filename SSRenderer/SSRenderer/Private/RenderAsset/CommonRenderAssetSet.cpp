@@ -44,23 +44,23 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	static_cast<IMaterialAssetMutable*>(_EmptyPBRMaterial)->InjectRawDataXXX(EmptyDefaultPBR);
 	AssetManager->AddToAssetPool(_EmptyPBRMaterial);
 
-	_Cube1mMesh = AssetManager->CreateEmptyMeshAsset("Cube1m.mesh", "__INTERNAL_ASSET__");
+	_Cube1mMesh = AssetManager->CreateEmptyMeshAsset(L"Cube1m.mesh", L"__INTERNAL_ASSET__");
 	MeshRawDataDefault* CubeRawData = CreateCube1mRawData();
 	static_cast<IMeshAssetMutable*>(_Cube1mMesh)->InjectRawDataXXX(CubeRawData);
 	AssetManager->AddToAssetPool(_Cube1mMesh);
 
 
-	_Cube1mModel = AssetManager->CreateEmptyModelAsset("Cube1m.mdl", "__INTERNAL_ASSET__");
+	_Cube1mModel = AssetManager->CreateEmptyModelAsset(L"Cube1m.mdl", L"__INTERNAL_ASSET__");
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMesh(_Cube1mMesh);
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMaterial(_EmptyPBRMaterial, 0);
 	AssetManager->AddToAssetPool(_Cube1mModel);
 
-	_Sphere1mMesh = AssetManager->CreateEmptyMeshAsset("Sphere1m.mesh", "__INTERNAL_ASSET__");
+	_Sphere1mMesh = AssetManager->CreateEmptyMeshAsset(L"Sphere1m.mesh", L"__INTERNAL_ASSET__");
 	MeshRawDataDefault* SphereRawData = CreateSphere1mRawData(8);
 	static_cast<IMeshAssetMutable*>(_Sphere1mMesh)->InjectRawDataXXX(SphereRawData);
 	AssetManager->AddToAssetPool(_Sphere1mMesh);
 
-	_Sphere1mModel = AssetManager->CreateEmptyModelAsset("Sphere1m.mdl", "__INTERNAL_ASSET__");
+	_Sphere1mModel = AssetManager->CreateEmptyModelAsset(L"Sphere1m.mdl", L"__INTERNAL_ASSET__");
 	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMesh(_Sphere1mMesh);
 	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMaterial(_EmptyPBRMaterial, 0);
 	AssetManager->AddToAssetPool(_Sphere1mModel);
@@ -83,7 +83,7 @@ void CommonRenderAssetSet::TEMP_CacheCommonAssetFromFBX()
 {
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
-	_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>("Arrow/Arrow.mesh");
+	_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>(L"Arrow/Arrow.mesh");
 	AssetInstanceReferencer Referencer;
 	Referencer.Type = EAssetInstanceReferenceType::AssetName;
 	Referencer.AssetName = L"__COMMON_ASSET_REFERENCER__";

@@ -2,7 +2,7 @@
 #include "SSRenderer/ModuleExportKeyword.h"
 
 
-struct MeshAssetSerializerContainer;
+struct MeshDataSerializerContainer;
 
-SSRENDERER_MODULE_NATIVE void FillDataFromAsset(MeshAssetSerializerContainer& Container);
-SSRENDERER_MODULE_NATIVE bool FillAssetFromData(MeshAssetSerializerContainer& Container);
+SSRENDERER_MODULE_NATIVE bool FillDataFromAsset(MeshDataSerializerContainer& Container);
+SSRENDERER_MODULE_NATIVE bool FillAssetFromData(MeshDataSerializerContainer& Container);

@@ -397,8 +397,9 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 
 	// - alloc vertex memory
 	NewMeshRawData->_VertexHeader.vertexCnt = ssVertexBuffer.GetSize();
-	NewMeshRawData->_VertexHeader.eachVertexSize = sizeof(SSDefaultVertex);
-	uint32 validVertexBufferSize = NewMeshRawData->_VertexHeader.eachVertexSize * NewMeshRawData->_VertexHeader.vertexCnt;
+	NewMeshRawData->_VertexHeader.MeshType = EMeshType::Rigid;
+	uint32 validVertexBufferSize = EachVertexSizeOfType(EMeshType::Rigid) * NewMeshRawData->_VertexHeader.vertexCnt;
+
 	NewMeshRawData->_vertexData = DBG_MALLOC(validVertexBufferSize);
 	SSDefaultVertex* ssVertex = (SSDefaultVertex*)NewMeshRawData->_vertexData;
 
@@ -734,8 +735,8 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 
 	// 2. alloc vertex memory
 	NewSkinnedMeshRawData->_VertexHeader.vertexCnt = ssVertexBuffer.GetSize();
-	NewSkinnedMeshRawData->_VertexHeader.eachVertexSize = sizeof(SSSkinnedVertex);
-	uint32 validVertexBufferSize = NewSkinnedMeshRawData->_VertexHeader.eachVertexSize * NewSkinnedMeshRawData->_VertexHeader.vertexCnt;
+	NewSkinnedMeshRawData->_VertexHeader.MeshType = EMeshType::Skinned;
+	uint32 validVertexBufferSize = EachVertexSizeOfType(EMeshType::Skinned) * NewSkinnedMeshRawData->_VertexHeader.vertexCnt;
 	NewSkinnedMeshRawData->_vertexData = DBG_MALLOC(validVertexBufferSize);
 	SSSkinnedVertex* ssSkinnedVertex = (SSSkinnedVertex*)NewSkinnedMeshRawData->_vertexData;
 

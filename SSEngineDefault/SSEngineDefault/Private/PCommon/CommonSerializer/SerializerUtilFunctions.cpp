@@ -15,8 +15,8 @@ void FillDataFromStrings(StringWSerializerContainer& Container)
 		TotalStrLen += (ItemStrLen + 1);
 	}
 
-	int32 TotalByteSize = sizeof(int32); // StringSize를 처음 4바이트에 넣어준다.
-	TotalByteSize += (TotalStrLen * sizeof(utf16)); // 그리고 스트링 길이만큼 바이트 사이즈 할당한다.
+	int32 TotalByteSize = sizeof(int32) + (TotalStrLen * sizeof(utf16));
+	// 전체 데이터 크기 = 데이터크기4byte + 전체스트링크기
 
 	Container.Data.SetSizeDirectly(TotalByteSize);
 

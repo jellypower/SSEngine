@@ -180,6 +180,16 @@ namespace SS
 			_size = 0;
 		}
 
+		void FlushMem()
+		{
+			Clear();
+
+			if (_allocator.GetData() != nullptr)
+			{
+				_allocator.Free();
+			}
+		}
+
 
 		void Reserve(int64 newCapacity)
 		{

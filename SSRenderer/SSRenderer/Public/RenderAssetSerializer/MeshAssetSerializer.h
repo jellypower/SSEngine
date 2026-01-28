@@ -2,11 +2,10 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
 
+struct MeshRawDataBase;
 
-class IMeshAsset;
-
-struct MeshAssetSerializerContainer
+struct MeshDataSerializerContainer
 {
 	SS::PooledList<byte> Data;
-	IMeshAsset* MeshAsset = nullptr;
+	MeshRawDataBase* MeshData = nullptr;
 };

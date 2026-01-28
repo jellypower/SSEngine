@@ -13,6 +13,15 @@ MeshAsset::MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 	_assetPath = InAssetPath;
 }
 
+MeshAsset::~MeshAsset()
+{
+	if (_MeshRawData != nullptr)
+	{
+		delete _MeshRawData;
+		_MeshRawData = nullptr;
+	}
+}
+
 void MeshAsset::InjectRawDataXXX(MeshRawDataBase* InRawData)
 {
 	_MeshRawData = InRawData;
@@ -102,8 +111,6 @@ void MeshAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerNa
 void MeshAsset::ReleaseSystemData()
 {
 	_MeshRawData->ReleaseData();
-	delete _MeshRawData;
-	_MeshRawData = nullptr;
 }
 
 void MeshAsset::ReleaseGALData()

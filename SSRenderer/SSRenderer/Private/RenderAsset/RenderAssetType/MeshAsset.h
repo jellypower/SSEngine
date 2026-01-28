@@ -1,5 +1,6 @@
 #pragma once
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RAFileOutline/MeshRawDataHeaders.h"
 
 struct MeshRawDataBase;
 class GALMeshAssetWrapperBase;
@@ -10,6 +11,7 @@ class MeshAsset : public IMeshAssetMutable
 {
 public:
 	MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
+	~MeshAsset();
 
 public:
 	virtual void InjectRawDataXXX(MeshRawDataBase* InRawData) override;
