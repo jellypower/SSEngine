@@ -168,6 +168,12 @@
     <ClInclude Include="Public\SSCommonUtil\TransientChunkHeader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Public\CommonSerializer\StringSerializer\StringSerailizerContainer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CommonSerializer\StringSerializer\SerializerUtilFunctions.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -222,6 +228,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\CommonSerializer\SerializerUtilFunctions.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

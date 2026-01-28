@@ -161,6 +161,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		SHasherTest();
 		StringTest();
 		DirectXMathTest();
+		CommonStringSerializerTest();
 	}
 
 

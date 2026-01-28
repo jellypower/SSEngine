@@ -6,6 +6,8 @@
 
 
 #include "SSEngineDefault/Public/SSDirectXMathCustom.h"
+#include "SSEngineDefault/Public/CommonSerializer/StringSerializer/SerializerUtilFunctions.h"
+#include "SSEngineDefault/Public/CommonSerializer/StringSerializer/StringSerailizerContainer.h"
 #include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "TestClasses/TestCustomHeapAllocator.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
@@ -561,12 +563,12 @@ void SHasherPoolTest()
 {
 	IHasherPool* PoolForTest = CreateHasherPool(10000);
 
-	for (int32 i=0;i<5000;i++)
+	for (int32 i = 0; i < 5000; i++)
 	{
 
 		utf16 TempStr[500];
 		int32 strLen = swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
-		
+
 		int32 HashedValue = CityHash32(reinterpret_cast<const char*>(TempStr), strLen * (sizeof(utf16) / sizeof(char)));
 
 		PoolForTest->FindOrAddHasherValue(TempStr, strLen, HashedValue);
@@ -577,7 +579,7 @@ void SHasherPoolTest()
 
 		utf16 TempStr[500];
 		int32 strLen = swprintf_s(TempStr, sizeof(TempStr) / sizeof(utf16), L"MyString: %d", i);
-		
+
 
 		uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(TempStr), strLen * (sizeof(utf16) / sizeof(char)));
 
@@ -770,12 +772,12 @@ void DirectXMathTest()
 	}
 
 	{
-		XMVECTOR v1 = {0,0,0,0};
-		XMVECTOR v2 = {1,1,1,1};
+		XMVECTOR v1 = { 0,0,0,0 };
+		XMVECTOR v2 = { 1,1,1,1 };
 		SS_ASSERT(XMAlmostEqual(v1, v2) == false);
 
 		v1 = { 0,0,0,0 };
-		v2 = { 0.1,0,0.1,0};
+		v2 = { 0.1,0,0.1,0 };
 		SS_ASSERT(XMAlmostEqual(v1, v2) == false);
 
 		v1 = { 0,0,0,0 };
@@ -875,7 +877,7 @@ void DirectXMathTest()
 		int a = 0;
 	}
 
-	for (int i=0;i<10;i++)
+	for (int i = 0; i < 10; i++)
 	{
 		XMVECTOR e1;
 
@@ -920,7 +922,7 @@ void DirectXMathTest()
 		SS_ASSERT(XMAlmostEqual(q1, q2, DEG_1) || XMAlmostEqual(q1, -q2, DEG_1));
 	}
 
-	for (int i=0;i<10;i++)
+	for (int i = 0; i < 10; i++)
 	{
 		XMVECTOR e1;
 
@@ -940,4 +942,160 @@ void DirectXMathTest()
 		constexpr float DEG_1 = 0.0174533 * 2;
 		SS_ASSERT(XMAlmostEqual(q1, q2, DEG_1) || XMAlmostEqual(q1, -q2, DEG_1));
 	}
+}
+
+void CommonStringSerializerTest()
+{
+	SS::PooledList<SS::StringW> Strings(20);
+
+	{
+		SS::StringW EmptyStr;
+
+		SS::StringW TestStr1 = L"너는 나를 존중해야 한다. 나는 발롱도르 5개와 수많은 개인 트로피를 들어올렸으며 "
+			L"2016 유로에서 포르투갈을 이끌고 우승을 차지했고 동시에 A매치 역대 최다 득점자이다. "
+			L"또한 챔스 역대 최다 득점자이자 5번이나 우승을 차지한 레알 마드리드의 상징이다. "
+			L"또한 36세의 나이에도 프리미어 리그에서 18골을 기록하고 챔스에서 5경기 연속 골을 기록하며"
+			L" 내가 세계 최고임을 증명해냈다. 은혜를 모르는 맨유 보드진과 팬들은 내가 맨유의 골칫덩이라고"
+			L" 쫓아냈지만, 내가 세계 최고이고 내가 팀보다 위대하다는 사실은 바뀌지 않는다. 내가 사우디에 간"
+			L" 이유는 메시에 대한 자격지심이 아니라 유럽에서 이룰 수 있는 모든 것을 이루었기에 아시아를 정복하기"
+			L" 위해 간 것이지, 단지 돈을 위해서 간 것이 아니다.";
+
+		SS::StringW TestStr2 = "HelloHelloab";
+		SS::StringW TestStr3 = "abcdefgHelloijklmnop";
+
+		SS::StringW TestStr4 = L"너는 호날두를 존중해야 한다. 호날두는 발롱도르 5개와 수많은 개인 트로피를 들어올렸으며"
+			L" 2016 유로에서 포르투갈을 이끌고 우승을 차지했고 동시에 A매치 역대 최다 득점자이다. "
+			L"또한 챔스 역대 최다 득점자이자 5번이호날두 우승을 차지한 레알 마드리드의 상징이다. "
+			L"또한 36세의 호날두이에도 프리미어 리그에서 18골을 기록하고 챔스에서 5경기 연속 골을 기록하며 "
+			L"내가 세계 최고임을 증명해냈다. 은혜를 모르는 맨유 보드진과 팬들은 내가 맨유의 골칫덩이라고 "
+			L"쫓아냈지만, 내가 세계 최고이고 내가 팀보다 위대하다는 사실은 바뀌지 않는다. 내가 사우디에 간 "
+			L"이유는 메시에 대한 자격지심이 아니라 유럽에서 이룰 수 있는 모든 것을 이루었기에 아시아를 정복하기"
+			L" 위해 간 것이지, 단지 돈을 위해서 간 것이 아니다.";
+
+		SS::StringW TestStr5 = "Hello Hello Hello Hello Hello";
+
+		SS::StringW TestStr6 = L"너는 나를 존중해야 한다. 나는 발롱도르 5개와 수많은 개인 트로피를 들어올렸으며 "
+			L"2016 유로에서 포르투갈을 이끌고라니 우승을 차지했고라니 동시에 A매치 역대 최다 득점자이다. "
+			L"또한 챔스 역대 최다 득점자이자 5번이나 우승을 차지한 레알 마드리드의 상징이다. "
+			L"또한 36세의 나이에도 프리미어 리그에서 18골을 기록하고라니 챔스에서 5경기 연속 골을 기록하며"
+			L" 내가 세계 최고라니임을 증명해냈다. 은혜를 모르는 맨유 보드진과 팬들은 내가 맨유의 골칫덩이라고"
+			L"라니 쫓아냈지만, 내가 세계 최고라니이고라니 내가 팀보다 위대하다는 사실은 바뀌지 않는다. 내가 사우디에 간"
+			L" 이유는 메시에 대한 자격지심이 아니라 유럽에서 이룰 수 있는 모든 것을 이루었기에 아시아를 정복하기"
+			L" 위해 간 것이지, 단지 돈을 위해서 간 것이 아니다.";
+
+		SS::StringW TestStr7 = L"안녕하시와요";
+
+
+		Strings.PushBack(EmptyStr);
+		Strings.PushBack(TestStr1);
+		Strings.PushBack(TestStr2);
+		Strings.PushBack(TestStr3);
+		Strings.PushBack(TestStr4);
+		Strings.PushBack(TestStr5);
+		Strings.PushBack(TestStr6);
+		Strings.PushBack(TestStr7);
+	}
+
+	StringWSerializerContainer Serializer;
+	Serializer.Strings = Strings;
+
+	FillDataFromStrings(Serializer);
+	if (_CrtCheckMemory() == false) SS_INTERRUPT();
+
+	bool bResult = FillStringFromData(Serializer);
+	if (_CrtCheckMemory() == false) SS_INTERRUPT();
+
+	SS_ASSERT(bResult);
+	for (int32 i = 0; i < Strings.GetSize(); i++)
+	{
+		SS_ASSERT(Strings[i] == Serializer.Strings[i]);
+	}
+
+	SS::StringW LemonPhrase =
+		L"夢ならばどれほどよかったでしょう"
+		L" 未だにあなたのことを夢にみる "
+		L"忘れた物を取りに帰るように "
+		L"古びた思い出の埃を払う "
+		L"戻らない幸せがあることを "
+		L"最後にあなたが教えてくれた"
+		L"言えずに隠してた昏い過去も"
+		L"あなたがいなきゃ永遠に昏いまま"
+		L"きっともうこれ以上傷つくことなど"
+		L"ありはしないとわかっている"
+		L"あの日の悲しみさえ あの日の苦しみさえ"
+		L"そのすべてを愛してた あなたとともに"
+		L"胸に残り離れない 苦いレモンの匂い"
+		L"雨が降り止むまでは帰れない"
+		L"今でもあなたはわたしの光"
+		L"暗闇であなたの背をなぞった"
+		L"その輪郭を鮮明に覚えている"
+		L"受け止めきれないものと出会うたび"
+		L"溢れてやまないのは涙だけ"
+		L"何をしていたの 何を見ていたの"
+		L"わたしの知らない横顔で"
+		L"どこかであなたが今"
+		L"わたしと同じ様な"
+		L"涙にくれ淋しさの中にいるなら"
+		L"わたしのことなどどうか忘れてください"
+		L"そんなことを心から願うほどに"
+		L"今でもあなたはわたしの光"
+		L"自分が思うより 恋をしていたあなたに"
+		L"あれから思うように 息ができない"
+		L"あんなに側にいたのに まるで嘘みたい"
+		L"とても忘れられない それだけが確か"
+		L"あの日の悲しみさえ あの日の苦しみさえ"
+		L"そのすべてを愛してた あなたとともに"
+		L"胸に残り離れない苦いレモンの匂い";
+
+	SS::StringW BanDPhrase =
+		L"지금당장떠나면아무도다치지않는다그러지않으면너희는모두죽어탐정놀이도이젠끝이다현실로돌아"
+		L"가면잊지말고전해라스텔라론헌터가너희의마지막을배웅했다는것을소탕시작액션원집행목표고정즉"
+		L"시처단프로토콜통과초토화작전집행지금당장떠나면아무도다치지않는다그러지않으면너희는모두죽"
+		L"어탐정놀이도이젠끝이다현실로돌아가면잊지말고전해라스텔라론헌터가너희의마지막을배웅했다는"
+		L"것을소탕시작액션원집행목표고정즉시처단프로토콜통과초토화작전집행지금당장떠나면아무도다치"
+		L"지않는다그러지않으면너희는모두죽어탐정놀이도이젠끝이다현실로돌아가면잊지말고전해라스텔라"
+		L"론헌터가너희의마지막을배웅했다는것을소탕시작액션원집행목표고정즉시처단프로토콜통과초토화"
+		L"작전집행지금당장떠나면아무도다치지않는다그러지않으면너희는모두죽어탐정놀이도이젠끝이다현"
+		L"실로돌아가면잊지말고전해라스텔라론헌터가너희의마지막을배웅했다는것을소탕시작액션원집행목"
+		L"표고정즉시처단프로토콜통과초토화작전집행지금당장떠나면아무도다치지않는다그러지않으면너희"
+		L"는모두죽어탐정놀이도이젠끝이다현실로돌아가면잊지말고전해라스텔라론헌터가너희의마지막을배"
+		L"웅했다는것을소탕시작액션원집행목표고정즉시처단프로토콜통과초토화작전집행지금당장떠나면아"
+		L"무도다치지않는다그러지않으면너희는모두죽어탐정놀이도이젠끝이다현실로돌아가면잊지말고전해"
+		L"라스텔라론헌터가너희의마지막을배웅했다는것을소탕시작액션원집행목표고정즉시처단프로토콜통"
+		L"과초토화작전집행지금당장떠나면아무도다치지않는다그러지않으면너희는모두죽어탐정놀이도이젠"
+		L"끝이다현실로돌아가면잊지말고전해라스텔라론헌터가너희의마지막을배웅했다는것을소탕시작액션"
+		L"원집행목표고정즉시처단프로토콜통과초토화작전집행지금당장떠나면아무도다치지않는다그러지않"
+		L"으면너희는모두죽어탐정놀이도이젠끝이다현실로돌아가면잊지말고전해라스텔라론헌터가너희의마"
+		L"지막을배웅했다는것을소탕시작액션원집행목표고정즉시처단프로토콜통과초토화작전집행";
+
+
+	std::vector<int> v1;
+	std::vector<int> v2 = SS::move(v1);
+
+	v1 = SS::move(v2);
+
+
+	Strings.Clear();
+	Strings.PushBack(L"ABCDEFGHIJKLMNOPWQRSTUVWXYZ");
+	Strings.PushBack(SS::move(LemonPhrase));
+	Strings.PushBack(L"ABCDEFGHIJKLMNOPWQRSTUVWXYZ");
+	Strings.PushBack(SS::move(BanDPhrase));
+	Strings.PushBack(L"ABCDEFGHIJKLMNOPWQRSTUVWXYZ");
+
+	Serializer.Strings = Strings;
+
+	FillDataFromStrings(Serializer);
+	if (_CrtCheckMemory() == false) SS_INTERRUPT();
+
+	bResult = FillStringFromData(Serializer);
+	if (_CrtCheckMemory() == false) SS_INTERRUPT();
+
+	SS_ASSERT(bResult);
+	for (int32 i = 0; i < Strings.GetSize(); i++)
+	{
+		SS_ASSERT(Strings[i] == Serializer.Strings[i]);
+	}
+
+
+	int a = 0;
 }
