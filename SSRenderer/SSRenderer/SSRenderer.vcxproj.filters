@@ -260,9 +260,6 @@
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RAFileOutline\MeshRawDataHeaders.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderAssetSerializer\MeshAssetSerializer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>

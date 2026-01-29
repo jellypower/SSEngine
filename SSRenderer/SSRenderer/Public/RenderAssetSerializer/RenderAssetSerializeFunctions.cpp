@@ -1,17 +1,20 @@
 ﻿#define SSRENDERER_MODULE_EXPORT
 #include "RenderAssetSerializeFunctions.h"
 
-#include "MeshAssetSerializer.h"
+#include "SSEngineDefault/Public/CommonSerializer/StringSerializerFunctions.h"
+#include "SSEngineDefault/Public/CommonSerializer/DefaultTypeSerializerFunctions.h"
+
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
 
-int FillMeshDefaultData(SS::PooledList<byte>& Data, const MeshRawDataDefault* MeshDefaultData)
+int FillDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefault* MeshDefaultData)
 {
 	if (MeshDefaultData->_vertexData == nullptr ||
-	MeshDefaultData->_indexData == nullptr)
+		MeshDefaultData->_indexData == nullptr)
 	{
-		return -1;
+		SS_ASSERT(false);
+		return 0;
 	}
 
 	constexpr int32 VertexHeaderSize = sizeof(MeshRawDataVertexHeader);
@@ -21,30 +24,31 @@ int FillMeshDefaultData(SS::PooledList<byte>& Data, const MeshRawDataDefault* Me
 
 	const int32 IndexDataSize = MeshDefaultData->_VertexHeader.wholeIndexDataCnt * sizeof(uint32);
 
-	const int32 StreamSize = sizeof(int32) + VertexHeaderSize + VertexDataSize + IndexDataSize;
+	const int32 StreamSizeToFill = sizeof(int32) + VertexHeaderSize + VertexDataSize + IndexDataSize;
 	// 전체 데이터 크기 = 데이터크기4byte + 헤더크기 + 버텍스버퍼크기 + 인덱스버퍼크기
 
 
-	int32 Cursor = 0;
 
-	Data.SetSizeDirectly(StreamSize);
-	byte* RawData = Data.GetData();
+	int32 OriginalSize = Data.GetSize();
+	Data.SetSizeDirectly(OriginalSize + StreamSizeToFill);
+	byte* RawData = Data.GetData() + OriginalSize;
 
 	errno_t Result = 0;
+	int32 Cursor = 0;
 
-	Result |= memcpy_s(RawData + Cursor, StreamSize - Cursor,
-		&StreamSize, sizeof(int32));
+	Result |= memcpy_s(RawData + Cursor, StreamSizeToFill - Cursor,
+		&StreamSizeToFill, sizeof(int32));
 	Cursor += sizeof(int32);
 
-	Result |= memcpy_s(RawData + Cursor, StreamSize - Cursor,
+	Result |= memcpy_s(RawData + Cursor, StreamSizeToFill - Cursor,
 		&MeshDefaultData->_VertexHeader, VertexHeaderSize);
 	Cursor += VertexHeaderSize;
 
-	Result |= memcpy_s(RawData + Cursor, StreamSize - Cursor,
+	Result |= memcpy_s(RawData + Cursor, StreamSizeToFill - Cursor,
 		MeshDefaultData->_vertexData, VertexDataSize);
 	Cursor += VertexDataSize;
 
-	Result |= memcpy_s(RawData + Cursor, StreamSize - Cursor,
+	Result |= memcpy_s(RawData + Cursor, StreamSizeToFill - Cursor,
 		MeshDefaultData->_indexData, IndexDataSize);
 	Cursor += IndexDataSize;
 
@@ -54,89 +58,87 @@ int FillMeshDefaultData(SS::PooledList<byte>& Data, const MeshRawDataDefault* Me
 		return -1;
 	}
 
+	SS_ASSERT(StreamSizeToFill == Cursor);
 	return Cursor;
 }
 
-int FillMeshSkinnedData(SS::PooledList<byte>& Data, int Offset, const MeshRawDataSkinned* MeshSkinnedData)
+int FillBoneDataFromSkinnedMesh(SS::PooledList<byte>& Data, const MeshRawDataSkinned* MeshSkinnedData)
 {
-	if (MeshSkinnedData->_vertexData == nullptr ||
-		MeshSkinnedData->_indexData == nullptr ||
-		MeshSkinnedData->_BonePlacements.GetSize() == 0)
+	if (MeshSkinnedData->_BonePlacements.GetSize() == 0)
 	{
-		return -1;
+		SS_ASSERT(false);
+		return 0;
 	}
 
-	constexpr int32 VertexHeaderSize = sizeof(MeshRawDataVertexHeader);
 	constexpr int32 BoneHeaderSize = sizeof(MeshRawDataBoneHeader);
 
-	const int32 EachVertexSize = EachVertexSizeOfType(MeshSkinnedData->GetMeshType());
-	const int32 VertexDataSize = EachVertexSize * MeshSkinnedData->_VertexHeader.vertexCnt;
+	const int32 BoneCnt = MeshSkinnedData->_BoneHeader._BoneCnt;
+	int32 BoneStrStreamSize = 0;
+	BoneStrStreamSize += sizeof(int32);
+	for (int32 i = 0; i < BoneCnt; i++)
+	{
+		int BoneNameLen = MeshSkinnedData->_BoneNames[i].GetStrLen();
+		BoneStrStreamSize += (BoneNameLen + 1) * sizeof(utf16);
+	}
 
-	const int32 IndexDataSize = MeshSkinnedData->_VertexHeader.wholeIndexDataCnt * sizeof(uint32);
 
-	const int32 BoneDataSize = MeshSkinnedData->_BoneHeader.
+	const int32 BoneTransformStreamSize = BoneCnt * sizeof(Transform);
+	const int32 StreamSize = sizeof(int32) + BoneHeaderSize + BoneStrStreamSize + BoneTransformStreamSize;
+	// 전체 데이터 크기 = 스트림사이즈4byte + 본헤더크기 + 본 데이터 크기
 
-	const int32 StreamSize = sizeof(int32) + VertexHeaderSize + BoneHeaderSize + VertexDataSize + IndexDataSize;
-	// 전체 데이터 크기 = 데이터크기4byte + 버텍스인덱스헤더크기 + 본헤더크기 + 버텍스버퍼크기 + 인덱스버퍼크기
-
+	int32 OriginalSize = Data.GetSize();
+	int32 ExpectedWriteResultSize = OriginalSize + StreamSize;
+	Data.Reserve(ExpectedWriteResultSize);
 
 	int32 Cursor = 0;
-
-	Data.SetSizeDirectly(StreamSize);
-	byte* RawData = Data.GetData();
-
 	errno_t Result = 0;
 
-	Result |= memcpy_s(RawData + Cursor, StreamSize - Cursor,
-		&StreamSize, sizeof(int32));
-	Cursor += sizeof(int32);
+	Cursor += AppendData(Data, &StreamSize, sizeof(int32));
+	Cursor += AppendData(Data, &MeshSkinnedData->_BoneHeader, BoneHeaderSize);
+	Cursor += AppendDataFromHashers(Data, MeshSkinnedData->_BoneNames);
+	Cursor += AppendData(Data, MeshSkinnedData->_BonePlacements.GetData(), BoneTransformStreamSize);
 
-	Result |= memcpy_s(RawData + Cursor, StreamSize - Cursor,
-		&MeshSkinnedData->_VertexHeader, VertexHeaderSize);
-	Cursor += VertexHeaderSize;
-
-	Result |= memcpy_s(RawData + Cursor, StreamSize - Cursor,
-		MeshSkinnedData->_vertexData, VertexDataSize);
-	Cursor += VertexDataSize;
-
-	Result |= memcpy_s(RawData + Cursor, StreamSize - Cursor,
-		MeshSkinnedData->_indexData, IndexDataSize);
-	Cursor += IndexDataSize;
-
-
-	if (Result != 0)
+	if (Cursor != ExpectedWriteResultSize)
 	{
-		return -1;
+		return 0;
 	}
 
 	return Cursor;
 }
 
 
-bool FillDataFromAsset(MeshDataSerializerContainer& Container)
+int FillDataFromMeshAsset(
+	SS::PooledList<byte>& Data,
+	const MeshRawDataBase* MeshData)
 {
-	Container.Data.Clear();
+	int OriginalDataSize = Data.GetSize();
 
-	const MeshRawDataBase* MeshRawData = Container.MeshData;
+	const MeshRawDataBase* MeshRawData = MeshData;
 
-	EMeshType Type = MeshRawData->GetMeshType();
+	const EMeshType Type = MeshRawData->GetMeshType();
 
 	int WrittenBytes = 0;
-	if (Type == EMeshType::Rigid)
+	if (Type == EMeshType::Rigid || Type == EMeshType::Skinned)
 	{
 		const MeshRawDataDefault* MeshDefaultData = static_cast<const MeshRawDataDefault*>(MeshRawData);
-		WrittenBytes = FillMeshDefaultData(Container.Data, MeshDefaultData);
+		WrittenBytes += FillDataFromDefaultMesh(Data, MeshDefaultData);
 	}
-	else if (Type == EMeshType::Skinned)
+
+	if (Type == EMeshType::Skinned)
 	{
 		const MeshRawDataSkinned* MeshSkinnedData = static_cast<const MeshRawDataSkinned*>(MeshRawData);
-		WrittenBytes = FillMeshSkinnedData(Container.Data, MeshSkinnedData);
+		WrittenBytes += FillBoneDataFromSkinnedMesh(Data, MeshSkinnedData);
 	}
 
-	SS_ASSERT(WrittenBytes == Container.Data.GetSize());
-	return WrittenBytes == Container.Data.GetSize();
+	int CurDataSize = Data.GetSize();
+	SS_ASSERT(WrittenBytes == CurDataSize - OriginalDataSize);
+	return WrittenBytes == Data.GetSize();
 }
 
-bool FillAssetFromData(MeshDataSerializerContainer& Container)
+int FillMeshAssetFromData(
+	MeshRawDataBase* MeshData,
+	const SS::PooledList<byte>& Data,
+	int Offset)
 {
+	return 0;
 }

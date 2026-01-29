@@ -154,14 +154,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	for (int32 i=0;i<10;i++)
 	{
-		ContainerTest_PooledLinkedList();
-		ContainerTest_HashMap();
-		CustomHeapAllocatorTest();
-		SHasherPoolTest();
-		SHasherTest();
-		StringTest();
-		DirectXMathTest();
-		CommonStringSerializerTest();
+		TEST_ExecuteTestFunctions();
 	}
 
 

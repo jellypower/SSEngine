@@ -97,6 +97,13 @@ namespace SS {
 			return Result;
 		}
 
+		int32 GetStrLen() const
+		{
+			uint32 OutStrLen = 0;
+			const utf16* Result = g_HasherPool->FindC_Str(_hashX, &OutStrLen);
+			return OutStrLen;
+		}
+
 		uint64 GetDirectValue() const { return _hashX; }
 
 	};

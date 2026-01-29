@@ -201,7 +201,6 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\RenderInstance\RIStaticMesh.h" />
     <ClInclude Include="Public\DEBUG\DebugDrawDesc.h" />
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h" />
-    <ClInclude Include="Public\RenderAssetSerializer\MeshAssetSerializer.h" />
     <ClInclude Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.h" />
     <ClInclude Include="Public\RenderAsset\IAssetManager.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\IAssetManagerMutable.h" />

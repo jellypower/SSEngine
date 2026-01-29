@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;SSENGINEDEFAULT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -134,7 +134,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;SSENGINEDEFAULT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -158,11 +158,13 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Private\PCommon\CommonSerializer\AppendDataInternal.h" />
     <ClInclude Include="Private\PCommon\SHasher\HasherPoolBase.h" />
+    <ClInclude Include="Private\PCommon\TestCodes\TestSerialize_Internal.h" />
+    <ClInclude Include="Private\PCommon\TestCodes\TestFunction_Internal.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
-    <ClInclude Include="Public\CommonSerializer\StringSerializer\SerializerUtilFunctions.h" />
-    <ClInclude Include="Public\CommonSerializer\StringSerializer\StringSerailizerContainer.h" />
+    <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
     <ClInclude Include="Public\RawInput\IRawInputProcessor.h" />
     <ClInclude Include="Public\RawInput\KeyCodeEnums.h" />
     <ClInclude Include="Public\RawInput\RawInputUtils.h" />
@@ -216,6 +218,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp" />
     <ClCompile Include="Private\PCommon\SHasher\HasherPoolBase.cpp" />
     <ClCompile Include="Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp" />
+    <ClCompile Include="Private\PCommon\TestCodes\TestSerialize_Internal.cpp" />
+    <ClCompile Include="Private\PCommon\TestCodes\TestFunction_Internal.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputUtils.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.cpp" />
@@ -230,7 +234,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestFunctions.cpp" />
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp" />
-    <ClCompile Include="Private\PCommon\CommonSerializer\SerializerUtilFunctions.cpp" />
+    <ClCompile Include="Private\PCommon\CommonSerializer\DefaultTypeSerializsers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -168,10 +168,16 @@
     <ClInclude Include="Public\SSCommonUtil\TransientChunkHeader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\CommonSerializer\StringSerializer\StringSerailizerContainer.h">
+    <ClInclude Include="Private\PCommon\CommonSerializer\AppendDataInternal.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\CommonSerializer\StringSerializer\SerializerUtilFunctions.h">
+    <ClInclude Include="Private\PCommon\TestCodes\TestFunction_Internal.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PCommon\TestCodes\TestSerialize_Internal.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -230,7 +236,13 @@
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\PCommon\CommonSerializer\SerializerUtilFunctions.cpp">
+    <ClCompile Include="Private\PCommon\TestCodes\TestFunction_Internal.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\TestCodes\TestSerialize_Internal.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\CommonSerializer\DefaultTypeSerializsers.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -174,9 +174,14 @@ namespace SS
 
 		void Clear()
 		{
-			for (int64 i = 0; i < _size; i++) {
-				_allocator.GetData()[i].~T();
+			if  constexpr (std::is_trivially_destructible_v<T> == false)
+			{
+				for (int64 i = 0; i < _size; i++)
+				{
+					_allocator.GetData()[i].~T();
+				}
 			}
+
 			_size = 0;
 		}
 
