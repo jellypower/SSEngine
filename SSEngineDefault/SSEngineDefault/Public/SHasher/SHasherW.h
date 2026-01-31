@@ -23,18 +23,12 @@ namespace SS {
 
 
 	private:
-		union {
-			struct {
-				uint32 _HashedValue; // 해쉬 상위 32비트
-				uint32 _CurNodeCnt; // 해쉬 하위 32비트
-			};
-			uint64 _hashX; // 해쉬 64비트 전체값
-		};
+		const HasherPoolNode* _StoredNode = nullptr;
 
 	public:
 		SHasherW()
 		{
-			_hashX = 0;
+			_StoredNode = nullptr;
 		}
 
 		SHasherW(const utf16* inStr)
@@ -51,7 +45,7 @@ namespace SS {
 			}
 
 			uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(inStr), StrLen * (sizeof(utf16) / sizeof(char)));
-			_hashX = g_HasherPool->FindOrAddHasherValue(inStr, StrLen, HashedValue);
+			_StoredNode = g_HasherPool->FindOrAddHasherValue(inStr, StrLen, HashedValue);
 		}
 
 		SHasherW(const char* inStr)
@@ -68,12 +62,12 @@ namespace SS {
 
 		SHasherW(const SS::SHasherW& rhs)
 		{
-			_hashX = rhs._hashX;
+			_StoredNode = rhs._StoredNode;
 		}
 
 		SHasherW& operator=(SHasherW rhs)
 		{
-			_hashX = rhs._hashX;
+			_StoredNode = rhs._StoredNode;
 			return *this;
 		}
 
@@ -83,28 +77,28 @@ namespace SS {
 
 		bool operator==(SHasherW rhs) const
 		{
-			return this->_hashX == rhs._hashX;
+			return this->_StoredNode == rhs._StoredNode;
 		}
 
 		bool IsEmpty() const
 		{
-			return _hashX == 0;
+			return _StoredNode == nullptr;
 		}
 
-		const utf16* C_Str(uint32* const OutStrLen = nullptr) const
+		const utf16* C_Str() const
 		{
-			const utf16* Result = g_HasherPool->FindC_Str(_hashX, OutStrLen);
-			return Result;
+			return _StoredNode == nullptr ? L"" : _StoredNode->_str;
 		}
 
 		int32 GetStrLen() const
 		{
-			uint32 OutStrLen = 0;
-			const utf16* Result = g_HasherPool->FindC_Str(_hashX, &OutStrLen);
-			return OutStrLen;
+			return _StoredNode == nullptr ? 0 : _StoredNode->_strLen;
 		}
 
-		uint64 GetDirectValue() const { return _hashX; }
+		uint64 GetDirectValue() const
+		{
+			return _StoredNode == nullptr ? 0 : _StoredNode->_hashX;
+		}
 
 	};
 };

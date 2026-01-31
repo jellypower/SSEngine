@@ -38,8 +38,8 @@ void ImGUI_ShowGameObjectDetail(const SObjHashCode& PickedHashCode)
 		if (PickedGameObject != nullptr)
 		{
 			SS::SHasherW sObjectName = PickedGameObject->GetObjectName();
-			uint32 iObjNameLen = 0;
-			const utf16* u16ObjName = sObjectName.C_Str(&iObjNameLen);
+			uint32 iObjNameLen = sObjectName.GetStrLen();
+			const utf16* u16ObjName = sObjectName.C_Str();
 			UTF16StrToUtf8Str(u16ObjName, iObjNameLen, PickedObjName, BUFFER_SIZE);
 		}
 
@@ -201,8 +201,8 @@ void ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow)
 			utf8 u8EquippedTexName[BUFFER_SIZE] = "EMPTY";
 			if (EquippedTexName.IsEmpty() == false)
 			{
-				uint32 EquippedTexNameCStrLen = 0;
-				const utf16* EquippedTexNameCStr = EquippedTexName.C_Str(&EquippedTexNameCStrLen);
+				uint32 EquippedTexNameCStrLen = EquippedTexName.GetStrLen();
+				const utf16* EquippedTexNameCStr = EquippedTexName.C_Str();
 				UTF16StrToUtf8Str(EquippedTexNameCStr, EquippedTexNameCStrLen, u8EquippedTexName, BUFFER_SIZE);
 			}
 
@@ -218,8 +218,8 @@ void ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow)
 					}
 
 					SS::SHasherW SelectTexItemName = TextureItem->GetAssetName();
-					uint32 SelectTexItemCStrLen = 0;
-					const utf16* SelectTexItemCStr = SelectTexItemName.C_Str(&SelectTexItemCStrLen);
+					uint32 SelectTexItemCStrLen = SelectTexItemName.GetStrLen();
+					const utf16* SelectTexItemCStr = SelectTexItemName.C_Str();
 
 					utf8 u8SelectTexItemName[BUFFER_SIZE];
 					UTF16StrToUtf8Str(SelectTexItemCStr, SelectTexItemCStrLen, u8SelectTexItemName, BUFFER_SIZE);
@@ -261,8 +261,8 @@ void ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderComponent* SkinnedMeshToS
 			utf8 u8ModelName[BUFFER_SIZE] = "EMPTY";
 			if (ModelName.IsEmpty() == false)
 			{
-				uint32 EquippedTexNameCStrLen = 0;
-				const utf16* EquippedTexNameCStr = ModelName.C_Str(&EquippedTexNameCStrLen);
+				uint32 EquippedTexNameCStrLen = ModelName.GetStrLen();
+				const utf16* EquippedTexNameCStr = ModelName.C_Str();
 				UTF16StrToUtf8Str(EquippedTexNameCStr, EquippedTexNameCStrLen, u8ModelName, BUFFER_SIZE);
 			}
 
@@ -292,8 +292,8 @@ void ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp)
 			utf8 u8EquippedAnimName[BUFFER_SIZE] = "EMPTY";
 			if (EquippedAnimAssetName.IsEmpty() == false)
 			{
-				uint32 EquippedAnimNameCStrLen = 0;
-				const utf16* EquippedAnimNameCStr = EquippedAnimAssetName.C_Str(&EquippedAnimNameCStrLen);
+				uint32 EquippedAnimNameCStrLen = EquippedAnimAssetName.GetStrLen();
+				const utf16* EquippedAnimNameCStr = EquippedAnimAssetName.C_Str();
 				UTF16StrToUtf8Str(EquippedAnimNameCStr, EquippedAnimNameCStrLen, u8EquippedAnimName, BUFFER_SIZE);
 			}
 
@@ -304,8 +304,8 @@ void ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp)
 					IRenderAnimAsset* RenderAnimItem = static_cast<IRenderAnimAsset*>(AnimPairItem.second);
 					
 					SS::SHasherW SelectAnimItemName = RenderAnimItem->GetAssetName();
-					uint32 SelectAnimItemCStrLen = 0;
-					const utf16* SelectAnimItemCStr = SelectAnimItemName.C_Str(&SelectAnimItemCStrLen);
+					uint32 SelectAnimItemCStrLen = SelectAnimItemName.GetStrLen();
+					const utf16* SelectAnimItemCStr = SelectAnimItemName.C_Str();
 
 					utf8 u8SelectTexItemName[BUFFER_SIZE];
 					UTF16StrToUtf8Str(SelectAnimItemCStr, SelectAnimItemCStrLen, u8SelectTexItemName, BUFFER_SIZE);

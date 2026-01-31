@@ -614,7 +614,8 @@ void SSEditor::ImGUI_AssetManagerWindow_Texture()
 			{
 				constexpr int32 BUFFER_SIZE = 256;
 				utf8 Converter[BUFFER_SIZE];
-				AssetCstr = TextureItem->GetAssetName().C_Str(&AssetStrLen);
+				AssetStrLen = TextureItem->GetAssetName().GetStrLen();
+				AssetCstr = TextureItem->GetAssetName().C_Str();
 				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
 
 				ImGui::Text(Converter);
@@ -625,7 +626,8 @@ void SSEditor::ImGUI_AssetManagerWindow_Texture()
 
 				constexpr int32 BUFFER_SIZE = 256;
 				utf8 Converter[BUFFER_SIZE];
-				AssetCstr = TextureItem->GetAssetPath().C_Str(&AssetStrLen);
+				AssetStrLen = TextureItem->GetAssetPath().GetStrLen();
+				AssetCstr = TextureItem->GetAssetPath().C_Str();
 				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
 
 				ImGui::Text(Converter);
@@ -671,7 +673,8 @@ void SSEditor::ImGUI_AssetManager_Mesh()
 			{
 				constexpr int32 BUFFER_SIZE = 256;
 				utf8 Converter[BUFFER_SIZE];
-				AssetCstr = MeshItem->GetAssetName().C_Str(&AssetStrLen);
+				AssetStrLen = MeshItem->GetAssetName().GetStrLen();
+				AssetCstr = MeshItem->GetAssetName().C_Str();
 				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
 
 				ImGui::Text(Converter);
@@ -682,7 +685,8 @@ void SSEditor::ImGUI_AssetManager_Mesh()
 
 				constexpr int32 BUFFER_SIZE = 256;
 				utf8 Converter[BUFFER_SIZE];
-				AssetCstr = MeshItem->GetAssetPath().C_Str(&AssetStrLen);
+				AssetStrLen = MeshItem->GetAssetPath().GetStrLen();
+				AssetCstr = MeshItem->GetAssetPath().C_Str();
 				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
 
 				ImGui::Text(Converter);
@@ -719,12 +723,14 @@ void SSEditor::ImGUI_AssetManager_Material()
 		SS::SHasherW MtlName = MtlItem->GetAssetName();
 		uint32 MtlNameStrLen = 0;
 		const utf16* MtlNameCStr = nullptr;
-		MtlNameCStr = MtlName.C_Str(&MtlNameStrLen);
+		MtlNameStrLen = MtlName.GetStrLen();
+		MtlNameCStr = MtlName.C_Str();
 
 		SS::SHasherW MtlPath = MtlItem->GetAssetPath();
 		uint32 MtlPathStrLen = 0;
 		const utf16* MtlPathCStr = nullptr;
-		MtlPathCStr = MtlPath.C_Str(&MtlPathStrLen);
+		MtlPathStrLen = MtlPath.GetStrLen();
+		MtlPathCStr = MtlPath.C_Str();
 
 		constexpr int32 BUFFER_SIZE = 256;
 		utf8 u8MtlName[BUFFER_SIZE];
@@ -810,8 +816,8 @@ void SSEditor::ImGUI_AssetManager_Material()
 							if (TexItem != nullptr)
 							{
 								EquippedTexName = TexItem->GetAssetName();
-								uint32 EquippedTexNameCStrLen = 0;
-								const utf16* EquippedTexNameCStr = EquippedTexName.C_Str(&EquippedTexNameCStrLen);
+								uint32 EquippedTexNameCStrLen = EquippedTexName.GetStrLen();
+								const utf16* EquippedTexNameCStr = EquippedTexName.C_Str();
 								UTF16StrToUtf8Str(EquippedTexNameCStr, EquippedTexNameCStrLen, u8EquippedTexName, BUFFER_SIZE);
 							}
 
@@ -823,8 +829,8 @@ void SSEditor::ImGUI_AssetManager_Material()
 								{
 									ITextureAsset* SelectTexItem = (ITextureAsset*)ItemPair.second;
 									SS::SHasherW SelectTexItemName = SelectTexItem->GetAssetName();
-									uint32 SelectTexItemCStrLen = 0;
-									const utf16* SelectTexItemCStr = SelectTexItemName.C_Str(&SelectTexItemCStrLen);
+									uint32 SelectTexItemCStrLen = SelectTexItemName.GetStrLen();
+									const utf16* SelectTexItemCStr = SelectTexItemName.C_Str();
 									utf8 u8SelectTexItemName[BUFFER_SIZE];
 									UTF16StrToUtf8Str(SelectTexItemCStr, SelectTexItemCStrLen, u8SelectTexItemName, BUFFER_SIZE);
 
@@ -876,11 +882,11 @@ void SSEditor::ImGUI_AssetManager_Model()
 	for (const SS::pair<SS::SHasherW, IAssetBase*>& ModelItemPair : ModelList)
 	{
 		IModelAssetMutable* ModelItem = (IModelAssetMutable*)ModelItemPair.second;
-		uint32 ModelNameStrLen = 0;
-		const utf16* ModelNameCStr = ModelItem->GetAssetName().C_Str(&ModelNameStrLen);
+		uint32 ModelNameStrLen = ModelItem->GetAssetName().GetStrLen();
+		const utf16* ModelNameCStr = ModelItem->GetAssetName().C_Str();
 
-		uint32 ModelPathStrLen = 0;
-		const utf16* ModelPathCStr = ModelItem->GetAssetPath().C_Str(&ModelPathStrLen);
+		uint32 ModelPathStrLen = ModelItem->GetAssetPath().GetStrLen();
+		const utf16* ModelPathCStr = ModelItem->GetAssetPath().C_Str();
 
 		constexpr int32 BUFFER_SIZE = 256;
 		utf8 u8ModelName[BUFFER_SIZE];
@@ -903,8 +909,8 @@ void SSEditor::ImGUI_AssetManager_Model()
 					IMeshAsset* SelectedMesh = ModelItem->GetMeshAsset();
 					SS::SHasherW SelectedMeshName = SelectedMesh->GetAssetName();
 
-					uint32 MeshAssetNameStrLen = 0;
-					const utf16* u16SelectedMeshAssetName = SelectedMeshName.C_Str(&MeshAssetNameStrLen);
+					uint32 MeshAssetNameStrLen = SelectedMeshName.GetStrLen();
+					const utf16* u16SelectedMeshAssetName = SelectedMeshName.C_Str();
 
 					utf8 u8MeshName[BUFFER_SIZE];
 					UTF16StrToUtf8Str(u16SelectedMeshAssetName, MeshAssetNameStrLen, u8MeshName, BUFFER_SIZE);
@@ -915,8 +921,8 @@ void SSEditor::ImGUI_AssetManager_Model()
 							IMeshAsset* MeshItemInList = (IMeshAsset*)MeshItemInListPair.second;
 							SS::SHasherW MeshItemInListName = MeshItemInList->GetAssetName();
 
-							uint32 MeshItemInListNameStrLen = 0;
-							const utf16* u16MeshItemInListName = MeshItemInListName.C_Str(&MeshItemInListNameStrLen);
+							uint32 MeshItemInListNameStrLen = MeshItemInListName.GetStrLen();
+							const utf16* u16MeshItemInListName = MeshItemInListName.C_Str();
 
 							UTF16StrToUtf8Str(u16MeshItemInListName, MeshItemInListNameStrLen, u8MeshName, BUFFER_SIZE);
 
@@ -954,8 +960,8 @@ void SSEditor::ImGUI_AssetManager_Model()
 					{
 						SelectedMtlName = SelectedMaterial->GetAssetName();
 
-						MtlAssetNameStrLen = 0;
-						MtlAssetName = SelectedMtlName.C_Str(&MtlAssetNameStrLen);
+						MtlAssetNameStrLen = SelectedMtlName.GetStrLen();
+						MtlAssetName = SelectedMtlName.C_Str();
 					}
 					else
 					{
@@ -977,8 +983,8 @@ void SSEditor::ImGUI_AssetManager_Model()
 							IAssetBase* MaterialItemInList = MtlItemPair.second;
 							SS::SHasherW MtlItemInListName = MaterialItemInList->GetAssetName();
 
-							uint32 MtlStrLen = 0;
-							const utf16* u16MtlStr = MtlItemInListName.C_Str(&MtlStrLen);
+							uint32 MtlStrLen = MtlItemInListName.GetStrLen();
+							const utf16* u16MtlStr = MtlItemInListName.C_Str();
 
 							UTF16StrToUtf8Str(u16MtlStr, MtlStrLen, u8MtlName, BUFFER_SIZE);
 
@@ -1038,7 +1044,8 @@ void SSEditor::ImGUI_AssetManager_RenderAnim()
 			{
 				constexpr int32 BUFFER_SIZE = 256;
 				utf8 Converter[BUFFER_SIZE];
-				AssetCstr = AnimItem->GetAssetName().C_Str(&AssetStrLen);
+				AssetStrLen = AnimItem->GetAssetName().GetStrLen();
+				AssetCstr = AnimItem->GetAssetName().C_Str();
 				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
 
 				ImGui::Text(Converter);
@@ -1049,7 +1056,8 @@ void SSEditor::ImGUI_AssetManager_RenderAnim()
 
 				constexpr int32 BUFFER_SIZE = 256;
 				utf8 Converter[BUFFER_SIZE];
-				AssetCstr = AnimItem->GetAssetPath().C_Str(&AssetStrLen);
+				AssetStrLen = AnimItem->GetAssetPath().GetStrLen();
+				AssetCstr = AnimItem->GetAssetPath().C_Str();
 				UTF16StrToUtf8Str(AssetCstr, AssetStrLen, Converter, BUFFER_SIZE);
 
 				ImGui::Text(Converter);
@@ -1108,8 +1116,8 @@ void SSEditor::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
 	int32 ChildCnt = Object->GetChildCnt();
 
 	SS::SHasherW sObjectName = Object->GetObjectName();
-	uint32 iObjectNameLen = 0;
-	const utf16* u16ObjectName = sObjectName.C_Str(&iObjectNameLen);
+	uint32 iObjectNameLen = sObjectName.GetStrLen();
+	const utf16* u16ObjectName = sObjectName.C_Str();
 
 	utf8 u8ObjectName[SHASHER_STRLEN_MAX];
 	UTF16StrToUtf8Str(u16ObjectName, iObjectNameLen, u8ObjectName, SHASHER_STRLEN_MAX);

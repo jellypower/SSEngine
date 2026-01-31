@@ -11,6 +11,5 @@ public:
 	virtual ~HasherPoolBase();
 
 public:
-	virtual const utf16* FindC_Str(uint64 InHashX, uint32* const OutStrLen = nullptr) const override;
-	virtual uint64 FindOrAddHasherValue(const utf16* InStr, uint32 InStrLen, uint32 InHashedValue) override;
+	virtual const HasherPoolNode* FindOrAddHasherValue(const utf16* InStr, uint32 InStrLen, uint32 InHashedValue) override;
 };

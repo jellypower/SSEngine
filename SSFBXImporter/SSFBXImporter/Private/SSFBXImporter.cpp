@@ -550,8 +550,8 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 	{
 		const AssetPlacementReference& ChildItem = OriginalMdlcAsset->GetChildAt(i);
 
-		uint32 ChildNodeNameLen = 0;
-		const utf16* ChildNodeName = ChildItem.PlacementName.C_Str(&ChildNodeNameLen);
+		uint32 ChildNodeNameLen = ChildItem.PlacementName.GetStrLen();
+		const utf16* ChildNodeName = ChildItem.PlacementName.C_Str();
 
 		RKFTrack NewTrack;
 

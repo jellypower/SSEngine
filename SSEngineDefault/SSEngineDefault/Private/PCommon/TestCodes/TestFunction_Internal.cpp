@@ -588,18 +588,19 @@ void SHasherPoolTest()
 
 		uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(TempStr), strLen * (sizeof(utf16) / sizeof(char)));
 
-		uint64 Value1 = PoolForTest->FindOrAddHasherValue(TempStr, strLen, HashedValue);
-		uint64 Value2 = PoolForTest->FindOrAddHasherValue(TempStr, strLen, HashedValue);
+		const HasherPoolNode* Value1 = PoolForTest->FindOrAddHasherValue(TempStr, strLen, HashedValue);
+		const HasherPoolNode* Value2 = PoolForTest->FindOrAddHasherValue(TempStr, strLen, HashedValue);
 
 		wcscpy(TempStr, L"MyStr");
 		strLen = wcslen(TempStr);
 		HashedValue = CityHash32(reinterpret_cast<const char*>(TempStr), strLen * (sizeof(utf16) / sizeof(char)));
-		uint64 Value3 = PoolForTest->FindOrAddHasherValue(TempStr, 5, HashedValue);
+		const HasherPoolNode* Value3 = PoolForTest->FindOrAddHasherValue(TempStr, 5, HashedValue);
 
 		SS_ASSERT(Value1 == Value2);
 		SS_ASSERT(Value1 != Value3);
 	}
 
+	if (_CrtCheckMemory() == false) SS_INTERRUPT();
 	delete PoolForTest;
 }
 
@@ -620,6 +621,8 @@ void SHasherTest()
 
 		SS_ASSERT(Hasher1 == Hasher2);
 	}
+
+	if (_CrtCheckMemory() == false) SS_INTERRUPT();
 }
 
 void StringTest()
@@ -947,6 +950,8 @@ void DirectXMathTest()
 		constexpr float DEG_1 = 0.0174533 * 2;
 		SS_ASSERT(XMAlmostEqual(q1, q2, DEG_1) || XMAlmostEqual(q1, -q2, DEG_1));
 	}
+
+	if (_CrtCheckMemory() == false) SS_INTERRUPT();
 }
 
 
