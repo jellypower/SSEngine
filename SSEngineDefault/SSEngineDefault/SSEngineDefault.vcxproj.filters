@@ -168,9 +168,6 @@
     <ClInclude Include="Public\SSCommonUtil\TransientChunkHeader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\PCommon\CommonSerializer\AppendDataInternal.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Private\PCommon\TestCodes\TestFunction_Internal.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>

@@ -40,6 +40,9 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
+#include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
+
+#include "TestCodes/MeshSerializeTest.h"
 
 
 SSEditor* g_Editor = nullptr;
@@ -84,11 +87,26 @@ void SSEditor::StartupEngine()
 		_FbxImporter->RelocateImportedAssetsToAssetManager();
 	}
 
+
 	{
 		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
 		_FbxImporter->GenerateImportedAssets();
 		_FbxImporter->RelocateImportedAssetsToAssetManager();
 	}
+
+
+	// DEBUG
+	{
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshAssetMap = 
+			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::Mesh);
+
+		for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshAssetItemPair : MeshAssetMap)
+		{
+			MeshSerializeTest(_Renderer, MeshAssetItemPair.first);
+		}
+	}
+	// ~DEBUG
+
 
 	_Renderer->GetCommonRenderAssetSet()->TEMP_CacheCommonAssetFromFBX();
 

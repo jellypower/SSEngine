@@ -72,7 +72,7 @@
     <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp">
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

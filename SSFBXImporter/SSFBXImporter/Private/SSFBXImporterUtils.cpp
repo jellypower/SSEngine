@@ -892,8 +892,10 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 	uint32 ClusterCnt = fbxSkin->GetClusterCount();
 
 	RawDataToSaveBone->_BoneHeader._BoneCnt = ClusterCnt;
-	SS::PooledList<BonePlacement>& OutBones = RawDataToSaveBone->_BonePlacements;
-	OutBones.Reserve(ClusterCnt);
+	SS::PooledList<Transform>& OutBoneTransforms = RawDataToSaveBone->_BonePlacements;
+	SS::PooledList<SS::SHasherW>& OutBoneNames = RawDataToSaveBone->_BoneNames;
+	OutBoneTransforms.Reserve(ClusterCnt);
+	OutBoneNames.Reserve(ClusterCnt);
 
 	SS::PooledList<int32, SS::InlineAllocator<200>> BoneParentIndices(ClusterCnt);
 	SS::PooledList<FbxNode*, SS::InlineAllocator<200>> BoneMatchingNodes(ClusterCnt);
@@ -916,10 +918,9 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 		
 		SS::SHasherW CurBoneName = Utf16Buffer;
 
-		BonePlacement NewBonePlacement;
-		NewBonePlacement.BoneName = CurBoneName;
 
-		OutBones.PushBack(NewBonePlacement);
+		OutBoneTransforms.PushBack(Transform::Identity);
+		OutBoneNames.PushBack(CurBoneName);
 		BoneMatchingNodes.PushBack(CurBoneNode);
 	}
 
@@ -955,7 +956,7 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 		const char8_t* FORDEBUG_CurNodeName = (char8_t*)CurNode->GetName();
 
 		BoneTransformResult = ExtractBoneRootRelativeTransform(CurNode); // 현재 노드의 Transform을 가지고온다.
-		OutBones[BoneItemIdx].BoneTransform = BoneTransformResult;
+		OutBoneTransforms[BoneItemIdx] = BoneTransformResult;
 	}
 
 	int a = 0;

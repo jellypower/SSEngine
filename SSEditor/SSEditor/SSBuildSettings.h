@@ -5,8 +5,8 @@
 // SSEditor
 #pragma comment(lib, "SSEngineDefault.lib")
 #pragma comment(lib, "SObject.lib")
-
 #pragma comment(lib, "SSContentsBase.lib")
+#pragma comment(lib, "SSRenderer.lib")
 
 #pragma comment(lib, "SSImgui.lib")
 #pragma comment(lib, "DXGI.lib") // ImGUI에서 DXGI초기화가 필요해서 추가

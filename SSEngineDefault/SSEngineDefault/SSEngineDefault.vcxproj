@@ -158,7 +158,6 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleExportKeyword.h" />
-    <ClInclude Include="Private\PCommon\CommonSerializer\AppendDataInternal.h" />
     <ClInclude Include="Private\PCommon\SHasher\HasherPoolBase.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestSerialize_Internal.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestFunction_Internal.h" />

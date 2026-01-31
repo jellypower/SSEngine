@@ -12,6 +12,11 @@ public:
 	SS::PooledList<Transform> _BonePlacements;
 
 public:
+	virtual EMeshType GetMeshType() const override
+	{
+		return EMeshType::Skinned;
+	}
+
 	virtual void ReleaseData() override
 	{
 		_BonePlacements.FlushMem();

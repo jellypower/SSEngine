@@ -1,13 +1,50 @@
 ﻿#define SSENGINEDEFAULT_MODULE_EXPORT
 #include "SSEngineDefault/Public/CommonSerializer/DefaultTypeSerializsers.h"
 
-#include "AppendDataInternal.h"
-
 
 
 int AppendData(SS::PooledList<byte>& ToData, const void* From, int FromDataSize)
 {
-	return AppendData_Internal(ToData, From, FromDataSize);
+	const int32 OriginalSize = ToData.GetSize();
+	ToData.SetSizeDirectly(OriginalSize + FromDataSize);
+
+	byte* CopyTargetRaw = ToData.GetData() + OriginalSize;
+
+	errno_t Result = memcpy_s(
+		CopyTargetRaw, FromDataSize,
+		From, FromDataSize);
+
+	if (Result != 0)
+	{
+		SS_ASSERT(false);
+		return 0;
+	}
+
+	return FromDataSize;
+}
+
+int FillMemoryFromData(
+	void* Dest, int CopySize,
+	const SS::PooledList<byte>& FromData, int FromOffset)
+{
+	int32 FromCapacity = FromData.GetSize() - FromOffset;
+	if (CopySize > FromCapacity)
+	{
+		SS_ASSERT(false);
+		return 0;
+	}
+
+	errno_t Result = memcpy_s(
+		Dest, CopySize,
+		FromData.GetData() + FromOffset, CopySize);
+
+	if (Result != 0)
+	{
+		SS_ASSERT(false);
+		return 0;
+	}
+
+	return CopySize;
 }
 
 int AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS::StringW>& Strings)
@@ -27,7 +64,7 @@ int AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS::S
 
 
 	int32 ByteCursor = 0;
-	ByteCursor += AppendData_Internal(Data, &TotalByteSizeToWrite, sizeof(int32));
+	ByteCursor += AppendData(Data, &TotalByteSizeToWrite, sizeof(int32));
 
 	for (const SS::StringW& StringItem : Strings)
 	{
@@ -36,7 +73,7 @@ int AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS::S
 
 		const utf16* ItemCStr = StringItem.C_Str();
 
-		ByteCursor += AppendData_Internal(Data, ItemCStr, ItemByteLen);
+		ByteCursor += AppendData(Data, ItemCStr, ItemByteLen);
 	}
 
 	SS_ASSERT(TotalByteSizeToWrite == ByteCursor);
@@ -95,7 +132,7 @@ int AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS::S
 
 
 	int32 ByteCursor = 0;
-	ByteCursor += AppendData_Internal(Data, &TotalByteSizeToWrite, sizeof(int32));
+	ByteCursor += AppendData(Data, &TotalByteSizeToWrite, sizeof(int32));
 
 	for (SS::SHasherW HasherItem : Hashers)
 	{
@@ -104,7 +141,7 @@ int AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS::S
 
 		const utf16* ItemCStr = HasherItem.C_Str();
 
-		ByteCursor += AppendData_Internal(Data, ItemCStr, ItemByteLen);
+		ByteCursor += AppendData(Data, ItemCStr, ItemByteLen);
 	}
 
 	SS_ASSERT(TotalByteSizeToWrite == ByteCursor);

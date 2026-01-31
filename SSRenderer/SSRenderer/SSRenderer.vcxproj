@@ -178,7 +178,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderInstance\RISkinnedMesh.cpp" />
     <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.cpp" />
-    <ClCompile Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />

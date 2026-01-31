@@ -115,14 +115,15 @@ void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGa
 
 	_BoneBindings.Clear();
 	_BoneBindings.Reserve(200);
-	const SS::PooledList<BonePlacement>& OriginalBones = SkinnedRawMesh->_BonePlacements;
+	const SS::PooledList<Transform>& BoneTransforms = SkinnedRawMesh->_BonePlacements;
+	const SS::PooledList<SS::SHasherW>& BoneNames = SkinnedRawMesh->_BoneNames;
 	for (int32 i = 0; i < NewBoneCnt; i++)
 	{
 		SGameObject* MatchingObject = nullptr;
 
 		for (SGameObject* Item : ScrapedDecendants)
 		{
-			if (OriginalBones[i].BoneName == Item->GetObjectName())
+			if (BoneNames[i] == Item->GetObjectName())
 			{
 				MatchingObject = Item;
 				break;

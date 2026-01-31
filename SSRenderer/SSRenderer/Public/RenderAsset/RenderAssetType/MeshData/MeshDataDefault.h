@@ -16,7 +16,7 @@ public:
 
 	virtual EMeshType GetMeshType() const override
 	{
-		return _VertexHeader.MeshType;
+		return EMeshType::Rigid;
 	}
 
 	virtual void ReleaseData() override
