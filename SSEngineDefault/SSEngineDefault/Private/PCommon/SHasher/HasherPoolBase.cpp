@@ -62,10 +62,11 @@ const HasherPoolNode* HasherPoolBase::FindOrAddHasherValue(const utf16* InStr, u
 
 
 	uint64 InStrSpaceSize = sizeof(utf16) * (InStrLen + 1);
-	if (CurHasherPoolNode == nullptr)
+	if (CurHasherPoolNode == nullptr) // 해당 해시 버킷에 노드가 들어간 적이 없는 경우
 	{
 		HasherPoolNode* NewNode = (HasherPoolNode*)DBG_MALLOC(sizeof(HasherPoolNode) + InStrSpaceSize);
 		NewNode->_next = nullptr;
+		NewNode->_hashX = HashX;
 		NewNode->_strLen = InStrLen;
 		wcscpy(NewNode->_str, InStr);
 		_HasherBucket[BucketIdx] = NewNode;
@@ -85,6 +86,7 @@ const HasherPoolNode* HasherPoolBase::FindOrAddHasherValue(const utf16* InStr, u
 		{
 			HasherPoolNode* NewNode = (HasherPoolNode*)DBG_MALLOC(sizeof(HasherPoolNode) + InStrSpaceSize);
 			NewNode->_next = nullptr;
+			NewNode->_hashX = HashX;
 			NewNode->_strLen = InStrLen;
 			wcscpy(NewNode->_str, InStr);
 			CurHasherPoolNode->_next = NewNode;

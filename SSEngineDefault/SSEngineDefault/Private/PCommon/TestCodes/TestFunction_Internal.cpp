@@ -598,6 +598,11 @@ void SHasherPoolTest()
 
 		SS_ASSERT(Value1 == Value2);
 		SS_ASSERT(Value1 != Value3);
+
+		SS_ASSERT(Value1->_hashX != 0);
+		SS_ASSERT(Value2->_hashX != 0);
+		SS_ASSERT(Value3->_hashX != 0);
+		SS_ASSERT(Value1->_hashX != Value3->_hashX);
 	}
 
 	if (_CrtCheckMemory() == false) SS_INTERRUPT();
@@ -620,6 +625,9 @@ void SHasherTest()
 		SS::SHasherW Hasher2 = SS::SHasherW(TempStr);
 
 		SS_ASSERT(Hasher1 == Hasher2);
+		SS_ASSERT(Hasher1.GetDirectValue() != 0);
+		SS_ASSERT(Hasher2.GetDirectValue() != 0);
+		SS_ASSERT(Hasher1.GetDirectValue() == Hasher2.GetDirectValue());
 	}
 
 	if (_CrtCheckMemory() == false) SS_INTERRUPT();
