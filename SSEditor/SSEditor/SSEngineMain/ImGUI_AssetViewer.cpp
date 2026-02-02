@@ -55,6 +55,10 @@ void ImGUI_AssetViewer::ImGUI_ShowAssetViewer()
 		{
 			_ImGUI_SelectedAssetManager_Type = EAssetType::RenderAnim;
 		}
+		else if (ImGui::TabItemButton("ModelCombination"))
+		{
+			_ImGUI_SelectedAssetManager_Type = EAssetType::ModelCombination;
+		}
 		ImGui::EndTabBar();
 
 		switch (_ImGUI_SelectedAssetManager_Type)
@@ -62,6 +66,7 @@ void ImGUI_AssetViewer::ImGUI_ShowAssetViewer()
 		case EAssetType::Texture: ImGUI_Show_Asset_RefCnt_Table(EAssetType::Texture); break;
 		case EAssetType::Mesh: ImGUI_Show_Asset_RefCnt_Table(EAssetType::Mesh); break;
 		case EAssetType::RenderAnim: ImGUI_Show_Asset_RefCnt_Table(EAssetType::RenderAnim); break;
+		case EAssetType::ModelCombination: ImGUI_Show_Asset_RefCnt_Table(EAssetType::ModelCombination); break;
 		case EAssetType::Material: ImGUI_AssetManager_Material(); break;
 		case EAssetType::Model: ImGUI_AssetManager_Model(); break;
 		default:
@@ -274,8 +279,6 @@ void ImGUI_AssetViewer::ImGUI_AssetManager_Material()
 void ImGUI_AssetViewer::ImGUI_AssetManager_Model()
 {
 	IAssetManager* AssetManager = _Renderer->GetAssetManager();
-	const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshList = AssetManager->GetAssetMap(EAssetType::Mesh);
-	const SS::HashMap<SS::SHasherW, IAssetBase*>& MtlList = AssetManager->GetAssetMap(EAssetType::Material);
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& ModelList = AssetManager->GetAssetMap(EAssetType::Model);
 
 	for (const SS::pair<SS::SHasherW, IAssetBase*>& ModelItemPair : ModelList)
