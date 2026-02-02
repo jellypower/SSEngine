@@ -6,6 +6,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class ImGUI_AssetViewer;
 class SRenderLightDirectionalComponent;
 enum class EAssetType;
 class SSImGUIInitializer;
@@ -39,19 +40,9 @@ public:
 
 #pragma region IMGUI
 private:
-	EAssetType _ImGUI_SelectedAssetManager_Type;
+	ImGUI_AssetViewer* _ImGUI_AssetViewer = nullptr;
 
-
-private:
 	void ProcessImGUI();
-
-
-	void ImGUI_AssetManagerWindow();
-	void ImGUI_AssetManagerWindow_Texture();
-	void ImGUI_AssetManager_Mesh();
-	void ImGUI_AssetManager_Material();
-	void ImGUI_AssetManager_Model();
-	void ImGUI_AssetManager_RenderAnim();
 
 	void ImGUI_FrameInfo();
 

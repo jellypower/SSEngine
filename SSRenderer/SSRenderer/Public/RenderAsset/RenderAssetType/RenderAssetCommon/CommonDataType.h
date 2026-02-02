@@ -16,6 +16,23 @@ enum class EAssetType : int32
 	Count
 };
 
+inline const char* to_string(EAssetType e)
+{
+	switch (e)
+	{
+	case EAssetType::None: return "EAssetType::None";
+	case EAssetType::Mesh: return "EAssetType::Mesh";
+	case EAssetType::Material: return "EAssetType::Material";
+	case EAssetType::Model: return "EAssetType::Model";
+	case EAssetType::ModelCombination: return "EAssetType::ModelCombination";
+	case EAssetType::Texture: return "EAssetType::Texture";
+	case EAssetType::Skeleton: return "EAssetType::Skeleton";
+	case EAssetType::RenderAnim: return "EAssetType::RenderAnim";
+	case EAssetType::Count: return "EAssetType::Count";
+	default: return "EAssetType::unknown";
+	}
+}
+
 
 inline const char* GetAssetSuffix(EAssetType InAssetType)
 {
