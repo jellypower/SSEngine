@@ -160,9 +160,6 @@ void SSEditor::StartupEngine()
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
 
 
-//		SGameObject* LowerBody = TEMP_MdlcObj->FindChildOfName(L"ù»Úâãó", true);
-//		SStaticMeshRenderComponent* SM = LowerBody->CreateComponent<SStaticMeshRenderComponent>(L"StaticMesh");
-//		SM->SetModelAsset(_Renderer->GetCommonRenderAssetSet()->GetCube1mModel()->GetAssetName());
 	}
 
 	{

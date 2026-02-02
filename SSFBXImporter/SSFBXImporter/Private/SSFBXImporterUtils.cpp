@@ -30,6 +30,7 @@ Transform SSFBXImporterUtils::ExtractTransformFromNode(FbxNode* node, FbxTime fb
 	fbxMat.SetR(node->GetGeometricRotation(FbxNode::eSourcePivot));
 	fbxMat.SetS(node->GetGeometricScaling(FbxNode::eSourcePivot));
 
+
 	const FbxAMatrix& AnimTransform = node->EvaluateLocalTransform(fbxTime);
 	fbxMat = AnimTransform * fbxMat;
 

@@ -44,6 +44,12 @@ namespace SS {
 				SS_INTERRUPT();
 			}
 
+			if (StrLen <= 0)
+			{
+				_StoredNode = nullptr;
+				return;
+			}
+
 			uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(inStr), StrLen * (sizeof(utf16) / sizeof(char)));
 			_StoredNode = g_HasherPool->FindOrAddHasherValue(inStr, StrLen, HashedValue);
 		}

@@ -30,7 +30,6 @@ namespace SS {
 			}
 			_stringPool.SetSizeDirectly(newStrLen + 1);
 			int32 resultLen = CharStrToUTF16Str(inStr, newStrLen, _stringPool.GetData(), _stringPool.GetCapacity());
-			SS_ASSERT(resultLen != 0);
 		}
 
 

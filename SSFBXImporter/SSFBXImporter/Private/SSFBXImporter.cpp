@@ -484,112 +484,109 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 		return;
 	}
 
-
-	FbxAnimStack* currAnimStack = _currentScene->GetCurrentAnimationStack();
-	if (currAnimStack == nullptr)
+	int32 AnimStackCnt = _currentScene->GetSrcObjectCount<FbxAnimStack>();
+	for (int i = 0; i < AnimStackCnt; i++)
 	{
-		return;
-	}		
+		FbxAnimStack* CurAnimStack = _currentScene->GetSrcObject<FbxAnimStack>(i);
+		_currentScene->SetCurrentAnimationStack(CurAnimStack);
 
 
-	SS::StringW OriginalMdlcAssetNameOnly;
-	OriginalMdlcAssetNameOnly = _boundFileName.C_Str();
+		SS::StringW OriginalMdlcAssetNameOnly = _boundFileName.C_Str();
 
-	SS::StringW OriginalMdlcAssetName = OriginalMdlcAssetNameOnly;
-	OriginalMdlcAssetName += L".mdlc";
-
+		SS::StringW OriginalMdlcAssetName = OriginalMdlcAssetNameOnly;
+		OriginalMdlcAssetName += L".mdlc";
 
 
-	constexpr int32 STR_BUFFER_SIZE = 512;
-	wchar_t Utf16Buffer[STR_BUFFER_SIZE];
-	FbxString fStrName = currAnimStack->GetNameOnly();
-	int32 StrLen = fStrName.GetLen();
-	char8_t* u8Name = reinterpret_cast<char8_t*>(fStrName.Buffer());
-	UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, Utf16Buffer, STR_BUFFER_SIZE);
+
+		constexpr int32 STR_BUFFER_SIZE = 512;
+		utf16 u16AnimStackName[STR_BUFFER_SIZE];
+		FbxString fCurAnimStackName = CurAnimStack->GetNameOnly();
+		int32 StrLen = fCurAnimStackName.GetLen();
+		char8_t* u8Name = reinterpret_cast<char8_t*>(fCurAnimStackName.Buffer());
+		UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, u16AnimStackName, STR_BUFFER_SIZE);
 
 
-	SS::StringW NewRenderAnimNameOnly = OriginalMdlcAssetNameOnly;
-	NewRenderAnimNameOnly += L"/";
-	NewRenderAnimNameOnly += Utf16Buffer;
+		SS::StringW NewRenderAnimNameOnly = OriginalMdlcAssetNameOnly;
+		NewRenderAnimNameOnly += L"/";
+		NewRenderAnimNameOnly += u16AnimStackName;
 
-	SS::SHasherW NewRenderAnimName =
-		_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NewRenderAnimNameOnly, EAssetType::RenderAnim);
-
-
-	IModelCombinationAsset* OriginalMdlcAsset = FindImportedAssetByName<IModelCombinationAsset>(OriginalMdlcAssetName.C_Str());
-	int ChildCnt = OriginalMdlcAsset->GetChildCnt();
-
-	IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(NewRenderAnimName, _boundFileName);
-
-	// ========================================================================================================================
-	FbxTakeInfo* takeInfo = _currentScene->GetTakeInfo(fStrName);
-	FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
-	FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+		SS::SHasherW NewRenderAnimName =
+			_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NewRenderAnimNameOnly, EAssetType::RenderAnim);
 
 
-	double frameStartSeconds = start.GetSecondDouble();
-	double frameEndSeconds = end.GetSecondDouble();
+		IModelCombinationAsset* OriginalMdlcAsset = FindImportedAssetByName<IModelCombinationAsset>(OriginalMdlcAssetName.C_Str());
+		int ChildCnt = OriginalMdlcAsset->GetChildCnt();
 
-	int64 frameStart = start.GetFrameCount(FbxTime::eFrames24);
-	int64 frameEnd = end.GetFrameCount(FbxTime::eFrames24);
-	int64 frameCnt = frameEnd - frameStart;
+		IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(NewRenderAnimName, _boundFileName);
 
-
-	RenderAnimRawData* NewRawData = DBG_NEW RenderAnimRawData();
-	NewRawData->_Tracks.Reserve(frameCnt);
-	NewRawData->_KeyFrameDuration = frameEndSeconds - frameStartSeconds;
+		// ========================================================================================================================
+		FbxTakeInfo* takeInfo = _currentScene->GetTakeInfo(fCurAnimStackName);
+		FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+		FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
 
 
-	NewRenderAnimAsset->SetOriginMdlcAsset(OriginalMdlcAsset);
-	NewRenderAnimAsset->InjectRawDataXXX(NewRawData);
+		double frameStartSeconds = start.GetSecondDouble();
+		double frameEndSeconds = end.GetSecondDouble();
+
+		int64 frameStart = start.GetFrameCount(FbxTime::eFrames24);
+		int64 frameEnd = end.GetFrameCount(FbxTime::eFrames24);
+		int64 frameCnt = frameEnd - frameStart;
 
 
-	static const SS::SHasherW NameRoot = SS::SHasherW("root");
+		RenderAnimRawData* NewRawData = DBG_NEW RenderAnimRawData();
+		NewRawData->_Tracks.Reserve(frameCnt);
+		NewRawData->_KeyFrameDuration = frameEndSeconds - frameStartSeconds;
 
-	for (int32 i = 0; i < ChildCnt; i++)
-	{
-		const AssetPlacementReference& ChildItem = OriginalMdlcAsset->GetChildAt(i);
 
-		uint32 ChildNodeNameLen = ChildItem.PlacementName.GetStrLen();
-		const utf16* ChildNodeName = ChildItem.PlacementName.C_Str();
+		NewRenderAnimAsset->SetOriginMdlcAsset(OriginalMdlcAsset);
+		NewRenderAnimAsset->InjectRawDataXXX(NewRawData);
 
-		RKFTrack NewTrack;
 
-		if (ChildNodeNameLen > 0 && NameRoot != ChildItem.PlacementName)
+
+		for (int32 ChildIdx = 1; ChildIdx < ChildCnt; ChildIdx++)
 		{
-			char ChildNodeNameStr[PATH_LEN_MAX];
+			const AssetPlacementReference& ChildItem = OriginalMdlcAsset->GetChildAt(ChildIdx);
 
-			int32 writtenBytes = UTF16StrToCharStr(ChildNodeName, ChildNodeNameLen, ChildNodeNameStr, PATH_LEN_MAX);
-			FbxNode* currentNode = _currentScene->FindNodeByName(ChildNodeNameStr);
-			
-			FbxNode* TempNode = _currentScene->FindNodeByName("direction");
-			SS_ASSERT(currentNode != nullptr);
+			uint32 ChildNodeNameLen = ChildItem.PlacementName.GetStrLen();
+			const utf16* ChildNodeName = ChildItem.PlacementName.C_Str();
 
-			NewTrack._TrackItemCnt = frameCnt;
-			NewTrack._Type = ERKFTrackItemType::BoneTransform;
-			NewTrack._TrackName = ChildItem.PlacementName;
+			RKFTrack NewTrack;
 
-			RKFTrackItemTransform* NewTrackItems = (RKFTrackItemTransform*)DBG_MALLOC(sizeof(RKFTrackItemTransform) * frameCnt);
-			NewTrack._TrackItems = NewTrackItems;
-
-
-			for (int64 CurFrameIdx = frameStart; CurFrameIdx < frameEnd; ++CurFrameIdx)
+			if (ChildNodeNameLen > 0)
 			{
-				FbxTime currTime;
-				currTime.SetFrame(CurFrameIdx, FbxTime::eFrames24);
+				char ChildNodeNameStr[PATH_LEN_MAX];
 
-				int32 FrameIdx = CurFrameIdx - frameStart;
-				float CurTimeRatio = (float)FrameIdx / (float)frameCnt;
-				NewTrackItems[FrameIdx]._TimeRatio = CurTimeRatio;
-				NewTrackItems[FrameIdx]._Transform = SSFBXImporterUtils::ExtractTransformFromNode(currentNode, currTime);
+				int32 writtenBytes = UTF16StrToCharStr(ChildNodeName, ChildNodeNameLen, ChildNodeNameStr, PATH_LEN_MAX);
+				FbxNode* currentNode = _currentScene->FindNodeByName(ChildNodeNameStr);
 
-				int a = 0;
+				SS_ASSERT(currentNode != nullptr);
+
+				NewTrack._TrackItemCnt = frameCnt;
+				NewTrack._Type = ERKFTrackItemType::BoneTransform;
+				NewTrack._TrackName = ChildItem.PlacementName;
+
+				RKFTrackItemTransform* NewTrackItems = (RKFTrackItemTransform*)DBG_MALLOC(sizeof(RKFTrackItemTransform) * frameCnt);
+				NewTrack._TrackItems = NewTrackItems;
+
+
+				for (int64 CurFrameIdx = frameStart; CurFrameIdx < frameEnd; ++CurFrameIdx)
+				{
+					FbxTime currTime;
+					currTime.SetFrame(CurFrameIdx, FbxTime::eFrames24);
+
+					int32 FrameIdx = CurFrameIdx - frameStart;
+					float CurTimeRatio = (float)FrameIdx / (float)frameCnt;
+					NewTrackItems[FrameIdx]._TimeRatio = CurTimeRatio;
+					NewTrackItems[FrameIdx]._Transform = SSFBXImporterUtils::ExtractTransformFromNode(currentNode, currTime);
+
+					int a = 0;
+				}
+
+				NewRawData->_Tracks.PushBack(NewTrack);
+
 			}
-
-			NewRawData->_Tracks.PushBack(NewTrack);
-
 		}
-	}
 
-	_ImportedAssets.PushBack(NewRenderAnimAsset);
+		_ImportedAssets.PushBack(NewRenderAnimAsset);
+	}
 }
