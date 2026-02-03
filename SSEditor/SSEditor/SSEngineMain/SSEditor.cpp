@@ -30,6 +30,8 @@
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 
+#include "SSAssetDBManager/Public/IAssetDBLoader.h"
+
 
 #include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
@@ -78,6 +80,10 @@ void SSEditor::StartupEngine()
 	{
 		_FbxImporter = g_fpCreateSSFBXImporter();
 		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
+	}
+
+	{
+		_AssetDBLoader = g_fpCreateAssetDBLoader();
 	}
 
 
@@ -244,6 +250,9 @@ void SSEditor::CleanupEngine()
 	_FbxImporter->ClearRendererToImportAsset();
 	delete _FbxImporter;
 	_FbxImporter = nullptr;
+
+	delete _AssetDBLoader;
+	_AssetDBLoader = nullptr;
 
 	_Renderer->GetCommonRenderAssetSet()->ReleaseCachedAssets();
 

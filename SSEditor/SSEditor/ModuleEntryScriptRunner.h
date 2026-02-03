@@ -2,15 +2,18 @@
 #include <Windows.h>
 
 #include "SSFBXImporter/Public/ModuleEntry/SSFBXImporterFactory.h"
-
+#include "SSAssetDBManager/Public/ModuleEntry/AssetDBLoaderFactory.h"
 
 extern HINSTANCE g_hInstSSGAL;
 extern HINSTANCE g_hInstSSRenderer;
 extern HINSTANCE g_hInstSSFBXImporter;
+extern HINSTANCE g_hInstSSAssetDBManager;
+
 extern HWND g_hWnd;
 
 
 extern FuncPtr_CreateSSFBXImporter g_fpCreateSSFBXImporter;
+extern FuncPtr_CreateAssetDBLoader g_fpCreateAssetDBLoader;
 
 void RunLoadLibraries();
 void RunModuleEntryScript();

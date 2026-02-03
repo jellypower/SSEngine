@@ -21,6 +21,7 @@
 #include "SSContentsBase/Public/ModuleEntry/SSContentsBaseModuleEntry.h"
 
 
+
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 
 IHasherPool* g_HasherPool = nullptr;
@@ -34,8 +35,12 @@ HWND g_hWnd = NULL;
 HINSTANCE g_hInstSSGAL = nullptr;
 HINSTANCE g_hInstSSRenderer = nullptr;
 HINSTANCE g_hInstSSFBXImporter = nullptr;
+HINSTANCE g_hInstSSAssetDBManager = nullptr;
 
 FuncPtr_CreateSSFBXImporter g_fpCreateSSFBXImporter = nullptr;
+FuncPtr_CreateAssetDBLoader g_fpCreateAssetDBLoader = nullptr;
+
+
 
 void RunLoadLibraries()
 {
@@ -55,6 +60,12 @@ void RunLoadLibraries()
 	if (g_hInstSSFBXImporter == nullptr)
 	{
 		g_hInstSSFBXImporter = LoadLibrary(SSFBXIMPORTER_MODULEPATH);
+	}
+
+	g_hInstSSAssetDBManager = LoadLibrary(L"SSAssetDBManager.dll");
+	if (g_hInstSSAssetDBManager == nullptr)
+	{
+		g_hInstSSAssetDBManager = LoadLibrary(SSASSETDBMANAGER_MODULEPATH);
 	}
 }
 
@@ -95,7 +106,8 @@ void RunModuleEntryScriptPostInitWindow(
 		FuncPtr_SSFBXImporterModuleEntry SSFBXImporterModuleEntry = (FuncPtr_SSFBXImporterModuleEntry)GetProcAddress(g_hInstSSFBXImporter, "SSFBXImporterModuleEntry");
 		g_fpCreateSSFBXImporter = (FuncPtr_CreateSSFBXImporter)GetProcAddress(g_hInstSSFBXImporter, "CreateSSFBXImporter");
 
-
+		FuncPtr_SSAssetDBManagerModuleEntry SSAssetDBManagerModuleEntry = (FuncPtr_SSAssetDBManagerModuleEntry)GetProcAddress(g_hInstSSAssetDBManager, "SSAssetDBManagerModuleEntry");
+		g_fpCreateAssetDBLoader = (FuncPtr_CreateAssetDBLoader)GetProcAddress(g_hInstSSAssetDBManager, "CreateAssetDBLoader");
 
 		SSGALModuleEntry(g_HasherPool);
 		GALRenderDevice* NewRenderDevice = CreateGALRenderDevice(
@@ -108,6 +120,8 @@ void RunModuleEntryScriptPostInitWindow(
 		g_Renderer = CreateRenderer(NewRenderDevice);
 
 		SSFBXImporterModuleEntry(g_HasherPool, g_Renderer);
+
+		SSAssetDBManagerModuleEntry(g_HasherPool);
 	}
 
 
@@ -142,6 +156,8 @@ void RunUnloadLibraries()
 	bSuccess = FreeLibrary(g_hInstSSRenderer);
 	if (bSuccess == false) SS_INTERRUPT();
 	bSuccess = FreeLibrary(g_hInstSSGAL);
+	if (bSuccess == false) SS_INTERRUPT();
+	bSuccess = FreeLibrary(g_hInstSSAssetDBManager);
 	if (bSuccess == false) SS_INTERRUPT();
 
 	g_hInstSSFBXImporter = nullptr;

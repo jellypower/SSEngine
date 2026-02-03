@@ -6,6 +6,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class IAssetDBLoader;
 class ImGUI_AssetViewer;
 class SRenderLightDirectionalComponent;
 enum class EAssetType;
@@ -81,5 +82,5 @@ private:
 	SS::StringW _importFileName_TMP;
 
 	ISSFBXImporter* _FbxImporter = nullptr;
-
+	IAssetDBLoader* _AssetDBLoader = nullptr;
 };
