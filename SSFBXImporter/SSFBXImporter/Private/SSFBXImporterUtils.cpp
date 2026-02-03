@@ -1,5 +1,7 @@
 #include "SSFBXImporterUtils.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ProfilerUtils.h>
+
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
 
@@ -24,15 +26,16 @@ int32 SSFBXImporterUtils::CalcWholeNodeCnt_Recursion(const FbxNode* node)
 
 Transform SSFBXImporterUtils::ExtractTransformFromNode(FbxNode* node, FbxTime fbxTime)
 {
-	FbxAMatrix fbxMat;
-	fbxMat.SetIdentity();
-	fbxMat.SetT(node->GetGeometricTranslation(FbxNode::eSourcePivot));
-	fbxMat.SetR(node->GetGeometricRotation(FbxNode::eSourcePivot));
-	fbxMat.SetS(node->GetGeometricScaling(FbxNode::eSourcePivot));
+//	FbxAMatrix fbxMat;
+//	fbxMat.SetIdentity();
+//	fbxMat.SetT(node->GetGeometricTranslation(FbxNode::eSourcePivot));
+//	fbxMat.SetR(node->GetGeometricRotation(FbxNode::eSourcePivot));
+//	fbxMat.SetS(node->GetGeometricScaling(FbxNode::eSourcePivot));
 
-
-	const FbxAMatrix& AnimTransform = node->EvaluateLocalTransform(fbxTime);
-	fbxMat = AnimTransform * fbxMat;
+	
+	const FbxAMatrix& fbxMat = node->EvaluateLocalTransform(fbxTime);
+//	const FbxAMatrix& AnimTransform = node->EvaluateLocalTransform(fbxTime);
+//	fbxMat = AnimTransform * fbxMat;
 
 	Transform transform;
 

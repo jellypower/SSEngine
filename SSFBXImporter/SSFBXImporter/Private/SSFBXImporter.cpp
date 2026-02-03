@@ -1,5 +1,7 @@
 #include "SSFBXImporter.h"
 
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
+
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSFBXImporterUtils.h"
 
