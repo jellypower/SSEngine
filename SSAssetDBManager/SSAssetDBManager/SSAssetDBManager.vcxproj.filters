@@ -33,6 +33,9 @@
     <ClInclude Include="Private\ModuleEntry\AssetDBLoader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Private\DBColumnTypes\Columns_v_0.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

@@ -84,6 +84,7 @@ void SSEditor::StartupEngine()
 
 	{
 		_AssetDBLoader = g_fpCreateAssetDBLoader();
+		_AssetDBLoader->StartLoadDB(L"Resource/AssetDB/EngineDefaultAssets.sqlite");
 	}
 
 

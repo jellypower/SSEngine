@@ -8,7 +8,7 @@ class IAssetManagerMutable;
 class IAssetDBLoader : public INoncopyable
 {
 public:
-	virtual bool BindDB(const utf16* inFilePath) = 0;
+	virtual bool StartLoadDB(const utf16* inFilePath) = 0;
 	virtual void ClearDB() = 0;
 
 	virtual void GenerateImportedAssets() = 0;

@@ -5,3 +5,5 @@
 #pragma comment(lib, "SSRenderer.lib")
 
 #pragma comment(lib, "ss-sqllite.lib")
+
+#pragma comment(lib, "SObject.lib")

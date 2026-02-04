@@ -2,7 +2,7 @@
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 
 class IRenderAnimAssetMutable;
-enum class ETextureType;
+enum class ETextureType : int32;
 class IMaterialAssetMutable;
 class ITextureAssetMutable;
 class IModelCombinationAssetMutable;
