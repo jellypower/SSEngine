@@ -21,13 +21,28 @@ public:
 	void RelocateImportedAssetsToAssetManager() override;
 
 private:
-	SS::StringW _BoundFilePath;
-	SS::StringW _BoundFileNameOnly;
+	bool LoadAllTexDB();
+	bool LoadAllMtlDB();
+	bool LoadAllMdls();
+
+private:
+	sqlite3* _hLoadedDB = nullptr;
+
+	SS::SHasherW _BoundFilePath;
+	SS::SHasherW _BoundDBNameSpace;
 	bool _bIsEngineDefaultAssetDB = false;
 
 	IAssetManagerMutable* _BoundAssetManager = nullptr;
 	ICommonRenderAssetSet* _BoundCommonRenderAssets = nullptr;
 
 
+private:
 	SS::PooledList<AssetDBColumn_Tex_v_0> _LoadedTextures;
+	SS::PooledList<AssetDBColumn_Mtl_DefaultPBR_v_0> _LoadedDefaultMtls;
+	SS::PooledList<AssetDBColumn_Mdl_v_0> _LoadedMdls;
+
+
+private:
+	SS::PooledList<ITextureAsset*> _GeneratedTextures;
+
 };

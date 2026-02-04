@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <shellapi.h>
 #include <shobjidl.h>
+#include <SSEngineDefault/Public/RawProfiler/ProfilerUtils.h>
 
 #include "imgui/imgui.h"
 
@@ -152,10 +153,17 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	g_FrameInfoProcessor->BeginFrameXXX();
 
+	int64 PC1 = GetPerofrmanceCounter();
+
 	for (int32 i=0;i<10;i++)
 	{
 		TEST_ExecuteTestFunctions();
 	}
+	int64 PC2 = GetPerofrmanceCounter();
+	int64 PF = GetPerformanceFrequency();
+	double eTime = (PC2 - PC1) / (double)PF;
+	int a = 0;
+
 
 
 	g_Editor->StartupEngine();

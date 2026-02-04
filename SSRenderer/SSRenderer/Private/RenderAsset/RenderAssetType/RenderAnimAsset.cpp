@@ -2,8 +2,9 @@
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 
-RenderAnimAsset::RenderAnimAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+RenderAnimAsset::RenderAnimAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
+	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
 }

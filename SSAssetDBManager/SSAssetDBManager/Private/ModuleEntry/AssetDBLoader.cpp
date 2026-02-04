@@ -1,12 +1,10 @@
 ﻿#include "pch.h"
+
 #include "AssetDBLoader.h"
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 
-
-constexpr utf16 ALL_TEXTURE_QUEERY[] = L"SELECT * from Textures";
-constexpr int32 ALL_TEXTURE_QUEERY_SIZE = sizeof(ALL_TEXTURE_QUEERY);
 
 
 AssetDBLoader::AssetDBLoader()
@@ -16,85 +14,56 @@ AssetDBLoader::AssetDBLoader()
 
 bool AssetDBLoader::StartLoadDB(const utf16* inFilePath)
 {
-	sqlite3* db = nullptr;
-	const void* __Temp = nullptr;
-	sqlite3_stmt* StmtResult = nullptr;
 	_BoundFilePath = inFilePath;
-	ExtractFileNameFromPath(_BoundFileNameOnly, _BoundFilePath.C_Str());
 
+	SS::StringW strBoundDBNameSpace;
+	ExtractFileNameFromPath(strBoundDBNameSpace, inFilePath);
+	_BoundDBNameSpace = strBoundDBNameSpace.C_Str();
 
-	int Result = sqlite3_open16(inFilePath, &db);
+	int Result = sqlite3_open16(inFilePath, &_hLoadedDB);
 	if (Result)
 	{
 		SS_ASSERT_MSG(false, L"Cannot open file.");
-		goto lb_fail;
+
+		_BoundFilePath = SS::SHasherW();
+		_BoundDBNameSpace = SS::SHasherW();
+		_bIsEngineDefaultAssetDB = false;
+
+		sqlite3_close(_hLoadedDB);
+		_hLoadedDB = nullptr;
+
+		return false;
 	}
 
-
-	Result = sqlite3_prepare16_v3(
-		db,
-		ALL_TEXTURE_QUEERY,
-		ALL_TEXTURE_QUEERY_SIZE,
-		SQLITE_OPEN_READONLY,
-		&StmtResult,
-		&__Temp);
-	if (Result)
-	{
-		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
-		goto lb_fail;
-	}
-
-	while ( sqlite3_step(StmtResult) == SQLITE_ROW)
-	{
-		SS::StringW AssetNameStr = _BoundFileNameOnly;
-		AssetNameStr += L"/";
-		SS::StringW AssetPathStr = _BoundFilePath;
-		AssetPathStr += L"/";
-
-		const utf16* db_c_str = nullptr;
-
-		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
-		AssetNameStr += db_c_str;
-
-		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 1);
-		AssetPathStr += db_c_str;
-
-		ETextureType TexType = (ETextureType)sqlite3_column_int(StmtResult, 2);
-		SS_ASSERT(ETextureType::None <= TexType && TexType < ETextureType::Count);
-
-		AssetDBColumn_Tex_v_0 NewColumn;
-		NewColumn.AssetName = AssetNameStr.C_Str();
-		NewColumn.AssetPath = AssetPathStr.C_Str();
-		NewColumn.TextureType = TexType;
-
-		_LoadedTextures.PushBack(NewColumn);
-	}
-
-	sqlite3_finalize(StmtResult);
+	bool bResult = LoadAllTexDB();
+	SS_ASSERT(bResult);
 
 
-
-	sqlite3_close(db);
 	return true;
-
-lb_fail:
-	if (db != nullptr)
-	{
-		sqlite3_close(db);
-	}
-
-	_BoundFilePath.Clear();
-	return false;
 }
 
 void AssetDBLoader::ClearDB()
 {
+	if (_hLoadedDB)
+	{
+		sqlite3_close(_hLoadedDB);
+		_hLoadedDB = nullptr;
+	}
 
+	_BoundFilePath = SS::SHasherW();
+	_BoundDBNameSpace = SS::SHasherW();
+	_bIsEngineDefaultAssetDB = false;
 }
 
 void AssetDBLoader::GenerateImportedAssets()
 {
+	for (const AssetDBColumn_Tex_v_0& TexColumnItem : _LoadedTextures)
+	{
+		ITextureAssetMutable* NewTex = _BoundAssetManager->CreateEmptyTextureAsset(_BoundDBNameSpace, 
+			TexColumnItem.AssetName, TexColumnItem.AssetPath, TexColumnItem.TextureType);
 
+		_GeneratedTextures.PushBack(NewTex);
+	}
 }
 
 void AssetDBLoader::BindAssetManagerToImportAsset(
@@ -112,5 +81,119 @@ void AssetDBLoader::ClearAssetManagerToImportAsset()
 
 void AssetDBLoader::RelocateImportedAssetsToAssetManager()
 {
+	for (ITextureAsset* TexItem : _GeneratedTextures)
+	{
+		_BoundAssetManager->AddToAssetPool(TexItem);
+	}
+	_GeneratedTextures.Clear();
+}
 
+bool AssetDBLoader::LoadAllTexDB()
+{
+	constexpr utf16 ALL_TEXTURE_QUEERY[] = L"SELECT * from Textures";
+	constexpr int32 ALL_TEXTURE_QUEERY_SIZE = sizeof(ALL_TEXTURE_QUEERY);
+
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		ALL_TEXTURE_QUEERY,
+		ALL_TEXTURE_QUEERY_SIZE,
+		SQLITE_OPEN_READONLY,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	while (sqlite3_step(StmtResult) == SQLITE_ROW)
+	{
+		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
+		AssetNameStr += L"/";
+
+		const utf16* db_c_str = nullptr;
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
+		AssetNameStr += db_c_str;
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 1);
+		SS::StringW AssetPathStr = db_c_str;
+
+		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
+
+		ETextureType TexType = (ETextureType)sqlite3_column_int(StmtResult, 3);
+		SS_ASSERT(ETextureType::None <= TexType && TexType < ETextureType::Count);
+
+		AssetDBColumn_Tex_v_0 NewColumn;
+		NewColumn.AssetName = AssetNameStr.C_Str();
+		NewColumn.AssetPath = AssetPathStr.C_Str();
+		NewColumn.LastUpdateTime = UpdateTime;
+		NewColumn.TextureType = TexType;
+
+		_LoadedTextures.PushBack(NewColumn);
+	}
+
+
+	sqlite3_finalize(StmtResult);
+	return true;
+}
+
+bool AssetDBLoader::LoadAllMtlDB()
+{
+	constexpr utf16 ALL_MTL_QUERY[] = L"SELECT * from Materials";
+	constexpr int32 ALL_MTL_QUERY_SIZE = sizeof(ALL_MTL_QUERY);
+
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		ALL_MTL_QUERY,
+		ALL_MTL_QUERY_SIZE,
+		SQLITE_OPEN_READONLY,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	while (sqlite3_step(StmtResult) == SQLITE_ROW)
+	{
+		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
+		AssetNameStr += L"/";
+		SS::StringW AssetPathStr = _BoundFilePath.C_Str();
+		AssetPathStr += L"/";
+
+		const utf16* db_c_str = nullptr;
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
+		AssetNameStr += db_c_str;
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 1);
+		AssetPathStr += db_c_str;
+
+		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
+
+
+
+		AssetDBColumn_Mtl_DefaultPBR_v_0 NewColumn;
+		NewColumn.AssetName = AssetNameStr.C_Str();
+		NewColumn.AssetPath = AssetPathStr.C_Str();
+		NewColumn.LastUpdateTime = UpdateTime;
+
+		_LoadedDefaultMtls.PushBack(NewColumn);
+	}
+
+
+	sqlite3_finalize(StmtResult);
+	return true;
 }

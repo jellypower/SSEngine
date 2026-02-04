@@ -8,7 +8,6 @@
 #include "SSImGUIInitializer.h"
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
 
-#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
@@ -26,6 +25,10 @@
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/StringUtilityFunctions.h"
+
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
+
 
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
@@ -69,11 +72,15 @@ SSEditor::~SSEditor()
 
 void SSEditor::StartupEngine()
 {
+
+
 	_Renderer->StartUp();
 	g_ImGuiInitializer->StartupImGui(_Renderer);
 
 
-	_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
+
+
+
 	TEMP_CreateAssets(); // CommonAssetSet을 초기화
 
 
@@ -82,9 +89,23 @@ void SSEditor::StartupEngine()
 		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 	}
 
+
+	int64 PC1 = GetPerofrmanceCounter();
 	{
 		_AssetDBLoader = g_fpCreateAssetDBLoader();
+		_AssetDBLoader->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 		_AssetDBLoader->StartLoadDB(L"Resource/AssetDB/EngineDefaultAssets.sqlite");
+
+		_AssetDBLoader->GenerateImportedAssets();
+		_AssetDBLoader->RelocateImportedAssetsToAssetManager();
+	}
+	int64 PC2 = GetPerofrmanceCounter();
+	int64 PF = GetPerformanceFrequency();
+	double eTime = (PC2 - PC1) / (double)PF;
+	int a = 0;
+
+	{
+		_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
 	}
 
 
@@ -100,6 +121,7 @@ void SSEditor::StartupEngine()
 		_FbxImporter->GenerateImportedAssets();
 		_FbxImporter->RelocateImportedAssetsToAssetManager();
 	}
+
 
 
 	// DEBUG
@@ -130,7 +152,7 @@ void SSEditor::StartupEngine()
 
 	// Floor
 	{
-		SGameObject* Floor = SRendererUtil::InstantiateModel(L"Cube1m.mdl");
+		SGameObject* Floor = SRendererUtil::InstantiateModel(L"__RUNTIME_CREATION__/Cube1m.mdl");
 		_DefaultWorld->AddToWorld(Floor);
 		Floor->SetPosition(Vector4f(0, -0.1,0, 1));
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
@@ -252,6 +274,7 @@ void SSEditor::CleanupEngine()
 	delete _FbxImporter;
 	_FbxImporter = nullptr;
 
+	_AssetDBLoader->ClearDB();
 	delete _AssetDBLoader;
 	_AssetDBLoader = nullptr;
 
@@ -318,7 +341,7 @@ void SSEditor::TEMP_CreateAssets()
 			const utf16* PathCStr = TextureAssetList[i].TexturePath;
 			ETextureType TexType = TextureAssetList[i].Type;
 			
-			ITextureAssetMutable* NewTex = AssetManager->CreateEmptyTextureAsset(NameCStr, PathCStr, TexType);
+			ITextureAssetMutable* NewTex = AssetManager->CreateEmptyTextureAsset("__TEMP__", NameCStr, PathCStr, TexType);
 			AssetManager->AddToAssetPool(NewTex);
 		}
 	}

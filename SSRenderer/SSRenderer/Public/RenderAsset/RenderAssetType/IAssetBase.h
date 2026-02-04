@@ -3,6 +3,8 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "RenderAssetCommon/CommonDataType.h"
 
+#include <ctime>
+
 enum class EAssetInstanceReferenceType : uint8
 {
 	None,
@@ -56,8 +58,10 @@ public:
 class IAssetBase : public INoncopyable
 {
 protected:
+	SS::SHasherW _DBNameSpace;
 	SS::SHasherW _assetName;
 	SS::SHasherW _assetPath;
+	time_t _LastUpdateTime = 0;
 
 	SS::PooledList<AssetInstanceReferencer> _AssetInstanceReferencers;
 
@@ -71,6 +75,7 @@ public:
 		return ThisAssetReferencer;
 	}
 
+	SS::SHasherW GetDBNameSpace() const { return _DBNameSpace; }
 	SS::SHasherW GetAssetName() const { return _assetName; }
 	SS::SHasherW GetAssetPath() const { return _assetPath; }
 	int32 GetAssetInstanceReferenceCnt() const { return _AssetInstanceReferencers.GetSize(); }

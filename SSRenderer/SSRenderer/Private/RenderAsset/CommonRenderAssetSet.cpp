@@ -14,21 +14,19 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
+
 void CommonRenderAssetSet::InitializeCommonAssets()
 {
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
 
-	_TexBLACK = AssetManager->CreateEmptyTextureAsset(L"BLACK.tex", L"Resource/Texture/BLACK.dds", ETextureType::Texture2D);
-	AssetManager->AddToAssetPool(_TexBLACK);
-	_TexEMPTY = AssetManager->CreateEmptyTextureAsset(L"EMPTY.tex", L"Resource/Texture/EMPTY.dds", ETextureType::Texture2D);
-	AssetManager->AddToAssetPool(_TexEMPTY);
-	_TexEMPTYNORMAL = AssetManager->CreateEmptyTextureAsset(L"EMPTYNORMAL.tex", L"Resource/Texture/EMPTYNORMAL.dds", ETextureType::Texture2D);
-	AssetManager->AddToAssetPool(_TexEMPTYNORMAL);
-	_TexWHITE = AssetManager->CreateEmptyTextureAsset(L"WHITE.tex", L"Resource/Texture/WHITE.dds", ETextureType::Texture2D);
-	AssetManager->AddToAssetPool(_TexWHITE);
+	_TexBLACK = AssetManager->FindAssetByName<ITextureAsset>(L"EngineDefaultAssets/BLACK.tex");
+	_TexEMPTY = AssetManager->FindAssetByName<ITextureAsset>(L"EngineDefaultAssets/EMPTY.tex");
+	_TexEMPTYNORMAL = AssetManager->FindAssetByName<ITextureAsset>(L"EngineDefaultAssets/EMPTYNORMAL.tex");
+	_TexWHITE = AssetManager->FindAssetByName<ITextureAsset>(L"EngineDefaultAssets/WHITE.tex");
 
-	_EmptyPBRMaterial = AssetManager->CreateEmptyMaterialAsset(L"EMPTY.mtl", "__INTERNAL_ASSET__");
+
+	_EmptyPBRMaterial = AssetManager->CreateEmptyMaterialAsset(L"__RUNTIME_CREATION__", L"EMPTY.mtl", "__INTERNAL_ASSET__");
 	MtlDataDefaultPBR* EmptyDefaultPBR = DBG_NEW MtlDataDefaultPBR();
 	EmptyDefaultPBR->_Type = EMaterialType::DefaultPBR;
 	EmptyDefaultPBR->_BaseColorScale = Vector4f::One;
@@ -44,23 +42,23 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	static_cast<IMaterialAssetMutable*>(_EmptyPBRMaterial)->InjectRawDataXXX(EmptyDefaultPBR);
 	AssetManager->AddToAssetPool(_EmptyPBRMaterial);
 
-	_Cube1mMesh = AssetManager->CreateEmptyMeshAsset(L"Cube1m.mesh", L"__INTERNAL_ASSET__");
+
+	_Cube1mMesh = AssetManager->CreateEmptyMeshAsset(L"__RUNTIME_CREATION__", L"__RUNTIME_CREATION__/Cube1m.mesh", L"__RUNTIME_CREATION__");
 	MeshRawDataDefault* CubeRawData = CreateCube1mRawData();
 	static_cast<IMeshAssetMutable*>(_Cube1mMesh)->InjectRawDataXXX(CubeRawData);
 	AssetManager->AddToAssetPool(_Cube1mMesh);
 
-
-	_Cube1mModel = AssetManager->CreateEmptyModelAsset(L"Cube1m.mdl", L"__INTERNAL_ASSET__");
+	_Cube1mModel = AssetManager->CreateEmptyModelAsset(L"__RUNTIME_CREATION__", L"__RUNTIME_CREATION__/Cube1m.mdl", L"__RUNTIME_CREATION__");
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMesh(_Cube1mMesh);
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMaterial(_EmptyPBRMaterial, 0);
 	AssetManager->AddToAssetPool(_Cube1mModel);
 
-	_Sphere1mMesh = AssetManager->CreateEmptyMeshAsset(L"Sphere1m.mesh", L"__INTERNAL_ASSET__");
+	_Sphere1mMesh = AssetManager->CreateEmptyMeshAsset(L"__RUNTIME_CREATION__", L"__RUNTIME_CREATION__/Sphere1m.mesh", L"__RUNTIME_CREATION__");
 	MeshRawDataDefault* SphereRawData = CreateSphere1mRawData(8);
 	static_cast<IMeshAssetMutable*>(_Sphere1mMesh)->InjectRawDataXXX(SphereRawData);
 	AssetManager->AddToAssetPool(_Sphere1mMesh);
 
-	_Sphere1mModel = AssetManager->CreateEmptyModelAsset(L"Sphere1m.mdl", L"__INTERNAL_ASSET__");
+	_Sphere1mModel = AssetManager->CreateEmptyModelAsset(L"__RUNTIME_CREATION__", L"__RUNTIME_CREATION__/Sphere1m.mdl", L"__RUNTIME_CREATION__");
 	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMesh(_Sphere1mMesh);
 	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMaterial(_EmptyPBRMaterial, 0);
 	AssetManager->AddToAssetPool(_Sphere1mModel);

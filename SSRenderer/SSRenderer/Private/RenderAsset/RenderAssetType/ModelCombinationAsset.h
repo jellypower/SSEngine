@@ -6,7 +6,7 @@
 class ModelCombinationAsset : public IModelCombinationAssetMutable
 {
 public:
-	ModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt);
+	ModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt);
 
 public:
 	EAssetType GetAssetType() const override;

@@ -10,7 +10,6 @@ enum class EAssetType : int32
 	Model,
 	ModelCombination,
 	Texture,
-	Skeleton,
 	RenderAnim,
 
 	Count
@@ -26,7 +25,6 @@ inline const char* to_string(EAssetType e)
 	case EAssetType::Model: return "EAssetType::Model";
 	case EAssetType::ModelCombination: return "EAssetType::ModelCombination";
 	case EAssetType::Texture: return "EAssetType::Texture";
-	case EAssetType::Skeleton: return "EAssetType::Skeleton";
 	case EAssetType::RenderAnim: return "EAssetType::RenderAnim";
 	case EAssetType::Count: return "EAssetType::Count";
 	default: return "EAssetType::unknown";

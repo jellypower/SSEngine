@@ -10,7 +10,7 @@ class GALMeshAssetWrapperBase;
 class MeshAsset : public IMeshAssetMutable
 {
 public:
-	MeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
+	MeshAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
 	~MeshAsset();
 
 public:

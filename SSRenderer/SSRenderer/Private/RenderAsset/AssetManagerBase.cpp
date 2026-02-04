@@ -21,7 +21,6 @@ AssetManagerBase::AssetManagerBase(int32 AssetHashMapCapacity, int32 AssetHashMa
 		SS::HashMap<SS::SHasherW, IAssetBase*>(AssetHashMapCapacity, AssetHashMapBucketCapacity),
 		SS::HashMap<SS::SHasherW, IAssetBase*>(AssetHashMapCapacity, AssetHashMapBucketCapacity),
 		SS::HashMap<SS::SHasherW, IAssetBase*>(AssetHashMapCapacity, AssetHashMapBucketCapacity),
-		SS::HashMap<SS::SHasherW, IAssetBase*>(AssetHashMapCapacity, AssetHashMapBucketCapacity),
 	}
 {
 }
@@ -69,36 +68,36 @@ void AssetManagerBase::ReleaseAllAssets()
 	}
 }
 
-ITextureAssetMutable* AssetManagerBase::CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
+ITextureAssetMutable* AssetManagerBase::CreateEmptyTextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
 {
-	return DBG_NEW TextureAsset(InAssetName, InAssetPath, InType);
+	return DBG_NEW TextureAsset(InDBNameSpace, InAssetName, InAssetPath, InType);
 }
 
-IMeshAssetMutable* AssetManagerBase::CreateEmptyMeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+IMeshAssetMutable* AssetManagerBase::CreateEmptyMeshAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
-	return DBG_NEW MeshAsset(InAssetName, InAssetName);
+	return DBG_NEW MeshAsset(InDBNameSpace, InAssetName, InAssetName);
 }
 
-IModelAssetMutable* AssetManagerBase::CreateEmptyModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+IModelAssetMutable* AssetManagerBase::CreateEmptyModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
-	return DBG_NEW ModelAsset(InAssetName, InAssetPath);
+	return DBG_NEW ModelAsset(InDBNameSpace, InAssetName, InAssetPath);
 }
 
-IModelCombinationAssetMutable* AssetManagerBase::CreateEmptyModelCombinationAsset(SS::SHasherW InAssetName,
+IModelCombinationAssetMutable* AssetManagerBase::CreateEmptyModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName,
 	SS::SHasherW InAssetPath, int32 ReservedChildCnt)
 {
-	return DBG_NEW ModelCombinationAsset(InAssetName, InAssetPath, ReservedChildCnt);
+	return DBG_NEW ModelCombinationAsset(InDBNameSpace, InAssetName, InAssetPath, ReservedChildCnt);
 }
 
-IMaterialAssetMutable* AssetManagerBase::CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+IMaterialAssetMutable* AssetManagerBase::CreateEmptyMaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
-	return DBG_NEW MaterialAsset(InAssetName, InAssetPath);
+	return DBG_NEW MaterialAsset(InDBNameSpace, InAssetName, InAssetPath);
 }
 
-IRenderAnimAssetMutable* AssetManagerBase::CreateEmptyRenderAnimAsset(SS::SHasherW InAssetName,
+IRenderAnimAssetMutable* AssetManagerBase::CreateEmptyRenderAnimAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName,
 	SS::SHasherW InAssetPath)
 {
-	return DBG_NEW RenderAnimAsset(InAssetName, InAssetPath);
+	return DBG_NEW RenderAnimAsset(InDBNameSpace, InAssetName, InAssetPath);
 }
 
 

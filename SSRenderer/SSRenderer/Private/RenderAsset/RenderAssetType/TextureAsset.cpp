@@ -5,8 +5,9 @@
 #include "SSRenderer/Private/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 
-TextureAsset::TextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
+TextureAsset::TextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
 {
+	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
 	_Type = InType;

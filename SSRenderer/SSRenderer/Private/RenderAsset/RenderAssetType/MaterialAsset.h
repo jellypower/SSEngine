@@ -9,7 +9,7 @@ private:
 	SS::PooledList<ITextureAsset*, SS::InlineAllocator<8>> _ReferencingTextures;
 
 public:
-	MaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
+	MaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
 	virtual ~MaterialAsset();
 
 public:

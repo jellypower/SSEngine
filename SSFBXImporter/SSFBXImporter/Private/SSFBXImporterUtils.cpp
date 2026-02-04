@@ -311,7 +311,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
 	
-	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
+	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(L"__FBX_IMPORT__", NewAssetName, InAssetPath);
 	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
 
 	// - Load num
@@ -572,7 +572,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 
 
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
-	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
+	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(L"__FBX_IMPORT__", NewAssetName, InAssetPath);
 	MeshRawDataSkinned* NewSkinnedMeshRawData = DBG_NEW MeshRawDataSkinned();
 
 	// 1. Load num

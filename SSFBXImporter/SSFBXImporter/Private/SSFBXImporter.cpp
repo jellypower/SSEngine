@@ -190,7 +190,7 @@ void SSFBXImporter::GenerateImportedMaterialAssets()
 
 		OriginalMtlNodeName = Utf16Buffer;
 		SS::SHasherW MtlAssetName = _AssetManagerToImportAsset->GenerateAssetName(wsBoundFileName, OriginalMtlNodeName, EAssetType::Material);
-		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(MtlAssetName, _boundFileName);
+		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(L"__FBX_IMPORT__", MtlAssetName, _boundFileName);
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();
 
 
@@ -319,7 +319,7 @@ void SSFBXImporter::GenerateImportedMdlcAsset()
 
 	
 	IModelCombinationAssetMutable* newMdlcAsset = 
-		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt + 1);
+		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(L"__FBX_IMPORT__", assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt + 1);
 	AssetPlacementReference RootAssetPlacement;
 	RootAssetPlacement.ParentIdx = INVALID_IDX;
 	RootAssetPlacement.PlacementName = L"root";
@@ -408,7 +408,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 				_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NodeNameString, EAssetType::Model);
 
 			
-			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(NewModelAssetName, _boundFileName);
+			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(L"__FBX_IMPORT__", NewModelAssetName, _boundFileName);
 			SS_ASSERT(newMeshAsset);
 			newModel->SetMesh(newMeshAsset);
 
@@ -519,7 +519,7 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 		IModelCombinationAsset* OriginalMdlcAsset = FindImportedAssetByName<IModelCombinationAsset>(OriginalMdlcAssetName.C_Str());
 		int ChildCnt = OriginalMdlcAsset->GetChildCnt();
 
-		IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(NewRenderAnimName, _boundFileName);
+		IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(L"__FBX_IMPORT__", NewRenderAnimName, _boundFileName);
 
 		// ========================================================================================================================
 		FbxTakeInfo* takeInfo = _currentScene->GetTakeInfo(fCurAnimStackName);

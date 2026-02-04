@@ -6,7 +6,7 @@
 class ModelAsset : public IModelAssetMutable
 {
 public:
-	ModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
+	ModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
 
 public:
 	EAssetType GetAssetType() const override;
