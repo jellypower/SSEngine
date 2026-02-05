@@ -4,7 +4,9 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
 
 AssetDBLoader::AssetDBLoader()
@@ -38,6 +40,8 @@ bool AssetDBLoader::StartLoadDB(const utf16* inFilePath)
 	bool bResult = LoadAllTexDB();
 	SS_ASSERT(bResult);
 
+	bResult = LoadAllMtlDB();
+	SS_ASSERT(bResult);
 
 	return true;
 }
@@ -63,6 +67,26 @@ void AssetDBLoader::GenerateImportedAssets()
 			TexColumnItem.AssetName, TexColumnItem.AssetPath, TexColumnItem.TextureType);
 
 		_GeneratedTextures.PushBack(NewTex);
+	}
+
+	for (const AssetDBColumn_Mtl_DefaultPBR_v_0& DefaultMtlColumnItem : _LoadedDefaultMtls)
+	{
+		IMaterialAssetMutable* NewMtl = _BoundAssetManager->CreateEmptyMaterialAsset(_BoundDBNameSpace,
+			DefaultMtlColumnItem.AssetName, DefaultMtlColumnItem.AssetPath);
+
+		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR;
+		NewDefaultPBRMtlData->_BaseColorScale = DefaultMtlColumnItem._BaseColorScale;
+		NewDefaultPBRMtlData->_EmissiveScale = DefaultMtlColumnItem._EmissiveScale;
+		NewDefaultPBRMtlData->_NormalTexScale = DefaultMtlColumnItem.NormalTexScale;
+		NewDefaultPBRMtlData->_Metallic = DefaultMtlColumnItem.Metallic;
+		NewDefaultPBRMtlData->_Roughness = DefaultMtlColumnItem.Roughness;
+		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor]	= DefaultMtlColumnItem.;
+		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal]		= DefaultMtlColumnItem.;
+		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Metallic]	= DefaultMtlColumnItem.;
+		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive]	= DefaultMtlColumnItem.;
+		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion]	= DefaultMtlColumnItem.;
+
+		NewMtl->InjectRawDataXXX(NewDefaultPBRMtlData);
 	}
 }
 
