@@ -168,14 +168,15 @@ bool AssetDBLoader::LoadAllMtlDB()
 
 	while (sqlite3_step(StmtResult) == SQLITE_ROW)
 	{
+		AssetDBColumn_Mtl_DefaultPBR_v_0 NewColumn;
+
+
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
 		AssetNameStr += L"/";
 		SS::StringW AssetPathStr = _BoundFilePath.C_Str();
 		AssetPathStr += L"/";
 
-		const utf16* db_c_str = nullptr;
-
-		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
+		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
 		AssetNameStr += db_c_str;
 
 		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 1);
@@ -184,11 +185,36 @@ bool AssetDBLoader::LoadAllMtlDB()
 		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
 
 
-
-		AssetDBColumn_Mtl_DefaultPBR_v_0 NewColumn;
 		NewColumn.AssetName = AssetNameStr.C_Str();
 		NewColumn.AssetPath = AssetPathStr.C_Str();
 		NewColumn.LastUpdateTime = UpdateTime;
+
+
+		NewColumn._BaseColorScale.X = sqlite3_column_double(StmtResult, 3);
+		NewColumn._BaseColorScale.Y = sqlite3_column_double(StmtResult, 4);
+		NewColumn._BaseColorScale.Z = sqlite3_column_double(StmtResult, 5);
+		NewColumn._BaseColorScale.W = 1;
+
+		NewColumn._EmissiveScale.X = sqlite3_column_double(StmtResult, 6);
+		NewColumn._EmissiveScale.Y = sqlite3_column_double(StmtResult, 7);
+		NewColumn._EmissiveScale.Z = sqlite3_column_double(StmtResult, 8);
+		NewColumn._EmissiveScale.W = 1;
+
+		NewColumn.NormalTexScale = sqlite3_column_double(StmtResult, 9);
+		NewColumn.Metallic = sqlite3_column_double(StmtResult, 10);
+		NewColumn.Roughness = sqlite3_column_double(StmtResult, 11);
+
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 12);
+		NewColumn.Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = db_c_str;
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 13);
+		NewColumn.Textures[(int32)EDefaultPBRMatTexTypes::Normal] = db_c_str;
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 14);
+		NewColumn.Textures[(int32)EDefaultPBRMatTexTypes::Metallic] = db_c_str;
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 15);
+		NewColumn.Textures[(int32)EDefaultPBRMatTexTypes::Emissive] = db_c_str;
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 16);
+		NewColumn.Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] = db_c_str;
 
 		_LoadedDefaultMtls.PushBack(NewColumn);
 	}
