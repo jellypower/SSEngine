@@ -3,7 +3,7 @@
 
 #include "SSContentsBase/Public/AnimWorker/AnimWorkee/IAnimWorkee.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
-#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 #include "SSContentsBase/Public/ContentBase/SWorld.h"

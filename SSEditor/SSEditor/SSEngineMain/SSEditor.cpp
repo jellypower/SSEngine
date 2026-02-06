@@ -36,14 +36,13 @@
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
 
-#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
+
 
 
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
@@ -72,16 +71,8 @@ SSEditor::~SSEditor()
 
 void SSEditor::StartupEngine()
 {
-
-
 	_Renderer->StartUp();
 	g_ImGuiInitializer->StartupImGui(_Renderer);
-
-
-
-
-
-	TEMP_CreateAssets(); // CommonAssetSet을 초기화
 
 
 	{
@@ -94,10 +85,16 @@ void SSEditor::StartupEngine()
 	{
 		_AssetDBLoader = g_fpCreateAssetDBLoader();
 		_AssetDBLoader->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
-		_AssetDBLoader->StartLoadDB(L"Resource/AssetDB/EngineDefaultAssets.sqlite");
 
+		_AssetDBLoader->StartLoadDB(CRAN::DB_PATH_DEFAULT_ASSET);
 		_AssetDBLoader->GenerateImportedAssets();
 		_AssetDBLoader->RelocateImportedAssetsToAssetManager();
+		_AssetDBLoader->ClearDB();
+
+		_AssetDBLoader->StartLoadDB(L"Resource/AssetDB/ContentsAssets.sqlite");
+		_AssetDBLoader->GenerateImportedAssets();
+		_AssetDBLoader->RelocateImportedAssetsToAssetManager();
+		_AssetDBLoader->ClearDB();
 	}
 	int64 PC2 = GetPerofrmanceCounter();
 	int64 PF = GetPerformanceFrequency();
@@ -194,7 +191,7 @@ void SSEditor::StartupEngine()
 	{
 		SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");
 		SCubeMapRenderComponent* CubeMapComp = CubemapObject->CreateComponent<SCubeMapRenderComponent>(L"CubemapComponent");
-		CubeMapComp->SetCubeMapTextureAssetName("T_Skybox01.tex");
+		CubeMapComp->SetCubeMapTextureAssetName("ContentsAssets/T_Skybox01.tex");
 		SGameObjectConstructor::FinishConstructHierarchy(CubemapObject);
 		_DefaultWorld->AddToWorld(CubemapObject);
 	}
@@ -287,64 +284,6 @@ void SSEditor::CleanupEngine()
 	_Renderer->CleanUp();
 	delete _Renderer;
 	_Renderer = nullptr;
-}
-
-void SSEditor::TEMP_CreateAssets()
-{
-	IAssetManagerMutable* AssetManager = _Renderer->GetMutableAssetManager();
-	
-
-	// Texture List 구성하기
-	{
-		struct STextureAssetList
-		{
-			const utf16* TextureName;
-			const utf16* TexturePath;
-			ETextureType Type;
-		};
-
-		const STextureAssetList TextureAssetList[]
-			= {
-				{L"rp_nathan_animated_003_dif.tex", L"Resource/Texture/rp_nathan_animated_003_dif.dds", ETextureType::Texture2D},
-
-				{L"Worm_SSS_Color.tex", L"Resource/Texture/Worm_SSS_Color.dds", ETextureType::Texture2D},
-				{L"Worm_reflection.tex", L"Resource/Texture/Worm_reflection.dds", ETextureType::Texture2D},
-				{L"Worm_Bump.tex", L"Resource/Texture/Worm_Bump.dds", ETextureType::Texture2D},
-
-				{L"Teeth_SSS_Color.tex", L"Resource/Texture/Teeth_SSS_Color.dds", ETextureType::Texture2D},
-				{L"Teeth_reflection.tex", L"Resource/Texture/Teeth_reflection.dds", ETextureType::Texture2D},
-				{L"Teeth_Bump.tex", L"Resource/Texture/Teeth_Bump.dds", ETextureType::Texture2D},
-
-				{L"T_Manny_02_D.tex", L"Resource/Texture/T_Manny_02_D.DDS", ETextureType::Texture2D},
-				{L"T_Manny_01_D.tex", L"Resource/Texture/T_Manny_01_D.DDS", ETextureType::Texture2D},
-				{L"T_Manny_02_N.tex", L"Resource/Texture/T_Manny_02_N.DDS", ETextureType::Texture2D},
-				{L"T_Manny_01_N.tex", L"Resource/Texture/T_Manny_01_N.DDS", ETextureType::Texture2D},
-				{L"T_Manny_02_MSR_MSK.tex", L"Resource/Texture/T_Manny_02_MSR_MSK.DDS", ETextureType::Texture2D},
-				{L"T_Manny_01_MSR_MSK.tex", L"Resource/Texture/T_Manny_01_MSR_MSK.DDS", ETextureType::Texture2D},
-
-				{L"T_Skybox01.tex", L"Resource/Texture/T_Skybox01.dds", ETextureType::CubeMap},
-				{L"T_Skybox02.tex", L"Resource/Texture/T_Skybox02.dds", ETextureType::CubeMap},
-				{L"T_Skybox03.tex", L"Resource/Texture/T_Skybox03.dds", ETextureType::CubeMap},
-
-				{L"T_Vivian_Body_D.tex", L"Resource/Texture/T_Vivian_Body_D.dds", ETextureType::Texture2D},
-				{L"T_Vivian_Crystal_D.tex", L"Resource/Texture/T_Vivian_Crystal_D.dds", ETextureType::Texture2D},
-				{L"T_Vivian_spa_h.tex", L"Resource/Texture/T_Vivian_spa_h.dds", ETextureType::Texture2D},
-				{L"T_Vivian_Weapon_D.tex", L"Resource/Texture/T_Vivian_Weapon_D.dds", ETextureType::Texture2D},
-				{L"T_Vivian_Weapon_Metallic.tex", L"Resource/Texture/T_Vivian_Weapon_Metallic.dds", ETextureType::Texture2D},
-				{L"T_VivianHair_D.tex", L"Resource/Texture/T_VivianHair_D.dds", ETextureType::Texture2D},
-				{L"T_Vivian_Face_D.tex", L"Resource/Texture/T_Vivian_Face_D.dds", ETextureType::Texture2D},
-		};
-
-		for (int32 i=0;i<_countof(TextureAssetList);i++)
-		{
-			const utf16* NameCStr = TextureAssetList[i].TextureName;
-			const utf16* PathCStr = TextureAssetList[i].TexturePath;
-			ETextureType TexType = TextureAssetList[i].Type;
-			
-			ITextureAssetMutable* NewTex = AssetManager->CreateEmptyTextureAsset("__TEMP__", NameCStr, PathCStr, TexType);
-			AssetManager->AddToAssetPool(NewTex);
-		}
-	}
 }
 
 void SSEditor::TEMP_ProcessContents()

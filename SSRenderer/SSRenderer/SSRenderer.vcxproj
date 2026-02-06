@@ -162,7 +162,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\ModuleEntry\SSRendererFactory.cpp" />
     <ClCompile Include="Private\RenderAsset\AssetManagerBase.cpp" />
-    <ClCompile Include="Private\RenderAsset\CommonRenderAssetSet.cpp" />
+    <ClCompile Include="Private\RenderAsset\CommonRenderAsset\CommonRenderAssetSet.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MaterialAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MeshAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\ModelAsset.cpp" />
@@ -184,7 +184,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Private\RenderAsset\AssetManagerBase.h" />
-    <ClInclude Include="Private\RenderAsset\CommonRenderAssetSet.h" />
+    <ClInclude Include="Private\RenderAsset\CommonRenderAsset\CommonRenderAssetSet.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MaterialAsset.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MeshAsset.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\ModelAsset.h" />
@@ -229,7 +229,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataBase.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataDefaultPBR.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h" />
-    <ClInclude Include="Public\RenderBase\ICommonRenderAssetSet.h" />
+    <ClInclude Include="Public\RenderAsset\CommonRenderAsset\CRAN.h" />
+    <ClInclude Include="Public\RenderAsset\CommonRenderAsset\ICommonRenderAssetSet.h" />
     <ClInclude Include="Public\RenderBase\IRenderer.h" />
     <ClInclude Include="Public\RenderBase\IRenderWorld.h" />
     <ClInclude Include="Public\RenderCommon\SSRendererInlineSettings.h" />

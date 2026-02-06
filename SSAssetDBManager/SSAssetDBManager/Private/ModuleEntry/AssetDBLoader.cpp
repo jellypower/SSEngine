@@ -12,10 +12,17 @@
 AssetDBLoader::AssetDBLoader()
 {
 	_LoadedTextures.Reserve(200);
+	_LoadedDefaultMtls.Reserve(200);
 }
 
 bool AssetDBLoader::StartLoadDB(const utf16* inFilePath)
 {
+	if (_BoundFilePath.IsEmpty() == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
 	_BoundFilePath = inFilePath;
 
 	SS::StringW strBoundDBNameSpace;
@@ -40,8 +47,8 @@ bool AssetDBLoader::StartLoadDB(const utf16* inFilePath)
 	bool bResult = LoadAllTexDB();
 	SS_ASSERT(bResult);
 
-//	bResult = LoadAllMtlDB();
-//	SS_ASSERT(bResult);
+	bResult = LoadAllMtlDB();
+	SS_ASSERT(bResult);
 
 	return true;
 }
@@ -53,6 +60,9 @@ void AssetDBLoader::ClearDB()
 		sqlite3_close(_hLoadedDB);
 		_hLoadedDB = nullptr;
 	}
+
+	_LoadedTextures.Clear();
+	_LoadedDefaultMtls.Clear();
 
 	_BoundFilePath = SS::SHasherW();
 	_BoundDBNameSpace = SS::SHasherW();
@@ -87,6 +97,8 @@ void AssetDBLoader::GenerateImportedAssets()
 		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion]	= DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Occlusion];
 
 		NewMtl->InjectRawDataXXX(NewDefaultPBRMtlData);
+
+		_GeneratedMaterials.PushBack(NewMtl);
 	}
 }
 
@@ -110,6 +122,12 @@ void AssetDBLoader::RelocateImportedAssetsToAssetManager()
 		_BoundAssetManager->AddToAssetPool(TexItem);
 	}
 	_GeneratedTextures.Clear();
+
+	for (IMaterialAsset* TexItem : _GeneratedMaterials)
+	{
+		_BoundAssetManager->AddToAssetPool(TexItem);
+	}
+	_GeneratedMaterials.Clear();
 }
 
 bool AssetDBLoader::LoadAllTexDB()

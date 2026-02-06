@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 
 class CommonRenderAssetSet : public ICommonRenderAssetSet
 {

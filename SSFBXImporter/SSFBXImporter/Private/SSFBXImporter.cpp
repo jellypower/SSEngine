@@ -14,11 +14,14 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
-#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
+
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
+
 
 
 namespace SSFbxName
@@ -194,18 +197,18 @@ void SSFBXImporter::GenerateImportedMaterialAssets()
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();
 
 
-		const SS::SHasherW BlackTexName = _CommonRenderAssetSetToImport->GetTexBLACK()->GetAssetName();
-		const SS::SHasherW WhiteTexName = _CommonRenderAssetSetToImport->GetTexWHITE()->GetAssetName();
-		const SS::SHasherW EmptyNormalTexName = _CommonRenderAssetSetToImport->GetTexEMPTYNORMAL()->GetAssetName();
+		static const SS::SHasherW BlackTexName = CRAN::BLACK_TEX;
+		static const SS::SHasherW WhiteTexName = CRAN::WHITE_TEX;
+		static const SS::SHasherW EmptyNormalTexName = CRAN::EMPTYNORMAL_TEX;
 
 		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::BaseColor] = WhiteTexName;
 		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Normal] = EmptyNormalTexName;
 		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Metallic] = WhiteTexName;
-		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = BlackTexName;
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = WhiteTexName;
 		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion] = BlackTexName;
 
 		NewDefaultPBRMtlData->_BaseColorScale = {1, 1, 1, 1};
-		NewDefaultPBRMtlData->_EmissiveScale = {0, 0, 0, 0};
+		NewDefaultPBRMtlData->_EmissiveScale = {0, 0, 0, 1};
 		NewDefaultPBRMtlData->_NormalTexScale = 1;
 		NewDefaultPBRMtlData->_Metallic = 0;
 		NewDefaultPBRMtlData->_Roughness = 0;

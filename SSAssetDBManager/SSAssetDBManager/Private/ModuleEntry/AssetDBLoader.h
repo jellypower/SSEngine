@@ -2,6 +2,7 @@
 #include "SSAssetDBManager/Private/DBColumnTypes/Columns_v_0.h"
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
+class IMaterialAsset;
 class ITextureAsset;
 
 class AssetDBLoader : public IAssetDBLoader
@@ -44,5 +45,6 @@ private:
 
 private:
 	SS::PooledList<ITextureAsset*> _GeneratedTextures;
+	SS::PooledList<IMaterialAsset*> _GeneratedMaterials;
 
 };

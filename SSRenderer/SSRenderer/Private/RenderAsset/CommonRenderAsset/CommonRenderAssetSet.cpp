@@ -2,63 +2,48 @@
 
 #include "SSRenderer/Private/RendererUtil/RawDataFactory.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
+
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 
 
 void CommonRenderAssetSet::InitializeCommonAssets()
 {
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
-
-	_TexBLACK = AssetManager->FindAssetByName<ITextureAsset>(L"EngineDefaultAssets/BLACK.tex");
-	_TexEMPTY = AssetManager->FindAssetByName<ITextureAsset>(L"EngineDefaultAssets/EMPTY.tex");
-	_TexEMPTYNORMAL = AssetManager->FindAssetByName<ITextureAsset>(L"EngineDefaultAssets/EMPTYNORMAL.tex");
-	_TexWHITE = AssetManager->FindAssetByName<ITextureAsset>(L"EngineDefaultAssets/WHITE.tex");
-
-
-	_EmptyPBRMaterial = AssetManager->CreateEmptyMaterialAsset(L"__RUNTIME_CREATION__", L"EMPTY.mtl", "__INTERNAL_ASSET__");
-	MtlDataDefaultPBR* EmptyDefaultPBR = DBG_NEW MtlDataDefaultPBR();
-	EmptyDefaultPBR->_Type = EMaterialType::DefaultPBR;
-	EmptyDefaultPBR->_BaseColorScale = Vector4f::One;
-	EmptyDefaultPBR->_EmissiveScale = Vector4f::One;
-	EmptyDefaultPBR->_NormalTexScale = 1;
-	EmptyDefaultPBR->_Metallic = 0.5;
-	EmptyDefaultPBR->_Roughness = 0.5;
-	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::BaseColor] = L"EngineDefaultAssets/WHITE.tex";
-	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Normal] = L"EngineDefaultAssets/EMPTYNORMAL.tex";
-	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Metallic] = L"EngineDefaultAssets/WHITE.tex";
-	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = L"EngineDefaultAssets/BLACK.tex";
-	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion] = L"EngineDefaultAssets/BLACK.tex";
-	static_cast<IMaterialAssetMutable*>(_EmptyPBRMaterial)->InjectRawDataXXX(EmptyDefaultPBR);
-	AssetManager->AddToAssetPool(_EmptyPBRMaterial);
+	_TexBLACK = AssetManager->FindAssetByName<ITextureAsset>(CRAN::BLACK_TEX);
+	_TexEMPTY = AssetManager->FindAssetByName<ITextureAsset>(CRAN::EMPTY_TEX);
+	_TexEMPTYNORMAL = AssetManager->FindAssetByName<ITextureAsset>(CRAN::EMPTYNORMAL_TEX);
+	_TexWHITE = AssetManager->FindAssetByName<ITextureAsset>(CRAN::WHITE_TEX);
+	_EmptyPBRMaterial = AssetManager->FindAssetByName<IMaterialAsset>(CRAN::EMPTY_PBR_MTL);
 
 
-	_Cube1mMesh = AssetManager->CreateEmptyMeshAsset(L"__RUNTIME_CREATION__", L"__RUNTIME_CREATION__/Cube1m.mesh", L"__RUNTIME_CREATION__");
+	static const SS::SHasherW NS_RUNTIME_CREATION_HASHER = CRAN::NS_RUNTIME_CREATION;
+
+
+	_Cube1mMesh = AssetManager->CreateEmptyMeshAsset(NS_RUNTIME_CREATION_HASHER, CRAN::CUBE1M_MESH, NS_RUNTIME_CREATION_HASHER);
 	MeshRawDataDefault* CubeRawData = CreateCube1mRawData();
 	static_cast<IMeshAssetMutable*>(_Cube1mMesh)->InjectRawDataXXX(CubeRawData);
 	AssetManager->AddToAssetPool(_Cube1mMesh);
 
-	_Cube1mModel = AssetManager->CreateEmptyModelAsset(L"__RUNTIME_CREATION__", L"__RUNTIME_CREATION__/Cube1m.mdl", L"__RUNTIME_CREATION__");
+	_Cube1mModel = AssetManager->CreateEmptyModelAsset(NS_RUNTIME_CREATION_HASHER, CRAN::CUBE1M_MDL, NS_RUNTIME_CREATION_HASHER);
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMesh(_Cube1mMesh);
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMaterial(_EmptyPBRMaterial, 0);
 	AssetManager->AddToAssetPool(_Cube1mModel);
 
-	_Sphere1mMesh = AssetManager->CreateEmptyMeshAsset(L"__RUNTIME_CREATION__", L"__RUNTIME_CREATION__/Sphere1m.mesh", L"__RUNTIME_CREATION__");
+	_Sphere1mMesh = AssetManager->CreateEmptyMeshAsset(NS_RUNTIME_CREATION_HASHER, CRAN::SPHERE1M_MESH, NS_RUNTIME_CREATION_HASHER);
 	MeshRawDataDefault* SphereRawData = CreateSphere1mRawData(8);
 	static_cast<IMeshAssetMutable*>(_Sphere1mMesh)->InjectRawDataXXX(SphereRawData);
 	AssetManager->AddToAssetPool(_Sphere1mMesh);
 
-	_Sphere1mModel = AssetManager->CreateEmptyModelAsset(L"__RUNTIME_CREATION__", L"__RUNTIME_CREATION__/Sphere1m.mdl", L"__RUNTIME_CREATION__");
+	_Sphere1mModel = AssetManager->CreateEmptyModelAsset(NS_RUNTIME_CREATION_HASHER, CRAN::SPHERE1M_MDL, NS_RUNTIME_CREATION_HASHER);
 	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMesh(_Sphere1mMesh);
 	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMaterial(_EmptyPBRMaterial, 0);
 	AssetManager->AddToAssetPool(_Sphere1mModel);
@@ -66,7 +51,7 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 
 	AssetInstanceReferencer Referencer;
 	Referencer.Type = EAssetInstanceReferenceType::AssetName;
-	Referencer.AssetName = L"__COMMON_ASSET_REFERENCER__";
+	Referencer.AssetName = CRAN::AR_COMMON;
 	_TexEMPTY->AddAssetReference(Referencer);
 	_TexWHITE->AddAssetReference(Referencer);
 	_TexBLACK->AddAssetReference(Referencer);
@@ -84,7 +69,7 @@ void CommonRenderAssetSet::TEMP_CacheCommonAssetFromFBX()
 	_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>(L"Arrow/Arrow.mesh");
 	AssetInstanceReferencer Referencer;
 	Referencer.Type = EAssetInstanceReferenceType::AssetName;
-	Referencer.AssetName = L"__COMMON_ASSET_REFERENCER__";
+	Referencer.AssetName = CRAN::AR_COMMON;
 	_ArrowMesh->AddAssetReference(Referencer);
 }
 
@@ -92,7 +77,7 @@ void CommonRenderAssetSet::ReleaseCachedAssets()
 {
 	AssetInstanceReferencer Referencer;
 	Referencer.Type = EAssetInstanceReferenceType::AssetName;
-	Referencer.AssetName = L"__COMMON_ASSET_REFERENCER__";
+	Referencer.AssetName = CRAN::AR_COMMON;
 
 	_TexEMPTY->RemoveAssetReference(Referencer);
 	_TexWHITE->RemoveAssetReference(Referencer);

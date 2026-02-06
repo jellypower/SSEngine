@@ -44,7 +44,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
-#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
