@@ -194,104 +194,26 @@ void SSFBXImporter::GenerateImportedMaterialAssets()
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();
 
 
-		// ====================================================== Diffuse ====================================================== 
-		FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuseFactor);
-		if (prop.IsValid())
-		{
-			FbxDouble3 diffuseFactor = prop.Get<FbxDouble3>();
-			NewDefaultPBRMtlData->_BaseColorScale = Vector4f(diffuseFactor[0], diffuseFactor[1], diffuseFactor[2], 1);
-		}
-		prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
-		if (prop.IsValid())
-		{
-			const int texCnt = prop.GetSrcObjectCount();
-			if (texCnt != 0)
-			{
-				const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
-				TextureAssetPath = fbxTexture->GetFileName();
-				ExtractFileNameFromPath(TextureAssetName, TextureAssetPath.C_Str());
-				ITextureAsset* TexAssetToBind = FindImportedAssetByName<ITextureAsset>(TextureAssetName.C_Str());
+		const SS::SHasherW BlackTexName = _CommonRenderAssetSetToImport->GetTexBLACK()->GetAssetName();
+		const SS::SHasherW WhiteTexName = _CommonRenderAssetSetToImport->GetTexWHITE()->GetAssetName();
+		const SS::SHasherW EmptyNormalTexName = _CommonRenderAssetSetToImport->GetTexEMPTYNORMAL()->GetAssetName();
 
-				if (TexAssetToBind != nullptr)
-				{
-					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = TexAssetToBind;
-				}
-			}
-		}
-		if (NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] == nullptr)
-		{
-			NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] =
-				_CommonRenderAssetSetToImport->GetTexWHITE();
-		}
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::BaseColor] = WhiteTexName;
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Normal] = EmptyNormalTexName;
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Metallic] = WhiteTexName;
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = BlackTexName;
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion] = BlackTexName;
+
+		NewDefaultPBRMtlData->_BaseColorScale = {1, 1, 1, 1};
+		NewDefaultPBRMtlData->_EmissiveScale = {0, 0, 0, 0};
+		NewDefaultPBRMtlData->_NormalTexScale = 1;
+		NewDefaultPBRMtlData->_Metallic = 0;
+		NewDefaultPBRMtlData->_Roughness = 0;
 
 
-		// ====================================================== Normal ====================================================== 
-		prop = material->FindProperty(FbxSurfaceMaterial::sNormalMap);
-		if (prop.IsValid())
-		{
-			const int texCnt = prop.GetSrcObjectCount();
-			if (texCnt != 0)
-			{
-				const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
-				TextureAssetPath = fbxTexture->GetFileName();
-				ExtractFileNameFromPath(TextureAssetName, TextureAssetPath.C_Str());
-				ITextureAsset* TexAssetToBind = FindImportedAssetByName<ITextureAsset>(TextureAssetName.C_Str());
-
-				if (TexAssetToBind != nullptr)
-				{
-					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] = TexAssetToBind;
-				}
-			}
-		}
-		if (NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] == nullptr)
-		{
-			NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] =
-				_CommonRenderAssetSetToImport->GetTexEMPTYNORMAL();
-		}
-
-
-		// ====================================================== Emissive ====================================================== 
-		prop = material->FindProperty(FbxSurfaceMaterial::sEmissiveFactor);
-		if (prop.IsValid())
-		{
-			FbxDouble emissive = prop.Get<FbxDouble>();
-			NewDefaultPBRMtlData->_EmissiveScale = Vector4f(emissive, emissive, emissive, 1);
-		}
-		prop = material->FindProperty(FbxSurfaceMaterial::sEmissive);
-		if (prop.IsValid())
-		{
-			const int texCnt = prop.GetSrcObjectCount();
-			if (texCnt != 0)
-			{
-				const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
-				TextureAssetPath = fbxTexture->GetFileName();
-				ExtractFileNameFromPath(TextureAssetName, TextureAssetPath.C_Str());
-				ITextureAsset* TexAssetToBind = FindImportedAssetByName<ITextureAsset>(TextureAssetName.C_Str());
-
-				if (TexAssetToBind != nullptr)
-				{
-					NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] = TexAssetToBind;
-				}
-			}
-		}
-		if (NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] == nullptr)
-		{
-			NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] =
-				_CommonRenderAssetSetToImport->GetTexBLACK();
-		}
-
-
-		// ====================================================== Etc Textures ======================================================
-		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Metallic] =
-			_CommonRenderAssetSetToImport->GetTexWHITE();
-		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] =
-			_CommonRenderAssetSetToImport->GetTexBLACK();
-
-
-		// ====================================================== Add to pool ======================================================
 		NewMtlAsset->InjectRawDataXXX(NewDefaultPBRMtlData);
 		_ImportedAssets.PushBack(NewMtlAsset);
-		NewMtlAsset->NotifyMtlDataModified();
+		NewMtlAsset->ApplyMtlDataModify();
 
 		uint64 FbxUniqueID = material->GetUniqueID();
 		_FbxUniqueIDToMtlAsset.Add(FbxUniqueID, NewMtlAsset);

@@ -40,8 +40,8 @@ bool AssetDBLoader::StartLoadDB(const utf16* inFilePath)
 	bool bResult = LoadAllTexDB();
 	SS_ASSERT(bResult);
 
-	bResult = LoadAllMtlDB();
-	SS_ASSERT(bResult);
+//	bResult = LoadAllMtlDB();
+//	SS_ASSERT(bResult);
 
 	return true;
 }
@@ -80,11 +80,11 @@ void AssetDBLoader::GenerateImportedAssets()
 		NewDefaultPBRMtlData->_NormalTexScale = DefaultMtlColumnItem.NormalTexScale;
 		NewDefaultPBRMtlData->_Metallic = DefaultMtlColumnItem.Metallic;
 		NewDefaultPBRMtlData->_Roughness = DefaultMtlColumnItem.Roughness;
-		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor]	= DefaultMtlColumnItem.;
-		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Normal]		= DefaultMtlColumnItem.;
-		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Metallic]	= DefaultMtlColumnItem.;
-		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive]	= DefaultMtlColumnItem.;
-		NewDefaultPBRMtlData->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion]	= DefaultMtlColumnItem.;
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::BaseColor] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::BaseColor];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Normal] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Normal];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Metallic] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Metallic];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Emissive];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion]	= DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Occlusion];
 
 		NewMtl->InjectRawDataXXX(NewDefaultPBRMtlData);
 	}
@@ -169,7 +169,7 @@ bool AssetDBLoader::LoadAllTexDB()
 
 bool AssetDBLoader::LoadAllMtlDB()
 {
-	constexpr utf16 ALL_MTL_QUERY[] = L"SELECT * from Materials";
+	constexpr utf16 ALL_MTL_QUERY[] = L"SELECT * from Mtl_DefaultPBR";
 	constexpr int32 ALL_MTL_QUERY_SIZE = sizeof(ALL_MTL_QUERY);
 
 	sqlite3_stmt* StmtResult = nullptr;
@@ -204,7 +204,10 @@ bool AssetDBLoader::LoadAllMtlDB()
 		AssetNameStr += db_c_str;
 
 		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 1);
-		AssetPathStr += db_c_str;
+		if (db_c_str != nullptr)
+		{
+			AssetPathStr += db_c_str;
+		}
 
 		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
 

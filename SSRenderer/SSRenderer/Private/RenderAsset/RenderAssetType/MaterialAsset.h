@@ -17,7 +17,5 @@ public:
 	void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
 	void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
 	void ReleaseGALData() override;
-	void NotifyMtlDataModified() override;
-
-
+	void ApplyMtlDataModify() override;
 };

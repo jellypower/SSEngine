@@ -34,11 +34,11 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	EmptyDefaultPBR->_NormalTexScale = 1;
 	EmptyDefaultPBR->_Metallic = 0.5;
 	EmptyDefaultPBR->_Roughness = 0.5;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::BaseColor] = _TexWHITE;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Normal] = _TexEMPTYNORMAL;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Metallic] = _TexWHITE;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Emissive] = _TexBLACK;
-	EmptyDefaultPBR->_Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] = _TexBLACK;
+	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::BaseColor] = L"EngineDefaultAssets/WHITE.tex";
+	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Normal] = L"EngineDefaultAssets/EMPTYNORMAL.tex";
+	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Metallic] = L"EngineDefaultAssets/WHITE.tex";
+	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = L"EngineDefaultAssets/BLACK.tex";
+	EmptyDefaultPBR->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion] = L"EngineDefaultAssets/BLACK.tex";
 	static_cast<IMaterialAssetMutable*>(_EmptyPBRMaterial)->InjectRawDataXXX(EmptyDefaultPBR);
 	AssetManager->AddToAssetPool(_EmptyPBRMaterial);
 

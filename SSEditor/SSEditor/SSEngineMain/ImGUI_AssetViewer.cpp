@@ -236,25 +236,13 @@ void ImGUI_AssetViewer::ImGUI_AssetManager_Material()
 						{
 							EDefaultPBRMatTexTypes TexType = (EDefaultPBRMatTexTypes)i;
 							const char* TexTypeStr = to_string(TexType);
-							ITextureAsset* TexItem = PbrMtlData->_Textures[i];
-							SS::SHasherW EquippedTexName;
-
-							constexpr int32 BUFFER_SIZE = 256;
-							utf8 u8EquippedTexName[BUFFER_SIZE] = "EMPTY";
-							if (TexItem != nullptr)
-							{
-								EquippedTexName = TexItem->GetAssetName();
-								uint32 EquippedTexNameCStrLen = EquippedTexName.GetStrLen();
-								const utf16* EquippedTexNameCStr = EquippedTexName.C_Str();
-								UTF16StrToUtf8Str(EquippedTexNameCStr, EquippedTexNameCStrLen, u8EquippedTexName, BUFFER_SIZE);
-							}
+							SS::SHasherW EquippedTexName = PbrMtlData->_TextureAssetNames[i];
 
 
 							SS::SHasherW NewlySelectedAsset = ImGUI_ShowAssetCombo(EAssetType::Texture, TexTypeStr, EquippedTexName);
 							if (NewlySelectedAsset.IsEmpty() == false)
 							{
-								ITextureAsset* NewlySelectedTexAsset = AssetManager->FindAssetByName<ITextureAsset>(NewlySelectedAsset);
-								PbrMtlData->_Textures[i] = NewlySelectedTexAsset;
+								PbrMtlData->_TextureAssetNames[i] = NewlySelectedAsset;
 								bIsMtlEdited = true;
 							}
 						}
@@ -270,7 +258,7 @@ void ImGUI_AssetViewer::ImGUI_AssetManager_Material()
 
 			if (bIsMtlEdited)
 			{
-				MtlItem->NotifyMtlDataModified();
+				MtlItem->ApplyMtlDataModify();
 			}
 		}
 	}

@@ -41,5 +41,8 @@ struct MtlDataDefaultPBR : public MtlDataBase
 	float _NormalTexScale = 1;
 	float _Metallic = 0;
 	float _Roughness = 0;
-	ITextureAsset* _Textures[(int32)EDefaultPBRMatTexTypes::Count] = { nullptr, };
+	SS::SHasherW _TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Count];
+
+	// Cached
+	ITextureAsset* _CachedTextureRefs[(int32)EDefaultPBRMatTexTypes::Count] = {nullptr, };
 };

@@ -140,12 +140,26 @@ SS::SHasherW AssetManagerBase::GenerateAssetName(const SS::StringW& fileName, co
 	return NewAssetNameHasher;
 }
 
-IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InModelAssetName, EAssetType InAssetType) const
+IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InAssetName, EAssetType InAssetType) const
 {
+	int32 i32InAssetName = (int32)InAssetType;
+
+	if (i32InAssetName <= (int32)EAssetType::None || i32InAssetName >= (int32)EAssetType::Count)
+	{
+		SS_ASSERT(false);
+		return nullptr;
+	}
+
+	if (InAssetName.IsEmpty())
+	{
+		SS_ASSERT(false);
+		return nullptr;
+	}
+
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetMapOfType =
 		_assetHashMap[(int32)InAssetType];
 
-	IAssetBase* const* ppFoundModelAsset = AssetMapOfType.Find(InModelAssetName);
+	IAssetBase* const* ppFoundModelAsset = AssetMapOfType.Find(InAssetName);
 	if (ppFoundModelAsset == nullptr)
 	{
 		return nullptr;

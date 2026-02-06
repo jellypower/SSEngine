@@ -4,7 +4,7 @@
 class IMaterialAssetMutable : public IMaterialAsset
 {
 public:
-	virtual void NotifyMtlDataModified() = 0;
+	virtual void ApplyMtlDataModify() = 0;
 
 public:
 	MtlDataBase* GetMutableMtlData() const { return _MtlData; }

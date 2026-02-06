@@ -104,7 +104,7 @@ void DX12GALDefaultPBRMaterialAsset::SyncMtlParam()
 		CD3DX12_CPU_DESCRIPTOR_HANDLE DescHandleToCopy = _MtlTexSRVDescTableCPU;
 		DescHandleToCopy.Offset(i, DescriptorIncrementalSize);
 
-		ITextureAsset* TexItem = DefaultPbrMtlData->_Textures[i];
+		ITextureAsset* TexItem = DefaultPbrMtlData->_CachedTextureRefs[i];
 		if (TexItem == nullptr)
 		{
 			SS_ASSERT(false);
