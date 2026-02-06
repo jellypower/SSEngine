@@ -13,7 +13,6 @@ struct AssetPlacementReference
 	SS::SHasherW AssetName;
 	EMeshType MeshType = EMeshType::None;
 	int32 ParentIdx = INVALID_IDX;
-	SS::PooledList<int32> ChildIndices;
 
 	AssetPlacementReference() { }
 	AssetPlacementReference(const AssetPlacementReference& rhs) = default;
@@ -24,8 +23,6 @@ struct AssetPlacementReference
 		AssetName = rhs.AssetName;
 		MeshType = rhs.MeshType;
 		ParentIdx = rhs.ParentIdx;
-
-		ChildIndices = SS::move(rhs.ChildIndices);
 	}
 
 	bool IsEmptyPlacement() const { return AssetName.IsEmpty(); }

@@ -395,8 +395,6 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 	int32 ThisAssetPlacementIdx = MdlcAsset->GetChildCnt();
 
 	MdlcAsset->AddNewChild(NewAssetPlacementRef);
-	AssetPlacementReference& ParentAssetPlacement = MdlcAsset->GetChildAtMutable(parentReferenceIdx);
-	ParentAssetPlacement.ChildIndices.PushBack(ThisAssetPlacementIdx);
 	for (int32 i = 0; i < childCount; i++)
 	{
 		ImportCurrentFileToModelAsset_Recursion(node->GetChild(i), ThisAssetPlacementIdx, MdlcAsset);

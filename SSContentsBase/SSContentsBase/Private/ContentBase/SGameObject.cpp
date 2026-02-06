@@ -199,10 +199,10 @@ void SGameObject::SetStrongBindAncestor(SGameObject* InAncestor)
 	}
 
 	SGameObject* Parent = GetParent();
-
-	if (Parent->GetStrongBindAncestor() != InAncestor)
+	if (Parent != nullptr && // This오브젝트가 아직 Enter World하지 않고 생성되는 중간인 경우에는 Parent가 없을 수도 있음
+		Parent->GetStrongBindAncestor() != InAncestor)
 	{
-		SS_ASSERT(false);
+		SS_ASSERT(false); 
 		return;
 	}
 
