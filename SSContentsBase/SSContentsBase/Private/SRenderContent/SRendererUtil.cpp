@@ -47,8 +47,10 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 	{
 		NewGameObjRoot->SetStrongBindAncestor(NewGameObjRoot);
 		int32 ChildCnt = MdlcAsset->GetChildCnt();
-		SS::PooledList<SGameObject*> GameObjectsCreation(ChildCnt);
+		SS::PooledList<SGameObject*, SS::InlineAllocator<200>> GameObjectsCreation(ChildCnt);
 
+
+		// 오브젝트들 만들기
 		for (int32 i = 0; i < ChildCnt; i++)
 		{
 			const AssetPlacementReference& ThisAssetPlacement = MdlcAsset->GetChildAt(i);
@@ -78,6 +80,8 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 			}
 		}
 
+
+		// 부모 구성하기
 		for (int32 i = 0; i < ChildCnt; i++)
 		{
 			const AssetPlacementReference& ThisAssetPlacement = MdlcAsset->GetChildAt(i);

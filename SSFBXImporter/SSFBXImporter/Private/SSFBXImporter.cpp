@@ -244,17 +244,12 @@ void SSFBXImporter::GenerateImportedMdlcAsset()
 
 	
 	IModelCombinationAssetMutable* newMdlcAsset = 
-		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(L"__FBX_IMPORT__", assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt + 1);
-	AssetPlacementReference RootAssetPlacement;
-	RootAssetPlacement.ParentIdx = INVALID_IDX;
-	RootAssetPlacement.PlacementName = L"root";
-	RootAssetPlacement.Transform = Transform::Identity;
-	newMdlcAsset->AddNewChild(RootAssetPlacement);
+		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(L"__FBX_IMPORT__", assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt);
 
 
 	for (int32 i = 0; i < rootChildCnt; i++)
 	{
-		ImportCurrentFileToModelAsset_Recursion(rootNode->GetChild(i), MDLC_PLACEMENTREF_ROOT_IDX, newMdlcAsset);
+		ImportCurrentFileToModelAsset_Recursion(rootNode->GetChild(i), -1, newMdlcAsset);
 	}
 
 	_ImportedAssets.PushBack(newMdlcAsset);
@@ -468,7 +463,7 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 
 
 
-		for (int32 ChildIdx = 1; ChildIdx < ChildCnt; ChildIdx++)
+		for (int32 ChildIdx = 0; ChildIdx < ChildCnt; ChildIdx++)
 		{
 			const AssetPlacementReference& ChildItem = OriginalMdlcAsset->GetChildAt(ChildIdx);
 
