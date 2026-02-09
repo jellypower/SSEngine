@@ -1,4 +1,6 @@
-﻿#include "ImGUI_GameObjectDetailViewer.h"
+﻿#include "pch.h"
+
+#include "ImGUI_GameObjectDetailViewer.h"
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
@@ -12,8 +14,6 @@
 #include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 
-#include "SSEngineDefault/Public/SSEngineDefault.h"
-#include "imgui.h"
 
 void ImGUI_ShowGameObjectDetail(const SObjHashCode& PickedHashCode)
 {

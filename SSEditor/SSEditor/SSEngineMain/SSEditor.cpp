@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "SSEditor.h"
 
 #include "ImGUI_AssetViewer.h"
@@ -6,6 +8,7 @@
 
 #include "ModuleEntryScriptRunner.h"
 #include "SSImGUIInitializer.h"
+#include "EngineUtils/Win32/OpenFilePathDialogue.h"
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
 
 
@@ -32,6 +35,7 @@
 
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
+#include "SSFBXImporter/Public/FRAN.h"
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
@@ -55,6 +59,8 @@ SSEditor* g_Editor = nullptr;
 SSEditor::SSEditor(IRenderer* EngineRenderer) :
 	_hashMap_TMP(200)
 {
+	_IEDataPool.Reserve(1024 * 10);
+
 	_Renderer = EngineRenderer;
 
 	if (g_ImGuiInitializer != nullptr)
@@ -87,12 +93,14 @@ void SSEditor::StartupEngine()
 		_AssetDBLoader->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 
 		_AssetDBLoader->StartLoadDB(CRAN::DB_PATH_DEFAULT_ASSET);
-		_AssetDBLoader->GenerateImportedAssets();
+		_AssetDBLoader->LoadAllAssets();
+		_AssetDBLoader->GenerateLoadedAssets();
 		_AssetDBLoader->RelocateImportedAssetsToAssetManager();
 		_AssetDBLoader->ClearDB();
 
 		_AssetDBLoader->StartLoadDB(L"Resource/AssetDB/ContentsAssets.sqlite");
-		_AssetDBLoader->GenerateImportedAssets();
+		_AssetDBLoader->LoadAllAssets();
+		_AssetDBLoader->GenerateLoadedAssets();
 		_AssetDBLoader->RelocateImportedAssetsToAssetManager();
 		_AssetDBLoader->ClearDB();
 	}
@@ -123,7 +131,7 @@ void SSEditor::StartupEngine()
 
 	// DEBUG
 	{
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshAssetMap = 
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshAssetMap =
 			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::Mesh);
 
 		for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshAssetItemPair : MeshAssetMap)
@@ -151,7 +159,7 @@ void SSEditor::StartupEngine()
 	{
 		SGameObject* Floor = SRendererUtil::InstantiateModel(L"__RUNTIME_CREATION__/Cube1m.mdl");
 		_DefaultWorld->AddToWorld(Floor);
-		Floor->SetPosition(Vector4f(0, -0.1,0, 1));
+		Floor->SetPosition(Vector4f(0, -0.1, 0, 1));
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
 	}
 
@@ -177,7 +185,7 @@ void SSEditor::StartupEngine()
 	}
 
 	{
-		
+
 		SS::StringW BoundFileName = _FbxImporter->GetBoundFileName().C_Str();
 		BoundFileName += ".mdlc";
 
@@ -207,7 +215,7 @@ void SSEditor::StartupEngine()
 		CameraComp->SetFOVWithDegrees(60);
 		CameraComp->SetNearZ(0.01f);
 		CameraComp->SetFarZ(20.f);
-		CameraObject->SetPosition(Vector4f(0,0,-10.f,0));
+		CameraObject->SetPosition(Vector4f(0, 0, -10.f, 0));
 
 		Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));
 		CameraObject->SetRotation(StartRot);
@@ -235,6 +243,7 @@ void SSEditor::StartupEngine()
 
 void SSEditor::EnginePerFrame()
 {
+	ProcessEditorCommand();
 	TEMP_ProcessContents();
 
 	Run_g_ImGuiInitializer__OnBeginFrameImGui();
@@ -286,6 +295,97 @@ void SSEditor::CleanupEngine()
 	_Renderer = nullptr;
 }
 
+void SSEditor::ProcessEditorCommand()
+{
+	if (SSInput::GetKey(EKeyCode::KEY_Ctrl))
+	{
+		if (SSInput::GetKeyDown(EKeyCode::KEY_S))
+		{
+			SS::PooledList<IAssetBase*> AssetListToSerialize;
+			IAssetManager* AM = _Renderer->GetAssetManager();
+			AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Mesh);
+
+			if (AssetListToSerialize.GetSize() == 0)
+			{
+				return;
+			}
+
+			// TEMP
+			int32 ArrowIdx = -1;
+			for (int32 i = 0; i < AssetListToSerialize.GetSize(); i++)
+			{
+				if (AssetListToSerialize[i]->GetAssetName()== L"Arrow/Arrow.mesh")
+				{
+					ArrowIdx = i;
+					break;
+				}
+			}
+
+			AssetListToSerialize.RemoveAtAndFillLast(ArrowIdx);
+			// ~TEMP
+
+			_IEDataPool.Clear();
+			AppendApakDataFromAssetList(_IEDataPool, AssetListToSerialize);
+
+			SS::StringW OutString;
+			HRESULT hr = OpenSystemPathDialogue(OutString, SPD_CREATEPATH);
+			if (FAILED(hr))
+			{
+				SS_ASSERT(false);
+				return;
+			}
+
+			FILE* hFile = nullptr;
+
+			errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"wb+");
+			if (no == 0)
+			{
+				fwrite(_IEDataPool.GetData(), 1, _IEDataPool.GetSize(), hFile);
+				fclose(hFile);
+			}
+		}
+
+		if (SSInput::GetKeyDown(EKeyCode::KEY_L))
+		{
+			SS::StringW OutString;
+			HRESULT hr = OpenSystemPathDialogue(OutString);
+			if (FAILED(hr))
+			{
+				SS_ASSERT(false);
+				return;
+			}
+
+			FILE* hFile = nullptr;
+			errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"rb");
+			if (no != 0)
+			{
+				SS_ASSERT(false);
+				return;
+			}
+
+
+			fseek(hFile, 0, SEEK_END);
+			int32 FileSize = ftell(hFile);
+
+			_IEDataPool.Clear();
+			_IEDataPool.SetSizeDirectly(FileSize);
+
+			fseek(hFile, 0, SEEK_SET);
+			size_t ReadSize = fread_s(
+				_IEDataPool.GetData(),
+				_IEDataPool.GetSize(),
+				1,
+				FileSize,
+				hFile);
+
+			SS::PooledList<IAssetBase*> CreatedAssetLists;
+			CreateAssetsFromApakData(CreatedAssetLists, _IEDataPool, OutString.C_Str(), "TEMP");
+
+			fclose(hFile);
+		}
+	}
+}
+
 void SSEditor::TEMP_ProcessContents()
 {
 	float DeltaTime = SSFrameInfo::GetDeltaTime();
@@ -295,7 +395,7 @@ void SSEditor::TEMP_ProcessContents()
 	Vector4f Up = CamGameObj->GetTransform().GetUp();
 
 	if (SSInput::GetMouse(EMouseCode::MOUSE_RIGHT)) // 카메라 움직이기
-	{	
+	{
 		constexpr float CAM_ROT_SPEED = 2;
 		constexpr float CAM_XROT_MAX = 0.9;
 
@@ -315,7 +415,7 @@ void SSEditor::TEMP_ProcessContents()
 		CamGameObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_CamXRot, TEMP_CamYRot, 0, 0)));
 
 		// 카메라 속도조절
-		float WheelDelta = SSInput::GetMouseWheelDelta(); 
+		float WheelDelta = SSInput::GetMouseWheelDelta();
 		if (WheelDelta > 0.01 || WheelDelta < -0.01)
 		{
 			TEMP_Speed += (WheelDelta * 0.005);
@@ -533,16 +633,16 @@ void SSEditor::ImGUI_FrameInfo()
 
 void SSEditor::ImGUI_DrawHierarchy()
 {
-	if (ImGui::Begin("Node Debugger")) 
+	if (ImGui::Begin("Node Debugger"))
 	{
 
-		if (ImGui::BeginChild("SceneTree", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) 
+		if (ImGui::BeginChild("SceneTree", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
 		{
 			SGameObject* RootObject = _DefaultWorld->GetWorldRootObject();
 
 			int32 ChildCnt = RootObject->GetChildCnt();
 
-			for (int i=0;i<ChildCnt;i++)
+			for (int i = 0; i < ChildCnt; i++)
 			{
 				ImGUI_DrawHierarchy_Recursion(RootObject->GetChild(i));
 			}
@@ -571,10 +671,10 @@ void SSEditor::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
 	}
 
-	if (ImGui::TreeNodeEx(u8ObjectName, 
+	if (ImGui::TreeNodeEx(u8ObjectName,
 		ImGuiTreeNodeFlags_SpanLabelWidth |
 		ImGuiTreeNodeFlags_OpenOnArrow |
-		ImGuiTreeNodeFlags_Selected | 
+		ImGuiTreeNodeFlags_Selected |
 		ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (ImGui::IsItemClicked(0))
@@ -586,7 +686,7 @@ void SSEditor::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
 		{
 			ImGUI_DrawHierarchy_Recursion(Object->GetChild(i));
 		}
-		
+
 		ImGui::TreePop();
 	}
 

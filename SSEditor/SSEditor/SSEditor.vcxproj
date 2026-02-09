@@ -106,6 +106,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\SSAssetDBManager;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,6 +129,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\SSAssetDBManager;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,20 +146,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleEntryScriptRunner.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SSBuildSettings.h" />
     <ClInclude Include="SSEngineMain\ImGUI_AssetViewer.h" />
     <ClInclude Include="SSEngineMain\ImGUI_GameObjectDetailViewer.h" />
+    <ClInclude Include="EngineUtils\Win32\OpenFilePathDialogue.h" />
+    <ClInclude Include="SSEngineMain\ImGUI_GOManager.h" />
     <ClInclude Include="SSEngineMain\SSEditor.h" />
     <ClInclude Include="SSEngineMain\SSImGUIInitializer.h" />
     <ClInclude Include="SSEngineMain\TestCodes\MeshSerializeTest.h" />
-    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModuleEntryScriptRunner.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_AssetViewer.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_GameObjectDetailViewer.cpp" />
+    <ClCompile Include="EngineUtils\Win32\OpenFilePathDialogue.cpp" />
+    <ClCompile Include="SSEngineMain\ImGUI_GOManager.cpp" />
     <ClCompile Include="SSEngineMain\SSEditor.cpp" />
     <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp" />
     <ClCompile Include="SSEngineMain\TestCodes\MeshSerializeTest.cpp" />

@@ -93,7 +93,7 @@ namespace SS {
 
 		const utf16* C_Str() const
 		{
-			return _StoredNode == nullptr ? L"" : _StoredNode->_str;
+			return _StoredNode == nullptr ? nullptr : _StoredNode->_str;
 		}
 
 		int32 GetStrLen() const

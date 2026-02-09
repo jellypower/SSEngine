@@ -1,7 +1,6 @@
 #pragma once
 #include "SObject/Public/SObjHashCode.h"
 
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
@@ -34,6 +33,7 @@ public:
 
 	void InjectImportFilePath_TMP(const utf16* inImportFilePath) { _importFileName_TMP = inImportFilePath; }
 
+	void ProcessEditorCommand();
 
 	void TEMP_ProcessContents();
 
@@ -75,10 +75,12 @@ private:
 	float TEMP_Speed = 10.f;
 
 
-
 private:
 	SS::HashMap<SS::SHasherW, SS::FixedStringW<PATH_LEN_MAX>> _hashMap_TMP;
 	SS::StringW _importFileName_TMP;
+
+	// Import Export Data Pool
+	SS::PooledList<byte> _IEDataPool;
 
 	ISSFBXImporter* _FbxImporter = nullptr;
 	IAssetDBLoader* _AssetDBLoader = nullptr;

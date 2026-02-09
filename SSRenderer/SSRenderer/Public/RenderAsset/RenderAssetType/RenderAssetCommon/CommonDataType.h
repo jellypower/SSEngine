@@ -32,19 +32,17 @@ inline const char* to_string(EAssetType e)
 }
 
 
-inline const char* GetAssetSuffix(EAssetType InAssetType)
+inline constexpr const utf16* GetAssetSuffix(EAssetType InAssetType)
 {
 	switch (InAssetType)
 	{
-	case EAssetType::Mesh: return ".mesh";
-	case EAssetType::Material: return ".mtl";
-	case EAssetType::Model: return ".mdl";
-	case EAssetType::ModelCombination: return ".mdlc";
-	case EAssetType::Texture: return ".tex";
-	case EAssetType::RenderAnim: return ".ranim";
-		break;
+	case EAssetType::Mesh: return L".mesh";
+	case EAssetType::Material: return L".mtl";
+	case EAssetType::Model: return L".mdl";
+	case EAssetType::ModelCombination: return L".mdlc";
+	case EAssetType::Texture: return L".tex";
+	case EAssetType::RenderAnim: return L".ranim";
+		
+	default: return L".unknown";
 	}
-
-	SS_ASSERT(false);
-	return nullptr;
 }

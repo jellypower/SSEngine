@@ -14,7 +14,8 @@ public:
 	bool StartLoadDB(const utf16* inFilePath) override;
 	void ClearDB() override;
 
-	void GenerateImportedAssets() override;
+	bool LoadAllAssets() override;
+	void GenerateLoadedAssets() override;
 
 	void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet) override;
 	void ClearAssetManagerToImportAsset() override;
@@ -47,4 +48,6 @@ private:
 	SS::PooledList<ITextureAsset*> _GeneratedTextures;
 	SS::PooledList<IMaterialAsset*> _GeneratedMaterials;
 
+private:
+	SS::PooledList<utf16, SS::InlineAllocator<256>> _StringWorkTable;
 };

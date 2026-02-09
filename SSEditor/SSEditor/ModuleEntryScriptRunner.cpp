@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "ModuleEntryScriptRunner.h"
 
 #include "SSBuildSettings.h"

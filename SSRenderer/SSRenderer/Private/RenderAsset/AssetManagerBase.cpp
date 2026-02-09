@@ -174,3 +174,19 @@ const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetManagerBase::GetAssetMap(EAss
 {
 	return _assetHashMap[(int32)InAssetType];
 }
+
+void AssetManagerBase::FindAssetsOfNamespace(SS::PooledList<IAssetBase*>& AssetListToFill, SS::SHasherW Namespace,
+	EAssetType InAssetType) const
+{
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetMap = _assetHashMap[(int32)InAssetType];
+
+
+	for (const SS::pair<SS::SHasherW, IAssetBase*>& AssetPairItem : AssetMap)
+	{
+		IAssetBase* AssetItem = AssetPairItem.second;
+		if (AssetItem->GetDBNameSpace() == Namespace)
+		{
+			AssetListToFill.PushBack(AssetItem);
+		}
+	}
+}

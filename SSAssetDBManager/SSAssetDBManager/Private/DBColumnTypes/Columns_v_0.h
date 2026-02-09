@@ -36,6 +36,7 @@ struct AssetDBColumn_Mdl_v_0
 	SS::SHasherW AssetPath;
 	time_t LastUpdateTime;
 
+	int32 SubMeshCnt = 0;
 	SS::SHasherW MeshName;
 	SS::SHasherW MtlNames[SUBMESH_COUNT_MAX];
 };

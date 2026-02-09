@@ -1,4 +1,6 @@
-﻿#include "MeshSerializeTest.h"
+﻿#include "pch.h"
+
+#include "MeshSerializeTest.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"

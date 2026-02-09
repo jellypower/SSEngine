@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <d3d12.h>
+#include "pch.h"
 #include "imgui.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
 

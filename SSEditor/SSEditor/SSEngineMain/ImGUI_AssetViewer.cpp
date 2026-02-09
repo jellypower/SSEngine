@@ -1,4 +1,6 @@
-﻿#include "ImGUI_AssetViewer.h"
+﻿#include "pch.h"
+
+#include "ImGUI_AssetViewer.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
 
@@ -12,7 +14,6 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 
-#include "imgui.h"
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 

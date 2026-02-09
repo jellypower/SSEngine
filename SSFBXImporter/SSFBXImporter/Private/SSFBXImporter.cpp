@@ -17,12 +17,11 @@
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 
-
+#include "SSFBXImporter/Public/FRAN.h"
 
 namespace SSFbxName
 {
@@ -31,7 +30,6 @@ namespace SSFbxName
 	constexpr char Metalness[] = "metalness";
 	constexpr char EmissiveColor[] = "EmissiveColor";
 }
-	
 
 
 SSFBXImporter::SSFBXImporter() :
@@ -170,6 +168,9 @@ IAssetBase* SSFBXImporter::FindImportedAssetByName(SS::SHasherW InAssetName, EAs
 
 void SSFBXImporter::GenerateImportedMaterialAssets()
 {
+	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+
+
 	const uint32 MtlCnt = _currentScene->GetMaterialCount();
 
 	SS::StringW wsBoundFileName = _boundFileName.C_Str();
@@ -193,7 +194,7 @@ void SSFBXImporter::GenerateImportedMaterialAssets()
 
 		OriginalMtlNodeName = Utf16Buffer;
 		SS::SHasherW MtlAssetName = _AssetManagerToImportAsset->GenerateAssetName(wsBoundFileName, OriginalMtlNodeName, EAssetType::Material);
-		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(L"__FBX_IMPORT__", MtlAssetName, _boundFileName);
+		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(HASHER_FBX_IMPORT, MtlAssetName, _boundFileName);
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();
 
 
@@ -225,6 +226,8 @@ void SSFBXImporter::GenerateImportedMaterialAssets()
 
 void SSFBXImporter::GenerateImportedMdlcAsset()
 {
+	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+
 	if (_currentScene == nullptr) {
 		SS_ASSERT_MSG(false, L"No scene to load");
 		return;
@@ -244,7 +247,7 @@ void SSFBXImporter::GenerateImportedMdlcAsset()
 
 	
 	IModelCombinationAssetMutable* newMdlcAsset = 
-		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(L"__FBX_IMPORT__", assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt);
+		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(HASHER_FBX_IMPORT, assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt);
 
 
 	for (int32 i = 0; i < rootChildCnt; i++)
@@ -258,7 +261,7 @@ void SSFBXImporter::GenerateImportedMdlcAsset()
 
 void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset)
 {
-	// TODO: importer Skinning Àû¿ë 25/01/31
+	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
 
 
 	uint32 childCount = node->GetChildCount();
@@ -328,7 +331,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 				_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NodeNameString, EAssetType::Model);
 
 			
-			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(L"__FBX_IMPORT__", NewModelAssetName, _boundFileName);
+			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(HASHER_FBX_IMPORT, NewModelAssetName, _boundFileName);
 			SS_ASSERT(newMeshAsset);
 			newModel->SetMesh(newMeshAsset);
 
@@ -398,6 +401,8 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 
 void SSFBXImporter::GenerateImportedRenderAnimAssets()
 {
+	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+
 	if (_currentScene == nullptr)
 	{
 		SS_ASSERT_MSG(false, L"No scene to load");
@@ -437,7 +442,7 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 		IModelCombinationAsset* OriginalMdlcAsset = FindImportedAssetByName<IModelCombinationAsset>(OriginalMdlcAssetName.C_Str());
 		int ChildCnt = OriginalMdlcAsset->GetChildCnt();
 
-		IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(L"__FBX_IMPORT__", NewRenderAnimName, _boundFileName);
+		IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(HASHER_FBX_IMPORT, NewRenderAnimName, _boundFileName);
 
 		// ========================================================================================================================
 		FbxTakeInfo* takeInfo = _currentScene->GetTakeInfo(fCurAnimStackName);

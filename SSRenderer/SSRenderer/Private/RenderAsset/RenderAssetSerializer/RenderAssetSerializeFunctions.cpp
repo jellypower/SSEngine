@@ -4,6 +4,7 @@
 #include "SSEngineDefault/Public/CommonSerializer/DefaultTypeSerializsers.h"
 
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
 
@@ -22,7 +23,7 @@ int AppendDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefau
 	const int32 VertexDataSize = EachVertexSize * MeshDefaultData->_VertexHeader.vertexCnt;
 
 	const int32 IndexDataSize = MeshDefaultData->_VertexHeader.wholeIndexDataCnt * sizeof(uint32);
-	
+
 	const int32 StreamSizeToFill = sizeof(int32) + VertexHeaderSize + VertexDataSize + IndexDataSize;
 	// 전체 데이터 크기 = 데이터크기4byte + 헤더크기 + 버텍스버퍼크기 + 인덱스버퍼크기
 
@@ -96,7 +97,7 @@ int AppendDataFromSkinnedMeshBone(SS::PooledList<byte>& Data, const MeshRawDataS
 }
 
 
-int AppendDataFromMeshAsset(
+int32 AppendDataFromMeshAsset(
 	SS::PooledList<byte>& Data,
 	const MeshRawDataBase* MeshData)
 {
@@ -183,17 +184,18 @@ int FillMeshBoneDataWithHeader(MeshRawDataSkinned* MeshDataToFill, const SS::Poo
 		sizeof(Transform) * ReadBoneCnt,
 		Data,
 		Offset + WrittenBytes);
-	
+
 	SS_ASSERT(ReadBoneCnt == MeshDataToFill->_BoneNames.GetSize());
 	return WrittenBytes;
 }
 
-int FillMeshAssetFromData(
+int32 FillMeshAssetFromData(
 	MeshRawDataDefault*& InOutMeshRawData,
 	const SS::PooledList<byte>& Data,
 	int Offset)
 {
-	int32 WholeMeshDataSize = 0;
+	int32 OriginalOffset = Offset;
+	int32 WholeMeshDataSize = 0; // Vertex/Index + BoneStructure + (BLAS cache, etc) size
 	Offset += FillMemoryFromData(&WholeMeshDataSize, sizeof(int32), Data, Offset);
 
 	int32 VertexDataSize = 0; // VertexBuffer + IndexBuffer + Header size
@@ -215,8 +217,8 @@ int FillMeshAssetFromData(
 			RawDataToFill = DBG_NEW MeshRawDataSkinned;
 		}
 
-		InOutMeshRawData->_VertexHeader = DecodedHeader;
 		InOutMeshRawData = RawDataToFill;
+		InOutMeshRawData->_VertexHeader = DecodedHeader;
 	}
 	else
 	{
@@ -226,8 +228,8 @@ int FillMeshAssetFromData(
 			return 0;
 		}
 
-		InOutMeshRawData->_VertexHeader = DecodedHeader;
 		RawDataToFill = InOutMeshRawData;
+		InOutMeshRawData->_VertexHeader = DecodedHeader;
 	}
 
 	Offset += FillMeshVertexDataOnly(RawDataToFill, DecodedHeader, Data, Offset);
@@ -237,6 +239,225 @@ int FillMeshAssetFromData(
 		MeshRawDataSkinned* SkinnedRawData = static_cast<MeshRawDataSkinned*>(RawDataToFill);
 		Offset += FillMeshBoneDataWithHeader(SkinnedRawData, Data, Offset);
 	}
-	
+
+	int32 WrittenBytes = Offset - OriginalOffset;
+	return WrittenBytes;
+}
+
+int32 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledList<IAssetBase*>& AssetListToSerailize)
+{
+	int32 SerializeTrialCnt = AssetListToSerailize.GetSize();
+
+	SS::PooledList<IAssetBase*> SerializableAssets(SerializeTrialCnt);
+	SS::PooledList<SS::SHasherW> SerializedAssetNames(SerializeTrialCnt);
+
+	// Find Serializable Assets
+	for (IAssetBase* AssetItem : AssetListToSerailize)
+	{
+		EAssetType AssetItemType = AssetItem->GetAssetType();
+		if (AssetItemType != EAssetType::Mesh)
+		{
+			SS_ASSERT(false);
+			continue;
+		}
+
+		SerializableAssets.PushBack(AssetItem);
+		SerializedAssetNames.PushBack(AssetItem->GetAssetName());
+	}
+
+	// Start Serialize
+	int32 OriginalDataSize = Data.GetSize();
+	int32 Offset = OriginalDataSize;
+	Offset += AppendData(Data, &Offset, sizeof(int32));
+
+	// 직렬화된 "개수"가 몇개인지 적어주는 기능 만들기
+	int32 SerializableAssetCnt = SerializableAssets.GetSize();
+	Offset += AppendData(Data, &SerializableAssetCnt, sizeof(int32));
+
+
+	// Serialize AssetNameTable
+	Offset += AppendDataFromHashers(Data, SerializedAssetNames);
+
+	// Alloc Serialize Data Chunk offset
+	struct DataChunkOffsetDesc
+	{
+		int32 Offset;
+		int32 Size;
+	};
+
+	const int32 DataChunkOffsetDescOffset = Data.GetSize();
+	int32 NewDataSize = sizeof(DataChunkOffsetDesc) * SerializableAssetCnt;
+	Data.SetSizeDirectly(DataChunkOffsetDescOffset + NewDataSize);
+	Offset += NewDataSize;
+
+
+	// Serialize Assets
+	for (int32 i = 0; i < SerializableAssetCnt; i++)
+	{
+		IAssetBase* AssetItem = SerializableAssets[i];
+		EAssetType AssetItemType = AssetItem->GetAssetType();
+
+		int32 PrevOffset = Data.GetSize();
+		int32 WrittenBytes = 0;
+
+		if (AssetItemType == EAssetType::Mesh)
+		{
+			IMeshAsset* MeshAssetItem = static_cast<IMeshAsset*>(AssetItem);
+			const MeshRawDataBase* MeshRawData = MeshAssetItem->GetMeshRawData();
+			WrittenBytes = AppendDataFromMeshAsset(Data, MeshRawData);
+		}
+		else
+		{
+			SS_ASSERT(false);
+		}
+
+		DataChunkOffsetDesc* DataChunkOffsetDescRaw = reinterpret_cast<DataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);
+		DataChunkOffsetDescRaw = DataChunkOffsetDescRaw + i;
+		DataChunkOffsetDescRaw->Offset = PrevOffset;
+		DataChunkOffsetDescRaw->Size = WrittenBytes;
+
+		Offset += WrittenBytes;
+	}
+
+	int32 TotalWrittenSize = Offset - OriginalDataSize;
+
+	void* RawData = Data.GetData();
+	DataChunkOffsetDesc* DESC_FOR_DEBUG = reinterpret_cast<DataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);
+
+	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(int32), &TotalWrittenSize, sizeof(int32));
+	return TotalWrittenSize;
+}
+
+int32 CreateAssetsFromApakData(
+	SS::PooledList<IAssetBase*>& CreatedAssetList,
+	const SS::PooledList<byte>& Data,
+	SS::SHasherW ApakAssetPath,
+	SS::SHasherW AssetNamespace,
+	int Offset)
+{
+	const int32 OriginalOffset = Offset;
+
+	int32 TotalDataSize;
+	Offset += FillMemoryFromData(&TotalDataSize, sizeof(int32), Data, Offset);
+
+	int32 SerializableAssetCnt;
+	Offset += FillMemoryFromData(&SerializableAssetCnt, sizeof(int32), Data, Offset);
+
+	SS::PooledList<SS::SHasherW> SerializedAssetNames(SerializableAssetCnt);
+	Offset += FillHashersFromData(SerializedAssetNames, Data, Offset);
+
+
+	// Alloc Serialize Data Chunk offset
+	struct DataChunkOffsetDesc
+	{
+		int32 Offset;
+		int32 Size;
+	};
+	SS::PooledList<DataChunkOffsetDesc> AssetOffsets;
+	AssetOffsets.SetSizeDirectly(SerializableAssetCnt);
+	const int32 AssetOffsetDataSize = SerializableAssetCnt * sizeof(DataChunkOffsetDesc);
+	Offset += FillMemoryFromData(AssetOffsets.GetData(), AssetOffsetDataSize, Data, Offset);
+
+
+	for (int32 i = 0; i < SerializableAssetCnt; i++)
+	{
+		DataChunkOffsetDesc OffsetDescItem = AssetOffsets[i];
+		SS::SHasherW AssetNameItem = SerializedAssetNames[i];
+		const EAssetType AssetTypeItem = ExtractAssetTypeFromName(AssetNameItem);
+
+		IAssetBase* NewAsset = nullptr;
+		int32 ReadBytes = 0;
+
+		const int32 ThisAssetOffset = OriginalOffset + OffsetDescItem.Offset;
+
+		if (AssetTypeItem == EAssetType::Mesh)
+		{
+			IMeshAsset* NewMeshAsset = nullptr;
+			ReadBytes = CreateMeshAssetFromData(
+				NewMeshAsset,
+				AssetNameItem,
+				ApakAssetPath,
+				AssetNamespace,
+				Data,
+				ThisAssetOffset);
+			NewAsset = NewMeshAsset;
+		}
+		else
+		{
+			SS_ASSERT_MSG(false, "TODO: Impl");
+		}
+
+		if (ReadBytes != OffsetDescItem.Size)
+		{
+			SS_ASSERT(false);
+			continue;
+		}
+
+		Offset += ReadBytes;
+		CreatedAssetList.PushBack(NewAsset);
+	}
+
 	return Offset;
+}
+
+int32 CreateMeshAssetFromData(
+	IMeshAsset*& OutMeshAsset, 
+	SS::SHasherW AssetName, 
+	SS::SHasherW AssetPath,
+	SS::SHasherW AssetNamespace,
+	const SS::PooledList<byte>& Data, 
+	int Offset)
+{
+	// 껍데기만 만들고
+	MeshAsset* NewAsset = DBG_NEW MeshAsset(AssetNamespace, AssetName, AssetPath);
+
+
+	// 실제 Raw데이터 만들어서 삽입
+	MeshRawDataDefault* CreatedDefaultData = nullptr;
+	int32 AssetSize = FillMeshAssetFromData(CreatedDefaultData, Data, Offset);
+	NewAsset->InjectRawDataXXX(CreatedDefaultData);
+
+	OutMeshAsset = NewAsset;
+	return AssetSize;
+}
+
+EAssetType ExtractAssetTypeFromName(SS::SHasherW InAssetName)
+{
+	const utf16* CStrAssetName = InAssetName.C_Str();
+	if (CStrAssetName == nullptr)
+	{
+		return EAssetType::None;
+	}
+
+	const int32 StrLen = InAssetName.GetStrLen();
+
+
+	const utf16* InExtentionStrStart = nullptr;
+	for (int32 i = StrLen - 1; i >= 0; i--)
+	{
+		if (CStrAssetName[i] == L'.')
+		{
+			InExtentionStrStart = CStrAssetName + i;
+			break;
+		}
+	}
+
+	if (InExtentionStrStart == nullptr)
+	{
+		return EAssetType::None;
+	}
+
+
+	for (int32 i = (int32)EAssetType::Mesh; i < (int32)EAssetType::Count; i++)
+	{
+		EAssetType AssetTypeItem = static_cast<EAssetType>(i);
+		const utf16* AssetSuffixItem = GetAssetSuffix(AssetTypeItem);
+
+		if (wcscmp(InExtentionStrStart, AssetSuffixItem) == 0)
+		{
+			return AssetTypeItem;
+		}
+	}
+
+	return EAssetType::None;
 }

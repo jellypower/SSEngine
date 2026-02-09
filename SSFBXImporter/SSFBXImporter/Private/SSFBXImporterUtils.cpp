@@ -5,6 +5,7 @@
 
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
+#include "SSFBXImporter/Public/FRAN.h"
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
@@ -307,12 +308,14 @@ SSSkinnedVertex ExtractSkinnedVertexWithoutSkinData(FbxMesh* fbxMesh, uint32 pol
 
 IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh, SS::SHasherW NewAssetName, const utf16* InAssetPath)
 {
+	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+
 	SS_ASSERT(fbxMesh != nullptr);
 
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
 
-	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(L"__FBX_IMPORT__", NewAssetName, InAssetPath);
+	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(HASHER_FBX_IMPORT, NewAssetName, InAssetPath);
 	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
 
 	// - Load num
@@ -563,6 +566,8 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	SS::SHasherW NewAssetName,
 	const utf16* InAssetPath)
 {
+	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+
 	if (fbxMesh == nullptr)
 	{
 		SS_INTERRUPT();
@@ -573,7 +578,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 
 
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
-	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(L"__FBX_IMPORT__", NewAssetName, InAssetPath);
+	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(HASHER_FBX_IMPORT, NewAssetName, InAssetPath);
 	MeshRawDataSkinned* NewSkinnedMeshRawData = DBG_NEW MeshRawDataSkinned();
 
 	// 1. Load num

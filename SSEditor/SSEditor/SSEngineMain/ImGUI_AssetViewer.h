@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include "imgui.h"
 
-#include "SSEngineDefault/Public/SSEngineDefault.h"
-
 
 class IRenderer;
 enum class EAssetType : int32;

@@ -13,7 +13,7 @@
 #include "SSGAL/Public/GALPostProcessContext/GALPPCDeferredShading.h"
 
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
-#include "SSRenderer/Private/RenderAsset/CommonRenderAssetSet.h"
+#include "SSRenderer/Private/RenderAsset/CommonRenderAsset/CommonRenderAssetSet.h"
 #include "SSRenderer/Private/RenderInstance/RenderCamera.h"
 #include "SSRenderer/Private/RenderInstance/RenderLightDirectional.h"
 #include "SSRenderer/Private/RenderInstance/RICubeMap.h"

@@ -11,16 +11,17 @@
 /// return when Written Byte Size.
 /// if something went wrong, return 0
 /// </returns>
-SSENGINEDEFAULT_MODULE int AppendData(
+SSENGINEDEFAULT_MODULE int32 AppendData(
 	SS::PooledList<byte>& ToData,
 	const void* From,
 	int FromDataSize);
+
 
 /// <returns>
 /// return when Written Byte Size.
 /// if something went wrong, return 0
 /// </returns>
-SSENGINEDEFAULT_MODULE int FillMemoryFromData(
+SSENGINEDEFAULT_MODULE int32 FillMemoryFromData(
 	void* Dest,
 	int CopySize,
 	const SS::PooledList<byte>& FromData,
@@ -28,20 +29,20 @@ SSENGINEDEFAULT_MODULE int FillMemoryFromData(
 
 
 
-SSENGINEDEFAULT_MODULE int AppendDataFromStrings(
+SSENGINEDEFAULT_MODULE int32 AppendDataFromStrings(
 	SS::PooledList<byte>& Data,
 	const SS::PooledList<SS::StringW>& Strings);
 
-SSENGINEDEFAULT_MODULE int FillStringFromData(
+SSENGINEDEFAULT_MODULE int32 FillStringFromData(
 	SS::PooledList<SS::StringW>& Strings,
 	const SS::PooledList<byte>& Data,
 	int Offset = 0);
 
-SSENGINEDEFAULT_MODULE int AppendDataFromHashers(
+SSENGINEDEFAULT_MODULE int32 AppendDataFromHashers(
 	SS::PooledList<byte>& Data,
 	const SS::PooledList<SS::SHasherW>& Hashers);
 
-SSENGINEDEFAULT_MODULE int FillHashersFromData(
+SSENGINEDEFAULT_MODULE int32 FillHashersFromData(
 	SS::PooledList<SS::SHasherW>& Hashers,
 	const SS::PooledList<byte>& Data,
 	int Offset = 0);

@@ -3,7 +3,7 @@
 
 
 
-int AppendData(SS::PooledList<byte>& ToData, const void* From, int FromDataSize)
+int32 AppendData(SS::PooledList<byte>& ToData, const void* From, int FromDataSize)
 {
 	const int32 OriginalSize = ToData.GetSize();
 	ToData.SetSizeDirectly(OriginalSize + FromDataSize);
@@ -23,7 +23,8 @@ int AppendData(SS::PooledList<byte>& ToData, const void* From, int FromDataSize)
 	return FromDataSize;
 }
 
-int FillMemoryFromData(
+
+int32 FillMemoryFromData(
 	void* Dest, int CopySize,
 	const SS::PooledList<byte>& FromData, int FromOffset)
 {
@@ -47,7 +48,7 @@ int FillMemoryFromData(
 	return CopySize;
 }
 
-int AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS::StringW>& Strings)
+int32 AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS::StringW>& Strings)
 {
 	int32 TotalStrLen = 0;
 	for (const SS::StringW& StringItem : Strings)
@@ -80,7 +81,7 @@ int AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS::S
 	return ByteCursor;
 }
 
-int FillStringFromData(SS::PooledList<SS::StringW>& Strings, const SS::PooledList<byte>& Data, int Offset)
+int32 FillStringFromData(SS::PooledList<SS::StringW>& Strings, const SS::PooledList<byte>& Data, int Offset)
 {
 	Strings.Clear();
 
@@ -114,7 +115,7 @@ int FillStringFromData(SS::PooledList<SS::StringW>& Strings, const SS::PooledLis
 	return ReadDataSize;
 }
 
-int AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS::SHasherW>& Hashers)
+int32 AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS::SHasherW>& Hashers)
 {
 	int32 TotalStrLen = 0;
 	for (SS::SHasherW HasherItem : Hashers)
@@ -148,7 +149,7 @@ int AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS::S
 	return ByteCursor;
 }
 
-int FillHashersFromData(SS::PooledList<SS::SHasherW>& Hashers, const SS::PooledList<byte>& Data, int Offset)
+int32 FillHashersFromData(SS::PooledList<SS::SHasherW>& Hashers, const SS::PooledList<byte>& Data, int Offset)
 {
 	Hashers.Clear();
 
