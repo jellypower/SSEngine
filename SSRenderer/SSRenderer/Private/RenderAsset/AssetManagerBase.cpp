@@ -41,6 +41,7 @@ void AssetManagerBase::AddToAssetPool(IAssetBase* newAsset)
 	}
 
 	AssetMapOfType.Add(newAsset->GetAssetName(), newAsset);
+	newAsset->BindAssetManager(this);
 }
 
 void AssetManagerBase::ReleaseAllAssets()
@@ -168,6 +169,34 @@ IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InAssetName, EAssetTy
 	IAssetBase* FoundModelAsset = *ppFoundModelAsset;
 	
 	return FoundModelAsset;
+}
+
+bool AssetManagerBase::AddAssetReferencer(SS::SHasherW InAssetName, EAssetType InAssetType,
+	const AssetInstanceReferencer& Referencer)
+{
+	IAssetBase* FoundAsset = FindAssetByName(InAssetName, InAssetType);
+	if (FoundAsset == nullptr)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	FoundAsset->AddAssetReference(Referencer);
+	return true;
+}
+
+bool AssetManagerBase::RemoveAssetReferencer(SS::SHasherW InAssetName, EAssetType InAssetType,
+	const AssetInstanceReferencer& Referencer)
+{
+	IAssetBase* FoundAsset = FindAssetByName(InAssetName, InAssetType);
+	if (FoundAsset == nullptr)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	FoundAsset->RemoveAssetReference(Referencer);
+	return true;
 }
 
 const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetManagerBase::GetAssetMap(EAssetType InAssetType) const

@@ -135,6 +135,7 @@ int32 AppendDataFromMeshAsset(
 }
 
 
+
 int FillMeshVertexDataOnly(MeshRawDataDefault* MeshDataToFill, const MeshRawDataVertexHeader& DecodedHeader, const SS::PooledList<byte>& Data, const int Offset)
 {
 	const int32 EachVertexSize = EachVertexSizeOfType(DecodedHeader.MeshType);
@@ -189,9 +190,10 @@ int FillMeshBoneDataWithHeader(MeshRawDataSkinned* MeshDataToFill, const SS::Poo
 	return WrittenBytes;
 }
 
-int32 FillMeshAssetFromData(
-	MeshRawDataDefault*& InOutMeshRawData,
-	const SS::PooledList<byte>& Data,
+
+int32 FillMeshAssetHeaaderOnly(
+	MeshRawDataDefault*& InOutMeshRawData, 
+	const SS::PooledList<byte>& Data, 
 	int Offset)
 {
 	int32 OriginalOffset = Offset;
@@ -204,20 +206,17 @@ int32 FillMeshAssetFromData(
 	Offset += FillMemoryFromData(&DecodedHeader, sizeof(MeshRawDataVertexHeader), Data, Offset);
 
 
-
-	MeshRawDataDefault* RawDataToFill = nullptr;
 	if (InOutMeshRawData == nullptr)// Create If null
 	{
 		if (DecodedHeader.MeshType == EMeshType::Rigid)
 		{
-			RawDataToFill = DBG_NEW MeshRawDataDefault;
+			InOutMeshRawData = DBG_NEW MeshRawDataDefault;
 		}
 		else if (DecodedHeader.MeshType == EMeshType::Skinned)
 		{
-			RawDataToFill = DBG_NEW MeshRawDataSkinned;
+			InOutMeshRawData = DBG_NEW MeshRawDataSkinned;
 		}
 
-		InOutMeshRawData = RawDataToFill;
 		InOutMeshRawData->_VertexHeader = DecodedHeader;
 	}
 	else
@@ -228,15 +227,24 @@ int32 FillMeshAssetFromData(
 			return 0;
 		}
 
-		RawDataToFill = InOutMeshRawData;
 		InOutMeshRawData->_VertexHeader = DecodedHeader;
 	}
 
-	Offset += FillMeshVertexDataOnly(RawDataToFill, DecodedHeader, Data, Offset);
+	return Offset - OriginalOffset;
+}
 
-	if (DecodedHeader.MeshType == EMeshType::Skinned)
+int32 FillMeshAssetFromData(
+	MeshRawDataDefault*& InOutMeshRawData,
+	const SS::PooledList<byte>& Data,
+	int Offset)
+{
+	int32 OriginalOffset = Offset;
+	Offset += FillMeshAssetHeaaderOnly(InOutMeshRawData, Data, Offset); // Create InOutMeshRawData if null only with header
+	Offset += FillMeshVertexDataOnly(InOutMeshRawData, InOutMeshRawData->_VertexHeader, Data, Offset);
+
+	if (InOutMeshRawData->_VertexHeader.MeshType == EMeshType::Skinned)
 	{
-		MeshRawDataSkinned* SkinnedRawData = static_cast<MeshRawDataSkinned*>(RawDataToFill);
+		MeshRawDataSkinned* SkinnedRawData = static_cast<MeshRawDataSkinned*>(InOutMeshRawData);
 		Offset += FillMeshBoneDataWithHeader(SkinnedRawData, Data, Offset);
 	}
 
@@ -279,14 +287,9 @@ int32 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 	Offset += AppendDataFromHashers(Data, SerializedAssetNames);
 
 	// Alloc Serialize Data Chunk offset
-	struct DataChunkOffsetDesc
-	{
-		int32 Offset;
-		int32 Size;
-	};
 
 	const int32 DataChunkOffsetDescOffset = Data.GetSize();
-	int32 NewDataSize = sizeof(DataChunkOffsetDesc) * SerializableAssetCnt;
+	int32 NewDataSize = sizeof(ApakDataChunkOffsetDesc) * SerializableAssetCnt;
 	Data.SetSizeDirectly(DataChunkOffsetDescOffset + NewDataSize);
 	Offset += NewDataSize;
 
@@ -311,7 +314,7 @@ int32 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 			SS_ASSERT(false);
 		}
 
-		DataChunkOffsetDesc* DataChunkOffsetDescRaw = reinterpret_cast<DataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);
+		ApakDataChunkOffsetDesc* DataChunkOffsetDescRaw = reinterpret_cast<ApakDataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);
 		DataChunkOffsetDescRaw = DataChunkOffsetDescRaw + i;
 		DataChunkOffsetDescRaw->Offset = PrevOffset;
 		DataChunkOffsetDescRaw->Size = WrittenBytes;
@@ -322,7 +325,7 @@ int32 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 	int32 TotalWrittenSize = Offset - OriginalDataSize;
 
 	void* RawData = Data.GetData();
-	DataChunkOffsetDesc* DESC_FOR_DEBUG = reinterpret_cast<DataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);
+	ApakDataChunkOffsetDesc* DESC_FOR_DEBUG = reinterpret_cast<ApakDataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);
 
 	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(int32), &TotalWrittenSize, sizeof(int32));
 	return TotalWrittenSize;
@@ -347,21 +350,16 @@ int32 CreateAssetsFromApakData(
 	Offset += FillHashersFromData(SerializedAssetNames, Data, Offset);
 
 
-	// Alloc Serialize Data Chunk offset
-	struct DataChunkOffsetDesc
-	{
-		int32 Offset;
-		int32 Size;
-	};
-	SS::PooledList<DataChunkOffsetDesc> AssetOffsets;
+
+	SS::PooledList<ApakDataChunkOffsetDesc> AssetOffsets;
 	AssetOffsets.SetSizeDirectly(SerializableAssetCnt);
-	const int32 AssetOffsetDataSize = SerializableAssetCnt * sizeof(DataChunkOffsetDesc);
+	const int32 AssetOffsetDataSize = SerializableAssetCnt * sizeof(ApakDataChunkOffsetDesc);
 	Offset += FillMemoryFromData(AssetOffsets.GetData(), AssetOffsetDataSize, Data, Offset);
 
 
 	for (int32 i = 0; i < SerializableAssetCnt; i++)
 	{
-		DataChunkOffsetDesc OffsetDescItem = AssetOffsets[i];
+		ApakDataChunkOffsetDesc OffsetDescItem = AssetOffsets[i];
 		SS::SHasherW AssetNameItem = SerializedAssetNames[i];
 		const EAssetType AssetTypeItem = ExtractAssetTypeFromName(AssetNameItem);
 

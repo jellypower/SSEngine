@@ -22,8 +22,15 @@ public:
 
 	virtual SS::SHasherW GenerateAssetName(const SS::StringW& fileName, const SS::StringW& nodeName, EAssetType InAssetType) const override;
 
-	virtual IAssetBase* FindAssetByName(SS::SHasherW InAssetName, EAssetType InAssetType) const override;
+
+public:
 	virtual const SS::HashMap<SS::SHasherW, IAssetBase*>& GetAssetMap(EAssetType InAssetType) const override;
 	virtual void FindAssetsOfNamespace(SS::PooledList<IAssetBase*>& AssetListToFill, SS::SHasherW Namespace, EAssetType InAssetType) const override;
+
+	virtual IAssetBase* FindAssetByName(SS::SHasherW InAssetName, EAssetType InAssetType) const override;
+
+public:
+	virtual bool AddAssetReferencer(SS::SHasherW InAssetName, EAssetType InAssetType, const AssetInstanceReferencer& Referencer) override;
+	virtual bool RemoveAssetReferencer(SS::SHasherW InAssetName, EAssetType InAssetType, const AssetInstanceReferencer& Referencer) override;
 	
 };

@@ -79,6 +79,11 @@ void RenderAnimAsset::RemoveAssetReference(const AssetInstanceReferencer& Refere
 	// TODO: 나중에 라이프사이클 추가하기
 }
 
+void RenderAnimAsset::BindAssetManager(IAssetManager* InAssetManager)
+{
+	_BoundAssetManager = InAssetManager;
+}
+
 RenderAnimRawData* RenderAnimAsset::GetMutableRawData()
 {
 	return _AnimRawData;

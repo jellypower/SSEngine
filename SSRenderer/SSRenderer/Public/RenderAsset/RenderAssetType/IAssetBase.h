@@ -5,6 +5,8 @@
 
 #include <ctime>
 
+class IAssetManager;
+
 enum class EAssetInstanceReferenceType : uint8
 {
 	None,
@@ -63,6 +65,8 @@ protected:
 	SS::SHasherW _assetPath;
 	time_t _LastUpdateTime = 0;
 
+	IAssetManager* _BoundAssetManager = nullptr;
+
 	SS::PooledList<AssetInstanceReferencer> _AssetInstanceReferencers;
 
 
@@ -86,6 +90,8 @@ public:
 
 	virtual void AddAssetReference(const AssetInstanceReferencer& Referencer) = 0;
 	virtual void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) = 0;
+
+	virtual void BindAssetManager(IAssetManager* InAssetManager) = 0;
 
 	//TODO: virtual void Serialize() = 0;
 };

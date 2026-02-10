@@ -13,9 +13,23 @@ class MeshRawDataDefault;
 struct MeshRawDataBase;
 
 
+// Alloc Serialize Data Chunk offset
+struct ApakDataChunkOffsetDesc
+{
+	int32 Offset;
+	int32 Size;
+};
+
+
 SSRENDERER_MODULE int32 AppendDataFromMeshAsset(
 	SS::PooledList<byte>& Data,
 	const MeshRawDataBase* MeshData);
+
+
+SSRENDERER_MODULE int32 FillMeshAssetHeaaderOnly(
+	MeshRawDataDefault*& InOutMeshRawData,
+	const SS::PooledList<byte>& Data,
+	int Offset = 0);
 
 SSRENDERER_MODULE int32 FillMeshAssetFromData(
 	MeshRawDataDefault*& InOutMeshRawData,
@@ -26,6 +40,8 @@ SSRENDERER_MODULE int32 FillMeshAssetFromData(
 SSRENDERER_MODULE int32 AppendApakDataFromAssetList(
 	SS::PooledList<byte>& Data,
 	const SS::PooledList<IAssetBase*>& AssetListToSerailize);
+
+
 
 SSRENDERER_MODULE int32 CreateAssetsFromApakData(
 	SS::PooledList<IAssetBase*>& CreatedAssetList,

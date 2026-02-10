@@ -31,14 +31,13 @@ void ModelCombinationAsset::AddAssetReference(const AssetInstanceReferencer& Ref
 	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
 	_AssetInstanceReferencers.PushBack(Referencer);
 
-	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 
 	if (PrevReferencerCnt == 0)
 	{
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
 		for (const AssetPlacementReference& ChildItem: _childs)
 		{
-			IModelAsset* ModelAssetItem = AssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
+			IModelAsset* ModelAssetItem = _BoundAssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
 			ModelAssetItem->AddAssetReference(ThisAssetReferencer);
 		}
 	}
@@ -69,15 +68,19 @@ void ModelCombinationAsset::RemoveAssetReference(const AssetInstanceReferencer& 
 	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
 	if (ReferencerCnt == 0)
 	{
-		IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
 
 		for (const AssetPlacementReference& ChildItem : _childs)
 		{
-			IModelAsset* ModelAssetItem = AssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
+			IModelAsset* ModelAssetItem = _BoundAssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
 			ModelAssetItem->RemoveAssetReference(ThisAssetReferencer);
 		}
 	}
+}
+
+void ModelCombinationAsset::BindAssetManager(IAssetManager* InAssetManager)
+{
+	_BoundAssetManager = InAssetManager;
 }
 
 void ModelCombinationAsset::AddNewChild(const AssetPlacementReference& newReference)

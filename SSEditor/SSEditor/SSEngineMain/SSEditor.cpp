@@ -93,15 +93,15 @@ void SSEditor::StartupEngine()
 		_AssetDBLoader->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 
 		_AssetDBLoader->StartLoadDB(CRAN::DB_PATH_DEFAULT_ASSET);
-		_AssetDBLoader->LoadAllAssets();
+		_AssetDBLoader->LoadAllAssetDataFromDB();
 		_AssetDBLoader->GenerateLoadedAssets();
-		_AssetDBLoader->RelocateImportedAssetsToAssetManager();
+		_AssetDBLoader->RelocateGeneratedAssetsToAssetManager();
 		_AssetDBLoader->ClearDB();
 
 		_AssetDBLoader->StartLoadDB(L"Resource/AssetDB/ContentsAssets.sqlite");
-		_AssetDBLoader->LoadAllAssets();
+		_AssetDBLoader->LoadAllAssetDataFromDB();
 		_AssetDBLoader->GenerateLoadedAssets();
-		_AssetDBLoader->RelocateImportedAssetsToAssetManager();
+		_AssetDBLoader->RelocateGeneratedAssetsToAssetManager();
 		_AssetDBLoader->ClearDB();
 	}
 	int64 PC2 = GetPerofrmanceCounter();

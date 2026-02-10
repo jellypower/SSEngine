@@ -9,10 +9,13 @@ public:
 	ModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt);
 
 public:
-	EAssetType GetAssetType() const override;
+	virtual EAssetType GetAssetType() const override;
 
-	void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
-	void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
+public:
+	virtual void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
+	virtual void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
+	virtual void BindAssetManager(IAssetManager* InAssetManager) override;
 
-	void AddNewChild(const AssetPlacementReference& newReference) override;
+public:
+	virtual void AddNewChild(const AssetPlacementReference& newReference) override;
 };

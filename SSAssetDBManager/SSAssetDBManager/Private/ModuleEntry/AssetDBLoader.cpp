@@ -5,6 +5,7 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
@@ -63,7 +64,7 @@ void AssetDBLoader::ClearDB()
 	_bIsEngineDefaultAssetDB = false;
 }
 
-bool AssetDBLoader::LoadAllAssets()
+bool AssetDBLoader::LoadAllAssetDataFromDB()
 {
 	bool bResult = LoadAllTexDB();
 	if (bResult == false)
@@ -113,6 +114,20 @@ void AssetDBLoader::GenerateLoadedAssets()
 
 		_GeneratedMaterials.PushBack(NewMtl);
 	}
+
+	for (const AssetDBColumn_Mdl_v_0& MdlRowItem : _LoadedMdls)
+	{
+		IModelAssetMutable* NewMdl = _BoundAssetManager->CreateEmptyModelAsset(
+			_BoundDBNameSpace,MdlRowItem.AssetName, MdlRowItem.AssetPath);
+
+	}
+}
+
+void AssetDBLoader::ClearLoadedAssetData()
+{
+	_LoadedTextures.Clear();
+	_LoadedMdls.Clear();
+	_LoadedDefaultMtls.Clear();
 }
 
 void AssetDBLoader::BindAssetManagerToImportAsset(
@@ -128,7 +143,7 @@ void AssetDBLoader::ClearAssetManagerToImportAsset()
 
 }
 
-void AssetDBLoader::RelocateImportedAssetsToAssetManager()
+void AssetDBLoader::RelocateGeneratedAssetsToAssetManager()
 {
 	for (ITextureAsset* TexItem : _GeneratedTextures)
 	{
@@ -145,8 +160,8 @@ void AssetDBLoader::RelocateImportedAssetsToAssetManager()
 
 bool AssetDBLoader::LoadAllTexDB()
 {
-	constexpr utf16 ALL_TEXTURE_QUEERY[] = L"SELECT * from Textures";
-	constexpr int32 ALL_TEXTURE_QUEERY_SIZE = sizeof(ALL_TEXTURE_QUEERY);
+	constexpr utf16 ALL_TEXTURE_QUERRY[] = L"SELECT * from Textures";
+	constexpr int32 ALL_TEXTURE_QUERRY_SIZE = sizeof(ALL_TEXTURE_QUERRY);
 
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
@@ -154,8 +169,8 @@ bool AssetDBLoader::LoadAllTexDB()
 
 	int Result = sqlite3_prepare16_v3(
 		_hLoadedDB,
-		ALL_TEXTURE_QUEERY,
-		ALL_TEXTURE_QUEERY_SIZE,
+		ALL_TEXTURE_QUERRY,
+		ALL_TEXTURE_QUERRY_SIZE,
 		SQLITE_OPEN_READONLY,
 		&StmtResult,
 		&__Temp);
@@ -340,6 +355,7 @@ bool AssetDBLoader::LoadAllMdls()
 		int32 SubmeshIdx = 0;
 		
 
+		_StringWorkTable.Clear();
 		utf16 ThisChar = L'\0';
 		do
 		{

@@ -14,13 +14,18 @@ public:
 	bool StartLoadDB(const utf16* inFilePath) override;
 	void ClearDB() override;
 
-	bool LoadAllAssets() override;
-	void GenerateLoadedAssets() override;
+
 
 	void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet) override;
 	void ClearAssetManagerToImportAsset() override;
 
-	void RelocateImportedAssetsToAssetManager() override;
+
+public:
+	virtual bool LoadAllAssetDataFromDB() override;
+	virtual void GenerateLoadedAssets() override;
+	virtual void ClearLoadedAssetData() override;
+	virtual void RelocateGeneratedAssetsToAssetManager() override;
+
 
 private:
 	bool LoadAllTexDB();

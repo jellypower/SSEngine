@@ -109,6 +109,11 @@ void MeshAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerNa
 
 }
 
+void MeshAsset::BindAssetManager(IAssetManager* InAssetManager)
+{
+	_BoundAssetManager = InAssetManager;
+}
+
 void MeshAsset::ReleaseSystemData()
 {
 	_MeshRawData->ReleaseData();

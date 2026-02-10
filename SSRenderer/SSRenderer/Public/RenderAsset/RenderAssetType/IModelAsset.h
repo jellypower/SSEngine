@@ -11,14 +11,10 @@ class IModelAsset : public IAssetBase
 public:
 	static const EAssetType ThisAssetType = EAssetType::Model;
 
-protected:
-	IMeshAsset* _MeshAsset = nullptr;
-	IMaterialAsset* _MaterialAssets[SUBMESH_COUNT_MAX] = { nullptr, };
-
-
 public:
-	IMeshAsset* GetMeshAsset() const { return _MeshAsset; }
-	IMaterialAsset* GetMaterialAsset(int32 materialIdx) const { return _MaterialAssets[materialIdx]; }
-
+	virtual IMeshAsset* GetMeshAsset() const = 0;
+	virtual IMaterialAsset* GetMaterialAsset(int32 materialIdx) const = 0;
+	virtual SS::SHasherW GetMeshAssetName() const = 0;
+	virtual SS::SHasherW GetMaterialAssetName(int32 materialIdx) const = 0;
 	virtual int32 GetSubMeshCnt() const = 0;
 };

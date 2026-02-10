@@ -66,6 +66,11 @@ void TextureAsset::RemoveAssetReference(const AssetInstanceReferencer& Reference
 	}
 }
 
+void TextureAsset::BindAssetManager(IAssetManager* InAssetManager)
+{
+	_BoundAssetManager = InAssetManager;
+}
+
 void TextureAsset::ReleaseGALData()
 {
 	delete _GALTextureAsset;

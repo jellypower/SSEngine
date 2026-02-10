@@ -304,15 +304,7 @@ void ImGUI_AssetViewer::ImGUI_AssetManager_Model()
 					SS::SHasherW NewlySelectedMesh = ImGUI_ShowAssetCombo(EAssetType::Mesh, "Mesh", SelectedMeshName);
 					if (NewlySelectedMesh.IsEmpty() == false)
 					{
-						IMeshAsset* NewlySelectedMeshAsset = AssetManager->FindAssetByName<IMeshAsset>(NewlySelectedMesh);
-						if (NewlySelectedMeshAsset != nullptr)
-						{
-							ModelItem->SetMesh(NewlySelectedMeshAsset);
-						}
-						else
-						{
-							SS_ASSERT(false);
-						}
+						ModelItem->SetMesh(NewlySelectedMesh);
 					}
 				}
 
@@ -334,15 +326,7 @@ void ImGUI_AssetViewer::ImGUI_AssetManager_Model()
 					SS::SHasherW NewlySelectedMtl = ImGUI_ShowAssetCombo(EAssetType::Material, MtlHeader, SelectedMtlName);
 					if (NewlySelectedMtl.IsEmpty() == false)
 					{
-						IMaterialAsset* NewlySelectMtl = AssetManager->FindAssetByName<IMaterialAsset>(NewlySelectedMtl);
-						if (NewlySelectMtl != nullptr)
-						{
-							ModelItem->SetMaterial(NewlySelectMtl, MtlIdx);
-						}
-						else
-						{
-							SS_ASSERT(false);
-						}
+						ModelItem->SetMaterial(NewlySelectedMtl, MtlIdx);
 					}
 				}
 			}

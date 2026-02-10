@@ -262,6 +262,7 @@ void SSFBXImporter::GenerateImportedMdlcAsset()
 void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset)
 {
 	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+	static const SS::SHasherW NAME_EMPTY_PBR_MTL = CRAN::EMPTY_PBR_MTL;
 
 
 	uint32 childCount = node->GetChildCount();
@@ -333,7 +334,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			
 			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(HASHER_FBX_IMPORT, NewModelAssetName, _boundFileName);
 			SS_ASSERT(newMeshAsset);
-			newModel->SetMesh(newMeshAsset);
+			newModel->SetMesh(NewMeshName);
 
 
 			SS::StringW tempAssetName;
@@ -349,17 +350,18 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 				if (ppFoundMtl == nullptr)
 				{
 					SS_ASSERT(false);
-					newModel->SetMaterial(_CommonRenderAssetSetToImport->GetEmptyPBRMaterial(), i);
+					newModel->SetMaterial(NAME_EMPTY_PBR_MTL, i);
 				}
 				else
 				{
-					newModel->SetMaterial(*ppFoundMtl, i);
+					IMaterialAsset* FoundMtl = *ppFoundMtl;
+					newModel->SetMaterial(FoundMtl->GetAssetName(), i);
 				}
 			}
 
 			if (matCnt == 0)
 			{
-				newModel->SetMaterial(_CommonRenderAssetSetToImport->GetEmptyPBRMaterial(), 0);
+				newModel->SetMaterial(NAME_EMPTY_PBR_MTL, 0);
 			}
 
 

@@ -15,9 +15,11 @@ public:
 	const IModelCombinationAsset* GetOriginalMdlcAsset() const override;
 
 public:
-	void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
-	void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
+	virtual void AddAssetReference(const AssetInstanceReferencer& Referencer) override;
+	virtual void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) override;
+	virtual void BindAssetManager(IAssetManager* InAssetManager) override;
 
+public:
 	RenderAnimRawData* GetMutableRawData() override;
 	void InjectRawDataXXX(RenderAnimRawData* InRenderAnimData) override;
 	void SetOriginMdlcAsset(IModelCombinationAsset* InMdlcAsset) override;
