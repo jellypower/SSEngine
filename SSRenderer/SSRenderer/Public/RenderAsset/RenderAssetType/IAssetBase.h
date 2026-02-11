@@ -82,6 +82,8 @@ public:
 	SS::SHasherW GetDBNameSpace() const { return _DBNameSpace; }
 	SS::SHasherW GetAssetName() const { return _assetName; }
 	SS::SHasherW GetAssetPath() const { return _assetPath; }
+	time_t GetLastUpdateTime() const { return _LastUpdateTime; }
+
 	int32 GetAssetInstanceReferenceCnt() const { return _AssetInstanceReferencers.GetSize(); }
 
 

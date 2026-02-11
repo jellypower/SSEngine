@@ -26,8 +26,8 @@ MeshAsset::~MeshAsset()
 void MeshAsset::InjectRawDataXXX(MeshRawDataBase* InRawData)
 {
 	_MeshRawData = InRawData;
-
 	_CachedMeshType = _MeshRawData->GetMeshType();
+	time(&_LastUpdateTime);
 }
 
 const MeshRawDataBase* MeshAsset::GetMeshRawData() const

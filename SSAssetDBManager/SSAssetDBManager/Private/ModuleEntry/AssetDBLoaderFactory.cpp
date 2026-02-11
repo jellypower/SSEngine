@@ -3,7 +3,7 @@
 
 #include "SSAssetDBManager/Public/ModuleEntry/AssetDBLoaderFactory.h"
 
-#include "AssetDBLoader.h"
+#include "SSAssetDBManager/Private/DBLoaders/AssetDBLoader.h"
 
 
 IHasherPool* g_HasherPool = nullptr;

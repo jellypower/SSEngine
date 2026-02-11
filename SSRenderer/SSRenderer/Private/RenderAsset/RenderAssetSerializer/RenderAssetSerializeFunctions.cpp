@@ -233,7 +233,7 @@ int32 FillMeshAssetHeaaderOnly(
 	return Offset - OriginalOffset;
 }
 
-int32 FillMeshAssetFromData(
+int32 FillMeshRawDataFromData(
 	MeshRawDataDefault*& InOutMeshRawData,
 	const SS::PooledList<byte>& Data,
 	int Offset)
@@ -412,7 +412,7 @@ int32 CreateMeshAssetFromData(
 
 	// 실제 Raw데이터 만들어서 삽입
 	MeshRawDataDefault* CreatedDefaultData = nullptr;
-	int32 AssetSize = FillMeshAssetFromData(CreatedDefaultData, Data, Offset);
+	int32 AssetSize = FillMeshRawDataFromData(CreatedDefaultData, Data, Offset);
 	NewAsset->InjectRawDataXXX(CreatedDefaultData);
 
 	OutMeshAsset = NewAsset;

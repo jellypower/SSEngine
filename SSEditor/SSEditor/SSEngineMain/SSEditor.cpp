@@ -94,15 +94,15 @@ void SSEditor::StartupEngine()
 
 		_AssetDBLoader->StartLoadDB(CRAN::DB_PATH_DEFAULT_ASSET);
 		_AssetDBLoader->LoadAllAssetDataFromDB();
-		_AssetDBLoader->GenerateLoadedAssets();
-		_AssetDBLoader->RelocateGeneratedAssetsToAssetManager();
+		_AssetDBLoader->CreateLoadedAssetInstances();
+		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
 		_AssetDBLoader->ClearDB();
 
 		_AssetDBLoader->StartLoadDB(L"Resource/AssetDB/ContentsAssets.sqlite");
 		_AssetDBLoader->LoadAllAssetDataFromDB();
-		_AssetDBLoader->GenerateLoadedAssets();
-		_AssetDBLoader->RelocateGeneratedAssetsToAssetManager();
-		_AssetDBLoader->ClearDB();
+		_AssetDBLoader->CreateLoadedAssetInstances();
+		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
+		_AssetDBLoader->ClearLoadedAssetData();
 	}
 	int64 PC2 = GetPerofrmanceCounter();
 	int64 PF = GetPerformanceFrequency();
@@ -343,6 +343,15 @@ void SSEditor::ProcessEditorCommand()
 				fwrite(_IEDataPool.GetData(), 1, _IEDataPool.GetSize(), hFile);
 				fclose(hFile);
 			}
+
+
+
+			// Save
+			AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Model);
+			_AssetDBLoader->PushAssetsToSaveToDB(AssetListToSerialize);
+			_AssetDBLoader->LoadAssetListFromAssetsToSaveToDB();
+			_AssetDBLoader->ClearAssetsToSaveToDB();
+			_AssetDBLoader->SaveLoadedAssetsToDB();
 		}
 
 		if (SSInput::GetKeyDown(EKeyCode::KEY_L))

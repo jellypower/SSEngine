@@ -2,6 +2,7 @@
 
 #include "AssetDBLoader.h"
 
+#include "SSAssetDBManager/Private/DBColumnTypes/DBRowUtils.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
@@ -9,11 +10,15 @@
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
+#include "DBQueries.h"
 
 AssetDBLoader::AssetDBLoader()
 {
-	_LoadedTextures.Reserve(200);
-	_LoadedDefaultMtls.Reserve(200);
+	_LoadedTextures.Reserve(128);
+	_LoadedMeshes.Reserve(128);
+	_LoadedDefaultMtls.Reserve(128);
+	_LoadedMdls.Reserve(128);
+	_LoadedMdlcs.Reserve(128);
 }
 
 bool AssetDBLoader::StartLoadDB(const utf16* inFilePath)
@@ -56,8 +61,7 @@ void AssetDBLoader::ClearDB()
 		_hLoadedDB = nullptr;
 	}
 
-	_LoadedTextures.Clear();
-	_LoadedDefaultMtls.Clear();
+	ClearLoadedAssetData();
 
 	_BoundFilePath = SS::SHasherW();
 	_BoundDBNameSpace = SS::SHasherW();
@@ -66,14 +70,35 @@ void AssetDBLoader::ClearDB()
 
 bool AssetDBLoader::LoadAllAssetDataFromDB()
 {
-	bool bResult = LoadAllTexDB();
+	bool bResult = LoadAllLoadedTex();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
 		return false;
 	}
 
-	bResult = LoadAllMtlDB();
+	bResult = LoadAllLoadedMeshes();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	bResult = LoadAllLoadedMtl();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	bResult = LoadAllLoadedMdls();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	bResult = LoadAllLoadedMdlcs();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
@@ -83,17 +108,17 @@ bool AssetDBLoader::LoadAllAssetDataFromDB()
 	return true;
 }
 
-void AssetDBLoader::GenerateLoadedAssets()
+void AssetDBLoader::CreateLoadedAssetInstances()
 {
-	for (const AssetDBColumn_Tex_v_0& TexColumnItem : _LoadedTextures)
+	for (const AssetDBRow_Tex_v_0& TexColumnItem : _LoadedTextures)
 	{
-		ITextureAssetMutable* NewTex = _BoundAssetManager->CreateEmptyTextureAsset(_BoundDBNameSpace, 
+		ITextureAssetMutable* NewTex = _BoundAssetManager->CreateEmptyTextureAsset(_BoundDBNameSpace,
 			TexColumnItem.AssetName, TexColumnItem.AssetPath, TexColumnItem.TextureType);
 
 		_GeneratedTextures.PushBack(NewTex);
 	}
 
-	for (const AssetDBColumn_Mtl_DefaultPBR_v_0& DefaultMtlColumnItem : _LoadedDefaultMtls)
+	for (const AssetDBRow_Mtl_DefaultPBR_v_0& DefaultMtlColumnItem : _LoadedDefaultMtls)
 	{
 		IMaterialAssetMutable* NewMtl = _BoundAssetManager->CreateEmptyMaterialAsset(_BoundDBNameSpace,
 			DefaultMtlColumnItem.AssetName, DefaultMtlColumnItem.AssetPath);
@@ -108,26 +133,27 @@ void AssetDBLoader::GenerateLoadedAssets()
 		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Normal] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Normal];
 		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Metallic] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Metallic];
 		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Emissive];
-		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion]	= DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Occlusion];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Occlusion];
 
 		NewMtl->InjectRawDataXXX(NewDefaultPBRMtlData);
 
 		_GeneratedMaterials.PushBack(NewMtl);
 	}
 
-	for (const AssetDBColumn_Mdl_v_0& MdlRowItem : _LoadedMdls)
+	for (const AssetDBRow_Mdl_v_0& MdlRowItem : _LoadedMdls)
 	{
 		IModelAssetMutable* NewMdl = _BoundAssetManager->CreateEmptyModelAsset(
-			_BoundDBNameSpace,MdlRowItem.AssetName, MdlRowItem.AssetPath);
-
+			_BoundDBNameSpace, MdlRowItem.AssetName, MdlRowItem.AssetPath);
 	}
 }
 
 void AssetDBLoader::ClearLoadedAssetData()
 {
 	_LoadedTextures.Clear();
-	_LoadedMdls.Clear();
+	_LoadedMeshes.Clear();
 	_LoadedDefaultMtls.Clear();
+	_LoadedMdls.Clear();
+	_LoadedMdlcs.Clear();
 }
 
 void AssetDBLoader::BindAssetManagerToImportAsset(
@@ -140,10 +166,11 @@ void AssetDBLoader::BindAssetManagerToImportAsset(
 
 void AssetDBLoader::ClearAssetManagerToImportAsset()
 {
-
+	_BoundAssetManager = nullptr;
+	_BoundCommonRenderAssets = nullptr;
 }
 
-void AssetDBLoader::RelocateGeneratedAssetsToAssetManager()
+void AssetDBLoader::RelocateCreatedAssetInstancesToAssetManager()
 {
 	for (ITextureAsset* TexItem : _GeneratedTextures)
 	{
@@ -158,19 +185,78 @@ void AssetDBLoader::RelocateGeneratedAssetsToAssetManager()
 	_GeneratedMaterials.Clear();
 }
 
-bool AssetDBLoader::LoadAllTexDB()
+void AssetDBLoader::PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets)
 {
-	constexpr utf16 ALL_TEXTURE_QUERRY[] = L"SELECT * from Textures";
-	constexpr int32 ALL_TEXTURE_QUERRY_SIZE = sizeof(ALL_TEXTURE_QUERRY);
+	for (IAssetBase* AssetItem : InAssets)
+	{
+		_AssetsToSaveToDB.PushBack(AssetItem);
+	}
+}
 
+void AssetDBLoader::LoadAssetListFromAssetsToSaveToDB()
+{
+	for (const IAssetBase* AssetItem : _AssetsToSaveToDB)
+	{
+		EAssetType Type = AssetItem->GetAssetType();
+		switch (Type)
+		{
+		case EAssetType::Mesh:
+			_LoadedMeshes.PushBack(AssetToDBRow_Mesh_v_0(reinterpret_cast<const IMeshAsset*>(AssetItem))); break;
+		case EAssetType::Material:
+			_LoadedDefaultMtls.PushBack(AssetToDBRow_Mtl_DefaultPBR_v_0(reinterpret_cast<const IMaterialAsset*>(AssetItem))); break;
+		case EAssetType::Model:
+			_LoadedMdls.PushBack(AssetToDBRow_Mdl_v_0(reinterpret_cast<const IModelAsset*>(AssetItem))); break;
+		case EAssetType::ModelCombination:
+			_LoadedMdlcs.PushBack(AssetToDBRow_Mdlc_v_0(reinterpret_cast<const IModelCombinationAsset*>(AssetItem))); break;
+		case EAssetType::Texture:
+			_LoadedTextures.PushBack(AssetToDBRow_Tex_v_0(reinterpret_cast<const ITextureAsset*>(AssetItem))); break;
+		}
+	}
+}
+
+void AssetDBLoader::ClearAssetsToSaveToDB()
+{
+	_AssetsToSaveToDB.Clear();
+}
+
+bool AssetDBLoader::SaveLoadedAssetsToDB()
+{
+	bool bResult = SaveAllLoadedMeshesToDB();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	bResult = SaveAllLoadedMdlsToDB();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	bResult = SaveAllLoadedMdlcsToDB();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	return true;
+}
+
+
+
+bool AssetDBLoader::LoadAllLoadedTex()
+{
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
 
 
 	int Result = sqlite3_prepare16_v3(
 		_hLoadedDB,
-		ALL_TEXTURE_QUERRY,
-		ALL_TEXTURE_QUERRY_SIZE,
+		ALL_TEXTURE_QUERY,
+		sizeof(ALL_TEXTURE_QUERY),
 		SQLITE_OPEN_READONLY,
 		&StmtResult,
 		&__Temp);
@@ -199,7 +285,7 @@ bool AssetDBLoader::LoadAllTexDB()
 		ETextureType TexType = (ETextureType)sqlite3_column_int(StmtResult, 3);
 		SS_ASSERT(ETextureType::None <= TexType && TexType < ETextureType::Count);
 
-		AssetDBColumn_Tex_v_0 NewColumn;
+		AssetDBRow_Tex_v_0 NewColumn;
 		NewColumn.AssetName = AssetNameStr.C_Str();
 		NewColumn.AssetPath = AssetPathStr.C_Str();
 		NewColumn.LastUpdateTime = UpdateTime;
@@ -213,11 +299,8 @@ bool AssetDBLoader::LoadAllTexDB()
 	return true;
 }
 
-bool AssetDBLoader::LoadAllMtlDB()
+bool AssetDBLoader::LoadAllLoadedMtl()
 {
-	constexpr utf16 ALL_MTL_QUERY[] = L"SELECT * from Mtl_DefaultPBR";
-	constexpr int32 ALL_MTL_QUERY_SIZE = sizeof(ALL_MTL_QUERY);
-
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
 
@@ -225,7 +308,7 @@ bool AssetDBLoader::LoadAllMtlDB()
 	int Result = sqlite3_prepare16_v3(
 		_hLoadedDB,
 		ALL_MTL_QUERY,
-		ALL_MTL_QUERY_SIZE,
+		sizeof(ALL_MTL_QUERY),
 		SQLITE_OPEN_READONLY,
 		&StmtResult,
 		&__Temp);
@@ -238,7 +321,7 @@ bool AssetDBLoader::LoadAllMtlDB()
 
 	while (sqlite3_step(StmtResult) == SQLITE_ROW)
 	{
-		AssetDBColumn_Mtl_DefaultPBR_v_0 NewColumn;
+		AssetDBRow_Mtl_DefaultPBR_v_0 NewColumn;
 
 
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
@@ -297,19 +380,16 @@ bool AssetDBLoader::LoadAllMtlDB()
 	return true;
 }
 
-bool AssetDBLoader::LoadAllMdls()
+bool AssetDBLoader::LoadAllLoadedMdls()
 {
-	constexpr utf16 ALL_MTL_QUERY[] = L"SELECT * from Models";
-	constexpr int32 ALL_MTL_QUERY_SIZE = sizeof(ALL_MTL_QUERY);
-
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
 
 
 	int Result = sqlite3_prepare16_v3(
 		_hLoadedDB,
-		ALL_MTL_QUERY,
-		ALL_MTL_QUERY_SIZE,
+		ALL_MDL_QUERY,
+		sizeof(ALL_MDL_QUERY),
 		SQLITE_OPEN_READONLY,
 		&StmtResult,
 		&__Temp);
@@ -322,7 +402,7 @@ bool AssetDBLoader::LoadAllMdls()
 
 	while (sqlite3_step(StmtResult) == SQLITE_ROW)
 	{
-		AssetDBColumn_Mdl_v_0 NewColumn;
+		AssetDBRow_Mdl_v_0 NewColumn;
 
 
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
@@ -353,7 +433,7 @@ bool AssetDBLoader::LoadAllMdls()
 
 		const utf16* StringIndexer = db_c_str;
 		int32 SubmeshIdx = 0;
-		
+
 
 		_StringWorkTable.Clear();
 		utf16 ThisChar = L'\0';
@@ -380,5 +460,201 @@ bool AssetDBLoader::LoadAllMdls()
 
 
 	sqlite3_finalize(StmtResult);
+	return true;
+}
+
+bool AssetDBLoader::LoadAllLoadedMeshes()
+{
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		ALL_MESH_QUERY,
+		sizeof(ALL_MESH_QUERY),
+		SQLITE_OPEN_READONLY,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	while (sqlite3_step(StmtResult) == SQLITE_ROW)
+	{
+		AssetDBRow_Mesh_v_0 NewRow;
+
+
+		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
+		AssetNameStr += L"/";
+		SS::StringW AssetPathStr = _BoundFilePath.C_Str();
+		AssetPathStr += L"/";
+
+		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
+		AssetNameStr += db_c_str;
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 1);
+		if (db_c_str != nullptr)
+		{
+			AssetPathStr += db_c_str;
+		}
+
+		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
+
+
+		NewRow.AssetName = AssetNameStr.C_Str();
+		NewRow.AssetPath = AssetPathStr.C_Str();
+		NewRow.LastUpdateTime = UpdateTime;
+
+
+		_LoadedMeshes.PushBack(NewRow);
+	}
+
+
+	sqlite3_finalize(StmtResult);
+	return true;
+}
+
+bool AssetDBLoader::LoadAllLoadedMdlcs()
+{
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		ALL_MDLC_QUERY,
+		sizeof(ALL_MDLC_QUERY),
+		SQLITE_OPEN_READONLY,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	while (sqlite3_step(StmtResult) == SQLITE_ROW)
+	{
+		AssetDBRow_Mdlc_v_0 NewRow;
+
+
+		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
+		AssetNameStr += L"/";
+		SS::StringW AssetPathStr = _BoundFilePath.C_Str();
+		AssetPathStr += L"/";
+
+		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
+		AssetNameStr += db_c_str;
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 1);
+		if (db_c_str != nullptr)
+		{
+			AssetPathStr += db_c_str;
+		}
+
+		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
+
+
+		NewRow.AssetName = AssetNameStr.C_Str();
+		NewRow.AssetPath = AssetPathStr.C_Str();
+		NewRow.LastUpdateTime = UpdateTime;
+
+
+		_LoadedMdlcs.PushBack(NewRow);
+	}
+
+
+	sqlite3_finalize(StmtResult);
+	return true;
+}
+
+bool AssetDBLoader::SaveAllLoadedMeshesToDB()
+{
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		SAVE_Mesh_v_0_QUERY,
+		sizeof(SAVE_Mesh_v_0_QUERY),
+		SQLITE_OPEN_READWRITE,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	for (const AssetDBRow_Mesh_v_0& RowItem : _LoadedMeshes)
+	{
+		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text16(StmtResult, 2, RowItem.AssetPath.C_Str(), -1, SQLITE_STATIC);
+		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
+
+
+		sqlite3_step(StmtResult);
+		sqlite3_reset(StmtResult);
+	}
+
+	sqlite3_finalize(StmtResult);
+	return true;
+}
+
+bool AssetDBLoader::SaveAllLoadedMdlsToDB()
+{
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		SAVE_Mdl_v_0_QUERY,
+		sizeof(SAVE_Mdl_v_0_QUERY),
+		SQLITE_OPEN_READWRITE,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	SS::StringW JoinedMtlNames;
+
+	for (const AssetDBRow_Mdl_v_0& RowItem : _LoadedMdls)
+	{
+		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text16(StmtResult, 2, RowItem.AssetPath.C_Str(), -1, SQLITE_STATIC);
+		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
+
+		sqlite3_bind_int64(StmtResult, 4, RowItem.SubMeshCnt);
+
+
+		sqlite3_bind_text16(StmtResult, 5, RowItem.MeshName.C_Str(), -1, SQLITE_STATIC);
+
+		JoinedMtlNames.Clear();
+		for (int32 i = 0; i < RowItem.SubMeshCnt; i++)
+		{
+			JoinedMtlNames += RowItem.MtlNames[i].C_Str();
+			JoinedMtlNames += L";";
+		}
+		sqlite3_bind_text16(StmtResult, 6, JoinedMtlNames.C_Str(), -1, SQLITE_TRANSIENT);
+
+
+		sqlite3_step(StmtResult);
+		sqlite3_reset(StmtResult);
+	}
+
+	sqlite3_finalize(StmtResult);
+	return true;
+}
+
+bool AssetDBLoader::SaveAllLoadedMdlcsToDB()
+{
 	return true;
 }

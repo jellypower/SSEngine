@@ -31,7 +31,7 @@ SSRENDERER_MODULE int32 FillMeshAssetHeaaderOnly(
 	const SS::PooledList<byte>& Data,
 	int Offset = 0);
 
-SSRENDERER_MODULE int32 FillMeshAssetFromData(
+SSRENDERER_MODULE int32 FillMeshRawDataFromData(
 	MeshRawDataDefault*& InOutMeshRawData,
 	const SS::PooledList<byte>& Data,
 	int Offset = 0);

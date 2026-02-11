@@ -30,10 +30,16 @@
     <ClInclude Include="Public\ModuleEntry\AssetDBLoaderFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\ModuleEntry\AssetDBLoader.h">
+    <ClInclude Include="Private\DBLoaders\AssetDBLoader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\DBColumnTypes\Columns_v_0.h">
+    <ClInclude Include="Private\DBColumnTypes\Rows_v_0.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DBColumnTypes\DBRowUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DBLoaders\DBQueries.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,7 +53,10 @@
     <ClCompile Include="Private\ModuleEntry\AssetDBLoaderFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\ModuleEntry\AssetDBLoader.cpp">
+    <ClCompile Include="Private\DBLoaders\AssetDBLoader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\DBColumnTypes\DBRowUtils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
