@@ -8,7 +8,7 @@
 
 #include "ModuleEntryScriptRunner.h"
 #include "SSImGUIInitializer.h"
-#include "EngineUtils/Win32/OpenFilePathDialogue.h"
+#include "EngineUtils/PWin32/OpenFilePathDialogue.h"
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
 
 

@@ -39,7 +39,7 @@
     <ClInclude Include="SSEngineMain\ImGUI_AssetViewer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="EngineUtils\Win32\OpenFilePathDialogue.h">
+    <ClInclude Include="EngineUtils\PWin32\OpenFilePathDialogue.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
@@ -71,7 +71,7 @@
     <ClCompile Include="SSEngineMain\ImGUI_AssetViewer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="EngineUtils\Win32\OpenFilePathDialogue.cpp">
+    <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">

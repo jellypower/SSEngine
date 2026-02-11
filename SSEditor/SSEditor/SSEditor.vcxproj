@@ -151,7 +151,7 @@
     <ClInclude Include="SSBuildSettings.h" />
     <ClInclude Include="SSEngineMain\ImGUI_AssetViewer.h" />
     <ClInclude Include="SSEngineMain\ImGUI_GameObjectDetailViewer.h" />
-    <ClInclude Include="EngineUtils\Win32\OpenFilePathDialogue.h" />
+    <ClInclude Include="EngineUtils\PWin32\OpenFilePathDialogue.h" />
     <ClInclude Include="SSEngineMain\ImGUI_GOManager.h" />
     <ClInclude Include="SSEngineMain\SSEditor.h" />
     <ClInclude Include="SSEngineMain\SSImGUIInitializer.h" />
@@ -163,7 +163,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_AssetViewer.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_GameObjectDetailViewer.cpp" />
-    <ClCompile Include="EngineUtils\Win32\OpenFilePathDialogue.cpp" />
+    <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_GOManager.cpp" />
     <ClCompile Include="SSEngineMain\SSEditor.cpp" />
     <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp" />

@@ -23,7 +23,7 @@
 #include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
-#include "EngineUtils/Win32/OpenFilePathDialogue.h"
+#include "EngineUtils/PWin32/OpenFilePathDialogue.h"
 
 
 #define MAX_LOADSTRING 100
