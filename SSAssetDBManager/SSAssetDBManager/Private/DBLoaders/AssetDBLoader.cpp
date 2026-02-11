@@ -7,6 +7,7 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
@@ -116,6 +117,15 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 			TexColumnItem.AssetName, TexColumnItem.AssetPath, TexColumnItem.TextureType);
 
 		_GeneratedTextures.PushBack(NewTex);
+	}
+
+	SS_ASSERT_MSG(false, L"여기서 계속하기 -> _LoadedMeshes 생성 잘 해내기");
+	for (const AssetDBRow_Mesh_v_0& MeshRowItem : _LoadedMeshes)
+	{
+		IMeshAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyMeshAsset(_BoundDBNameSpace,
+			MeshRowItem.AssetName, MeshRowItem.AssetPath);
+
+		_GeneratedMeshes.PushBack(NewAsset);
 	}
 
 	for (const AssetDBRow_Mtl_DefaultPBR_v_0& DefaultMtlColumnItem : _LoadedDefaultMtls)
@@ -421,39 +431,49 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 
 		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
 
+		NewColumn.SubMeshCnt = sqlite3_column_int(StmtResult, 3);
+
 
 		NewColumn.AssetName = AssetNameStr.C_Str();
 		NewColumn.AssetPath = AssetPathStr.C_Str();
 		NewColumn.LastUpdateTime = UpdateTime;
 
-		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 3);
-		NewColumn.MeshName = db_c_str;
-
+		SS_ASSERT_MSG(false, L"여기서 계속하기 -> MeshName이 비어있으면 안되게 만들기");
 		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 4);
-
-		const utf16* StringIndexer = db_c_str;
-		int32 SubmeshIdx = 0;
-
-
-		_StringWorkTable.Clear();
-		utf16 ThisChar = L'\0';
-		do
+		if (db_c_str != nullptr)
 		{
-			ThisChar = *StringIndexer;
-			StringIndexer++;
+			NewColumn.MeshName = db_c_str;
+		}
 
-			if (ThisChar == L';')
+
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 5);
+		int32 SubmeshIdx = 0;
+		const utf16* StringIndexer = db_c_str;
+
+		if (StringIndexer != nullptr)
+		{
+			_StringWorkTable.Clear();
+			utf16 ThisChar = L'\0';
+			do
 			{
-				_StringWorkTable.PushBack(L'\0');
-				NewColumn.MtlNames[SubmeshIdx++] = _StringWorkTable.GetData();
-				_StringWorkTable.Clear();
-			}
+				ThisChar = *StringIndexer;
+				StringIndexer++;
 
-			_StringWorkTable.PushBack(ThisChar);
+				if (ThisChar == L';')
+				{
+					_StringWorkTable.PushBack(L'\0');
+					NewColumn.MtlNames[SubmeshIdx++] = _StringWorkTable.GetData();
+					_StringWorkTable.Clear();
+				}
 
-		} while (ThisChar != '\0');
+				_StringWorkTable.PushBack(ThisChar);
+
+			} while (ThisChar != '\0');
+		}
 
 
+		SS_ASSERT(NewColumn.SubMeshCnt == SubmeshIdx);
 		NewColumn.SubMeshCnt = SubmeshIdx;
 		_LoadedMdls.PushBack(NewColumn);
 	}

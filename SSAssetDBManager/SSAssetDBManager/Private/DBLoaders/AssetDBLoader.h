@@ -2,6 +2,9 @@
 #include "SSAssetDBManager/Private/DBColumnTypes/Rows_v_0.h"
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
+class IModelCombinationAsset;
+class IModelAsset;
+class IMeshAsset;
 class IMaterialAsset;
 class ITextureAsset;
 
@@ -68,7 +71,10 @@ private:
 
 private:
 	SS::PooledList<ITextureAsset*> _GeneratedTextures;
+	SS::PooledList<IMeshAsset*> _GeneratedMeshes;
 	SS::PooledList<IMaterialAsset*> _GeneratedMaterials;
+	SS::PooledList<IModelAsset*> _GeneratedMdls;
+	SS::PooledList<IModelCombinationAsset*> _GeneratedMdlcs;
 
 private:
 	SS::PooledList<IAssetBase*> _AssetsToSaveToDB;

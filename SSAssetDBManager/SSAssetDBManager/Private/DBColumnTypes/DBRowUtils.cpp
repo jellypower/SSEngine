@@ -71,6 +71,7 @@ AssetDBRow_Mdl_v_0 AssetToDBRow_Mdl_v_0(const IModelAsset* InAsset)
 	Row.LastUpdateTime = InAsset->GetLastUpdateTime();
 
 	Row.SubMeshCnt = InAsset->GetSubMeshCnt();
+	Row.MeshName = InAsset->GetMeshAssetName();
 
 	for (int32 i = 0; i < Row.SubMeshCnt; i++)
 	{

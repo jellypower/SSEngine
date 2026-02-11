@@ -46,6 +46,7 @@ struct AssetDBRow_Mdl_v_0
 	int32 SubMeshCnt = 0;
 	SS::SHasherW MeshName;
 	SS::SHasherW MtlNames[SUBMESH_COUNT_MAX];
+
 };
 
 struct AssetDBRow_Mdlc_v_0
