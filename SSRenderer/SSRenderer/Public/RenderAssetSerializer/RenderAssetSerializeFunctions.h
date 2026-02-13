@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
 
+class IApakFileReader;
 class IMeshAsset;
 enum class EAssetType;
 class IAssetBase;
@@ -13,12 +14,6 @@ class MeshRawDataDefault;
 struct MeshRawDataBase;
 
 
-// Alloc Serialize Data Chunk offset
-struct ApakDataChunkOffsetDesc
-{
-	int32 Offset;
-	int32 Size;
-};
 
 
 SSRENDERER_MODULE int32 AppendDataFromMeshAsset(
@@ -37,13 +32,13 @@ SSRENDERER_MODULE int32 FillMeshRawDataFromData(
 	int Offset = 0);
 
 
-SSRENDERER_MODULE int32 AppendApakDataFromAssetList(
+SSRENDERER_MODULE int64 AppendApakDataFromAssetList(
 	SS::PooledList<byte>& Data,
 	const SS::PooledList<IAssetBase*>& AssetListToSerailize);
 
 
 
-SSRENDERER_MODULE int32 CreateAssetsFromApakData(
+SSRENDERER_MODULE int64 CreateAssetsFromApakData(
 	SS::PooledList<IAssetBase*>& CreatedAssetList,
 	const SS::PooledList<byte>& Data,
 	SS::SHasherW ApakAssetPath,
@@ -59,3 +54,7 @@ SSRENDERER_MODULE int32 CreateMeshAssetFromData(
 	int Offset = 0);
 
 SSRENDERER_MODULE EAssetType ExtractAssetTypeFromName(SS::SHasherW InAssetName);
+
+SSRENDERER_MODULE IApakFileReader* CreateApakFileAccessor(SS::SHasherW SystemPath);
+SSRENDERER_MODULE IApakFileReader* CreateApakFileAccessorFromNameSpace(SS::SHasherW DBNameSpace, SS::SHasherW RelativePath);
+

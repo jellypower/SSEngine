@@ -1,12 +1,14 @@
 ﻿#define SSRENDERER_MODULE_EXPORT
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
 
+#include "ApakFileReader.h"
 #include "SSEngineDefault/Public/CommonSerializer/DefaultTypeSerializsers.h"
 
+#include "SSRenderer/Public/RenderAssetSerializer/ApakDataChunkOffsetDesc.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
-#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
+
 
 int AppendDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefault* MeshDefaultData)
 {
@@ -252,9 +254,9 @@ int32 FillMeshRawDataFromData(
 	return WrittenBytes;
 }
 
-int32 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledList<IAssetBase*>& AssetListToSerailize)
+int64 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledList<IAssetBase*>& AssetListToSerailize)
 {
-	int32 SerializeTrialCnt = AssetListToSerailize.GetSize();
+	int64 SerializeTrialCnt = AssetListToSerailize.GetSize();
 
 	SS::PooledList<IAssetBase*> SerializableAssets(SerializeTrialCnt);
 	SS::PooledList<SS::SHasherW> SerializedAssetNames(SerializeTrialCnt);
@@ -274,13 +276,17 @@ int32 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 	}
 
 	// Start Serialize
-	int32 OriginalDataSize = Data.GetSize();
-	int32 Offset = OriginalDataSize;
-	Offset += AppendData(Data, &Offset, sizeof(int32));
+	const int64 OriginalDataSize = Data.GetSize();
 
-	// 직렬화된 "개수"가 몇개인지 적어주는 기능 만들기
-	int32 SerializableAssetCnt = SerializableAssets.GetSize();
-	Offset += AppendData(Data, &SerializableAssetCnt, sizeof(int32));
+	ApakFileHeader Header;
+	Header.FileTotalBytes = OriginalDataSize;
+	Header.SerializableAssetCnt = SerializableAssets.GetSize();
+	Header.Padd1 = -1;
+	Header.Padd2 = -1;
+
+
+	int64 Offset = OriginalDataSize;
+	Offset += AppendData(Data, &Header, sizeof(ApakFileHeader));
 
 
 	// Serialize AssetNameTable
@@ -289,13 +295,13 @@ int32 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 	// Alloc Serialize Data Chunk offset
 
 	const int32 DataChunkOffsetDescOffset = Data.GetSize();
-	int32 NewDataSize = sizeof(ApakDataChunkOffsetDesc) * SerializableAssetCnt;
+	int32 NewDataSize = sizeof(ApakDataChunkOffsetDesc) * Header.SerializableAssetCnt;
 	Data.SetSizeDirectly(DataChunkOffsetDescOffset + NewDataSize);
 	Offset += NewDataSize;
 
 
 	// Serialize Assets
-	for (int32 i = 0; i < SerializableAssetCnt; i++)
+	for (int32 i = 0; i < Header.SerializableAssetCnt; i++)
 	{
 		IAssetBase* AssetItem = SerializableAssets[i];
 		EAssetType AssetItemType = AssetItem->GetAssetType();
@@ -324,14 +330,17 @@ int32 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 
 	int32 TotalWrittenSize = Offset - OriginalDataSize;
 
+	// DEBUG
 	void* RawData = Data.GetData();
 	ApakDataChunkOffsetDesc* DESC_FOR_DEBUG = reinterpret_cast<ApakDataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);
+	// ~DEBUG
 
-	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(int32), &TotalWrittenSize, sizeof(int32));
+	Header.FileTotalBytes = TotalWrittenSize;
+	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(ApakFileHeader), &Header, sizeof(ApakFileHeader));
 	return TotalWrittenSize;
 }
 
-int32 CreateAssetsFromApakData(
+int64 CreateAssetsFromApakData(
 	SS::PooledList<IAssetBase*>& CreatedAssetList,
 	const SS::PooledList<byte>& Data,
 	SS::SHasherW ApakAssetPath,
@@ -340,24 +349,22 @@ int32 CreateAssetsFromApakData(
 {
 	const int32 OriginalOffset = Offset;
 
-	int32 TotalDataSize;
-	Offset += FillMemoryFromData(&TotalDataSize, sizeof(int32), Data, Offset);
+	ApakFileHeader Header;
+	Offset += FillMemoryFromData(&Header, sizeof(ApakFileHeader), Data, Offset);
 
-	int32 SerializableAssetCnt;
-	Offset += FillMemoryFromData(&SerializableAssetCnt, sizeof(int32), Data, Offset);
 
-	SS::PooledList<SS::SHasherW> SerializedAssetNames(SerializableAssetCnt);
+	SS::PooledList<SS::SHasherW> SerializedAssetNames(Header.SerializableAssetCnt);
 	Offset += FillHashersFromData(SerializedAssetNames, Data, Offset);
 
 
 
 	SS::PooledList<ApakDataChunkOffsetDesc> AssetOffsets;
-	AssetOffsets.SetSizeDirectly(SerializableAssetCnt);
-	const int32 AssetOffsetDataSize = SerializableAssetCnt * sizeof(ApakDataChunkOffsetDesc);
+	AssetOffsets.SetSizeDirectly(Header.SerializableAssetCnt);
+	const int32 AssetOffsetDataSize = Header.SerializableAssetCnt * sizeof(ApakDataChunkOffsetDesc);
 	Offset += FillMemoryFromData(AssetOffsets.GetData(), AssetOffsetDataSize, Data, Offset);
 
 
-	for (int32 i = 0; i < SerializableAssetCnt; i++)
+	for (int32 i = 0; i < Header.SerializableAssetCnt; i++)
 	{
 		ApakDataChunkOffsetDesc OffsetDescItem = AssetOffsets[i];
 		SS::SHasherW AssetNameItem = SerializedAssetNames[i];
@@ -458,4 +465,27 @@ EAssetType ExtractAssetTypeFromName(SS::SHasherW InAssetName)
 	}
 
 	return EAssetType::None;
+}
+
+IApakFileReader* CreateApakFileAccessor(SS::SHasherW SystemPath)
+{
+	ApakFileReader* NewApak = DBG_NEW ApakFileReader(SystemPath);
+	if (NewApak->IsValid() == false)
+	{
+		delete NewApak;
+		return nullptr;
+	}
+
+	return NewApak;
+}
+
+IApakFileReader* CreateApakFileAccessorFromNameSpace(SS::SHasherW DBNameSpace, SS::SHasherW RelativePath)
+{
+	SS::StringW PathConstructor = L"Resource/AssetDB";
+	PathConstructor += DBNameSpace.C_Str();
+	PathConstructor += L"/Apak";
+	PathConstructor += RelativePath.C_Str();
+
+	SS::SHasherW FilePathName = PathConstructor.C_Str();
+	return CreateApakFileAccessor(FilePathName);
 }

@@ -3,15 +3,28 @@
 #include "AssetDBLoader.h"
 
 #include "SSAssetDBManager/Private/DBColumnTypes/DBRowUtils.h"
+
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
+
+
+#include "SSRenderer/Public/RenderAssetSerializer/IApakFileReader.h"
+#include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
+
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
 
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
+
 
 #include "DBQueries.h"
+
+#include <algorithm>
+#include <vector>
+
 
 AssetDBLoader::AssetDBLoader()
 {
@@ -22,26 +35,30 @@ AssetDBLoader::AssetDBLoader()
 	_LoadedMdlcs.Reserve(128);
 }
 
-bool AssetDBLoader::StartLoadDB(const utf16* inFilePath)
+bool AssetDBLoader::StartLoadDB(const utf16* InNameSpace)
 {
-	if (_BoundFilePath.IsEmpty() == false)
+	if (_BoundDBNameSpace.IsEmpty() == false)
 	{
 		SS_ASSERT(false);
 		return false;
 	}
 
-	_BoundFilePath = inFilePath;
+	_BoundDBNameSpace = InNameSpace;
 
-	SS::StringW strBoundDBNameSpace;
-	ExtractFileNameFromPath(strBoundDBNameSpace, inFilePath);
-	_BoundDBNameSpace = strBoundDBNameSpace.C_Str();
+	SS::StringW FilePathConstructor = L"Resource/AssetDB/";
+	FilePathConstructor += InNameSpace;
+	FilePathConstructor += L"/";
+	FilePathConstructor += InNameSpace;
+	FilePathConstructor += L".sqlite";
+	_BoundDBSqlFilePath = FilePathConstructor.C_Str();
 
-	int Result = sqlite3_open16(inFilePath, &_hLoadedDB);
+
+	const int Result = sqlite3_open16(_BoundDBSqlFilePath.C_Str(), &_hLoadedDB);
 	if (Result)
 	{
 		SS_ASSERT_MSG(false, L"Cannot open file.");
 
-		_BoundFilePath = SS::SHasherW();
+		_BoundDBSqlFilePath = SS::SHasherW();
 		_BoundDBNameSpace = SS::SHasherW();
 		_bIsEngineDefaultAssetDB = false;
 
@@ -64,7 +81,7 @@ void AssetDBLoader::ClearDB()
 
 	ClearLoadedAssetData();
 
-	_BoundFilePath = SS::SHasherW();
+	_BoundDBSqlFilePath = SS::SHasherW();
 	_BoundDBNameSpace = SS::SHasherW();
 	_bIsEngineDefaultAssetDB = false;
 }
@@ -116,16 +133,8 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 		ITextureAssetMutable* NewTex = _BoundAssetManager->CreateEmptyTextureAsset(_BoundDBNameSpace,
 			TexColumnItem.AssetName, TexColumnItem.AssetPath, TexColumnItem.TextureType);
 
-		_GeneratedTextures.PushBack(NewTex);
-	}
-
-	SS_ASSERT_MSG(false, L"여기서 계속하기 -> _LoadedMeshes 생성 잘 해내기");
-	for (const AssetDBRow_Mesh_v_0& MeshRowItem : _LoadedMeshes)
-	{
-		IMeshAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyMeshAsset(_BoundDBNameSpace,
-			MeshRowItem.AssetName, MeshRowItem.AssetPath);
-
-		_GeneratedMeshes.PushBack(NewAsset);
+		_CreatedAssetInstances.PushBack(NewTex);
+		_CreatedTextures.PushBack(NewTex);
 	}
 
 	for (const AssetDBRow_Mtl_DefaultPBR_v_0& DefaultMtlColumnItem : _LoadedDefaultMtls)
@@ -147,14 +156,52 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 
 		NewMtl->InjectRawDataXXX(NewDefaultPBRMtlData);
 
-		_GeneratedMaterials.PushBack(NewMtl);
+		_CreatedAssetInstances.PushBack(NewMtl);
+		_CreatedMaterials.PushBack(NewMtl);
+	}
+
+	for (const AssetDBRow_Mesh_v_0& MeshRowItem : _LoadedMeshes)
+	{
+		IMeshAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyMeshAsset(_BoundDBNameSpace,
+			MeshRowItem.AssetName, MeshRowItem.AssetPath);
+
+		_CreatedAssetInstances.PushBack(NewAsset);
+		_CreatedMeshes.PushBack(NewAsset);
 	}
 
 	for (const AssetDBRow_Mdl_v_0& MdlRowItem : _LoadedMdls)
 	{
 		IModelAssetMutable* NewMdl = _BoundAssetManager->CreateEmptyModelAsset(
 			_BoundDBNameSpace, MdlRowItem.AssetName, MdlRowItem.AssetPath);
+
+		NewMdl->SetMesh(MdlRowItem.MeshName);
+
+		for (int32 i = 0; i < SUBMESH_COUNT_MAX; i++)
+		{
+			SS::SHasherW MtlName = MdlRowItem.MtlNames[i];
+			if (MtlName.IsEmpty())
+			{
+				break;
+			}
+
+			NewMdl->SetMaterial(MtlName, i);
+		}
+
+		_CreatedAssetInstances.PushBack(NewMdl);
+		_CreatedMdls.PushBack(NewMdl);
 	}
+
+	for (const AssetDBRow_Mdlc_v_0& MdlcRowItem : _LoadedMdlcs)
+	{
+		IModelCombinationAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyModelCombinationAsset(_BoundDBNameSpace,
+			MdlcRowItem.AssetName, MdlcRowItem.AssetPath, 0);
+
+		_CreatedAssetInstances.PushBack(NewAsset);
+		_CreatedMdlcs.PushBack(NewAsset);
+	}
+
+
+	FillEmptyAssetsFromApakFile();
 }
 
 void AssetDBLoader::ClearLoadedAssetData()
@@ -182,17 +229,17 @@ void AssetDBLoader::ClearAssetManagerToImportAsset()
 
 void AssetDBLoader::RelocateCreatedAssetInstancesToAssetManager()
 {
-	for (ITextureAsset* TexItem : _GeneratedTextures)
+	for (IAssetBase* TexItem : _CreatedAssetInstances)
 	{
 		_BoundAssetManager->AddToAssetPool(TexItem);
 	}
-	_GeneratedTextures.Clear();
 
-	for (IMaterialAsset* TexItem : _GeneratedMaterials)
-	{
-		_BoundAssetManager->AddToAssetPool(TexItem);
-	}
-	_GeneratedMaterials.Clear();
+	_CreatedAssetInstances.Clear();
+	_CreatedTextures.Clear();
+	_CreatedMeshes.Clear();
+	_CreatedMaterials.Clear();
+	_CreatedMdls.Clear();
+	_CreatedMdlcs.Clear();
 }
 
 void AssetDBLoader::PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets)
@@ -256,6 +303,65 @@ bool AssetDBLoader::SaveLoadedAssetsToDB()
 }
 
 
+bool SortByAssetPath(const IAssetBase* lhs, const IAssetBase* rhs)
+{
+	return lhs->GetAssetPath().GetDirectValue() < rhs->GetAssetPath().GetDirectValue();
+}
+
+void AssetDBLoader::FillEmptyAssetsFromApakFile()
+{
+	int64 Size = _CreatedAssetInstances.GetSize();
+	IAssetBase** RawData = _CreatedAssetInstances.GetData();
+	std::sort(RawData, RawData + Size, SortByAssetPath);
+
+
+	IApakFileReader* ApakFileAccessor = nullptr;
+	for (IAssetBase* AssetItem : _CreatedAssetInstances)
+	{
+		SS::SHasherW PathItem = AssetItem->GetAssetPath();
+
+		if (PathItem.IsEmpty())
+		{
+			continue;
+		}
+
+		if (ApakFileAccessor == nullptr ||
+			ApakFileAccessor->GetFilePath() != PathItem)
+		{
+
+			if (ApakFileAccessor != nullptr)
+			{
+				delete ApakFileAccessor;
+			}
+
+			ApakFileAccessor = CreateApakFileAccessor(PathItem);
+		}
+
+		bool bResult = ApakFileAccessor->SetDataCursorToAsset(AssetItem->GetAssetName());
+		if (bResult == false)
+		{
+			SS_ASSERT(false);
+			continue;
+		}
+
+
+		const EAssetType AssetTypeItem = AssetItem->GetAssetType();
+		if (AssetTypeItem == EAssetType::Mesh)
+		{
+			IMeshAssetMutable* MeshAsset = (IMeshAssetMutable*)AssetItem;
+
+			MeshRawDataDefault* MeshRawData = nullptr;
+			FillMeshRawDataFromData(MeshRawData, ApakFileAccessor->GetCursoredData());
+
+			MeshAsset->InjectRawDataXXX(MeshRawData);
+		}
+		else
+		{
+			SS_ASSERT_MSG(false, L"TODO: Impl");
+		}
+	}
+
+}
 
 bool AssetDBLoader::LoadAllLoadedTex()
 {
@@ -336,7 +442,7 @@ bool AssetDBLoader::LoadAllLoadedMtl()
 
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
 		AssetNameStr += L"/";
-		SS::StringW AssetPathStr = _BoundFilePath.C_Str();
+		SS::StringW AssetPathStr = _BoundDBSqlFilePath.C_Str();
 		AssetPathStr += L"/";
 
 		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
@@ -417,7 +523,7 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
 		AssetNameStr += L"/";
-		SS::StringW AssetPathStr = _BoundFilePath.C_Str();
+		SS::StringW AssetPathStr = _BoundDBSqlFilePath.C_Str();
 		AssetPathStr += L"/";
 
 		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
@@ -431,15 +537,14 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 
 		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
 
-		NewColumn.SubMeshCnt = sqlite3_column_int(StmtResult, 3);
 
 
 		NewColumn.AssetName = AssetNameStr.C_Str();
 		NewColumn.AssetPath = AssetPathStr.C_Str();
 		NewColumn.LastUpdateTime = UpdateTime;
 
-		SS_ASSERT_MSG(false, L"여기서 계속하기 -> MeshName이 비어있으면 안되게 만들기");
-		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 4);
+		//		SS_ASSERT_MSG(false, L"여기서 계속하기 -> MeshName이 비어있으면 안되게 만들기");
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 3);
 		if (db_c_str != nullptr)
 		{
 			NewColumn.MeshName = db_c_str;
@@ -447,7 +552,7 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 
 
 
-		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 5);
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 4);
 		int32 SubmeshIdx = 0;
 		const utf16* StringIndexer = db_c_str;
 
@@ -472,9 +577,6 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 			} while (ThisChar != '\0');
 		}
 
-
-		SS_ASSERT(NewColumn.SubMeshCnt == SubmeshIdx);
-		NewColumn.SubMeshCnt = SubmeshIdx;
 		_LoadedMdls.PushBack(NewColumn);
 	}
 
@@ -509,7 +611,7 @@ bool AssetDBLoader::LoadAllLoadedMeshes()
 
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
 		AssetNameStr += L"/";
-		SS::StringW AssetPathStr = _BoundFilePath.C_Str();
+		SS::StringW AssetPathStr = _BoundDBSqlFilePath.C_Str();
 		AssetPathStr += L"/";
 
 		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
@@ -563,7 +665,7 @@ bool AssetDBLoader::LoadAllLoadedMdlcs()
 
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
 		AssetNameStr += L"/";
-		SS::StringW AssetPathStr = _BoundFilePath.C_Str();
+		SS::StringW AssetPathStr = _BoundDBSqlFilePath.C_Str();
 		AssetPathStr += L"/";
 
 		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
@@ -651,19 +753,21 @@ bool AssetDBLoader::SaveAllLoadedMdlsToDB()
 		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
 		sqlite3_bind_text16(StmtResult, 2, RowItem.AssetPath.C_Str(), -1, SQLITE_STATIC);
 		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
-
-		sqlite3_bind_int64(StmtResult, 4, RowItem.SubMeshCnt);
-
-
-		sqlite3_bind_text16(StmtResult, 5, RowItem.MeshName.C_Str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text16(StmtResult, 4, RowItem.MeshName.C_Str(), -1, SQLITE_STATIC);
 
 		JoinedMtlNames.Clear();
-		for (int32 i = 0; i < RowItem.SubMeshCnt; i++)
+		for (int32 i = 0; i < SUBMESH_COUNT_MAX; i++)
 		{
+			SS::SHasherW MtlNameItem = RowItem.MtlNames[i];
+			if (MtlNameItem.IsEmpty())
+			{
+				break;
+			}
+
 			JoinedMtlNames += RowItem.MtlNames[i].C_Str();
 			JoinedMtlNames += L";";
 		}
-		sqlite3_bind_text16(StmtResult, 6, JoinedMtlNames.C_Str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_text16(StmtResult, 5, JoinedMtlNames.C_Str(), -1, SQLITE_TRANSIENT);
 
 
 		sqlite3_step(StmtResult);

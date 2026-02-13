@@ -75,6 +75,9 @@
     <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\ApakFileReader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h">
@@ -264,6 +267,15 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\RenderAsset\CommonRenderAsset\CRAN.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAssetSerializer\IApakFileReader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\RenderAsset\RenderAssetSerializer\ApakFileReader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAssetSerializer\ApakDataChunkOffsetDesc.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

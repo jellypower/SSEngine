@@ -14,17 +14,6 @@ struct AssetPlacementReference
 	EMeshType MeshType = EMeshType::None;
 	int32 ParentIdx = INVALID_IDX;
 
-	AssetPlacementReference() { }
-	AssetPlacementReference(const AssetPlacementReference& rhs) = default;
-	AssetPlacementReference(AssetPlacementReference&& rhs)
-	{
-		Transform = rhs.Transform;
-		PlacementName = rhs.PlacementName;
-		AssetName = rhs.AssetName;
-		MeshType = rhs.MeshType;
-		ParentIdx = rhs.ParentIdx;
-	}
-
 	bool IsEmptyPlacement() const { return AssetName.IsEmpty(); }
 };
 

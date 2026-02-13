@@ -50,6 +50,7 @@
 
 
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
+#include "SSRenderer/Public/RenderAssetSerializer/IApakFileReader.h"
 
 #include "TestCodes/MeshSerializeTest.h"
 
@@ -92,13 +93,13 @@ void SSEditor::StartupEngine()
 		_AssetDBLoader = g_fpCreateAssetDBLoader();
 		_AssetDBLoader->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 
-		_AssetDBLoader->StartLoadDB(CRAN::DB_PATH_DEFAULT_ASSET);
+		_AssetDBLoader->StartLoadDB(CRAN::NS_DEFAULT_ASSET);
 		_AssetDBLoader->LoadAllAssetDataFromDB();
 		_AssetDBLoader->CreateLoadedAssetInstances();
 		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
 		_AssetDBLoader->ClearDB();
 
-		_AssetDBLoader->StartLoadDB(L"Resource/AssetDB/ContentsAssets.sqlite");
+		_AssetDBLoader->StartLoadDB(L"ContentsAssets");
 		_AssetDBLoader->LoadAllAssetDataFromDB();
 		_AssetDBLoader->CreateLoadedAssetInstances();
 		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
@@ -346,8 +347,21 @@ void SSEditor::ProcessEditorCommand()
 
 
 
-			// Save
+			// TEMP
 			AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Model);
+			ArrowIdx = -1;
+			for (int32 i = 0; i < AssetListToSerialize.GetSize(); i++)
+			{
+				if (AssetListToSerialize[i]->GetAssetName() == L"Arrow/Arrow.mdl")
+				{
+					ArrowIdx = i;
+					break;
+				}
+			}
+
+			AssetListToSerialize.RemoveAtAndFillLast(ArrowIdx);
+			// ~TEMP
+
 			_AssetDBLoader->PushAssetsToSaveToDB(AssetListToSerialize);
 			_AssetDBLoader->LoadAssetListFromAssetsToSaveToDB();
 			_AssetDBLoader->ClearAssetsToSaveToDB();
@@ -364,33 +378,11 @@ void SSEditor::ProcessEditorCommand()
 				return;
 			}
 
-			FILE* hFile = nullptr;
-			errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"rb");
-			if (no != 0)
+			IApakFileReader* Accessor = CreateApakFileAccessor(OutString.C_Str());
+			if (Accessor != nullptr)
 			{
-				SS_ASSERT(false);
-				return;
+				delete Accessor;
 			}
-
-
-			fseek(hFile, 0, SEEK_END);
-			int32 FileSize = ftell(hFile);
-
-			_IEDataPool.Clear();
-			_IEDataPool.SetSizeDirectly(FileSize);
-
-			fseek(hFile, 0, SEEK_SET);
-			size_t ReadSize = fread_s(
-				_IEDataPool.GetData(),
-				_IEDataPool.GetSize(),
-				1,
-				FileSize,
-				hFile);
-
-			SS::PooledList<IAssetBase*> CreatedAssetLists;
-			CreateAssetsFromApakData(CreatedAssetLists, _IEDataPool, OutString.C_Str(), "TEMP");
-
-			fclose(hFile);
 		}
 	}
 }

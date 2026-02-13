@@ -6,8 +6,6 @@
 struct CRAN
 {
 	// EngineDefaultAssets
-
-	constexpr static const utf16* DB_PATH_DEFAULT_ASSET = L"Resource/AssetDB/EngineDefaultAssets.sqlite";
 	constexpr static const utf16* NS_DEFAULT_ASSET = L"EngineDefaultAssets"; // NameSpace Default Asset
 
 	constexpr static const utf16* WHITE_TEX = L"EngineDefaultAssets/WHITE.tex";

@@ -1,11 +1,14 @@
 ﻿#include "ModelAsset.h"
 
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 ModelAsset::ModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
@@ -157,6 +160,7 @@ void ModelAsset::BindAssetManager(IAssetManager* InAssetManager)
 	_SubMeshCntCache = FoundMeshAsset->GetSubMeshCnt();
 
 	static SS::SHasherW EmptyMtlName = CRAN::EMPTY_PBR_MTL;
+	ICommonRenderAssetSet* CommRenderAssetSet = g_Renderer->GetCommonRenderAssetSet();
 
 	for (int32 i = 0; i < _SubMeshCntCache; i++)
 	{
@@ -165,9 +169,8 @@ void ModelAsset::BindAssetManager(IAssetManager* InAssetManager)
 		if (FoudnMtl == nullptr)
 		{
 			_MaterialAssetNames[i] = EmptyMtlName;
-
-			SS_ASSERT(false);
-			continue;
+			FoudnMtl = CommRenderAssetSet->GetEmptyPBRMaterial();
+			SS_ASSERT(FoudnMtl != nullptr);
 		}
 
 		_MaterialAssetCache[i] = FoudnMtl;
@@ -183,7 +186,6 @@ void ModelAsset::SetMesh(SS::SHasherW InMeshAssetName)
 {
 	if (_BoundAssetManager == nullptr)
 	{
-		time(&_LastUpdateTime);
 		_MeshAssetName = InMeshAssetName;
 		return;
 	}
@@ -240,7 +242,6 @@ void ModelAsset::SetMaterial(SS::SHasherW InMaterialAssetName, int32 InMaterialI
 	if (_BoundAssetManager == nullptr)
 	{
 		_MaterialAssetNames[InMaterialIdx] = InMaterialAssetName;
-		time(&_LastUpdateTime);
 		return;
 	}
 

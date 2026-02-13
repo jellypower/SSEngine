@@ -14,7 +14,7 @@ public:
 	AssetDBLoader();
 
 public:
-	bool StartLoadDB(const utf16* inFilePath) override;
+	bool StartLoadDB(const utf16* InNameSpace) override;
 	void ClearDB() override;
 
 
@@ -35,7 +35,8 @@ public:
 	virtual void ClearAssetsToSaveToDB() override;
 	virtual bool SaveLoadedAssetsToDB() override;
 
-
+private:
+	void FillEmptyAssetsFromApakFile();
 
 private:
 	bool LoadAllLoadedTex();
@@ -52,7 +53,7 @@ private:
 private:
 	sqlite3* _hLoadedDB = nullptr;
 
-	SS::SHasherW _BoundFilePath;
+	SS::SHasherW _BoundDBSqlFilePath;
 	SS::SHasherW _BoundDBNameSpace;
 	bool _bIsEngineDefaultAssetDB = false;
 
@@ -70,15 +71,17 @@ private:
 
 
 private:
-	SS::PooledList<ITextureAsset*> _GeneratedTextures;
-	SS::PooledList<IMeshAsset*> _GeneratedMeshes;
-	SS::PooledList<IMaterialAsset*> _GeneratedMaterials;
-	SS::PooledList<IModelAsset*> _GeneratedMdls;
-	SS::PooledList<IModelCombinationAsset*> _GeneratedMdlcs;
+	SS::PooledList<IAssetBase*> _CreatedAssetInstances;
+	SS::PooledList<ITextureAsset*> _CreatedTextures;
+	SS::PooledList<IMeshAsset*> _CreatedMeshes;
+	SS::PooledList<IMaterialAsset*> _CreatedMaterials;
+	SS::PooledList<IModelAsset*> _CreatedMdls;
+	SS::PooledList<IModelCombinationAsset*> _CreatedMdlcs;
 
 private:
 	SS::PooledList<IAssetBase*> _AssetsToSaveToDB;
 
 private:
 	SS::PooledList<utf16, SS::InlineAllocator<256>> _StringWorkTable;
+	SS::PooledList<byte> _FileDataWorkTable;
 };

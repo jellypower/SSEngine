@@ -155,7 +155,7 @@ int32 FillHashersFromData(SS::PooledList<SS::SHasherW>& Hashers, const SS::Poole
 
 	const byte* RawData = Data.GetData() + Offset;
 
-	int32 ReadDataSize;
+	int32 ReadDataSize; // 해당 값은 ReadDataSize자체의 크기도 포함한다.
 	memcpy_s(&ReadDataSize, sizeof(int32), RawData, sizeof(int32));
 
 

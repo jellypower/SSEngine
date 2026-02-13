@@ -85,6 +85,6 @@ void ModelCombinationAsset::BindAssetManager(IAssetManager* InAssetManager)
 
 void ModelCombinationAsset::AddNewChild(const AssetPlacementReference& newReference)
 {
-	_childs.PushBack(SS::move(newReference)); // R-Value 제대로 고치기
+	_childs.PushBack(newReference);
 	time(&_LastUpdateTime);
 }
