@@ -148,22 +148,22 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 		_CreatedTextures.PushBack(NewTex);
 	}
 
-	for (const AssetDBRow_Mtl_DefaultPBR_v_0& DefaultMtlColumnItem : _LoadedDefaultMtls)
+	for (const AssetDBRow_Mtl_DefaultPBR_v_0& DefaultMtlRowItem : _LoadedDefaultMtls)
 	{
 		IMaterialAssetMutable* NewMtl = _BoundAssetManager->CreateEmptyMaterialAsset(_BoundDBNameSpace,
-			DefaultMtlColumnItem.AssetName, DefaultMtlColumnItem.AssetPath);
+			DefaultMtlRowItem.AssetName, DefaultMtlRowItem.AssetPath);
 
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR;
-		NewDefaultPBRMtlData->_BaseColorScale = DefaultMtlColumnItem._BaseColorScale;
-		NewDefaultPBRMtlData->_EmissiveScale = DefaultMtlColumnItem._EmissiveScale;
-		NewDefaultPBRMtlData->_NormalTexScale = DefaultMtlColumnItem.NormalTexScale;
-		NewDefaultPBRMtlData->_Metallic = DefaultMtlColumnItem.Metallic;
-		NewDefaultPBRMtlData->_Roughness = DefaultMtlColumnItem.Roughness;
-		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::BaseColor] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::BaseColor];
-		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Normal] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Normal];
-		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Metallic] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Metallic];
-		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Emissive];
-		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion] = DefaultMtlColumnItem.Textures[(int32)EDefaultPBRMatTexTypes::Occlusion];
+		NewDefaultPBRMtlData->_BaseColorScale = DefaultMtlRowItem._BaseColorScale;
+		NewDefaultPBRMtlData->_EmissiveScale = DefaultMtlRowItem._EmissiveScale;
+		NewDefaultPBRMtlData->_NormalTexScale = DefaultMtlRowItem.NormalTexScale;
+		NewDefaultPBRMtlData->_Metallic = DefaultMtlRowItem.Metallic;
+		NewDefaultPBRMtlData->_Roughness = DefaultMtlRowItem.Roughness;
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::BaseColor] = DefaultMtlRowItem.Textures[(int32)EDefaultPBRMatTexTypes::BaseColor];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Normal] = DefaultMtlRowItem.Textures[(int32)EDefaultPBRMatTexTypes::Normal];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Metallic] = DefaultMtlRowItem.Textures[(int32)EDefaultPBRMatTexTypes::Metallic];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Emissive] = DefaultMtlRowItem.Textures[(int32)EDefaultPBRMatTexTypes::Emissive];
+		NewDefaultPBRMtlData->_TextureAssetNames[(int32)EDefaultPBRMatTexTypes::Occlusion] = DefaultMtlRowItem.Textures[(int32)EDefaultPBRMatTexTypes::Occlusion];
 
 		NewMtl->InjectRawDataXXX(NewDefaultPBRMtlData);
 
@@ -437,13 +437,13 @@ bool AssetDBLoader::LoadAllLoadedTex()
 		ETextureType TexType = (ETextureType)sqlite3_column_int(StmtResult, 3);
 		SS_ASSERT(ETextureType::None <= TexType && TexType < ETextureType::Count);
 
-		AssetDBRow_Tex_v_0 NewColumn;
-		NewColumn.AssetName = AssetNameStr.C_Str();
-		NewColumn.AssetPath = AssetPathStr.C_Str();
-		NewColumn.LastUpdateTime = UpdateTime;
-		NewColumn.TextureType = TexType;
+		AssetDBRow_Tex_v_0 NewRow;
+		NewRow.AssetName = AssetNameStr.C_Str();
+		NewRow.AssetPath = AssetPathStr.C_Str();
+		NewRow.LastUpdateTime = UpdateTime;
+		NewRow.TextureType = TexType;
 
-		_LoadedTextures.PushBack(NewColumn);
+		_LoadedTextures.PushBack(NewRow);
 	}
 
 
@@ -545,7 +545,7 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 
 	while (sqlite3_step(StmtResult) == SQLITE_ROW)
 	{
-		AssetDBRow_Mdl_v_0 NewColumn;
+		AssetDBRow_Mdl_v_0 NewRow;
 
 
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
@@ -557,15 +557,15 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 
 		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
 
-		NewColumn.AssetName = AssetNameStr.C_Str();
-		NewColumn.LastUpdateTime = UpdateTime;
+		NewRow.AssetName = AssetNameStr.C_Str();
+		NewRow.LastUpdateTime = UpdateTime;
 
 
 		//		SS_ASSERT_MSG(false, L"여기서 계속하기 -> MeshName이 비어있으면 안되게 만들기");
 		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 3);
 		if (db_c_str != nullptr)
 		{
-			NewColumn.MeshName = db_c_str;
+			NewRow.MeshName = db_c_str;
 		}
 
 
@@ -586,7 +586,7 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 				if (ThisChar == L';')
 				{
 					_StringWorkTable.PushBack(L'\0');
-					NewColumn.MtlNames[SubmeshIdx++] = _StringWorkTable.GetData();
+					NewRow.MtlNames[SubmeshIdx++] = _StringWorkTable.GetData();
 					_StringWorkTable.Clear();
 				}
 
@@ -595,7 +595,7 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 			} while (ThisChar != '\0');
 		}
 
-		_LoadedMdls.PushBack(NewColumn);
+		_LoadedMdls.PushBack(NewRow);
 	}
 
 
