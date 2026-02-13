@@ -53,6 +53,7 @@ private:
 private:
 	sqlite3* _hLoadedDB = nullptr;
 
+	SS::SHasherW _BoundDBNameSpacePath;
 	SS::SHasherW _BoundDBSqlFilePath;
 	SS::SHasherW _BoundDBNameSpace;
 	bool _bIsEngineDefaultAssetDB = false;
@@ -71,7 +72,7 @@ private:
 
 
 private:
-	SS::PooledList<IAssetBase*> _CreatedAssetInstances;
+	SS::PooledList<IAssetBase*> _AllAssetInstancesSortedByPath;
 	SS::PooledList<ITextureAsset*> _CreatedTextures;
 	SS::PooledList<IMeshAsset*> _CreatedMeshes;
 	SS::PooledList<IMaterialAsset*> _CreatedMaterials;
