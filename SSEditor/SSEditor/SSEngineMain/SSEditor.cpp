@@ -338,13 +338,22 @@ void SSEditor::ProcessEditorCommand()
 
 			FILE* hFile = nullptr;
 
+			// TODO:
+			// 1. 여기서 ExtractWorkDirRelativePath라는 함수 만들어서 상대경로 빼오기
+			// 2. Asset에 직접적으로 Path를 Assign하는 간단한 기능 만들어서 Assign하기
+			// 3. DBLoader에서 Assign한 Path를 기준으로 Namespace기준 상대 Path 만들기
+
+
 			errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"wb+");
-			if (no == 0)
+			if (no != 0)
 			{
-				fwrite(_IEDataPool.GetData(), 1, _IEDataPool.GetSize(), hFile);
 				fclose(hFile);
+				SS_ASSERT(false);
+				return;
 			}
 
+			fwrite(_IEDataPool.GetData(), 1, _IEDataPool.GetSize(), hFile);
+			fclose(hFile);
 
 
 			// TEMP
