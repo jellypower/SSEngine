@@ -106,7 +106,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\SSAssetDBManager;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -129,7 +129,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\SSAssetDBManager;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -160,7 +160,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModuleEntryScriptRunner.cpp" />
-    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SSEngineMain\ImGUI_AssetViewer.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_GameObjectDetailViewer.cpp" />
     <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp" />

@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include "pch.h"
-#include "imgui.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
 
 #include "SSGAL/Public/ModuleEntry/ExtractD3DDeviceInfo.h"
