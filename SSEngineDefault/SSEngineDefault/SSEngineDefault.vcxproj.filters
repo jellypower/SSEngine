@@ -177,6 +177,9 @@
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Public\SystemUtilities.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -240,6 +243,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PCommon\CommonSerializer\DefaultTypeSerializsers.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SystemUtilities.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

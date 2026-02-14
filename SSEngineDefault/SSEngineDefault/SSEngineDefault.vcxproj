@@ -210,6 +210,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SSStaticMath.h" />
     <ClInclude Include="Public\SSVector.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.h" />
+    <ClInclude Include="Public\SystemUtilities.h" />
     <ClInclude Include="Public\TestCodes\TestFunctions.h" />
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +235,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PCommon\TestCodes\TestFunctions.cpp" />
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp" />
     <ClCompile Include="Private\PCommon\CommonSerializer\DefaultTypeSerializsers.cpp" />
+    <ClCompile Include="Private\PCommon\SystemUtilities.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
