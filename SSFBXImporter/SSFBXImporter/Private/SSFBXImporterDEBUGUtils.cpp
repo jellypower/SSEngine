@@ -1,4 +1,5 @@
-﻿#include "SSFBXImporterDEBUGUtils.h"
+﻿#include "pch.h"
+#include "SSFBXImporterDEBUGUtils.h"
 
 void PrintFbxNodeInfo(FbxNode* node)
 {

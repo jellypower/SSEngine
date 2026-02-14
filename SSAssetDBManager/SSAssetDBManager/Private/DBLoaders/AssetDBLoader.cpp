@@ -23,7 +23,6 @@
 #include "DBQueries.h"
 
 #include <algorithm>
-#include <vector>
 
 
 AssetDBLoader::AssetDBLoader()

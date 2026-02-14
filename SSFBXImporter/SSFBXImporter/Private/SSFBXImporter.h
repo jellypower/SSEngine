@@ -2,8 +2,6 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
-#define FBXSDK_SHARED
-#include <fbxsdk.h>
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 

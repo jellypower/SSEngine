@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "SSFBXImporter.h"
 
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"

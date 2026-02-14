@@ -1,3 +1,4 @@
+#include "pch.h"
 #define SSFBXIMPORTER_MODULE_EXPORT
 #include "SSFBXImporter/Public/ModuleEntry/SSFBXImporterFactory.h"
 
