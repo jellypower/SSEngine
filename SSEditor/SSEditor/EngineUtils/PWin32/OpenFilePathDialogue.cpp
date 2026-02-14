@@ -45,6 +45,7 @@ HRESULT OpenSystemPathDialogue(SS::StringW& OutFilePath, ESystemPathDialogueOpti
 					if (SUCCEEDED(hr))
 					{
 						OutFilePath = pszFilePath;
+						OutFilePath.Replace(L"\\", L"/");
 						CoTaskMemFree(pszFilePath);
 					}
 					pItem->Release();

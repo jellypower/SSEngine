@@ -41,7 +41,8 @@ namespace SS {
 				_stringPool.Reserve(newStrLen);
 			}
 			_stringPool.SetSizeDirectly(newStrLen + 1);
-			wcscpy_s(_stringPool.GetData(), _stringPool.GetCapacity(), inStr);
+			memmove_s(_stringPool.GetData(), _stringPool.GetCapacity() * sizeof(utf16),
+				inStr, (newStrLen + 1) * sizeof(utf16));
 		}
 
 		StringW(const StringW& rhs)
@@ -61,6 +62,19 @@ namespace SS {
 			_stringPool = SS::move(rhs._stringPool);
 		}
 
+		StringW& operator=(const utf16* inStr)
+		{
+			int32 newStrLen = wcslen(inStr);
+			if (_stringPool.GetCapacity() < newStrLen)
+			{
+				_stringPool.Reserve(newStrLen);
+			}
+			_stringPool.SetSizeDirectly(newStrLen + 1);
+			memmove_s(_stringPool.GetData(), _stringPool.GetCapacity() * sizeof(utf16),
+				inStr, (newStrLen + 1)* sizeof(utf16));
+
+			return *this;
+		}
 
 		StringW& operator=(const StringW& rhs)
 		{

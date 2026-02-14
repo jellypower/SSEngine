@@ -279,6 +279,7 @@ void AssetDBLoader::PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAs
 {
 	for (IAssetBase* AssetItem : InAssets)
 	{
+		AssetItem->MarkAsUpdated();
 		_AssetsToSaveToDB.PushBack(AssetItem);
 	}
 }
@@ -732,8 +733,16 @@ bool AssetDBLoader::SaveAllLoadedMeshesToDB()
 
 	for (const AssetDBRow_Mesh_v_0& RowItem : _LoadedMeshes)
 	{
+		const utf16* NameSpacePathCutoff = CutOffNameSpacePath(RowItem.AssetPath, _BoundDBNameSpacePath);
+		if (NameSpacePathCutoff == nullptr)
+		{
+			SS_ASSERT_MSG(false, L"Not a valid namespace path. If you want to save Asset path to a namespace, asset original file path must be located in same asset path directory.");
+			continue;
+		}
+
 		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
-		sqlite3_bind_text16(StmtResult, 2, RowItem.AssetPath.C_Str(), -1, SQLITE_STATIC);
+
+		sqlite3_bind_text16(StmtResult, 2, NameSpacePathCutoff, -1, SQLITE_STATIC);
 		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
 
 
@@ -769,7 +778,7 @@ bool AssetDBLoader::SaveAllLoadedMdlsToDB()
 	for (const AssetDBRow_Mdl_v_0& RowItem : _LoadedMdls)
 	{
 		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
-		sqlite3_bind_text16(StmtResult, 2, RowItem.AssetPath.C_Str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text16(StmtResult, 2, nullptr, -1, SQLITE_STATIC);
 		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
 		sqlite3_bind_text16(StmtResult, 4, RowItem.MeshName.C_Str(), -1, SQLITE_STATIC);
 

@@ -13,3 +13,17 @@ AssetDBRow_Tex_v_0 AssetToDBRow_Tex_v_0(const ITextureAsset* InAsset);
 AssetDBRow_Mtl_DefaultPBR_v_0 AssetToDBRow_Mtl_DefaultPBR_v_0(const IMaterialAsset* InAsset);
 AssetDBRow_Mdl_v_0 AssetToDBRow_Mdl_v_0(const IModelAsset* InAsset);
 AssetDBRow_Mdlc_v_0 AssetToDBRow_Mdlc_v_0(const IModelCombinationAsset* InAsset);
+
+
+///
+///
+
+//
+
+/// <returns>
+/// if passed "Resource/AssetDB/{NameSpace}/Mesh/MyDefaultMesh.apak"
+/// pass pointer of "Mesh/MyDefaultMesh.apak" C_Str
+///
+/// if namespace is not appriopriate with this db, return NULL
+/// </returns>
+const utf16* CutOffNameSpacePath(SS::SHasherW InPath, SS::SHasherW InNamespacePath);

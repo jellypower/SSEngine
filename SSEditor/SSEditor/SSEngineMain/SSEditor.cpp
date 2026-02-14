@@ -33,6 +33,7 @@
 
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+#include "SSEngineDefault/Public/SystemUtilities.h"
 
 
 
@@ -337,6 +338,19 @@ void SSEditor::ProcessEditorCommand()
 			}
 
 			FILE* hFile = nullptr;
+
+			bool bResult = ConvertToWorkingDirPath(OutString);
+			if (bResult == false)
+			{
+				SS_ASSERT(false);
+				return;
+			}
+
+			SS::SHasherW SaveAssetWorkingDirPath = OutString.C_Str();
+			for (IAssetBase* SerializedAssets : AssetListToSerialize)
+			{
+				SerializedAssets->SetAssetPathXXX(SaveAssetWorkingDirPath);
+			}
 
 			// TODO:
 			// 1. 여기서 ExtractWorkDirRelativePath라는 함수 만들어서 상대경로 빼오기

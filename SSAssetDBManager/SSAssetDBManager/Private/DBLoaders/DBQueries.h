@@ -23,18 +23,17 @@ L"WHERE LastUpdateTime < excluded.LastUpdateTime;";
 
 
 constexpr utf16 SAVE_Mdl_v_0_QUERY[] = 
-L"INSERT INTO Models(AssetName, AssetPath, LastUpdateTime, SubMeshCnt, MeshName, MtlNames) "
-L"VALUES (?, ?, ?, ?, ?, ?) "
+L"INSERT INTO Models(AssetName, AssetPath, LastUpdateTime, MeshName, MtlNames) "
+L"VALUES (?, ?, ?, ?, ?) "
 
 L"ON CONFLICT(AssetName) DO UPDATE SET "
 
 L"AssetPath = excluded.AssetPath, "
 L"LastUpdateTime = excluded.LastUpdateTime,"
-L"SubMeshCnt = excluded.SubMeshCnt,"
 L"MeshName = excluded.MeshName,"
 L"MtlNames = excluded.MtlNames "
 
-L"WHERE LastUpdateTime < excluded.LastUpdateTime";
+L"WHERE LastUpdateTime < excluded.LastUpdateTime;";
 
 
 

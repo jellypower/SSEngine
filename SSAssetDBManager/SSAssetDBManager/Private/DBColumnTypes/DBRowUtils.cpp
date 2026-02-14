@@ -93,3 +93,16 @@ AssetDBRow_Mdlc_v_0 AssetToDBRow_Mdlc_v_0(const IModelCombinationAsset* InAsset)
 
 	return Row;
 }
+
+const utf16* CutOffNameSpacePath(SS::SHasherW InPath, SS::SHasherW InNameSpacePath)
+{
+	const utf16* PathRaw = InPath.C_Str();
+	const utf16* NamespacePathRaw = InNameSpacePath.C_Str();
+	const int32 NamespacePathLen = InNameSpacePath.GetStrLen();
+	if (wcsncmp(PathRaw, NamespacePathRaw, NamespacePathLen) != 0)
+	{
+		return nullptr;
+	}
+
+	return PathRaw + NamespacePathLen;
+}

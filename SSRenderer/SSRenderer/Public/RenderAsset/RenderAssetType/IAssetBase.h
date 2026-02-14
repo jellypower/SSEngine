@@ -86,6 +86,9 @@ public:
 
 	int32 GetAssetInstanceReferenceCnt() const { return _AssetInstanceReferencers.GetSize(); }
 
+public:
+	void MarkAsUpdated(){ time(&_LastUpdateTime); }
+	void SetAssetPathXXX(SS::SHasherW InPath) { _assetPath = InPath; }
 
 public:
 	virtual EAssetType GetAssetType() const = 0;
@@ -94,6 +97,4 @@ public:
 	virtual void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) = 0;
 
 	virtual void BindAssetManager(IAssetManager* InAssetManager) = 0;
-
-	//TODO: virtual void Serialize() = 0;
 };
