@@ -6,6 +6,9 @@
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 
 
+class IMaterialAsset;
+class IMeshAsset;
+
 class RIStaticMesh : public IRIMesh
 {
 public:
@@ -29,16 +32,25 @@ public:
 	virtual IRenderWorld* GetIncludedRenderWorld() const override;
 
 
+public:
+	virtual IMeshAsset* GetMeshAsset() const override;
+	virtual IMaterialAsset* GetMaterialAsset(int MtlIdx) const override;
 
-	virtual IModelAsset* GetModelAsset() const override;
 	virtual void SetModelAsset(IModelAsset* InAsset) override;
+	virtual void SetMeshAsset(IMeshAsset* InAsset) override;
+	virtual void SetMaterialAsset(IMaterialAsset* InAsset, int32 MtlIdx) override;
 
+
+private:
+	IMeshAsset* _MeshRef = nullptr;
+	SS::PooledList<IMaterialAsset*, SS::InlineAllocator<8>> _MtlRef;
 
 private:
 	XMMATRIX _WorldTransformMatrix;
 	XMMATRIX _WorldRotationMatrix;
 	SObjHashCode _GameObjectHashCode = nullptr;
-	IModelAsset* _ModelRef = nullptr;
+	
 	GALRIMetadata* _MetaData = nullptr;
 	IRenderWorld* _IncludedRenderWorld = nullptr;
+
 };

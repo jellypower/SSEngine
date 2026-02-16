@@ -1,9 +1,12 @@
 ﻿#include "RISkinnedMesh.h"
 
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
+
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
-RISkinnedMesh::RISkinnedMesh():
+RISkinnedMesh::RISkinnedMesh() :
 	_SkeletonPose(200)
 {
 }
@@ -87,7 +90,19 @@ void RISkinnedMesh::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)
 	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
 	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
 
-	_ModelRef->AddAssetReference(ThisAssetRef);
+
+	if (_MeshRef == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+	_MeshRef->AddAssetReference(ThisAssetRef);
+
+	int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+	for (int i = 0; i < SubMeshCnt; i++)
+	{
+		_MtlRef[i]->AddAssetReference(ThisAssetRef);
+	}
 }
 
 void RISkinnedMesh::OnExitFromRenderWorldXXX()
@@ -98,7 +113,18 @@ void RISkinnedMesh::OnExitFromRenderWorldXXX()
 	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
 	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
 
-	_ModelRef->RemoveAssetReference(ThisAssetRef);
+	if (_MeshRef == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+	_MeshRef->RemoveAssetReference(ThisAssetRef);
+
+	int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+	for (int i = 0; i < SubMeshCnt; i++)
+	{
+		_MtlRef[i]->RemoveAssetReference(ThisAssetRef);
+	}
 }
 
 IRenderWorld* RISkinnedMesh::GetIncludedRenderWorld() const
@@ -106,14 +132,116 @@ IRenderWorld* RISkinnedMesh::GetIncludedRenderWorld() const
 	return _IncludedRenderWorld;
 }
 
-IModelAsset* RISkinnedMesh::GetModelAsset() const
+IMeshAsset* RISkinnedMesh::GetMeshAsset() const
 {
-	return _ModelRef;
+	return _MeshRef;
 }
+
+IMaterialAsset* RISkinnedMesh::GetMaterialAsset(int MtlIdx) const
+{
+	if (_MeshRef->GetSubMeshCnt() <= MtlIdx)
+	{
+		return nullptr;
+	}
+
+	return _MtlRef[MtlIdx];
+}
+
 
 void RISkinnedMesh::SetModelAsset(IModelAsset* InAsset)
 {
-	_ModelRef = InAsset;
+	if (_IncludedRenderWorld == nullptr)
+	{
+		_MeshRef = InAsset->GetMeshAsset();
+
+		int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+		_MtlRef.SetSizeDirectly(SubMeshCnt);
+		for (int32 i = 0; i < SubMeshCnt; i++)
+		{
+			_MtlRef[i] = InAsset->GetMaterialAsset(i);
+		}
+
+		return;
+	}
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+
+
+	const int32 PrevSubMeshCnt = _MeshRef->GetSubMeshCnt();
+	_MeshRef->RemoveAssetReference(ThisAssetRef);
+	for (int32 i = 0; i < PrevSubMeshCnt; i++)
+	{
+		_MtlRef[i]->RemoveAssetReference(ThisAssetRef);
+	}
+
+
+
+	_MeshRef = InAsset->GetMeshAsset();
+	const int32 NewSubMeshCnt = _MeshRef->GetSubMeshCnt();
+	_MeshRef->AddAssetReference(ThisAssetRef);
+	_MtlRef.SetSizeDirectly(NewSubMeshCnt);
+	for (int32 i=0;i<NewSubMeshCnt;i++)
+	{
+		_MtlRef[i] = InAsset->GetMaterialAsset(i);
+		_MtlRef[i]->AddAssetReference(ThisAssetRef);
+	}
+}
+
+void RISkinnedMesh::SetMeshAsset(IMeshAsset* InAsset)
+{
+	if (_IncludedRenderWorld == nullptr)
+	{
+		_MeshRef = InAsset;
+		return;
+	}
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+	const int32 PrevSubMeshCnt = _MeshRef->GetSubMeshCnt();
+	_MeshRef->RemoveAssetReference(ThisAssetRef);
+	_MeshRef = InAsset;
+	const int32 NewSubMeshCnt = _MeshRef->GetSubMeshCnt();
+	_MeshRef->AddAssetReference(ThisAssetRef);
+
+
+	for (int32 i = NewSubMeshCnt; i < PrevSubMeshCnt; i++)
+	{
+		_MtlRef[i]->RemoveAssetReference(ThisAssetRef);
+	}
+	_MtlRef.SetSizeDirectly(NewSubMeshCnt);
+}
+
+void RISkinnedMesh::SetMaterialAsset(IMaterialAsset* InAsset, int32 MtlIdx)
+{
+	if (_MeshRef == nullptr)
+	{
+		return;
+	}
+
+	const int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+	if (SubMeshCnt <= MtlIdx)
+	{
+		return;
+	}
+
+	if (_IncludedRenderWorld == nullptr)
+	{
+		_MtlRef[MtlIdx] = InAsset;
+		return;
+	}
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+	_MtlRef[MtlIdx]->RemoveAssetReference(ThisAssetRef);
+	_MtlRef[MtlIdx] = InAsset;
+	InAsset->AddAssetReference(ThisAssetRef);
 }
 
 const SS::PooledList<SBASkinningJointMatrix>& RISkinnedMesh::GetSkeletonPose() const

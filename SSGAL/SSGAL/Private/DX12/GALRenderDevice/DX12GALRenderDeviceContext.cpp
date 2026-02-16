@@ -983,13 +983,12 @@ void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat)
 {
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// Scrap Mesh Asset
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
 	const DX12GALMeshAssetWrapper* GALMeshAsset = (const DX12GALMeshAssetWrapper*)lMeshAsset->GetGALMeshAsset();
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
@@ -1031,7 +1030,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
-		IMaterialAsset* MtlAsset = InModelAsset->GetMaterialAsset(i);
+		IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
 		DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
 		if (MtlAsset != nullptr)
 		{
@@ -1079,13 +1078,12 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 	const XMMATRIX& DrawRotMat)
 {
 	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// Scrap Mesh Asset
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
 	if (MeshRawData->GetMeshType() != EMeshType::Skinned)
 	{
@@ -1127,7 +1125,7 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
-		IMaterialAsset* MtlAsset = InModelAsset->GetMaterialAsset(i);
+		IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
 		DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
 		if (MtlAsset != nullptr)
 		{
@@ -1181,13 +1179,12 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
                                                       const XMMATRIX& DrawRotMat)
 {
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SM*>(RIToDraw->GetGALMetadata());
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// Scrap Mesh Asset
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
 	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(lMeshAsset->GetGALMeshAsset());
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
@@ -1242,13 +1239,12 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 	const XMMATRIX& DrawRotMat)
 {
 	DX12GALRIMetadata_SKM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// Scrap Mesh Asset
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
 	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(lMeshAsset->GetGALMeshAsset());
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();

@@ -1,8 +1,10 @@
 ﻿#include "RIStaticMesh.h"
 
-#include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
-#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelAsset.h"
+
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 
 SObjHashCode RIStaticMesh::GetGameObjectID() const
 {
@@ -26,11 +28,6 @@ void RIStaticMesh::ReleaseGALMetaData()
 		delete _MetaData;
 		_MetaData = nullptr;
 	}
-}
-
-IModelAsset* RIStaticMesh::GetModelAsset() const
-{
-	return _ModelRef;
 }
 
 const XMMATRIX& RIStaticMesh::GetWorldTransformMatrix() const
@@ -72,12 +69,79 @@ void RIStaticMesh::SetWorldRotation(const Quaternion& InRotation)
 
 void RIStaticMesh::SetGameObjectIDXXX(SObjHashCode InHashCode)
 {
+	if (_GameObjectHashCode != nullptr)
+	{
+		SS_INTERRUPT();
+	}
+
 	_GameObjectHashCode = InHashCode;
 }
 
+IMeshAsset* RIStaticMesh::GetMeshAsset() const
+{
+	return _MeshRef;
+}
+
+IMaterialAsset* RIStaticMesh::GetMaterialAsset(int MtlIdx) const
+{
+	if (_MtlRef.GetSize() <= MtlIdx)
+	{
+		return nullptr;
+	}
+
+	return _MtlRef[MtlIdx];
+}
+
+
 void RIStaticMesh::SetModelAsset(IModelAsset* InAsset)
 {
-	_ModelRef = InAsset;
+	if (_IncludedRenderWorld == nullptr)
+	{
+		_MeshRef = InAsset->GetMeshAsset();
+
+		int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+		_MtlRef.SetSizeDirectly(SubMeshCnt);
+		for (int32 i = 0; i < SubMeshCnt; i++)
+		{
+			_MtlRef[i] = InAsset->GetMaterialAsset(i);
+		}
+
+		return;
+	}
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+
+
+	const int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+	_MeshRef->RemoveAssetReference(ThisAssetRef);
+	for (int32 i = 0; i < SubMeshCnt; i++)
+	{
+		_MtlRef[i]->RemoveAssetReference(ThisAssetRef);
+	}
+
+
+
+	_MeshRef = InAsset->GetMeshAsset();
+	const int32 NewSubMeshCnt = _MeshRef->GetSubMeshCnt();
+	_MeshRef->AddAssetReference(ThisAssetRef);
+	_MtlRef.SetSizeDirectly(NewSubMeshCnt);
+	for (int32 i = 0; i < NewSubMeshCnt; i++)
+	{
+		_MtlRef[i] = InAsset->GetMaterialAsset(i);
+		_MtlRef[i]->AddAssetReference(ThisAssetRef);
+	}
+}
+
+void RIStaticMesh::SetMeshAsset(IMeshAsset* InAsset)
+{
+}
+
+void RIStaticMesh::SetMaterialAsset(IMaterialAsset* InAsset, int32 MtlIdx)
+{
+
 }
 
 void RIStaticMesh::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)
@@ -93,7 +157,19 @@ void RIStaticMesh::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)
 	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
 	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
 
-	_ModelRef->AddAssetReference(ThisAssetRef);
+
+	if (_MeshRef == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+	_MeshRef->AddAssetReference(ThisAssetRef);
+
+	int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+	for (int i = 0; i < SubMeshCnt; i++)
+	{
+		_MtlRef[i]->AddAssetReference(ThisAssetRef);
+	}
 }
 
 void RIStaticMesh::OnExitFromRenderWorldXXX()
@@ -104,7 +180,18 @@ void RIStaticMesh::OnExitFromRenderWorldXXX()
 	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
 	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
 
-	_ModelRef->RemoveAssetReference(ThisAssetRef);
+	if (_MeshRef == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+	_MeshRef->RemoveAssetReference(ThisAssetRef);
+
+	int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+	for (int i = 0; i < SubMeshCnt; i++)
+	{
+		_MtlRef[i]->RemoveAssetReference(ThisAssetRef);
+	}
 }
 
 IRenderWorld* RIStaticMesh::GetIncludedRenderWorld() const

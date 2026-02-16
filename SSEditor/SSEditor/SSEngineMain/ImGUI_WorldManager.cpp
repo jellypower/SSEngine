@@ -398,6 +398,11 @@ void ImGUI_WorldManager::ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderCompo
 			ImGui::Text("Model Name: %s", u8ModelName);
 
 
+			if (ImGui::Button("ApplyModelAssetChange"))
+			{
+				SkinnedMeshToShow->ApplyModelAssetChange();
+			}
+
 		}
 		ImGui::PopID();
 	}

@@ -2,6 +2,8 @@
 
 #include "DX12GALRIMetadata_SM.h"
 
+#include <SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h>
+
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 
 #include "SSGAL/Private/DX12/DX12CommonUtils/DX12ConstantBufferResourcePage.h"
@@ -19,8 +21,10 @@ DX12GALRIMetadata_SM::DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, cons
 	_OwnerRenderDevice = (DX12GALRenderDevice*)InRenderDevice;
 	ID3D12Device5* D3DDevice = _OwnerRenderDevice->GetD3DDevice();
 	SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
-	_SubMeshCntCache = InOwnerRenderInstance->GetModelAsset()->GetSubMeshCnt();
-	SS::SHasherW ModelName = InOwnerRenderInstance->GetModelAsset()->GetAssetName();
+	_SubMeshCntCache = InOwnerRenderInstance->GetMeshAsset()->GetSubMeshCnt();
+
+	
+	SS::SHasherW MeshName = InOwnerRenderInstance->GetMeshAsset()->GetAssetName();
 
 	_OwnerRenderInstance = InOwnerRenderInstance;
 
@@ -28,7 +32,7 @@ DX12GALRIMetadata_SM::DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, cons
 
 	// Constant Buffer
 	{
-		_ModelCBChunk = ConstantBufferAllocator->AllocChunk(sizeof(CBAModelBuffer), ModelName);
+		_ModelCBChunk = ConstantBufferAllocator->AllocChunk(sizeof(CBAModelBuffer), MeshName);
 		DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)_ModelCBChunk.PageContent;
 		_ModelCBSysMemAddr = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + _ModelCBChunk.ChunkOffset);
 		_ModelCBGPUMemAddr = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + _ModelCBChunk.ChunkOffset;

@@ -3,7 +3,7 @@
 #include "SMeshRenderComponentBase.h"
 
 
-class SSkinnedMeshRenderComponent : public SMeshRenderComponentBase
+class SSCONTENTBASE_MODULE SSkinnedMeshRenderComponent : public SMeshRenderComponentBase
 {
 private:
 	SS::PooledList<SObjHashT<SGameObject>> _BoneBindings;
