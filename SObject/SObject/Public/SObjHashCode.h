@@ -7,6 +7,7 @@ class SObjectBase;
 
 class SOBJECT_MODULE SObjHashCode
 {
+public:
 	static constexpr int64 SOBJ_NATIVEVALUE_NULL = 0;
 
 private:

@@ -30,7 +30,7 @@
     <ClInclude Include="SSEngineMain\SSImGUIInitializer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineMain\ImGUI_GameObjectDetailViewer.h">
+    <ClInclude Include="SSEngineMain\ImGUI_WorldManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSEngineMain\TestCodes\MeshSerializeTest.h">
@@ -62,7 +62,7 @@
     <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSEngineMain\ImGUI_GameObjectDetailViewer.cpp">
+    <ClCompile Include="SSEngineMain\ImGUI_WorldManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSEngineMain\TestCodes\MeshSerializeTest.cpp">

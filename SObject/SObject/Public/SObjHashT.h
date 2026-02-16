@@ -25,6 +25,13 @@ public:
 		return _HashCode;
 	}
 
+
+	FORCEINLINE int64 GetNativeValue() const { return _HashCode.GetNativeValue(); }
+	FORCEINLINE bool operator!=(const SObjHashT& rhs) const { return _HashCode.GetNativeValue() != rhs._HashCode.GetNativeValue(); }
+	FORCEINLINE bool operator==(const SObjHashT& rhs) const { return _HashCode.GetNativeValue() == rhs._HashCode.GetNativeValue(); }
+	FORCEINLINE bool operator!=(nullptr_t) const { return _HashCode.GetNativeValue() != SObjHashCode::SOBJ_NATIVEVALUE_NULL; }
+	FORCEINLINE bool operator==(nullptr_t) const { return _HashCode.GetNativeValue() == SObjHashCode::SOBJ_NATIVEVALUE_NULL; }
+
 private:
 	SObjHashCode _HashCode;
 };

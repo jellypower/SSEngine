@@ -17,14 +17,12 @@ class RenderWorld : public IRenderWorld
 public:
 	RenderWorld(const utf16* InWorldName);
 	virtual ~RenderWorld();
-	void InitializeRenderWorld(IRenderer* OwnerRenderer);
 
 public:
 	const SS::HashMap<SObjHashCode, IRenderInstance*>& GetRenderInstanceMap() const { return _RenderInstanceByHashCode; }
 
 	virtual bool IsAnyInstanceRemainInWorld() const override;
 	virtual SS::SHasherW GetWorldName() const override;
-	IRenderer* GetOwnerRenderer() const override;
 	
 	void AddToWorld(IRenderInstance* InRenderInstance) override;
 	virtual void RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToRemove) override;
@@ -38,6 +36,5 @@ private:
 
 	GALRWMetaData* _GALMetadata = nullptr;
 
-	IRenderer* _OwnerRenderer = nullptr;
 	SS::HashMap<SObjHashCode, IRenderInstance*> _RenderInstanceByHashCode;
 };

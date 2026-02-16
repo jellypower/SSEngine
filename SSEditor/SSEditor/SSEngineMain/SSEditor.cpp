@@ -3,7 +3,7 @@
 #include "SSEditor.h"
 
 #include "ImGUI_AssetViewer.h"
-#include "ImGUI_GameObjectDetailViewer.h"
+#include "ImGUI_WorldManager.h"
 #include "ModuleEntryScriptRunner.h"
 #include "SSImGUIInitializer.h"
 
@@ -157,6 +157,10 @@ void SSEditor::StartupEngine()
 	_DefaultWorld = NewSObject<SWorld>(L"World");
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
+	{
+		_ImGUI_WorldManager = DBG_NEW ImGUI_WorldManager(_DefaultWorld);
+	}
+
 	// Floor
 	{
 		SGameObject* Floor = SRendererUtil::InstantiateModel(L"__RUNTIME_CREATION__/Cube1m.mdl");
@@ -245,11 +249,11 @@ void SSEditor::StartupEngine()
 
 void SSEditor::EnginePerFrame()
 {
-	ProcessEditorCommand();
-	TEMP_ProcessContents();
-
 	Run_g_ImGuiInitializer__OnBeginFrameImGui();
+
 	ProcessImGUI();
+
+	TEMP_ProcessContents();
 
 	_DefaultWorld->PerFrameContents();
 	_DefaultWorld->PerFrameAnim();
@@ -264,6 +268,9 @@ void SSEditor::EnginePerFrame()
 
 void SSEditor::CleanupEngine()
 {
+	delete _ImGUI_WorldManager;
+	_ImGUI_WorldManager = nullptr;
+
 	delete _ImGUI_AssetViewer;
 	_ImGUI_AssetViewer = nullptr;
 
@@ -494,48 +501,10 @@ void SSEditor::TEMP_ProcessContents()
 		}
 	}
 
-
-	// Pixel Picking
-	{
-		if (SSInput::GetMouseDown(EMouseCode::MOUSE_LEFT))
-		{
-			Vector2i32 MousePos = SSInput::GetMousePos();
-			_Renderer->RequestPixelPicking(MousePos.X, MousePos.Y);
-			_PixelPickingRequestFrameCounter = SWAP_CHAIN_FRAME_COUNT + 1; // PixelPicking용 프레임버퍼가 2프레임 뒤에 그려져서 그걸 생각해야함.
-		}
-
-		if (_PixelPickingRequestFrameCounter >= 0)
-		{
-			_PixelPickingRequestFrameCounter--;
-		}
-
-		if (_PixelPickingRequestFrameCounter == 0)
-		{
-			SObjHashCode PixelPickedObjID = _Renderer->GetPixelPickedObjectID();
-			_PickedObject = PixelPickedObjID;
-		}
-
-		if (_HieararchyPickedObject != nullptr && _PickedObject != _HieararchyPickedObject)
-		{
-			_PickedObject = _HieararchyPickedObject;
-			_HieararchyPickedObject = nullptr;
-		}
-	}
-
 	Quaternion::FromEulerRotation(Vector4f(45, 45, 90, 0));
 
 
-	SObjectBase* PickedObject = _PickedObject.GetSObject();
-	SGameObject* PickedGameObject = nullptr;
-	if (SComponentBase* PickedComponent = dynamic_cast<SComponentBase*>(PickedObject))
-	{
-		PickedGameObject = PickedComponent->GetGameObject();
-	}
-	else if (SGameObject* CastedPickedGameObject = dynamic_cast<SGameObject*>(PickedObject))
-	{
-		PickedGameObject = CastedPickedGameObject;
-	}
-
+	SGameObject* PickedGameObject = _ImGUI_WorldManager->GetPickedObject();
 	if (PickedGameObject != nullptr)
 	{
 		XMMATRIX Mat = PickedGameObject->CalcWorldTransformMatrix();
@@ -637,9 +606,10 @@ void SSEditor::ProcessImGUI()
 
 
 	_ImGUI_AssetViewer->ImGUI_ShowAssetViewer();
+	_ImGUI_WorldManager->PerFrame();
+
+	ProcessEditorCommand();
 	ImGUI_FrameInfo();
-	ImGUI_ShowGameObjectDetail(_PickedObject);
-	ImGUI_DrawHierarchy();
 }
 
 
@@ -653,70 +623,4 @@ void SSEditor::ImGUI_FrameInfo()
 		ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
 	}
 	ImGui::End();
-}
-
-void SSEditor::ImGUI_DrawHierarchy()
-{
-	if (ImGui::Begin("Node Debugger"))
-	{
-
-		if (ImGui::BeginChild("SceneTree", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
-		{
-			SGameObject* RootObject = _DefaultWorld->GetWorldRootObject();
-
-			int32 ChildCnt = RootObject->GetChildCnt();
-
-			for (int i = 0; i < ChildCnt; i++)
-			{
-				ImGUI_DrawHierarchy_Recursion(RootObject->GetChild(i));
-			}
-		}
-		ImGui::EndChild();
-	}
-	ImGui::End();
-}
-
-void SSEditor::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
-{
-	int32 ChildCnt = Object->GetChildCnt();
-
-	SS::SHasherW sObjectName = Object->GetObjectName();
-	uint32 iObjectNameLen = sObjectName.GetStrLen();
-	const utf16* u16ObjectName = sObjectName.C_Str();
-
-	utf8 u8ObjectName[SHASHER_STRLEN_MAX];
-	UTF16StrToUtf8Str(u16ObjectName, iObjectNameLen, u8ObjectName, SHASHER_STRLEN_MAX);
-
-
-	bool bColorNode = _HieararchyPickedObject == Object->GetHashCode();
-
-	if (bColorNode)
-	{
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-	}
-
-	if (ImGui::TreeNodeEx(u8ObjectName,
-		ImGuiTreeNodeFlags_SpanLabelWidth |
-		ImGuiTreeNodeFlags_OpenOnArrow |
-		ImGuiTreeNodeFlags_Selected |
-		ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		if (ImGui::IsItemClicked(0))
-		{
-			_HieararchyPickedObject = Object;
-		}
-
-		for (int i = 0; i < ChildCnt; i++)
-		{
-			ImGUI_DrawHierarchy_Recursion(Object->GetChild(i));
-		}
-
-		ImGui::TreePop();
-	}
-
-
-	if (bColorNode)
-	{
-		ImGui::PopStyleColor(); // Pop the green text color
-	}
 }

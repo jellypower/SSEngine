@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class ImGUI_WorldManager;
 class IAssetDBLoader;
 class ImGUI_AssetViewer;
 class SRenderLightDirectionalComponent;
@@ -41,14 +42,12 @@ public:
 #pragma region IMGUI
 private:
 	ImGUI_AssetViewer* _ImGUI_AssetViewer = nullptr;
+	ImGUI_WorldManager* _ImGUI_WorldManager = nullptr;
 
 	void ProcessImGUI();
 
 	void ImGUI_FrameInfo();
 
-
-	void ImGUI_DrawHierarchy();
-	void ImGUI_DrawHierarchy_Recursion(SGameObject* Object);
 
 #pragma endregion
 
@@ -59,10 +58,6 @@ private:
 	IRenderer* _Renderer = nullptr;
 
 
-	SObjHashCode _PickedObject = nullptr;
-
-	int32 _PixelPickingRequestFrameCounter = 0;
-	SObjHashCode _HieararchyPickedObject = nullptr;
 	
 
 	SGameObject* TEMP_MdlcObj = nullptr;

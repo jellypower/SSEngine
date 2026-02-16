@@ -127,7 +127,6 @@ IRenderWorld* SSRenderer::CreateRenderWorld(const utf16* InWorldName)
 	if (InWorldName == nullptr) InWorldName = L"EMPTY_WorldName";
 	
 	RenderWorld* NewRenderWorld = DBG_NEW RenderWorld(InWorldName);
-	NewRenderWorld->InitializeRenderWorld(this);
 	return NewRenderWorld;
 }
 

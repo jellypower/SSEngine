@@ -1,6 +1,10 @@
 ﻿#include "pch.h"
+#include "ImGUI_WorldManager.h"
 
-#include "ImGUI_GameObjectDetailViewer.h"
+#include <SSContentsBase/Public/ContentBase/SWorld.h>
+#include <SSEngineDefault/Public/RawInput/SSInput.h>
+#include <SSGAL/Public/SSGALInlineSettings.h>
+
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
@@ -15,16 +19,141 @@
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 
 
-void ImGUI_ShowGameObjectDetail(const SObjHashCode& PickedHashCode)
+ImGUI_WorldManager::ImGUI_WorldManager(SWorld* InWorld)
+{
+	_BoundWorld = InWorld;
+}
+
+void ImGUI_WorldManager::PerFrame()
+{
+	ImGUI_DrawHierarchy();
+
+	if (SSInput::GetMouseDown(EMouseCode::MOUSE_LEFT))
+	{
+		Vector2i32 MousePos = SSInput::GetMousePos();
+		g_Renderer->RequestPixelPicking(MousePos.X, MousePos.Y);
+		_PixelPickingRequestFrameCounter = SWAP_CHAIN_FRAME_COUNT + 1; // PixelPicking용 프레임버퍼가 2프레임 뒤에 그려져서 그걸 생각해야함.
+	}
+
+	if (_PixelPickingRequestFrameCounter >= 0)
+	{
+		_PixelPickingRequestFrameCounter--;
+	}
+
+	if (_PixelPickingRequestFrameCounter == 0)
+	{
+		SObjHashCode PixelPickedObjID = g_Renderer->GetPixelPickedObjectID();
+		SObjectBase* SObj = PixelPickedObjID.GetSObject();
+
+		if (SComponentBase* PickedComponent = dynamic_cast<SComponentBase*>(SObj))
+		{
+			_LastPixelPickedObject = PickedComponent->GetGameObject();
+		}
+		else if (SGameObject* CastedPickedGameObject = dynamic_cast<SGameObject*>(SObj))
+		{
+			_LastPixelPickedObject = CastedPickedGameObject;
+		}
+	}
+
+
+	if (_LastPixelPickedObject != nullptr)
+	{
+		_PickedObject = _LastPixelPickedObject;
+	}
+
+	if (_LastHieararchyPickedObject != nullptr) // 우선순위 더 높음
+	{
+		_PickedObject = _LastHieararchyPickedObject;
+	}
+
+	_LastPixelPickedObject = nullptr;
+	_LastHieararchyPickedObject = nullptr;
+
+
+	ImGUI_ShowGameObjectDetail();
+}
+
+SGameObject* ImGUI_WorldManager::GetPickedObject() const
+{
+	return _PickedObject.Get();
+}
+
+void ImGUI_WorldManager::ImGUI_DrawHierarchy()
+{
+	if (ImGui::Begin("Node Debugger"))
+	{
+
+		if (ImGui::BeginChild("SceneTree", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
+		{
+			SGameObject* RootObject = _BoundWorld->GetWorldRootObject();
+
+			int32 ChildCnt = RootObject->GetChildCnt();
+
+			for (int i = 0; i < ChildCnt; i++)
+			{
+				ImGUI_DrawHierarchy_Recursion(RootObject->GetChild(i));
+			}
+		}
+		ImGui::EndChild();
+	}
+	ImGui::End();
+}
+
+void ImGUI_WorldManager::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
+{
+	int32 ChildCnt = Object->GetChildCnt();
+
+	SS::SHasherW sObjectName = Object->GetObjectName();
+	uint32 iObjectNameLen = sObjectName.GetStrLen();
+	const utf16* u16ObjectName = sObjectName.C_Str();
+
+	utf8 u8ObjectName[SHASHER_STRLEN_MAX];
+	UTF16StrToUtf8Str(u16ObjectName, iObjectNameLen, u8ObjectName, SHASHER_STRLEN_MAX);
+
+
+	bool bColorNode = _LastHieararchyPickedObject.GetHashCode() == Object->GetHashCode();
+
+	if (bColorNode)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+	}
+
+	if (ImGui::TreeNodeEx(u8ObjectName,
+		ImGuiTreeNodeFlags_SpanLabelWidth |
+		ImGuiTreeNodeFlags_OpenOnArrow |
+		ImGuiTreeNodeFlags_Selected |
+		ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (ImGui::IsItemClicked(0))
+		{
+			_LastHieararchyPickedObject = Object;
+		}
+
+		for (int i = 0; i < ChildCnt; i++)
+		{
+			ImGUI_DrawHierarchy_Recursion(Object->GetChild(i));
+		}
+
+		ImGui::TreePop();
+	}
+
+
+	if (bColorNode)
+	{
+		ImGui::PopStyleColor(); // Pop the green text color
+	}
+}
+
+void ImGUI_WorldManager::ImGUI_ShowGameObjectDetail()
 {
 	ImGui::Begin((utf8*)u8"Object Detail");
 	{
 		constexpr int32 BUFFER_SIZE = 512;
 		char PickedObjName[BUFFER_SIZE] = "EMPTY";
-		int64 ObjectID = PickedHashCode.GetNativeValue();
+		int64 ObjectID = _PickedObject.GetHashCode().GetNativeValue();
+		SObjectBase* PickedObject = _PickedObject.Get();
 
 
-		SObjectBase* PickedObject = PickedHashCode.GetSObject();
 		SGameObject* PickedGameObject = nullptr;
 		if (SComponentBase* PickedComponent = dynamic_cast<SComponentBase*>(PickedObject))
 		{
@@ -64,7 +193,7 @@ void ImGUI_ShowGameObjectDetail(const SObjHashCode& PickedHashCode)
 	ImGui::End();
 }
 
-void ImGUI_ShowGameObjectTransform(SGameObject* PickedInstance)
+void ImGUI_WorldManager::ImGUI_ShowGameObjectTransform(SGameObject* PickedInstance)
 {
 	const Transform& transform = PickedInstance->GetTransform();
 
@@ -132,7 +261,7 @@ void ImGUI_ShowGameObjectTransform(SGameObject* PickedInstance)
 }
 
 
-void ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow)
+void ImGUI_WorldManager::ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow)
 {
 	if (SRenderLightComponent* RenderLight = dynamic_cast<SRenderLightComponent*>(ComponentToShow))
 	{
@@ -152,7 +281,7 @@ void ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow)
 	}
 }
 
-void ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow)
+void ImGUI_WorldManager::ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow)
 {
 	const utf8* u8CompName = (utf8*)u8"RenderLightComponent";
 
@@ -183,7 +312,7 @@ void ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow)
 	}
 }
 
-void ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow)
+void ImGUI_WorldManager::ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow)
 {
 	const utf8* u8CompName = (utf8*)u8"CubeMapComp";
 	if (ImGui::CollapsingHeader(u8CompName))
@@ -247,7 +376,7 @@ void ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow)
 	}
 }
 
-void ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderComponent* SkinnedMeshToShow)
+void ImGUI_WorldManager::ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderComponent* SkinnedMeshToShow)
 {
 	const utf8* u8CompName = (utf8*)u8"SSkinnedMeshRenderComponent";
 	if (ImGui::CollapsingHeader(u8CompName))
@@ -274,7 +403,7 @@ void ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderComponent* SkinnedMeshToS
 	}
 }
 
-void ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp)
+void ImGUI_WorldManager::ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp)
 {
 	const utf8* u8CompName = (utf8*)u8"SSimpleAnimatorTestComponent";
 	if (ImGui::CollapsingHeader(u8CompName))

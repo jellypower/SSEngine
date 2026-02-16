@@ -150,7 +150,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SSBuildSettings.h" />
     <ClInclude Include="SSEngineMain\ImGUI_AssetViewer.h" />
-    <ClInclude Include="SSEngineMain\ImGUI_GameObjectDetailViewer.h" />
+    <ClInclude Include="SSEngineMain\ImGUI_WorldManager.h" />
     <ClInclude Include="EngineUtils\PWin32\OpenFilePathDialogue.h" />
     <ClInclude Include="SSEngineMain\ImGUI_GOManager.h" />
     <ClInclude Include="SSEngineMain\SSEditor.h" />
@@ -165,7 +165,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SSEngineMain\ImGUI_AssetViewer.cpp" />
-    <ClCompile Include="SSEngineMain\ImGUI_GameObjectDetailViewer.cpp" />
+    <ClCompile Include="SSEngineMain\ImGUI_WorldManager.cpp" />
     <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_GOManager.cpp" />
     <ClCompile Include="SSEngineMain\SSEditor.cpp" />
