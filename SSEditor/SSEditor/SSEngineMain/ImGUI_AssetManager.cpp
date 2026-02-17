@@ -1,36 +1,61 @@
 ﻿#include "pch.h"
+#include "ImGUI_AssetManager.h"
 
-#include "ImGUI_AssetViewer.h"
 
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
+#include "ModuleEntryScriptRunner.h"
+#include "EngineUtils/PWin32/OpenFilePathDialogue.h"
+#include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
+#include "SSEngineDefault/Public/SystemUtilities.h"
+#include "SSEngineDefault/Public/RawInput/SSInput.h"
 
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
-
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
-
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
+#include "SSFBXImporter/Public/FRAN.h"
 
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IAssetBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
+#include "SSRenderer/Public/RenderAssetSerializer/IApakFileReader.h"
+#include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
-ImGUI_AssetViewer::ImGUI_AssetViewer(IRenderer* InRenderer)
+
+enum class EExportTabbarActionType : int32
+{
+	AssetView,
+	AssetExport
+};
+
+
+ImGUI_AssetManager::ImGUI_AssetManager(IRenderer* InRenderer)
 {
 	_Renderer = InRenderer;
 	_ImGUI_SelectedAssetManager_Type = EAssetType::Texture;
+	_TabbarActionType = EExportTabbarActionType::AssetView;
+
+	_AssetDBLoaderToExport = g_fpCreateAssetDBLoader();
+	_SelectedAssetDBNameSpace = CRAN::NS_DEFAULT_ASSET;
+
+	_IEDataPool.Reserve(200);
 }
 
-ImGUI_AssetViewer::~ImGUI_AssetViewer()
+ImGUI_AssetManager::~ImGUI_AssetManager()
 {
+	delete _AssetDBLoaderToExport;
+}
 
+void ImGUI_AssetManager::PerFrame()
+{
+	ImGUI_ShowAssetViewer();
 }
 
 
-void ImGUI_AssetViewer::ImGUI_ShowAssetViewer()
+void ImGUI_AssetManager::ImGUI_ShowAssetViewer()
 {
 	ImGui::Begin("Asset Editor");
 	{
@@ -39,46 +64,67 @@ void ImGUI_AssetViewer::ImGUI_ShowAssetViewer()
 		if (ImGui::TabItemButton("Texture"))
 		{
 			_ImGUI_SelectedAssetManager_Type = EAssetType::Texture;
+			_TabbarActionType = EExportTabbarActionType::AssetView;
 		}
 		else if (ImGui::TabItemButton("Mesh"))
 		{
 			_ImGUI_SelectedAssetManager_Type = EAssetType::Mesh;
+			_TabbarActionType = EExportTabbarActionType::AssetView;
 		}
 		else if (ImGui::TabItemButton("Material"))
 		{
 			_ImGUI_SelectedAssetManager_Type = EAssetType::Material;
+			_TabbarActionType = EExportTabbarActionType::AssetView;
 		}
 		else if (ImGui::TabItemButton("Model"))
 		{
 			_ImGUI_SelectedAssetManager_Type = EAssetType::Model;
+			_TabbarActionType = EExportTabbarActionType::AssetView;
 		}
 		else if (ImGui::TabItemButton("RenderAnim"))
 		{
 			_ImGUI_SelectedAssetManager_Type = EAssetType::RenderAnim;
+			_TabbarActionType = EExportTabbarActionType::AssetView;
 		}
 		else if (ImGui::TabItemButton("ModelCombination"))
 		{
 			_ImGUI_SelectedAssetManager_Type = EAssetType::ModelCombination;
+			_TabbarActionType = EExportTabbarActionType::AssetView;
+		}
+		else if (ImGui::TabItemButton("AssetExport"))
+		{
+			_TabbarActionType = EExportTabbarActionType::AssetExport;
+			_ImGUI_SelectedAssetManager_Type = EAssetType::None;
 		}
 		ImGui::EndTabBar();
 
-		switch (_ImGUI_SelectedAssetManager_Type)
+
+		if (_TabbarActionType == EExportTabbarActionType::AssetView)
 		{
-		case EAssetType::Texture: ImGUI_Show_Asset_RefCnt_Table(EAssetType::Texture); break;
-		case EAssetType::Mesh: ImGUI_Show_Asset_RefCnt_Table(EAssetType::Mesh); break;
-		case EAssetType::RenderAnim: ImGUI_Show_Asset_RefCnt_Table(EAssetType::RenderAnim); break;
-		case EAssetType::ModelCombination: ImGUI_Show_Asset_RefCnt_Table(EAssetType::ModelCombination); break;
-		case EAssetType::Material: ImGUI_AssetManager_Material(); break;
-		case EAssetType::Model: ImGUI_AssetManager_Model(); break;
-		default:
-			SS_ASSERT(false);
-			break;
+			switch (_ImGUI_SelectedAssetManager_Type)
+			{
+			case EAssetType::Texture: ImGUI_Show_Asset_RefCnt_Table(EAssetType::Texture); break;
+			case EAssetType::Mesh: ImGUI_Show_Asset_RefCnt_Table(EAssetType::Mesh); break;
+			case EAssetType::RenderAnim: ImGUI_Show_Asset_RefCnt_Table(EAssetType::RenderAnim); break;
+			case EAssetType::ModelCombination: ImGUI_Show_Asset_RefCnt_Table(EAssetType::ModelCombination); break;
+			case EAssetType::Material: ImGUI_AssetManager_Material(); break;
+			case EAssetType::Model: ImGUI_AssetManager_Model(); break;
+			default:
+				SS_ASSERT(false);
+				break;
+			}
 		}
+		else if (_TabbarActionType == EExportTabbarActionType::AssetExport)
+		{
+			ImGUI_AssetManager_FBXExporter();
+		}
+
+
 	}
 	ImGui::End();
 }
 
-void ImGUI_AssetViewer::ImGUI_Show_Asset_RefCnt_Table(EAssetType AssetTypeToShow)
+void ImGUI_AssetManager::ImGUI_Show_Asset_RefCnt_Table(EAssetType AssetTypeToShow)
 {
 	IAssetManager* AssetManager = _Renderer->GetAssetManager();
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetList = AssetManager->GetAssetMap(AssetTypeToShow);
@@ -140,7 +186,7 @@ void ImGUI_AssetViewer::ImGUI_Show_Asset_RefCnt_Table(EAssetType AssetTypeToShow
 	}
 }
 
-void ImGUI_AssetViewer::ImGUI_AssetManager_Material()
+void ImGUI_AssetManager::ImGUI_AssetManager_Material()
 {
 	IAssetManager* AssetManager = _Renderer->GetAssetManager();
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& TextureList = AssetManager->GetAssetMap(EAssetType::Texture);
@@ -265,7 +311,7 @@ void ImGUI_AssetViewer::ImGUI_AssetManager_Material()
 	}
 }
 
-void ImGUI_AssetViewer::ImGUI_AssetManager_Model()
+void ImGUI_AssetManager::ImGUI_AssetManager_Model()
 {
 	IAssetManager* AssetManager = _Renderer->GetAssetManager();
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& ModelList = AssetManager->GetAssetMap(EAssetType::Model);
@@ -336,7 +382,174 @@ void ImGUI_AssetViewer::ImGUI_AssetManager_Model()
 	}
 }
 
-SS::SHasherW ImGUI_AssetViewer::ImGUI_ShowAssetCombo(EAssetType InType, const utf8* LabelName, SS::SHasherW PrevSelectedAssetName, ImGuiComboFlags_ Flags)
+void ImGUI_AssetManager::ImGUI_AssetManager_FBXExporter()
+{
+	constexpr int32 BUFFER_SIZE = 512;
+	static const SS::SHasherW NameSpaces[] =
+	{
+		SS::SHasherW(CRAN::NS_DEFAULT_ASSET),
+		SS::SHasherW(L"ContentsAssets")
+	};
+	
+	uint32 PrevSelectedNSStrLen = _SelectedAssetDBNameSpace.GetStrLen();
+	const utf16* PrevSelectedNSCStr = _SelectedAssetDBNameSpace.C_Str();
+
+	utf8 u8SelectedNS[BUFFER_SIZE] = "EMPTY";
+	UTF16StrToUtf8Str(PrevSelectedNSCStr, PrevSelectedNSStrLen, u8SelectedNS, BUFFER_SIZE);
+
+	if (ImGui::BeginCombo("NameSpaceSelected", u8SelectedNS, ImGuiComboFlags_WidthFitPreview))
+	{
+		for (SS::SHasherW NSItem : NameSpaces)
+		{
+			uint32 NSItemStrLen = NSItem.GetStrLen();
+			const utf16* NSItemCStr = NSItem.C_Str();
+
+			utf8 u8NSItem[BUFFER_SIZE];
+			UTF16StrToUtf8Str(NSItemCStr, NSItemStrLen, u8NSItem, BUFFER_SIZE);
+
+
+			if (ImGui::Selectable(u8NSItem, _SelectedAssetDBNameSpace == NSItem))
+			{
+				_SelectedAssetDBNameSpace = NSItem;
+			}
+
+			if (_SelectedAssetDBNameSpace == NSItem)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+
+		}
+		ImGui::EndCombo();
+	}
+
+	if (ImGui::Button("Export FBX Asset"))
+	{
+		_AssetDBLoaderToExport->StartLoadDB(_SelectedAssetDBNameSpace);
+
+		ImGUI_ExportLoadedFBXAssets(_SelectedAssetDBNameSpace);
+
+		_AssetDBLoaderToExport->ClearDB();
+	}
+}
+
+void ImGUI_AssetManager::ImGUI_ProcessAssetExport()
+{
+	if (SSInput::GetKey(EKeyCode::KEY_Ctrl))
+	{
+		if (SSInput::GetKeyDown(EKeyCode::KEY_S))
+		{
+		}
+
+		if (SSInput::GetKeyDown(EKeyCode::KEY_L))
+		{
+			SS::StringW OutString;
+			HRESULT hr = OpenSystemPathDialogue(OutString);
+			if (FAILED(hr))
+			{
+				SS_ASSERT(false);
+				return;
+			}
+
+			IApakFileReader* Accessor = CreateApakFileAccessor(OutString.C_Str());
+			if (Accessor != nullptr)
+			{
+				delete Accessor;
+			}
+		}
+	}
+}
+
+void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace)
+{
+	SS::PooledList<IAssetBase*> AssetListToSerialize;
+	IAssetManager* AM = _Renderer->GetAssetManager();
+	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Mesh);
+
+	if (AssetListToSerialize.GetSize() == 0)
+	{
+		return;
+	}
+
+	// TEMP
+//	int32 ArrowIdx = -1;
+//	for (int32 i = 0; i < AssetListToSerialize.GetSize(); i++)
+//	{
+//		if (AssetListToSerialize[i]->GetAssetName() == L"Arrow/Arrow.mesh")
+//		{
+//			ArrowIdx = i;
+//			break;
+//		}
+//	}
+//
+//	AssetListToSerialize.RemoveAtAndFillLast(ArrowIdx);
+	// ~TEMP
+
+	_IEDataPool.Clear();
+	AppendApakDataFromAssetList(_IEDataPool, AssetListToSerialize);
+
+	SS::StringW OutString;
+	HRESULT hr = OpenSystemPathDialogue(OutString, SPD_CREATEPATH);
+	if (FAILED(hr))
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	FILE* hFile = nullptr;
+
+	bool bResult = ConvertToWorkingDirPath(OutString);
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	SS::SHasherW SaveAssetWorkingDirPath = OutString.C_Str();
+	for (IAssetBase* SerializedAssets : AssetListToSerialize)
+	{
+		SerializedAssets->SetAssetPathXXX(SaveAssetWorkingDirPath);
+	}
+
+	// TODO:
+	// 1. 여기서 ExtractWorkDirRelativePath라는 함수 만들어서 상대경로 빼오기
+	// 2. Asset에 직접적으로 Path를 Assign하는 간단한 기능 만들어서 Assign하기
+	// 3. DBLoader에서 Assign한 Path를 기준으로 Namespace기준 상대 Path 만들기
+
+
+	errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"wb+");
+	if (no != 0)
+	{
+		fclose(hFile);
+		SS_ASSERT(false);
+		return;
+	}
+
+	fwrite(_IEDataPool.GetData(), 1, _IEDataPool.GetSize(), hFile);
+	fclose(hFile);
+
+
+	// TEMP
+//	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Model);
+//	ArrowIdx = -1;
+//	for (int32 i = 0; i < AssetListToSerialize.GetSize(); i++)
+//	{
+//		if (AssetListToSerialize[i]->GetAssetName() == L"Arrow/Arrow.mdl")
+//		{
+//			ArrowIdx = i;
+//			break;
+//		}
+//	}
+//
+//	AssetListToSerialize.RemoveAtAndFillLast(ArrowIdx);
+	// ~TEMP
+
+	_AssetDBLoaderToExport->PushAssetsToSaveToDB(AssetListToSerialize);
+	_AssetDBLoaderToExport->LoadAssetListFromAssetsToSaveToDB();
+	_AssetDBLoaderToExport->ClearAssetsToSaveToDB();
+	_AssetDBLoaderToExport->SaveLoadedAssetsToDB();
+}
+
+SS::SHasherW ImGUI_AssetManager::ImGUI_ShowAssetCombo(EAssetType InType, const utf8* LabelName, SS::SHasherW PrevSelectedAssetName, ImGuiComboFlags_ Flags)
 {
 	constexpr int32 BUFFER_SIZE = 512;
 

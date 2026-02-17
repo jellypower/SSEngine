@@ -27,7 +27,7 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	_TexEMPTYNORMAL = AssetManager->FindAssetByName<ITextureAsset>(CRAN::EMPTYNORMAL_TEX);
 	_TexWHITE = AssetManager->FindAssetByName<ITextureAsset>(CRAN::WHITE_TEX);
 	_EmptyPBRMaterial = AssetManager->FindAssetByName<IMaterialAsset>(NAME_EMPTY_PBR_MTL);
-
+	_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>(CRAN::ARROW_MESH);
 
 
 	static const SS::SHasherW NS_RUNTIME_CREATION_HASHER = CRAN::NS_RUNTIME_CREATION;
@@ -62,6 +62,7 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	_TexBLACK->AddAssetReference(Referencer);
 	_TexEMPTYNORMAL->AddAssetReference(Referencer);
 	_EmptyPBRMaterial->AddAssetReference(Referencer);
+	_ArrowMesh->AddAssetReference(Referencer);
 
 	_Cube1mModel->AddAssetReference(Referencer);
 	_Sphere1mModel->AddAssetReference(Referencer);
@@ -69,13 +70,7 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 
 void CommonRenderAssetSet::TEMP_CacheCommonAssetFromFBX()
 {
-	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
-	_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>(L"Arrow/Arrow.mesh");
-	AssetInstanceReferencer Referencer;
-	Referencer.Type = EAssetInstanceReferenceType::AssetName;
-	Referencer.AssetName = CRAN::AR_COMMON;
-	_ArrowMesh->AddAssetReference(Referencer);
 }
 
 void CommonRenderAssetSet::ReleaseCachedAssets()

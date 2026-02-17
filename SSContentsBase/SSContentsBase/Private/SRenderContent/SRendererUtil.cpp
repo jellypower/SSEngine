@@ -1,6 +1,7 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/SRendererUtil.h"
 
+
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SSkinnedMeshRenderComponent.h"
 
@@ -8,10 +9,12 @@
 
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SStaticMeshRenderComponent.h"
 
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelCombinationAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
@@ -126,6 +129,41 @@ SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName, SS::SH
 
 	SStaticMeshRenderComponent* NewStaticMeshComp = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(lModelAsset->GetAssetName());
 	NewStaticMeshComp->SetModelAsset(lModelAsset->GetAssetName());
+	NewStaticMeshComp->PostConstructHierarchy();
+
+	return NewGameObj;
+}
+
+SGameObject* SRendererUtil::InstantiateMesh(SS::SHasherW MeshAssetName, SS::SHasherW ObjectNameOverride)
+{
+	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+	const ICommonRenderAssetSet* CommRenderAssets = g_Renderer->GetCommonRenderAssetSet();
+	const IMeshAsset* lMeshAsset = AssetManager->FindAssetByName<IMeshAsset>(MeshAssetName);
+	if (lMeshAsset == nullptr)
+	{
+		SS_ASSERT(false);
+		return nullptr;
+	}
+
+	SGameObject* NewGameObj = nullptr;
+	if (ObjectNameOverride.IsEmpty())
+	{
+		NewGameObj = NewSObject<SGameObject>(MeshAssetName);
+	}
+	else
+	{
+		NewGameObj = NewSObject<SGameObject>(ObjectNameOverride);
+	}
+
+	SStaticMeshRenderComponent* NewStaticMeshComp = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(L"MeshAssetName");
+	NewStaticMeshComp->SetMeshAsset(MeshAssetName);
+
+	static const SS::SHasherW EmptyMtlAssetName = CRAN::EMPTY_PBR_MTL;
+	const int32 SubMeshCnt = lMeshAsset->GetSubMeshCnt();
+	for (int32 i=0;i<SubMeshCnt;i++)
+	{
+		NewStaticMeshComp->SetMaterialAsset(EmptyMtlAssetName, i);
+	}
 	NewStaticMeshComp->PostConstructHierarchy();
 
 	return NewGameObj;

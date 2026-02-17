@@ -7,7 +7,7 @@
 
 class ImGUI_WorldManager;
 class IAssetDBLoader;
-class ImGUI_AssetViewer;
+class ImGUI_AssetManager;
 class SRenderLightDirectionalComponent;
 enum class EAssetType;
 class SSImGUIInitializer;
@@ -34,14 +34,13 @@ public:
 
 	void InjectImportFilePath_TMP(const utf16* inImportFilePath) { _importFileName_TMP = inImportFilePath; }
 
-	void ProcessEditorCommand();
 
 	void TEMP_ProcessContents();
 
 
 #pragma region IMGUI
 private:
-	ImGUI_AssetViewer* _ImGUI_AssetViewer = nullptr;
+	ImGUI_AssetManager* _ImGUI_AssetViewer = nullptr;
 	ImGUI_WorldManager* _ImGUI_WorldManager = nullptr;
 
 	void ProcessImGUI();
@@ -74,8 +73,6 @@ private:
 	SS::HashMap<SS::SHasherW, SS::FixedStringW<PATH_LEN_MAX>> _hashMap_TMP;
 	SS::StringW _importFileName_TMP;
 
-	// Import Export Data Pool
-	SS::PooledList<byte> _IEDataPool;
 
 	ISSFBXImporter* _FbxImporter = nullptr;
 	IAssetDBLoader* _AssetDBLoader = nullptr;

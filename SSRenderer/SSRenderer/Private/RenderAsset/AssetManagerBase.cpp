@@ -76,7 +76,7 @@ ITextureAssetMutable* AssetManagerBase::CreateEmptyTextureAsset(SS::SHasherW InD
 
 IMeshAssetMutable* AssetManagerBase::CreateEmptyMeshAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
-	return DBG_NEW MeshAsset(InDBNameSpace, InAssetName, InAssetName);
+	return DBG_NEW MeshAsset(InDBNameSpace, InAssetName, InAssetPath);
 }
 
 IModelAssetMutable* AssetManagerBase::CreateEmptyModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)

@@ -2,7 +2,7 @@
 
 #include "SSEditor.h"
 
-#include "ImGUI_AssetViewer.h"
+#include "ImGUI_AssetManager.h"
 #include "ImGUI_WorldManager.h"
 #include "ModuleEntryScriptRunner.h"
 #include "SSImGUIInitializer.h"
@@ -61,7 +61,6 @@ SSEditor* g_Editor = nullptr;
 SSEditor::SSEditor(IRenderer* EngineRenderer) :
 	_hashMap_TMP(200)
 {
-	_IEDataPool.Reserve(1024 * 10);
 
 	_Renderer = EngineRenderer;
 
@@ -105,6 +104,7 @@ void SSEditor::StartupEngine()
 		_AssetDBLoader->CreateLoadedAssetInstances();
 		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
 		_AssetDBLoader->ClearLoadedAssetData();
+		_AssetDBLoader->ClearDB();
 	}
 	int64 PC2 = GetPerofrmanceCounter();
 	int64 PF = GetPerformanceFrequency();
@@ -116,11 +116,11 @@ void SSEditor::StartupEngine()
 	}
 
 
-	{
-		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\Arrow.fbx");
-		_FbxImporter->GenerateImportedAssets();
-		_FbxImporter->RelocateImportedAssetsToAssetManager();
-	}
+//	{
+//		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\Arrow.fbx");
+//		_FbxImporter->GenerateImportedAssets();
+//		_FbxImporter->RelocateImportedAssetsToAssetManager();
+//	}
 
 
 	{
@@ -145,7 +145,7 @@ void SSEditor::StartupEngine()
 
 
 	{
-		_ImGUI_AssetViewer = DBG_NEW ImGUI_AssetViewer(_Renderer);
+		_ImGUI_AssetViewer = DBG_NEW ImGUI_AssetManager(_Renderer);
 	}
 
 
@@ -171,20 +171,22 @@ void SSEditor::StartupEngine()
 
 	// Arrow
 	{
+		static const SS::SHasherW ArrowMeshName = CRAN::ARROW_MESH;
+
 		// X
-		SGameObject* DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-X");
+		SGameObject* DirectionObject = SRendererUtil::InstantiateMesh(ArrowMeshName, L"Arrow-X");
 		_DefaultWorld->AddToWorld(DirectionObject);
 		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(1, 0, 0, 0)));
 		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
 
 		// Y
-		DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-Y");
+		DirectionObject = SRendererUtil::InstantiateMesh(ArrowMeshName, L"Arrow-Y");
 		_DefaultWorld->AddToWorld(DirectionObject);
 		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(0, 1, 0, 0)));
 		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
 
 		// Z
-		DirectionObject = SRendererUtil::InstantiateModel(L"Arrow/Arrow.mdl", L"Arrow-Z");
+		DirectionObject = SRendererUtil::InstantiateMesh(ArrowMeshName, L"Arrow-Z");
 		_DefaultWorld->AddToWorld(DirectionObject);
 		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(0, 0, 1, 0)));
 		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
@@ -302,119 +304,6 @@ void SSEditor::CleanupEngine()
 	_Renderer->CleanUp();
 	delete _Renderer;
 	_Renderer = nullptr;
-}
-
-void SSEditor::ProcessEditorCommand()
-{
-	if (SSInput::GetKey(EKeyCode::KEY_Ctrl))
-	{
-		if (SSInput::GetKeyDown(EKeyCode::KEY_S))
-		{
-			SS::PooledList<IAssetBase*> AssetListToSerialize;
-			IAssetManager* AM = _Renderer->GetAssetManager();
-			AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Mesh);
-
-			if (AssetListToSerialize.GetSize() == 0)
-			{
-				return;
-			}
-
-			// TEMP
-			int32 ArrowIdx = -1;
-			for (int32 i = 0; i < AssetListToSerialize.GetSize(); i++)
-			{
-				if (AssetListToSerialize[i]->GetAssetName()== L"Arrow/Arrow.mesh")
-				{
-					ArrowIdx = i;
-					break;
-				}
-			}
-
-			AssetListToSerialize.RemoveAtAndFillLast(ArrowIdx);
-			// ~TEMP
-
-			_IEDataPool.Clear();
-			AppendApakDataFromAssetList(_IEDataPool, AssetListToSerialize);
-
-			SS::StringW OutString;
-			HRESULT hr = OpenSystemPathDialogue(OutString, SPD_CREATEPATH);
-			if (FAILED(hr))
-			{
-				SS_ASSERT(false);
-				return;
-			}
-
-			FILE* hFile = nullptr;
-
-			bool bResult = ConvertToWorkingDirPath(OutString);
-			if (bResult == false)
-			{
-				SS_ASSERT(false);
-				return;
-			}
-
-			SS::SHasherW SaveAssetWorkingDirPath = OutString.C_Str();
-			for (IAssetBase* SerializedAssets : AssetListToSerialize)
-			{
-				SerializedAssets->SetAssetPathXXX(SaveAssetWorkingDirPath);
-			}
-
-			// TODO:
-			// 1. 여기서 ExtractWorkDirRelativePath라는 함수 만들어서 상대경로 빼오기
-			// 2. Asset에 직접적으로 Path를 Assign하는 간단한 기능 만들어서 Assign하기
-			// 3. DBLoader에서 Assign한 Path를 기준으로 Namespace기준 상대 Path 만들기
-
-
-			errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"wb+");
-			if (no != 0)
-			{
-				fclose(hFile);
-				SS_ASSERT(false);
-				return;
-			}
-
-			fwrite(_IEDataPool.GetData(), 1, _IEDataPool.GetSize(), hFile);
-			fclose(hFile);
-
-
-			// TEMP
-			AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Model);
-			ArrowIdx = -1;
-			for (int32 i = 0; i < AssetListToSerialize.GetSize(); i++)
-			{
-				if (AssetListToSerialize[i]->GetAssetName() == L"Arrow/Arrow.mdl")
-				{
-					ArrowIdx = i;
-					break;
-				}
-			}
-
-			AssetListToSerialize.RemoveAtAndFillLast(ArrowIdx);
-			// ~TEMP
-
-			_AssetDBLoader->PushAssetsToSaveToDB(AssetListToSerialize);
-			_AssetDBLoader->LoadAssetListFromAssetsToSaveToDB();
-			_AssetDBLoader->ClearAssetsToSaveToDB();
-			_AssetDBLoader->SaveLoadedAssetsToDB();
-		}
-
-		if (SSInput::GetKeyDown(EKeyCode::KEY_L))
-		{
-			SS::StringW OutString;
-			HRESULT hr = OpenSystemPathDialogue(OutString);
-			if (FAILED(hr))
-			{
-				SS_ASSERT(false);
-				return;
-			}
-
-			IApakFileReader* Accessor = CreateApakFileAccessor(OutString.C_Str());
-			if (Accessor != nullptr)
-			{
-				delete Accessor;
-			}
-		}
-	}
 }
 
 void SSEditor::TEMP_ProcessContents()
@@ -605,10 +494,9 @@ void SSEditor::ProcessImGUI()
 	ImGui::DockSpaceOverViewport(dockspace_id, nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 
 
-	_ImGUI_AssetViewer->ImGUI_ShowAssetViewer();
+	_ImGUI_AssetViewer->PerFrame();
 	_ImGUI_WorldManager->PerFrame();
 
-	ProcessEditorCommand();
 	ImGUI_FrameInfo();
 }
 

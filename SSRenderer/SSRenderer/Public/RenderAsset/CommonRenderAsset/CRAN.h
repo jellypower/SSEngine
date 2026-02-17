@@ -15,14 +15,16 @@ struct CRAN
 
 	constexpr static const utf16* EMPTY_PBR_MTL = L"EngineDefaultAssets/EMPTY.mtl";
 
+	constexpr static const utf16* ARROW_MESH = L"EngineDefaultAssets/Arrow/Arrow.mesh";
 
 
 	// RuntimeCreationAssets
 	constexpr static const utf16* NS_RUNTIME_CREATION = L"__RUNTIME_CREATION__"; // NameSpace Runtime Creation
 
 	constexpr static const utf16* CUBE1M_MESH = L"__RUNTIME_CREATION__/Cube1m.mesh";
-	constexpr static const utf16* CUBE1M_MDL = L"__RUNTIME_CREATION__/Cube1m.mdl";
 	constexpr static const utf16* SPHERE1M_MESH = L"__RUNTIME_CREATION__/Sphere1m.mesh";
+
+	constexpr static const utf16* CUBE1M_MDL = L"__RUNTIME_CREATION__/Cube1m.mdl";
 	constexpr static const utf16* SPHERE1M_MDL = L"__RUNTIME_CREATION__/Sphere1m.mdl";
 
 

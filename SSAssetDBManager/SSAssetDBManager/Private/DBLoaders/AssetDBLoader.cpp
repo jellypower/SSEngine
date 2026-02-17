@@ -34,7 +34,7 @@ AssetDBLoader::AssetDBLoader()
 	_LoadedMdlcs.Reserve(128);
 }
 
-bool AssetDBLoader::StartLoadDB(const utf16* InNameSpace)
+bool AssetDBLoader::StartLoadDB(SS::SHasherW InNameSpace)
 {
 	if (_BoundDBNameSpace.IsEmpty() == false)
 	{
@@ -45,11 +45,11 @@ bool AssetDBLoader::StartLoadDB(const utf16* InNameSpace)
 	_BoundDBNameSpace = InNameSpace;
 
 	SS::StringW FilePathConstructor = L"Resource/AssetDB/";
-	FilePathConstructor += InNameSpace;
+	FilePathConstructor += InNameSpace.C_Str();
 	FilePathConstructor += L"/";
 	_BoundDBNameSpacePath = FilePathConstructor.C_Str();
 
-	FilePathConstructor += InNameSpace;
+	FilePathConstructor += InNameSpace.C_Str();
 	FilePathConstructor += L".sqlite";
 	_BoundDBSqlFilePath = FilePathConstructor.C_Str();
 
@@ -394,6 +394,10 @@ void AssetDBLoader::FillEmptyAssetsFromApakFile()
 		}
 	}
 
+	if (ApakFileAccessor != nullptr)
+	{
+		delete ApakFileAccessor;
+	}
 }
 
 bool AssetDBLoader::LoadAllLoadedTex()

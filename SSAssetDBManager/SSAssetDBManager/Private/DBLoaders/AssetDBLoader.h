@@ -14,7 +14,7 @@ public:
 	AssetDBLoader();
 
 public:
-	bool StartLoadDB(const utf16* InNameSpace) override;
+	bool StartLoadDB(SS::SHasherW InNameSpace) override;
 	void ClearDB() override;
 
 

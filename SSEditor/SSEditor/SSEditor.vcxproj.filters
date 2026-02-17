@@ -36,7 +36,7 @@
     <ClInclude Include="SSEngineMain\TestCodes\MeshSerializeTest.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineMain\ImGUI_AssetViewer.h">
+    <ClInclude Include="SSEngineMain\ImGUI_AssetManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="EngineUtils\PWin32\OpenFilePathDialogue.h">
@@ -65,7 +65,7 @@
     <ClCompile Include="SSEngineMain\TestCodes\MeshSerializeTest.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSEngineMain\ImGUI_AssetViewer.cpp">
+    <ClCompile Include="SSEngineMain\ImGUI_AssetManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp">

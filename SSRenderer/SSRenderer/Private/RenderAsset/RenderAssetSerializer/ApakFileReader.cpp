@@ -147,6 +147,7 @@ bool ApakFileReader::SetDataCursorToAsset(SS::SHasherW AssetName)
 			break;
 		}
 	}
+	i--;
 
 	ApakDataChunkOffsetDesc ChunkDesc = _AssetOffsets[i];
 	fseek(_hFile, ChunkDesc.Offset, SEEK_SET);
