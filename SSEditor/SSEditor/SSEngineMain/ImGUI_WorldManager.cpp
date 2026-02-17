@@ -386,12 +386,12 @@ void ImGUI_WorldManager::ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderCompo
 			constexpr int32 BUFFER_SIZE = 256;
 
 
-			SS::SHasherW ModelName = SkinnedMeshToShow->GetModelAssetName();
+			SS::SHasherW MeshName = SkinnedMeshToShow->GetMeshAssetName();
 			utf8 u8ModelName[BUFFER_SIZE] = "EMPTY";
-			if (ModelName.IsEmpty() == false)
+			if (MeshName.IsEmpty() == false)
 			{
-				uint32 EquippedTexNameCStrLen = ModelName.GetStrLen();
-				const utf16* EquippedTexNameCStr = ModelName.C_Str();
+				uint32 EquippedTexNameCStrLen = MeshName.GetStrLen();
+				const utf16* EquippedTexNameCStr = MeshName.C_Str();
 				UTF16StrToUtf8Str(EquippedTexNameCStr, EquippedTexNameCStrLen, u8ModelName, BUFFER_SIZE);
 			}
 

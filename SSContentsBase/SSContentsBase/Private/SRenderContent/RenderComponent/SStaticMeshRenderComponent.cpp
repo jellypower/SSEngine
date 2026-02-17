@@ -12,16 +12,9 @@
 
 void SStaticMeshRenderComponent::ConstructRenderInstance()
 {
-	IRIMesh* NewStaticMeshRI = g_Renderer->CreateRIStaticMesh();
-	_RenderInstance = NewStaticMeshRI;
-
-	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-
-	SS_ASSERT(_ModelAssetName.IsEmpty() == false);
-	IModelAsset* FoundModelRef = AssetManager->FindAssetByName<IModelAsset>(_ModelAssetName);
-
-	NewStaticMeshRI->SetModelAsset(FoundModelRef);
-	NewStaticMeshRI->SetGameObjectIDXXX(GetHashCode());
+	_RenderInstance = g_Renderer->CreateRIStaticMesh();
+	_RenderInstance->SetGameObjectIDXXX(GetHashCode());
+	SnycMeshRIWithAssetBindingIfExists();
 }
 
 void SStaticMeshRenderComponent::DestructRenderInstance()

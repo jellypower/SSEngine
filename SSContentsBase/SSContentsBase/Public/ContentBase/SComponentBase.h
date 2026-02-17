@@ -3,6 +3,7 @@
 
 #include "SSContentsBase/ModuleExportKeyword.h"
 
+class SWorld;
 class SGameObject;
 
 class SSCONTENTBASE_MODULE SComponentBase : public SObjectBase
@@ -12,6 +13,7 @@ private:
 
 public:
 	SGameObject* GetGameObject() const { return _ParentGameObject; }
+	SWorld* GetIncludedWorld() const;
 
 	void InitComponentWithParent(SGameObject* InParent);
 

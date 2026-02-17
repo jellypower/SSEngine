@@ -147,54 +147,13 @@ IMaterialAsset* RISkinnedMesh::GetMaterialAsset(int MtlIdx) const
 	return _MtlRef[MtlIdx];
 }
 
-
-void RISkinnedMesh::SetModelAsset(IModelAsset* InAsset)
-{
-	if (_IncludedRenderWorld == nullptr)
-	{
-		_MeshRef = InAsset->GetMeshAsset();
-
-		int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
-		_MtlRef.SetSizeDirectly(SubMeshCnt);
-		for (int32 i = 0; i < SubMeshCnt; i++)
-		{
-			_MtlRef[i] = InAsset->GetMaterialAsset(i);
-		}
-
-		return;
-	}
-
-	AssetInstanceReferencer ThisAssetRef;
-	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
-	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
-
-
-
-	const int32 PrevSubMeshCnt = _MeshRef->GetSubMeshCnt();
-	_MeshRef->RemoveAssetReference(ThisAssetRef);
-	for (int32 i = 0; i < PrevSubMeshCnt; i++)
-	{
-		_MtlRef[i]->RemoveAssetReference(ThisAssetRef);
-	}
-
-
-
-	_MeshRef = InAsset->GetMeshAsset();
-	const int32 NewSubMeshCnt = _MeshRef->GetSubMeshCnt();
-	_MeshRef->AddAssetReference(ThisAssetRef);
-	_MtlRef.SetSizeDirectly(NewSubMeshCnt);
-	for (int32 i=0;i<NewSubMeshCnt;i++)
-	{
-		_MtlRef[i] = InAsset->GetMaterialAsset(i);
-		_MtlRef[i]->AddAssetReference(ThisAssetRef);
-	}
-}
-
 void RISkinnedMesh::SetMeshAsset(IMeshAsset* InAsset)
 {
 	if (_IncludedRenderWorld == nullptr)
 	{
 		_MeshRef = InAsset;
+		const int32 NewSubMeshCnt = _MeshRef->GetSubMeshCnt();
+		_MtlRef.SetSizeDirectly(NewSubMeshCnt);
 		return;
 	}
 

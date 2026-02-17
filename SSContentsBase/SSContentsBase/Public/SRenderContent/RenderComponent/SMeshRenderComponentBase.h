@@ -1,13 +1,29 @@
 #pragma once
 #include "SRenderComponentBase.h"
 
+class IMaterialAsset;
+class IMeshAsset;
+class IModelAsset;
+
 class SSCONTENTBASE_MODULE SMeshRenderComponentBase : public SRenderComponentBase
 {
 protected:
-	SS::SHasherW _ModelAssetName;
+	IModelAsset* _CachedOirignalModelAsset = nullptr;
+	IMeshAsset* _CachedMeshAsset = nullptr;
+	SS::PooledList<IMaterialAsset*, SS::InlineAllocator<8>> _CachedMtlAssets;
+
+protected:
+	void SnycMeshRIWithAssetBindingIfExists();
+
+
+public:
+	SS::SHasherW GetMeshAssetName() const;
+	SS::SHasherW GetMtlAssetName(int32 MtlIdx) const;
 
 public:
 	void SetModelAsset(SS::SHasherW ModelAssetName);
+	void SetMeshAsset(SS::SHasherW MeshAssetName);
+	void SetMaterialAsset(SS::SHasherW MtlAssetName, int32 MtlIdx);
 
 	// Model이 인스턴스로 만들어지면 해당 렌더인스턴스는 더 이상 모델 자체에 바인딩 되지 않는다.
 	// 해당 모델이 가지고 있는 메시와 메테리얼 정보만 스크랩해가고 원본 모델에 대한 정보는 잊어버린다.

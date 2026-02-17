@@ -3,6 +3,16 @@
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 
+SWorld* SComponentBase::GetIncludedWorld() const
+{
+	if (_ParentGameObject == nullptr)
+	{
+		return nullptr;
+	}
+
+	return _ParentGameObject->GetIncludedWorldRef();
+}
+
 void SComponentBase::InitComponentWithParent(SGameObject* InParent)
 {
 	if (_ParentGameObject != nullptr)

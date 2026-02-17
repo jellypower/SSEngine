@@ -36,7 +36,6 @@ public:
 	virtual IMeshAsset* GetMeshAsset() const override;
 	virtual IMaterialAsset* GetMaterialAsset(int MtlIdx) const override;
 
-	virtual void SetModelAsset(IModelAsset* InAsset) override;
 	virtual void SetMeshAsset(IMeshAsset* InAsset) override;
 	virtual void SetMaterialAsset(IMaterialAsset* InAsset, int32 MtlIdx) override;
 

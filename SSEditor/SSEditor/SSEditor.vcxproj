@@ -152,7 +152,6 @@
     <ClInclude Include="SSEngineMain\ImGUI_AssetViewer.h" />
     <ClInclude Include="SSEngineMain\ImGUI_WorldManager.h" />
     <ClInclude Include="EngineUtils\PWin32\OpenFilePathDialogue.h" />
-    <ClInclude Include="SSEngineMain\ImGUI_GOManager.h" />
     <ClInclude Include="SSEngineMain\SSEditor.h" />
     <ClInclude Include="SSEngineMain\SSImGUIInitializer.h" />
     <ClInclude Include="SSEngineMain\TestCodes\MeshSerializeTest.h" />
@@ -167,7 +166,6 @@
     <ClCompile Include="SSEngineMain\ImGUI_AssetViewer.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_WorldManager.cpp" />
     <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp" />
-    <ClCompile Include="SSEngineMain\ImGUI_GOManager.cpp" />
     <ClCompile Include="SSEngineMain\SSEditor.cpp" />
     <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp" />
     <ClCompile Include="SSEngineMain\TestCodes\MeshSerializeTest.cpp" />

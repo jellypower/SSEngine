@@ -93,19 +93,13 @@ IMaterialAsset* RIStaticMesh::GetMaterialAsset(int MtlIdx) const
 }
 
 
-void RIStaticMesh::SetModelAsset(IModelAsset* InAsset)
+void RIStaticMesh::SetMeshAsset(IMeshAsset* InAsset)
 {
 	if (_IncludedRenderWorld == nullptr)
 	{
-		_MeshRef = InAsset->GetMeshAsset();
-
-		int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
-		_MtlRef.SetSizeDirectly(SubMeshCnt);
-		for (int32 i = 0; i < SubMeshCnt; i++)
-		{
-			_MtlRef[i] = InAsset->GetMaterialAsset(i);
-		}
-
+		_MeshRef = InAsset;
+		const int32 NewSubMeshCnt = _MeshRef->GetSubMeshCnt();
+		_MtlRef.SetSizeDirectly(NewSubMeshCnt);
 		return;
 	}
 
@@ -113,35 +107,46 @@ void RIStaticMesh::SetModelAsset(IModelAsset* InAsset)
 	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
 	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
 
-
-
-	const int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+	const int32 PrevSubMeshCnt = _MeshRef->GetSubMeshCnt();
 	_MeshRef->RemoveAssetReference(ThisAssetRef);
-	for (int32 i = 0; i < SubMeshCnt; i++)
+	_MeshRef = InAsset;
+	const int32 NewSubMeshCnt = _MeshRef->GetSubMeshCnt();
+	_MeshRef->AddAssetReference(ThisAssetRef);
+
+
+	for (int32 i = NewSubMeshCnt; i < PrevSubMeshCnt; i++)
 	{
 		_MtlRef[i]->RemoveAssetReference(ThisAssetRef);
 	}
-
-
-
-	_MeshRef = InAsset->GetMeshAsset();
-	const int32 NewSubMeshCnt = _MeshRef->GetSubMeshCnt();
-	_MeshRef->AddAssetReference(ThisAssetRef);
 	_MtlRef.SetSizeDirectly(NewSubMeshCnt);
-	for (int32 i = 0; i < NewSubMeshCnt; i++)
-	{
-		_MtlRef[i] = InAsset->GetMaterialAsset(i);
-		_MtlRef[i]->AddAssetReference(ThisAssetRef);
-	}
-}
-
-void RIStaticMesh::SetMeshAsset(IMeshAsset* InAsset)
-{
 }
 
 void RIStaticMesh::SetMaterialAsset(IMaterialAsset* InAsset, int32 MtlIdx)
 {
+	if (_MeshRef == nullptr)
+	{
+		return;
+	}
 
+	const int32 SubMeshCnt = _MeshRef->GetSubMeshCnt();
+	if (SubMeshCnt <= MtlIdx)
+	{
+		return;
+	}
+
+	if (_IncludedRenderWorld == nullptr)
+	{
+		_MtlRef[MtlIdx] = InAsset;
+		return;
+	}
+
+	AssetInstanceReferencer ThisAssetRef;
+	ThisAssetRef.Type = EAssetInstanceReferenceType::ObjectHashCode;
+	ThisAssetRef.ObjHashCode = _GameObjectHashCode;
+
+	_MtlRef[MtlIdx]->RemoveAssetReference(ThisAssetRef);
+	_MtlRef[MtlIdx] = InAsset;
+	InAsset->AddAssetReference(ThisAssetRef);
 }
 
 void RIStaticMesh::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)
