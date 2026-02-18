@@ -68,11 +68,6 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	_Sphere1mModel->AddAssetReference(Referencer);
 }
 
-void CommonRenderAssetSet::TEMP_CacheCommonAssetFromFBX()
-{
-
-}
-
 void CommonRenderAssetSet::ReleaseCachedAssets()
 {
 	AssetInstanceReferencer Referencer;

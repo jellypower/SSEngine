@@ -546,7 +546,7 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 	_AssetDBLoaderToExport->PushAssetsToSaveToDB(AssetListToSerialize);
 	_AssetDBLoaderToExport->LoadAssetListFromAssetsToSaveToDB();
 	_AssetDBLoaderToExport->ClearAssetsToSaveToDB();
-	_AssetDBLoaderToExport->SaveLoadedAssetsToDB();
+	_AssetDBLoaderToExport->SaveInterAssetsToDB();
 }
 
 SS::SHasherW ImGUI_AssetManager::ImGUI_ShowAssetCombo(EAssetType InType, const utf8* LabelName, SS::SHasherW PrevSelectedAssetName, ImGuiComboFlags_ Flags)

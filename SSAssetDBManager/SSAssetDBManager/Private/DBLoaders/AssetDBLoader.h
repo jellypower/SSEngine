@@ -22,33 +22,33 @@ public:
 	void ClearAssetManagerToImportAsset() override;
 
 public:
-	virtual void ClearLoadedAssetData() override;
+	virtual void ClearInterData() override;
 
 public:
 	virtual bool LoadAllAssetDataFromDB() override;
-	virtual void CreateLoadedAssetInstances() override;
+	virtual void CreateAssetInstancesFromInter() override;
 	virtual void RelocateCreatedAssetInstancesToAssetManager() override;
 
 public:
 	virtual void PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets) override;
 	virtual void LoadAssetListFromAssetsToSaveToDB() override;
 	virtual void ClearAssetsToSaveToDB() override;
-	virtual bool SaveLoadedAssetsToDB() override;
+	virtual bool SaveInterAssetsToDB() override;
 
 private:
 	void FillEmptyAssetsFromApakFile();
 
 private:
-	bool LoadAllLoadedTex();
-	bool LoadAllLoadedMtl();
-	bool LoadAllLoadedMdls();
-	bool LoadAllLoadedMeshes();
-	bool LoadAllLoadedMdlcs();
+	bool LoadDBInterAllTex();
+	bool LoadDBInterAllMtl();
+	bool LoadDBInterAllMdls();
+	bool LoadDBInterAllMeshes();
+	bool LoadDBInterAllMdlcs();
 
 private:
-	bool SaveAllLoadedMeshesToDB();
-	bool SaveAllLoadedMdlsToDB();
-	bool SaveAllLoadedMdlcsToDB();
+	bool SaveAllInterMeshesToDB();
+	bool SaveAllInterMdlsToDB();
+	bool SaveAllInterMdlcsToDB();
 
 private:
 	sqlite3* _hLoadedDB = nullptr;
@@ -63,11 +63,11 @@ private:
 
 
 private:
-	SS::PooledList<AssetDBRow_Tex_v_0> _LoadedTextures;
-	SS::PooledList<AssetDBRow_Mesh_v_0> _LoadedMeshes;
-	SS::PooledList<AssetDBRow_Mtl_DefaultPBR_v_0> _LoadedDefaultMtls;
-	SS::PooledList<AssetDBRow_Mdl_v_0> _LoadedMdls;
-	SS::PooledList<AssetDBRow_Mdlc_v_0> _LoadedMdlcs;
+	SS::PooledList<AssetDBRow_Tex_v_0> _DBInterTextures;
+	SS::PooledList<AssetDBRow_Mesh_v_0> _DBInterMeshes;
+	SS::PooledList<AssetDBRow_Mtl_DefaultPBR_v_0> _DBInterDefaultMtls;
+	SS::PooledList<AssetDBRow_Mdl_v_0> _DBInterMdls;
+	SS::PooledList<AssetDBRow_Mdlc_v_0> _DBInterMdlcs;
 
 
 

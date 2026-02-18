@@ -16,17 +16,17 @@ public:
 
 
 public:
-	virtual void ClearLoadedAssetData() = 0;
+	virtual void ClearInterData() = 0;
 
 public:
 	virtual bool LoadAllAssetDataFromDB() = 0;
-	virtual void CreateLoadedAssetInstances() = 0;
+	virtual void CreateAssetInstancesFromInter() = 0;
 	virtual void RelocateCreatedAssetInstancesToAssetManager() = 0;
 
 public:
 	virtual void PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets) = 0;
 	virtual void LoadAssetListFromAssetsToSaveToDB() = 0;
-	virtual bool SaveLoadedAssetsToDB() = 0;
+	virtual bool SaveInterAssetsToDB() = 0;
 	virtual void ClearAssetsToSaveToDB() = 0;
 };
 

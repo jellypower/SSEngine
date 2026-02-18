@@ -27,7 +27,6 @@ public:
 
 public:
 	virtual void InitializeCommonAssets() = 0;
-	virtual void TEMP_CacheCommonAssetFromFBX() = 0;
 	virtual void ReleaseCachedAssets() = 0;
 
 protected:

@@ -27,11 +27,11 @@
 
 AssetDBLoader::AssetDBLoader()
 {
-	_LoadedTextures.Reserve(128);
-	_LoadedMeshes.Reserve(128);
-	_LoadedDefaultMtls.Reserve(128);
-	_LoadedMdls.Reserve(128);
-	_LoadedMdlcs.Reserve(128);
+	_DBInterTextures.Reserve(128);
+	_DBInterMeshes.Reserve(128);
+	_DBInterDefaultMtls.Reserve(128);
+	_DBInterMdls.Reserve(128);
+	_DBInterMdlcs.Reserve(128);
 }
 
 bool AssetDBLoader::StartLoadDB(SS::SHasherW InNameSpace)
@@ -81,7 +81,7 @@ void AssetDBLoader::ClearDB()
 		_hLoadedDB = nullptr;
 	}
 
-	ClearLoadedAssetData();
+	ClearInterData();
 
 	_BoundDBNameSpacePath = SS::SHasherW();
 	_BoundDBSqlFilePath = SS::SHasherW();
@@ -91,35 +91,35 @@ void AssetDBLoader::ClearDB()
 
 bool AssetDBLoader::LoadAllAssetDataFromDB()
 {
-	bool bResult = LoadAllLoadedTex();
+	bool bResult = LoadDBInterAllTex();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
 		return false;
 	}
 
-	bResult = LoadAllLoadedMeshes();
+	bResult = LoadDBInterAllMeshes();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
 		return false;
 	}
 
-	bResult = LoadAllLoadedMtl();
+	bResult = LoadDBInterAllMtl();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
 		return false;
 	}
 
-	bResult = LoadAllLoadedMdls();
+	bResult = LoadDBInterAllMdls();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
 		return false;
 	}
 
-	bResult = LoadAllLoadedMdlcs();
+	bResult = LoadDBInterAllMdlcs();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
@@ -135,9 +135,9 @@ bool SortByAssetPath(const IAssetBase* lhs, const IAssetBase* rhs)
 	return lhs->GetAssetPath().GetDirectValue() < rhs->GetAssetPath().GetDirectValue();
 }
 
-void AssetDBLoader::CreateLoadedAssetInstances()
+void AssetDBLoader::CreateAssetInstancesFromInter()
 {
-	for (const AssetDBRow_Tex_v_0& TexRowItem : _LoadedTextures)
+	for (const AssetDBRow_Tex_v_0& TexRowItem : _DBInterTextures)
 	{
 		
 		ITextureAssetMutable* NewTex = _BoundAssetManager->CreateEmptyTextureAsset(_BoundDBNameSpace,
@@ -147,7 +147,7 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 		_CreatedTextures.PushBack(NewTex);
 	}
 
-	for (const AssetDBRow_Mtl_DefaultPBR_v_0& DefaultMtlRowItem : _LoadedDefaultMtls)
+	for (const AssetDBRow_Mtl_DefaultPBR_v_0& DefaultMtlRowItem : _DBInterDefaultMtls)
 	{
 		IMaterialAssetMutable* NewMtl = _BoundAssetManager->CreateEmptyMaterialAsset(_BoundDBNameSpace,
 			DefaultMtlRowItem.AssetName, DefaultMtlRowItem.AssetPath);
@@ -170,7 +170,7 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 		_CreatedMaterials.PushBack(NewMtl);
 	}
 
-	for (const AssetDBRow_Mesh_v_0& MeshRowItem : _LoadedMeshes)
+	for (const AssetDBRow_Mesh_v_0& MeshRowItem : _DBInterMeshes)
 	{
 		IMeshAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyMeshAsset(_BoundDBNameSpace,
 			MeshRowItem.AssetName, MeshRowItem.AssetPath);
@@ -179,7 +179,7 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 		_CreatedMeshes.PushBack(NewAsset);
 	}
 
-	for (const AssetDBRow_Mdl_v_0& MdlRowItem : _LoadedMdls)
+	for (const AssetDBRow_Mdl_v_0& MdlRowItem : _DBInterMdls)
 	{
 		IModelAssetMutable* NewMdl = _BoundAssetManager->CreateEmptyModelAsset(
 			_BoundDBNameSpace, MdlRowItem.AssetName, MdlRowItem.AssetPath);
@@ -201,7 +201,7 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 		_CreatedMdls.PushBack(NewMdl);
 	}
 
-	for (const AssetDBRow_Mdlc_v_0& MdlcRowItem : _LoadedMdlcs)
+	for (const AssetDBRow_Mdlc_v_0& MdlcRowItem : _DBInterMdlcs)
 	{
 		IModelCombinationAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyModelCombinationAsset(_BoundDBNameSpace,
 			MdlcRowItem.AssetName, MdlcRowItem.AssetPath, 0);
@@ -217,13 +217,13 @@ void AssetDBLoader::CreateLoadedAssetInstances()
 	FillEmptyAssetsFromApakFile();
 }
 
-void AssetDBLoader::ClearLoadedAssetData()
+void AssetDBLoader::ClearInterData()
 {
-	_LoadedTextures.Clear();
-	_LoadedMeshes.Clear();
-	_LoadedDefaultMtls.Clear();
-	_LoadedMdls.Clear();
-	_LoadedMdlcs.Clear();
+	_DBInterTextures.Clear();
+	_DBInterMeshes.Clear();
+	_DBInterDefaultMtls.Clear();
+	_DBInterMdls.Clear();
+	_DBInterMdlcs.Clear();
 }
 
 void AssetDBLoader::BindAssetManagerToImportAsset(
@@ -292,15 +292,15 @@ void AssetDBLoader::LoadAssetListFromAssetsToSaveToDB()
 		switch (Type)
 		{
 		case EAssetType::Mesh:
-			_LoadedMeshes.PushBack(AssetToDBRow_Mesh_v_0(reinterpret_cast<const IMeshAsset*>(AssetItem))); break;
+			_DBInterMeshes.PushBack(AssetToDBRow_Mesh_v_0(reinterpret_cast<const IMeshAsset*>(AssetItem))); break;
 		case EAssetType::Material:
-			_LoadedDefaultMtls.PushBack(AssetToDBRow_Mtl_DefaultPBR_v_0(reinterpret_cast<const IMaterialAsset*>(AssetItem))); break;
+			_DBInterDefaultMtls.PushBack(AssetToDBRow_Mtl_DefaultPBR_v_0(reinterpret_cast<const IMaterialAsset*>(AssetItem))); break;
 		case EAssetType::Model:
-			_LoadedMdls.PushBack(AssetToDBRow_Mdl_v_0(reinterpret_cast<const IModelAsset*>(AssetItem))); break;
+			_DBInterMdls.PushBack(AssetToDBRow_Mdl_v_0(reinterpret_cast<const IModelAsset*>(AssetItem))); break;
 		case EAssetType::ModelCombination:
-			_LoadedMdlcs.PushBack(AssetToDBRow_Mdlc_v_0(reinterpret_cast<const IModelCombinationAsset*>(AssetItem))); break;
+			_DBInterMdlcs.PushBack(AssetToDBRow_Mdlc_v_0(reinterpret_cast<const IModelCombinationAsset*>(AssetItem))); break;
 		case EAssetType::Texture:
-			_LoadedTextures.PushBack(AssetToDBRow_Tex_v_0(reinterpret_cast<const ITextureAsset*>(AssetItem))); break;
+			_DBInterTextures.PushBack(AssetToDBRow_Tex_v_0(reinterpret_cast<const ITextureAsset*>(AssetItem))); break;
 		}
 	}
 }
@@ -310,23 +310,23 @@ void AssetDBLoader::ClearAssetsToSaveToDB()
 	_AssetsToSaveToDB.Clear();
 }
 
-bool AssetDBLoader::SaveLoadedAssetsToDB()
+bool AssetDBLoader::SaveInterAssetsToDB()
 {
-	bool bResult = SaveAllLoadedMeshesToDB();
+	bool bResult = SaveAllInterMeshesToDB();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
 		return false;
 	}
 
-	bResult = SaveAllLoadedMdlsToDB();
+	bResult = SaveAllInterMdlsToDB();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
 		return false;
 	}
 
-	bResult = SaveAllLoadedMdlcsToDB();
+	bResult = SaveAllInterMdlcsToDB();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
@@ -400,7 +400,7 @@ void AssetDBLoader::FillEmptyAssetsFromApakFile()
 	}
 }
 
-bool AssetDBLoader::LoadAllLoadedTex()
+bool AssetDBLoader::LoadDBInterAllTex()
 {
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
@@ -447,7 +447,7 @@ bool AssetDBLoader::LoadAllLoadedTex()
 		NewRow.LastUpdateTime = UpdateTime;
 		NewRow.TextureType = TexType;
 
-		_LoadedTextures.PushBack(NewRow);
+		_DBInterTextures.PushBack(NewRow);
 	}
 
 
@@ -455,7 +455,7 @@ bool AssetDBLoader::LoadAllLoadedTex()
 	return true;
 }
 
-bool AssetDBLoader::LoadAllLoadedMtl()
+bool AssetDBLoader::LoadDBInterAllMtl()
 {
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
@@ -519,7 +519,7 @@ bool AssetDBLoader::LoadAllLoadedMtl()
 		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 16);
 		NewRow.Textures[(int32)EDefaultPBRMatTexTypes::Occlusion] = db_c_str;
 
-		_LoadedDefaultMtls.PushBack(NewRow);
+		_DBInterDefaultMtls.PushBack(NewRow);
 	}
 
 
@@ -527,7 +527,7 @@ bool AssetDBLoader::LoadAllLoadedMtl()
 	return true;
 }
 
-bool AssetDBLoader::LoadAllLoadedMdls()
+bool AssetDBLoader::LoadDBInterAllMdls()
 {
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
@@ -599,7 +599,7 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 			} while (ThisChar != '\0');
 		}
 
-		_LoadedMdls.PushBack(NewRow);
+		_DBInterMdls.PushBack(NewRow);
 	}
 
 
@@ -607,7 +607,7 @@ bool AssetDBLoader::LoadAllLoadedMdls()
 	return true;
 }
 
-bool AssetDBLoader::LoadAllLoadedMeshes()
+bool AssetDBLoader::LoadDBInterAllMeshes()
 {
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
@@ -654,7 +654,7 @@ bool AssetDBLoader::LoadAllLoadedMeshes()
 		NewRow.LastUpdateTime = UpdateTime;
 
 
-		_LoadedMeshes.PushBack(NewRow);
+		_DBInterMeshes.PushBack(NewRow);
 	}
 
 
@@ -662,7 +662,7 @@ bool AssetDBLoader::LoadAllLoadedMeshes()
 	return true;
 }
 
-bool AssetDBLoader::LoadAllLoadedMdlcs()
+bool AssetDBLoader::LoadDBInterAllMdlcs()
 {
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
@@ -708,7 +708,7 @@ bool AssetDBLoader::LoadAllLoadedMdlcs()
 		NewRow.LastUpdateTime = UpdateTime;
 
 
-		_LoadedMdlcs.PushBack(NewRow);
+		_DBInterMdlcs.PushBack(NewRow);
 	}
 
 
@@ -716,7 +716,7 @@ bool AssetDBLoader::LoadAllLoadedMdlcs()
 	return true;
 }
 
-bool AssetDBLoader::SaveAllLoadedMeshesToDB()
+bool AssetDBLoader::SaveAllInterMeshesToDB()
 {
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
@@ -735,7 +735,7 @@ bool AssetDBLoader::SaveAllLoadedMeshesToDB()
 		return false;
 	}
 
-	for (const AssetDBRow_Mesh_v_0& RowItem : _LoadedMeshes)
+	for (const AssetDBRow_Mesh_v_0& RowItem : _DBInterMeshes)
 	{
 		const utf16* NameSpacePathCutoff = CutOffNameSpacePath(RowItem.AssetPath, _BoundDBNameSpacePath);
 		if (NameSpacePathCutoff == nullptr)
@@ -758,7 +758,7 @@ bool AssetDBLoader::SaveAllLoadedMeshesToDB()
 	return true;
 }
 
-bool AssetDBLoader::SaveAllLoadedMdlsToDB()
+bool AssetDBLoader::SaveAllInterMdlsToDB()
 {
 	sqlite3_stmt* StmtResult = nullptr;
 	const void* __Temp = nullptr;
@@ -779,7 +779,7 @@ bool AssetDBLoader::SaveAllLoadedMdlsToDB()
 
 	SS::StringW JoinedMtlNames;
 
-	for (const AssetDBRow_Mdl_v_0& RowItem : _LoadedMdls)
+	for (const AssetDBRow_Mdl_v_0& RowItem : _DBInterMdls)
 	{
 		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
 		sqlite3_bind_text16(StmtResult, 2, nullptr, -1, SQLITE_STATIC);
@@ -809,7 +809,7 @@ bool AssetDBLoader::SaveAllLoadedMdlsToDB()
 	return true;
 }
 
-bool AssetDBLoader::SaveAllLoadedMdlcsToDB()
+bool AssetDBLoader::SaveAllInterMdlcsToDB()
 {
 	return true;
 }

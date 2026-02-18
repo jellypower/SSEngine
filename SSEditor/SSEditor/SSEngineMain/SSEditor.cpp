@@ -95,15 +95,14 @@ void SSEditor::StartupEngine()
 
 		_AssetDBLoader->StartLoadDB(CRAN::NS_DEFAULT_ASSET);
 		_AssetDBLoader->LoadAllAssetDataFromDB();
-		_AssetDBLoader->CreateLoadedAssetInstances();
+		_AssetDBLoader->CreateAssetInstancesFromInter();
 		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
 		_AssetDBLoader->ClearDB();
 
 		_AssetDBLoader->StartLoadDB(L"ContentsAssets");
 		_AssetDBLoader->LoadAllAssetDataFromDB();
-		_AssetDBLoader->CreateLoadedAssetInstances();
+		_AssetDBLoader->CreateAssetInstancesFromInter();
 		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
-		_AssetDBLoader->ClearLoadedAssetData();
 		_AssetDBLoader->ClearDB();
 	}
 	int64 PC2 = GetPerofrmanceCounter();
@@ -114,13 +113,6 @@ void SSEditor::StartupEngine()
 	{
 		_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
 	}
-
-
-//	{
-//		_FbxImporter->BindFbxSceneFile(L"D:\\FBXAssets\\Arrow.fbx");
-//		_FbxImporter->GenerateImportedAssets();
-//		_FbxImporter->RelocateImportedAssetsToAssetManager();
-//	}
 
 
 	{
@@ -148,8 +140,6 @@ void SSEditor::StartupEngine()
 		_ImGUI_AssetViewer = DBG_NEW ImGUI_AssetManager(_Renderer);
 	}
 
-
-	_Renderer->GetCommonRenderAssetSet()->TEMP_CacheCommonAssetFromFBX();
 
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
