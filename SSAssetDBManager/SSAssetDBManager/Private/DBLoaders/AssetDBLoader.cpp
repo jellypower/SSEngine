@@ -284,7 +284,7 @@ void AssetDBLoader::PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAs
 	}
 }
 
-void AssetDBLoader::LoadAssetListFromAssetsToSaveToDB()
+void AssetDBLoader::CreateInterListFromAssetsToSaveToDB()
 {
 	for (const IAssetBase* AssetItem : _AssetsToSaveToDB)
 	{
@@ -313,6 +313,13 @@ void AssetDBLoader::ClearAssetsToSaveToDB()
 bool AssetDBLoader::SaveInterAssetsToDB()
 {
 	bool bResult = SaveAllInterMeshesToDB();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	bResult = SaveAllInterMtlsToDB();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
@@ -368,7 +375,7 @@ void AssetDBLoader::FillEmptyAssetsFromApakFile()
 				delete ApakFileAccessor;
 			}
 
-			ApakFileAccessor = CreateApakFileAccessor(PathItem);
+			ApakFileAccessor = CreateApakFileAccessor(PathItem, _BoundDBNameSpace);
 		}
 
 		bool bResult = ApakFileAccessor->SetDataCursorToAsset(AssetItem->GetAssetName());
@@ -381,12 +388,17 @@ void AssetDBLoader::FillEmptyAssetsFromApakFile()
 
 		if (AssetTypeItem == EAssetType::Mesh)
 		{
-			IMeshAssetMutable* MeshAsset = (IMeshAssetMutable*)AssetItem;
+			IMeshAssetMutable* MeshAsset = static_cast<IMeshAssetMutable*>(AssetItem);
 
 			MeshRawDataDefault* MeshRawData = nullptr;
 			FillMeshRawDataFromData(MeshRawData, ApakFileAccessor->GetCursoredData());
 
 			MeshAsset->InjectRawDataXXX(MeshRawData);
+		}
+		else if (AssetTypeItem == EAssetType::ModelCombination)
+		{
+			IModelCombinationAssetMutable* MdlcAsset = static_cast<IModelCombinationAssetMutable*>(AssetItem);
+			FillEmptyMdlcAssetFromData(MdlcAsset, ApakFileAccessor->GetCursoredData());
 		}
 		else
 		{
@@ -634,7 +646,6 @@ bool AssetDBLoader::LoadDBInterAllMeshes()
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
 		AssetNameStr += L"/";
 		SS::StringW AssetPathStr = _BoundDBNameSpacePath.C_Str();
-		AssetPathStr += L"/";
 
 
 		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
@@ -689,7 +700,6 @@ bool AssetDBLoader::LoadDBInterAllMdlcs()
 		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
 		AssetNameStr += L"/";
 		SS::StringW AssetPathStr = _BoundDBNameSpacePath.C_Str();
-		AssetPathStr += L"/";
 
 		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
 		AssetNameStr += db_c_str;
@@ -748,6 +758,64 @@ bool AssetDBLoader::SaveAllInterMeshesToDB()
 
 		sqlite3_bind_text16(StmtResult, 2, NameSpacePathCutoff, -1, SQLITE_STATIC);
 		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
+
+
+		sqlite3_step(StmtResult);
+		sqlite3_reset(StmtResult);
+	}
+
+	sqlite3_finalize(StmtResult);
+	return true;
+}
+
+bool AssetDBLoader::SaveAllInterMtlsToDB()
+{
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		SAVE_DefaultPBR_Mtl_v_0_QUERY,
+		sizeof(SAVE_DefaultPBR_Mtl_v_0_QUERY),
+		SQLITE_OPEN_READONLY,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	for (const AssetDBRow_Mtl_DefaultPBR_v_0& RowItem : _DBInterDefaultMtls)
+	{
+//		L"AssetName, AssetPath, LastUpdateTime, "
+//		L"BaseColor_r, BaseColor_g, BaseColor_b, "
+//		L"Emissive_r, Emissive_g, Emissive_b, "
+//		L"NormalTexScale, Metallic, Roughness, "
+//		L"BaseColor_Tex_ID, Normal_Tex_ID, Metallic_Tex_ID, Emissive_Tex_ID, Occlusion_Tex_ID) "
+
+		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text16(StmtResult, 2, nullptr, -1, SQLITE_STATIC); // No Path to DefaultPBRMtls
+		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
+
+		sqlite3_bind_double(StmtResult, 4, RowItem._BaseColorScale.X); // BaseColor
+		sqlite3_bind_double(StmtResult, 5, RowItem._BaseColorScale.Y);
+		sqlite3_bind_double(StmtResult, 6, RowItem._BaseColorScale.Z);
+
+		sqlite3_bind_double(StmtResult, 7, RowItem._EmissiveScale.X); // Emussuve
+		sqlite3_bind_double(StmtResult, 8, RowItem._EmissiveScale.Y);
+		sqlite3_bind_double(StmtResult, 9, RowItem._EmissiveScale.Z);
+
+		sqlite3_bind_double(StmtResult, 10, RowItem.NormalTexScale); // NormalTexScale
+		sqlite3_bind_double(StmtResult, 11, RowItem.Metallic); // Metallic
+		sqlite3_bind_double(StmtResult, 12, RowItem.Roughness); // Roughness
+
+		for (int32 i = 0; i < (int32)EDefaultPBRMatTexTypes::Count; i++)
+		{
+			sqlite3_bind_text16(StmtResult, 13 + i, RowItem.Textures[i].C_Str(), -1, SQLITE_STATIC);
+		}
 
 
 		sqlite3_step(StmtResult);

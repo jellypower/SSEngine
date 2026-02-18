@@ -83,6 +83,17 @@ void ModelCombinationAsset::BindAssetManager(IAssetManager* InAssetManager)
 	_BoundAssetManager = InAssetManager;
 }
 
+void ModelCombinationAsset::ReserveChilds(int32 Capacity)
+{
+	_childs.Reserve(Capacity);
+}
+
+void ModelCombinationAsset::ClearChilds()
+{
+	_childs.Clear();
+	time(&_LastUpdateTime);
+}
+
 void ModelCombinationAsset::AddNewChild(const AssetPlacementReference& newReference)
 {
 	_childs.PushBack(newReference);

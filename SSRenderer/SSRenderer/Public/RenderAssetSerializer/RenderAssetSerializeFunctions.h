@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
 
+class IModelCombinationAssetMutable;
 class IApakFileReader;
 class IMeshAsset;
 enum class EAssetType;
@@ -19,6 +20,10 @@ struct MeshRawDataBase;
 SSRENDERER_MODULE int32 AppendDataFromMeshAsset(
 	SS::PooledList<byte>& Data,
 	const MeshRawDataBase* MeshData);
+
+SSRENDERER_MODULE int64 AppendDataFromMdlcAsset(
+	SS::PooledList<byte>& Data,
+	const IModelCombinationAsset* MdlcData);
 
 
 SSRENDERER_MODULE int32 FillMeshAssetHeaaderOnly(
@@ -53,8 +58,13 @@ SSRENDERER_MODULE int32 CreateMeshAssetFromData(
 	const SS::PooledList<byte>& Data,
 	int Offset = 0);
 
+SSRENDERER_MODULE int64 FillEmptyMdlcAssetFromData(
+	IModelCombinationAssetMutable* MdlcAssetToFill,
+	const SS::PooledList<byte>& Data,
+	int64 Offset = 0);
+
 SSRENDERER_MODULE EAssetType ExtractAssetTypeFromName(SS::SHasherW InAssetName);
 
-SSRENDERER_MODULE IApakFileReader* CreateApakFileAccessor(SS::SHasherW SystemPath);
+SSRENDERER_MODULE IApakFileReader* CreateApakFileAccessor(SS::SHasherW SystemPath, SS::SHasherW DBNameSpace);
 SSRENDERER_MODULE IApakFileReader* CreateApakFileAccessorFromNameSpace(SS::SHasherW DBNameSpace, SS::SHasherW RelativePath);
 

@@ -3,9 +3,17 @@
 
 
 
-int32 AppendData(SS::PooledList<byte>& ToData, const void* From, int FromDataSize)
+int64 AppendData(SS::PooledList<byte>& ToData, const void* From, int64 FromDataSize)
 {
-	const int32 OriginalSize = ToData.GetSize();
+	const int64 OriginalSize = ToData.GetSize();
+	const int64 OriginalCapacity = ToData.GetCapacity();
+
+	if (OriginalCapacity - OriginalSize < FromDataSize)
+	{
+		// 가용가능한 공간이 새로 할당해야 할 데이터 사이즈보다 작으면 메모리를 2배로 할당
+		ToData.Reserve(OriginalCapacity * 2);
+	}
+
 	ToData.SetSizeDirectly(OriginalSize + FromDataSize);
 
 	byte* CopyTargetRaw = ToData.GetData() + OriginalSize;
@@ -142,7 +150,14 @@ int32 AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS:
 
 		const utf16* ItemCStr = HasherItem.C_Str();
 
-		ByteCursor += AppendData(Data, ItemCStr, ItemByteLen);
+		if (ItemCStr != nullptr)
+		{
+			ByteCursor += AppendData(Data, ItemCStr, ItemByteLen);
+		}
+		else
+		{
+			ByteCursor += AppendData(Data, L"", ItemByteLen);
+		}
 	}
 
 	SS_ASSERT(TotalByteSizeToWrite == ByteCursor);

@@ -11,10 +11,10 @@
 /// return when Written Byte Size.
 /// if something went wrong, return 0
 /// </returns>
-SSENGINEDEFAULT_MODULE int32 AppendData(
+SSENGINEDEFAULT_MODULE int64 AppendData(
 	SS::PooledList<byte>& ToData,
 	const void* From,
-	int FromDataSize);
+	int64 FromDataSize);
 
 
 /// <returns>

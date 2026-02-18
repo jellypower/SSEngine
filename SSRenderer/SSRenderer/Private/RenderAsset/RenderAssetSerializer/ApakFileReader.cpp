@@ -2,10 +2,11 @@
 
 #include "SSEngineDefault/Public/CommonSerializer/DefaultTypeSerializsers.h"
 
-ApakFileReader::ApakFileReader(SS::SHasherW InFilePath)
+ApakFileReader::ApakFileReader(SS::SHasherW InFilePath, SS::SHasherW TargetDBNameSpace)
 {
 	// fopen해보고 파일 여는걸 실패하면 ApakFileAccessor자체를 만들어주지 않을수도 있기 때문에 주입해주는 형태
 	_FilePath = InFilePath;
+	_TargetDBNameSpace = TargetDBNameSpace;
 
 	errno_t no = _wfopen_s(&_hFile, _FilePath.C_Str(), L"rb");
 	if (no != 0)
@@ -89,6 +90,15 @@ ApakFileReader::ApakFileReader(SS::SHasherW InFilePath)
 		return;
 	}
 
+	SS::StringW NSBoundAssetName;
+	for (int32 i=0;i<_AssetNames.GetSize();i++)
+	{
+		NSBoundAssetName = _TargetDBNameSpace.C_Str();
+		NSBoundAssetName += L"/";
+		NSBoundAssetName += _AssetNames[i].C_Str();
+		_AssetNames[i] = NSBoundAssetName.C_Str();
+	}
+
 
 	_AssetOffsets.SetSizeDirectly(_FileHeader.SerializableAssetCnt);
 	ReadBytes = FillMemoryFromData(_AssetOffsets.GetData(), OffsetTableBytes, _FReadData, Offset);
@@ -147,7 +157,13 @@ bool ApakFileReader::SetDataCursorToAsset(SS::SHasherW AssetName)
 			break;
 		}
 	}
-	i--;
+
+	if (i >= AssetCnt)
+	{
+		SS_ASSERT(false);
+		return false; 
+	}
+
 
 	ApakDataChunkOffsetDesc ChunkDesc = _AssetOffsets[i];
 	fseek(_hFile, ChunkDesc.Offset, SEEK_SET);

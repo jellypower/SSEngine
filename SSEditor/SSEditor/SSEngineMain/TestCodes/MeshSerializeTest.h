@@ -4,3 +4,4 @@
 class IRenderer;
 
 void MeshSerializeTest(IRenderer* InRenderer, SS::SHasherW MeshToTest);
+void MdlcSerializeTest(IRenderer* InRenderer, SS::SHasherW MdlcToTest);

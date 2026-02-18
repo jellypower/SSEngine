@@ -256,6 +256,10 @@ void SSFBXImporter::GenerateImportedMdlcAsset()
 		ImportCurrentFileToModelAsset_Recursion(rootNode->GetChild(i), -1, newMdlcAsset);
 	}
 
+	MdlcAssetHeader NewHeader;
+	NewHeader.ChildCnt = newMdlcAsset->GetChildCnt();
+	newMdlcAsset->SetHeader(NewHeader);
+
 	_ImportedAssets.PushBack(newMdlcAsset);
 
 }
@@ -367,14 +371,14 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 
 
 			NewAssetPlacementRef.AssetName = NewModelAssetName;
-			if (tempAssetName.GetStrLen() == 0)
-			{
-				NewAssetPlacementRef.PlacementName = L"Object";
-			}
-			else
-			{
-				NewAssetPlacementRef.PlacementName = tempAssetName.C_Str();
-			}
+//			if (tempAssetName.GetStrLen() == 0)
+//			{
+//				NewAssetPlacementRef.PlacementName = L"Object";
+//			}
+//			else
+//			{
+//				NewAssetPlacementRef.PlacementName = tempAssetName.C_Str();
+//			}
 
 			_ImportedAssets.PushBack(newModel);
 			// PrintFbxNodeInfo(node);

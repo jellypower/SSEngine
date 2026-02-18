@@ -20,7 +20,17 @@ L"LastUpdateTime = excluded.LastUpdateTime "
 L"WHERE LastUpdateTime < excluded.LastUpdateTime;";
 
 
-
+constexpr utf16 SAVE_DefaultPBR_Mtl_v_0_QUERY[] =
+L"INSERT INTO Mtl_DefaultPBR( "
+L"AssetName, AssetPath, LastUpdateTime, "
+L"BaseColor_r, BaseColor_g, BaseColor_b, "
+L"Emissive_r, Emissive_g, Emissive_b, "
+L"NormalTexScale, Metallic, Roughness, "
+L"BaseColor_Tex_ID, Normal_Tex_ID, Metallic_Tex_ID, Emissive_Tex_ID, Occlusion_Tex_ID) "
+L"VALUES(? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? ) "
+L"ON CONFLICT(AssetName) "
+L"DO UPDATE SET AssetPath = excluded.AssetPath, LastUpdateTime = excluded.LastUpdateTime "
+L"WHERE LastUpdateTime < excluded.LastUpdateTime;";
 
 constexpr utf16 SAVE_Mdl_v_0_QUERY[] = 
 L"INSERT INTO Models(AssetName, AssetPath, LastUpdateTime, MeshName, MtlNames) "

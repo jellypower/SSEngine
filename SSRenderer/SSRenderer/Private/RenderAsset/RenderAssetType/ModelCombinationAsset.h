@@ -3,6 +3,8 @@
 
 
 
+
+
 class ModelCombinationAsset : public IModelCombinationAssetMutable
 {
 public:
@@ -17,5 +19,10 @@ public:
 	virtual void BindAssetManager(IAssetManager* InAssetManager) override;
 
 public:
+	virtual void ReserveChilds(int32 Capacity) override;
+	virtual void ClearChilds() override;
 	virtual void AddNewChild(const AssetPlacementReference& newReference) override;
+
+private:
+
 };

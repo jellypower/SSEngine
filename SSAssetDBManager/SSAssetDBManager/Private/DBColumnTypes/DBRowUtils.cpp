@@ -45,6 +45,7 @@ AssetDBRow_Mtl_DefaultPBR_v_0 AssetToDBRow_Mtl_DefaultPBR_v_0(const IMaterialAss
 	if (MtlDataBase->_Type != EMaterialType::DefaultPBR)
 	{
 		SS_INTERRUPT();
+		return AssetDBRow_Mtl_DefaultPBR_v_0();
 	}
 	const MtlDataDefaultPBR* PBRMtlData = static_cast<const MtlDataDefaultPBR*>(MtlDataBase);
 

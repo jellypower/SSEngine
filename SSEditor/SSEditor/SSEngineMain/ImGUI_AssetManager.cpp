@@ -450,11 +450,11 @@ void ImGUI_AssetManager::ImGUI_ProcessAssetExport()
 				return;
 			}
 
-			IApakFileReader* Accessor = CreateApakFileAccessor(OutString.C_Str());
-			if (Accessor != nullptr)
-			{
-				delete Accessor;
-			}
+//			IApakFileReader* Accessor = CreateApakFileAccessor(OutString.C_Str());
+//			if (Accessor != nullptr)
+//			{
+//				delete Accessor;
+//			}
 		}
 	}
 }
@@ -464,25 +464,12 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 	SS::PooledList<IAssetBase*> AssetListToSerialize;
 	IAssetManager* AM = _Renderer->GetAssetManager();
 	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Mesh);
+	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::ModelCombination);
 
 	if (AssetListToSerialize.GetSize() == 0)
 	{
 		return;
 	}
-
-	// TEMP
-//	int32 ArrowIdx = -1;
-//	for (int32 i = 0; i < AssetListToSerialize.GetSize(); i++)
-//	{
-//		if (AssetListToSerialize[i]->GetAssetName() == L"Arrow/Arrow.mesh")
-//		{
-//			ArrowIdx = i;
-//			break;
-//		}
-//	}
-//
-//	AssetListToSerialize.RemoveAtAndFillLast(ArrowIdx);
-	// ~TEMP
 
 	_IEDataPool.Clear();
 	AppendApakDataFromAssetList(_IEDataPool, AssetListToSerialize);
@@ -510,11 +497,6 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 		SerializedAssets->SetAssetPathXXX(SaveAssetWorkingDirPath);
 	}
 
-	// TODO:
-	// 1. 여기서 ExtractWorkDirRelativePath라는 함수 만들어서 상대경로 빼오기
-	// 2. Asset에 직접적으로 Path를 Assign하는 간단한 기능 만들어서 Assign하기
-	// 3. DBLoader에서 Assign한 Path를 기준으로 Namespace기준 상대 Path 만들기
-
 
 	errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"wb+");
 	if (no != 0)
@@ -528,23 +510,12 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 	fclose(hFile);
 
 
-	// TEMP
-//	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Model);
-//	ArrowIdx = -1;
-//	for (int32 i = 0; i < AssetListToSerialize.GetSize(); i++)
-//	{
-//		if (AssetListToSerialize[i]->GetAssetName() == L"Arrow/Arrow.mdl")
-//		{
-//			ArrowIdx = i;
-//			break;
-//		}
-//	}
-//
-//	AssetListToSerialize.RemoveAtAndFillLast(ArrowIdx);
-	// ~TEMP
+	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Material);
+	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Model);
+
 
 	_AssetDBLoaderToExport->PushAssetsToSaveToDB(AssetListToSerialize);
-	_AssetDBLoaderToExport->LoadAssetListFromAssetsToSaveToDB();
+	_AssetDBLoaderToExport->CreateInterListFromAssetsToSaveToDB();
 	_AssetDBLoaderToExport->ClearAssetsToSaveToDB();
 	_AssetDBLoaderToExport->SaveInterAssetsToDB();
 }

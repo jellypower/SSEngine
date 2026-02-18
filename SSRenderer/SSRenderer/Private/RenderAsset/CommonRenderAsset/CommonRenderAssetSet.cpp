@@ -29,6 +29,11 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	_EmptyPBRMaterial = AssetManager->FindAssetByName<IMaterialAsset>(NAME_EMPTY_PBR_MTL);
 	_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>(CRAN::ARROW_MESH);
 
+	if (_ArrowMesh == nullptr) // Fallback
+	{
+		_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>(L"Arrow/Arrow.mesh");
+	}
+
 
 	static const SS::SHasherW NS_RUNTIME_CREATION_HASHER = CRAN::NS_RUNTIME_CREATION;
 

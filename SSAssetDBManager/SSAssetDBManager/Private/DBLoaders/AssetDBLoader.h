@@ -31,7 +31,7 @@ public:
 
 public:
 	virtual void PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets) override;
-	virtual void LoadAssetListFromAssetsToSaveToDB() override;
+	virtual void CreateInterListFromAssetsToSaveToDB() override;
 	virtual void ClearAssetsToSaveToDB() override;
 	virtual bool SaveInterAssetsToDB() override;
 
@@ -47,6 +47,7 @@ private:
 
 private:
 	bool SaveAllInterMeshesToDB();
+	bool SaveAllInterMtlsToDB();
 	bool SaveAllInterMdlsToDB();
 	bool SaveAllInterMdlcsToDB();
 

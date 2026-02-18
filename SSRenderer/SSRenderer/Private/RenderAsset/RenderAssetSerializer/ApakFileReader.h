@@ -5,7 +5,7 @@
 class ApakFileReader : public IApakFileReader
 {
 public:
-	ApakFileReader(SS::SHasherW InFilePath);
+	ApakFileReader(SS::SHasherW InFilePath, SS::SHasherW TargetDBNameSpace);
 	virtual ~ApakFileReader() override;
 
 public:
@@ -24,6 +24,7 @@ private:
 	void HandleFailOnLoad();
 
 private:
+	SS::SHasherW _TargetDBNameSpace;
 	SS::SHasherW _FilePath;
 	FILE* _hFile = nullptr;
 	SS::PooledList<byte> _FReadData;

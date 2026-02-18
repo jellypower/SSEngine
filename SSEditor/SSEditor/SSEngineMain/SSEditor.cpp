@@ -2,6 +2,8 @@
 
 #include "SSEditor.h"
 
+#include <SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h>
+
 #include "ImGUI_AssetManager.h"
 #include "ImGUI_WorldManager.h"
 #include "ModuleEntryScriptRunner.h"
@@ -110,10 +112,6 @@ void SSEditor::StartupEngine()
 	double eTime = (PC2 - PC1) / (double)PF;
 	int a = 0;
 
-	{
-		_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
-	}
-
 
 	{
 		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
@@ -121,6 +119,10 @@ void SSEditor::StartupEngine()
 		_FbxImporter->RelocateImportedAssetsToAssetManager();
 	}
 
+
+	{
+		_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
+	}
 
 
 	// DEBUG
@@ -132,6 +134,15 @@ void SSEditor::StartupEngine()
 		{
 			MeshSerializeTest(_Renderer, MeshAssetItemPair.first);
 		}
+
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MdlcAssetMap =
+			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::ModelCombination);
+
+		for (const SS::pair<SS::SHasherW, IAssetBase*>& MdlcAssetItemPair : MdlcAssetMap)
+		{
+			MdlcSerializeTest(_Renderer, MdlcAssetItemPair.first);
+		}
+
 	}
 	// ~DEBUG
 
@@ -161,7 +172,7 @@ void SSEditor::StartupEngine()
 
 	// Arrow
 	{
-		static const SS::SHasherW ArrowMeshName = CRAN::ARROW_MESH;
+		static const SS::SHasherW ArrowMeshName = _Renderer->GetCommonRenderAssetSet()->GetArrowMesh()->GetAssetName();
 
 		// X
 		SGameObject* DirectionObject = SRendererUtil::InstantiateMesh(ArrowMeshName, L"Arrow-X");

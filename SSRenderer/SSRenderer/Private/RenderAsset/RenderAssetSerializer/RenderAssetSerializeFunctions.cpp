@@ -6,6 +6,7 @@
 
 #include "SSRenderer/Public/RenderAssetSerializer/ApakDataChunkOffsetDesc.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
+#include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
 
@@ -136,6 +137,43 @@ int32 AppendDataFromMeshAsset(
 	return WrittenBytes;
 }
 
+int64 AppendDataFromMdlcAsset(SS::PooledList<byte>& Data, const IModelCombinationAsset* MdlcData)
+{
+	const int64 OriginalDataSize = Data.GetSize();
+
+	const int32 ChildCnt = MdlcData->GetChildCnt();
+	SS::PooledList<SS::SHasherW> PlacementNames(ChildCnt);
+	SS::PooledList<SS::SHasherW> AssetNames(ChildCnt);
+	SS::PooledList<Transform> Transforms(ChildCnt);
+	SS::PooledList<EMeshType> MeshTypes(ChildCnt);
+	SS::PooledList<int32> ParentIndices(ChildCnt);
+
+	for (int32 i = 0; i < ChildCnt; i++)
+	{
+		const AssetPlacementReference& Item = MdlcData->GetChildAt(i);
+		PlacementNames.PushBack(Item.PlacementName);
+		AssetNames.PushBack(Item.AssetName);
+		Transforms.PushBack(Item.Transform);
+		MeshTypes.PushBack(Item.MeshType);
+		ParentIndices.PushBack(Item.ParentIdx);
+	}
+
+	MdlcAssetHeader Header = MdlcData->GetAssetHeader();
+	
+	int64 WrittenBytes = 0;
+	WrittenBytes += AppendData(Data, &WrittenBytes, sizeof(WrittenBytes));
+	WrittenBytes += AppendData(Data, &Header, sizeof(Header));
+	WrittenBytes += AppendDataFromHashers(Data, PlacementNames);
+	WrittenBytes += AppendDataFromHashers(Data, AssetNames);
+	WrittenBytes += AppendData(Data, Transforms.GetData(), sizeof(Transform) * ChildCnt);
+	WrittenBytes += AppendData(Data, MeshTypes.GetData(), sizeof(EMeshType) * ChildCnt);
+	WrittenBytes += AppendData(Data, ParentIndices.GetData(), sizeof(int32) * ChildCnt);
+
+	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(WrittenBytes),
+		&WrittenBytes, sizeof(WrittenBytes));
+
+	return WrittenBytes;
+}
 
 
 int FillMeshVertexDataOnly(MeshRawDataDefault* MeshDataToFill, const MeshRawDataVertexHeader& DecodedHeader, const SS::PooledList<byte>& Data, const int Offset)
@@ -218,6 +256,10 @@ int32 FillMeshAssetHeaaderOnly(
 		{
 			InOutMeshRawData = DBG_NEW MeshRawDataSkinned;
 		}
+		else
+		{
+			SS_INTERRUPT();
+		}
 
 		InOutMeshRawData->_VertexHeader = DecodedHeader;
 	}
@@ -265,7 +307,8 @@ int64 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 	for (IAssetBase* AssetItem : AssetListToSerailize)
 	{
 		EAssetType AssetItemType = AssetItem->GetAssetType();
-		if (AssetItemType != EAssetType::Mesh)
+		if (AssetItemType != EAssetType::Mesh &&
+			AssetItemType != EAssetType::ModelCombination)
 		{
 			SS_ASSERT(false);
 			continue;
@@ -307,13 +350,18 @@ int64 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 		EAssetType AssetItemType = AssetItem->GetAssetType();
 
 		int32 PrevOffset = Data.GetSize();
-		int32 WrittenBytes = 0;
+		int32 WrittenByteItem = 0;
 
 		if (AssetItemType == EAssetType::Mesh)
 		{
 			IMeshAsset* MeshAssetItem = static_cast<IMeshAsset*>(AssetItem);
 			const MeshRawDataBase* MeshRawData = MeshAssetItem->GetMeshRawData();
-			WrittenBytes = AppendDataFromMeshAsset(Data, MeshRawData);
+			WrittenByteItem = AppendDataFromMeshAsset(Data, MeshRawData);
+		}
+		else if (AssetItemType == EAssetType::ModelCombination)
+		{
+			IModelCombinationAsset* MdlcAssetItem = static_cast<IModelCombinationAsset*>(AssetItem);
+			WrittenByteItem = AppendDataFromMdlcAsset(Data, MdlcAssetItem);
 		}
 		else
 		{
@@ -323,9 +371,9 @@ int64 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 		ApakDataChunkOffsetDesc* DataChunkOffsetDescRaw = reinterpret_cast<ApakDataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);
 		DataChunkOffsetDescRaw = DataChunkOffsetDescRaw + i;
 		DataChunkOffsetDescRaw->Offset = PrevOffset;
-		DataChunkOffsetDescRaw->Size = WrittenBytes;
+		DataChunkOffsetDescRaw->Size = WrittenByteItem;
 
-		Offset += WrittenBytes;
+		Offset += WrittenByteItem;
 	}
 
 	int32 TotalWrittenSize = Offset - OriginalDataSize;
@@ -426,6 +474,58 @@ int32 CreateMeshAssetFromData(
 	return AssetSize;
 }
 
+
+int64 FillEmptyMdlcAssetFromData(
+	IModelCombinationAssetMutable* MdlcAssetToFill,
+	const SS::PooledList<byte>& Data,
+	int64 Offset)
+{
+	const int64 OriginalOffset = Offset;
+
+	int64 MdlcDataWholeSize;
+	Offset += FillMemoryFromData(&MdlcDataWholeSize, sizeof(MdlcDataWholeSize), Data, Offset);
+
+	MdlcAssetHeader Header;
+	Offset += FillMemoryFromData(&Header, sizeof(Header), Data, Offset);
+
+	SS::PooledList<SS::SHasherW> PlacementNames(Header.ChildCnt);
+	SS::PooledList<SS::SHasherW> PlacementAssetNames(Header.ChildCnt);
+	SS::PooledList<Transform> PlacementTransforms(Header.ChildCnt);
+	SS::PooledList<EMeshType> PlacementMeshTypes(Header.ChildCnt);
+	SS::PooledList<int32> PlacementParentIndices(Header.ChildCnt);
+
+
+	Offset += FillHashersFromData(PlacementNames, Data, Offset);
+	Offset += FillHashersFromData(PlacementAssetNames, Data, Offset);
+	SS_ASSERT(PlacementNames.GetSize() == PlacementAssetNames.GetSize());
+
+	PlacementTransforms.SetSizeDirectly(Header.ChildCnt);
+	PlacementMeshTypes.SetSizeDirectly(Header.ChildCnt);
+	PlacementParentIndices.SetSizeDirectly(Header.ChildCnt);
+
+	Offset += FillMemoryFromData(PlacementTransforms.GetData(), PlacementTransforms.GetSize() * sizeof(Transform), Data, Offset);
+	Offset += FillMemoryFromData(PlacementMeshTypes.GetData(), PlacementMeshTypes.GetSize() * sizeof(EMeshType), Data, Offset);
+	Offset += FillMemoryFromData(PlacementParentIndices.GetData(), PlacementParentIndices.GetSize() * sizeof(int32), Data, Offset);
+
+	// 껍데기만 만들고
+	MdlcAssetToFill->ClearChilds();
+	MdlcAssetToFill->ReserveChilds(Header.ChildCnt);
+
+	for (int32 i = 0; i < Header.ChildCnt; i++)
+	{
+		AssetPlacementReference NewPlacement;
+		NewPlacement.PlacementName = PlacementNames[i];
+		NewPlacement.AssetName = PlacementAssetNames[i];
+		NewPlacement.Transform = PlacementTransforms[i];
+		NewPlacement.MeshType = PlacementMeshTypes[i];
+		NewPlacement.ParentIdx = PlacementParentIndices[i];
+		MdlcAssetToFill->AddNewChild(NewPlacement);
+	}
+
+	SS_ASSERT(MdlcDataWholeSize == Offset - OriginalOffset);
+	return MdlcDataWholeSize;
+}
+
 EAssetType ExtractAssetTypeFromName(SS::SHasherW InAssetName)
 {
 	const utf16* CStrAssetName = InAssetName.C_Str();
@@ -467,9 +567,9 @@ EAssetType ExtractAssetTypeFromName(SS::SHasherW InAssetName)
 	return EAssetType::None;
 }
 
-IApakFileReader* CreateApakFileAccessor(SS::SHasherW SystemPath)
+IApakFileReader* CreateApakFileAccessor(SS::SHasherW SystemPath, SS::SHasherW DBNameSpace)
 {
-	ApakFileReader* NewApak = DBG_NEW ApakFileReader(SystemPath);
+	ApakFileReader* NewApak = DBG_NEW ApakFileReader(SystemPath, DBNameSpace);
 	if (NewApak->IsValid() == false)
 	{
 		delete NewApak;
@@ -487,5 +587,5 @@ IApakFileReader* CreateApakFileAccessorFromNameSpace(SS::SHasherW DBNameSpace, S
 	PathConstructor += RelativePath.C_Str();
 
 	SS::SHasherW FilePathName = PathConstructor.C_Str();
-	return CreateApakFileAccessor(FilePathName);
+	return CreateApakFileAccessor(FilePathName, DBNameSpace);
 }
