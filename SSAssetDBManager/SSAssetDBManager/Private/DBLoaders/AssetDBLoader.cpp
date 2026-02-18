@@ -605,8 +605,10 @@ bool AssetDBLoader::LoadDBInterAllMdls()
 					NewRow.MtlNames[SubmeshIdx++] = _StringWorkTable.GetData();
 					_StringWorkTable.Clear();
 				}
-
-				_StringWorkTable.PushBack(ThisChar);
+				else
+				{
+					_StringWorkTable.PushBack(ThisChar);
+				}
 
 			} while (ThisChar != '\0');
 		}
