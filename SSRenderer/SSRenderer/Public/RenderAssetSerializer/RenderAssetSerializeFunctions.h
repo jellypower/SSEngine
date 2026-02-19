@@ -23,7 +23,9 @@ SSRENDERER_MODULE int32 AppendDataFromMeshAsset(
 
 SSRENDERER_MODULE int64 AppendDataFromMdlcAsset(
 	SS::PooledList<byte>& Data,
-	const IModelCombinationAsset* MdlcData);
+	const IModelCombinationAsset* MdlcData,
+	SS::SHasherW MdlcChildNameSpaceReplaced,
+	SS::SHasherW MdlcChildNameSpaceToReplace);
 
 
 SSRENDERER_MODULE int32 FillMeshAssetHeaaderOnly(
@@ -39,7 +41,9 @@ SSRENDERER_MODULE int32 FillMeshRawDataFromData(
 
 SSRENDERER_MODULE int64 AppendApakDataFromAssetList(
 	SS::PooledList<byte>& Data,
-	const SS::PooledList<IAssetBase*>& AssetListToSerailize);
+	const SS::PooledList<IAssetBase*>& AssetListToSerailize,
+	SS::SHasherW MdlcChildNameSpaceReplaced,
+	SS::SHasherW MdlcChildNameSpaceToReplace);
 
 
 

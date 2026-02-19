@@ -424,11 +424,7 @@ void ImGUI_AssetManager::ImGUI_AssetManager_FBXExporter()
 
 	if (ImGui::Button("Export FBX Asset"))
 	{
-		_AssetDBLoaderToExport->StartLoadDB(_SelectedAssetDBNameSpace);
-
 		ImGUI_ExportLoadedFBXAssets(_SelectedAssetDBNameSpace);
-
-		_AssetDBLoaderToExport->ClearDB();
 	}
 }
 
@@ -461,10 +457,15 @@ void ImGUI_AssetManager::ImGUI_ProcessAssetExport()
 
 void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace)
 {
+	static const SS::SHasherW HASHSER_NS_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+
+	_AssetDBLoaderToExport->StartLoadDB(_SelectedAssetDBNameSpace);
+
+
 	SS::PooledList<IAssetBase*> AssetListToSerialize;
 	IAssetManager* AM = _Renderer->GetAssetManager();
-	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Mesh);
-	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::ModelCombination);
+	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::Mesh);
+	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::ModelCombination);
 
 	if (AssetListToSerialize.GetSize() == 0)
 	{
@@ -472,7 +473,11 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 	}
 
 	_IEDataPool.Clear();
-	AppendApakDataFromAssetList(_IEDataPool, AssetListToSerialize);
+	AppendApakDataFromAssetList(
+		_IEDataPool,
+		AssetListToSerialize,
+		HASHSER_NS_FBX_IMPORT,
+		_SelectedAssetDBNameSpace);
 
 	SS::StringW OutString;
 	HRESULT hr = OpenSystemPathDialogue(OutString, SPD_CREATEPATH);
@@ -501,7 +506,6 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 	errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"wb+");
 	if (no != 0)
 	{
-		fclose(hFile);
 		SS_ASSERT(false);
 		return;
 	}
@@ -510,14 +514,15 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 	fclose(hFile);
 
 
-	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Material);
-	AM->FindAssetsOfNamespace(AssetListToSerialize, FRAN::NS_FBX_IMPORT, EAssetType::Model);
+	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::Material);
+	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::Model);
 
 
 	_AssetDBLoaderToExport->PushAssetsToSaveToDB(AssetListToSerialize);
-	_AssetDBLoaderToExport->CreateInterListFromAssetsToSaveToDB();
+	_AssetDBLoaderToExport->CreateInterListFromAssetsToSaveToDB(HASHSER_NS_FBX_IMPORT, _SelectedAssetDBNameSpace);
 	_AssetDBLoaderToExport->ClearAssetsToSaveToDB();
 	_AssetDBLoaderToExport->SaveInterAssetsToDB();
+	_AssetDBLoaderToExport->ClearDB();
 }
 
 SS::SHasherW ImGUI_AssetManager::ImGUI_ShowAssetCombo(EAssetType InType, const utf8* LabelName, SS::SHasherW PrevSelectedAssetName, ImGuiComboFlags_ Flags)

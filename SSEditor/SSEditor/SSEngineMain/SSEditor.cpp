@@ -83,14 +83,12 @@ void SSEditor::StartupEngine()
 	_Renderer->StartUp();
 	g_ImGuiInitializer->StartupImGui(_Renderer);
 
+	int64 PC1;
+	int64 PC2;
+	int64 PF;
+	double eTime;
 
-	{
-		_FbxImporter = g_fpCreateSSFBXImporter();
-		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
-	}
-
-
-	int64 PC1 = GetPerofrmanceCounter();
+	PC1 = GetPerofrmanceCounter();
 	{
 		_AssetDBLoader = g_fpCreateAssetDBLoader();
 		_AssetDBLoader->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
@@ -107,23 +105,28 @@ void SSEditor::StartupEngine()
 		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
 		_AssetDBLoader->ClearDB();
 	}
-	int64 PC2 = GetPerofrmanceCounter();
-	int64 PF = GetPerformanceFrequency();
-	double eTime = (PC2 - PC1) / (double)PF;
+	PC2 = GetPerofrmanceCounter();
+	PF = GetPerformanceFrequency();
+	eTime = (PC2 - PC1) / (double)PF;
 	int a = 0;
 
 
+	PC1 = GetPerofrmanceCounter();
 	{
+		_FbxImporter = g_fpCreateSSFBXImporter();
+		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
 		_FbxImporter->GenerateImportedAssets();
 		_FbxImporter->RelocateImportedAssetsToAssetManager();
 	}
-
+	PC2 = GetPerofrmanceCounter();
+	PF = GetPerformanceFrequency();
+	eTime = (PC2 - PC1) / (double)PF;
+	a = 0;
 
 	{
 		_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
 	}
-
 
 	// DEBUG
 	{
@@ -195,14 +198,17 @@ void SSEditor::StartupEngine()
 
 	{
 
-		SS::StringW BoundFileName = _FbxImporter->GetBoundFileName().C_Str();
-		BoundFileName += ".mdlc";
+		SS::SHasherW BoundAsset = _FbxImporter->GetRepresentingAssetName();
 
-		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundFileName.C_Str());
+		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundAsset.C_Str());
 		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
+	}
 
-
+	{
+		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(L"ContentsAssets/SKM_Vivian.mdlc");
+		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
+		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
 	}
 
 	{

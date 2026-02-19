@@ -31,7 +31,7 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 
 	if (_ArrowMesh == nullptr) // Fallback
 	{
-		_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>(L"Arrow/Arrow.mesh");
+		_ArrowMesh = AssetManager->FindAssetByName<IMeshAsset>(L"__ANS_FBX_IMPORT__/Arrow/Arrow.mesh");
 	}
 
 

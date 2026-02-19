@@ -34,7 +34,8 @@ namespace SSFbxName
 
 
 SSFBXImporter::SSFBXImporter() :
-	_FbxUniqueIDToMtlAsset(1000, 100)
+	_FbxUniqueIDToMtlAsset(1000, 100),
+	_IssuedAssetNamesForThisBind(200)
 {
 	_FBXManager = ::FbxManager::Create();
 	_FBXImporter = ::FbxImporter::Create(_FBXManager, "");
@@ -54,6 +55,11 @@ SS::SHasherW SSFBXImporter::GetBoundFilePath() const
 SS::SHasherW SSFBXImporter::GetBoundFileName() const
 {
 	return _boundFileName;
+}
+
+SS::SHasherW SSFBXImporter::GetRepresentingAssetName() const
+{
+	return _RepresentingAssetName;
 }
 
 SS::PooledList<IAssetBase*> SSFBXImporter::GetImportedAssets() const
@@ -85,6 +91,8 @@ bool SSFBXImporter::BindFbxSceneFile(const utf16* inFilePath)
 	FileNameStr.Replace(L" ", L"");
 	_boundFileName = FileNameStr.C_Str();
 
+	SS::StringW Empty;
+	_RepresentingAssetName = IssueNewAssetName(Empty, EAssetType::ModelCombination);
 
 	_importedMeshNames.Clear();
 	_importedMeshNames.Reserve(100);
@@ -109,6 +117,9 @@ bool SSFBXImporter::BindFbxSceneFile(const utf16* inFilePath)
 	// FrontVector(카메라가 바라보는 방향): Z+
 	// RightVector (카메라의 오른쪽): X-
 	// 왼손/오른손: 오른손
+
+
+	_IssuedAssetNamesForThisBind.Clear();
 	
 	return true;
 }
@@ -121,6 +132,8 @@ void SSFBXImporter::ClearFbxSceneFile()
 	}
 	_currentScene = nullptr;
 	_boundFilePath = SS::SHasherW::GetEmpty();
+	_boundFileName = SS::SHasherW::GetEmpty();
+	_RepresentingAssetName = SS::SHasherW::GetEmpty();
 }
 
 void SSFBXImporter::BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet)
@@ -167,6 +180,56 @@ IAssetBase* SSFBXImporter::FindImportedAssetByName(SS::SHasherW InAssetName, EAs
 	return nullptr;
 }
 
+SS::SHasherW SSFBXImporter::IssueNewAssetName(const SS::StringW& nodeName, EAssetType InAssetType)
+{
+	SS::StringW NewAssetNameStrPrefix = FRAN::NS_FBX_IMPORT;
+	NewAssetNameStrPrefix += L"/";
+	NewAssetNameStrPrefix += _boundFileName.C_Str();
+
+	if (nodeName.GetStrLen() > 0)
+	{
+		NewAssetNameStrPrefix += L"/";
+		NewAssetNameStrPrefix += nodeName;
+	}
+
+
+	int32 DupCnt = 0;
+	SS::StringW NewAssetNameStrCur;
+	while (true)
+	{
+		NewAssetNameStrCur = NewAssetNameStrPrefix;
+		if (DupCnt > 0)
+		{
+			NewAssetNameStrCur += L"_";
+			SS::StringW SuffixNoStr = IntToString(DupCnt++);
+			NewAssetNameStrPrefix += SuffixNoStr;
+		}
+
+		NewAssetNameStrCur += GetAssetSuffix(InAssetType);
+
+		bool bIsDuplicated = false;
+		for (SS::SHasherW IssuedNameItem : _IssuedAssetNamesForThisBind)
+		{
+			if (wcscmp(NewAssetNameStrCur.C_Str(), IssuedNameItem.C_Str()) == 0)
+			{
+				DupCnt++;
+				bIsDuplicated = true;
+				break;
+			}
+		}
+
+		if (bIsDuplicated == false)
+		{
+			break;
+		}
+	}
+
+
+	SS::SHasherW NewIssuedName = NewAssetNameStrCur.C_Str();
+	_IssuedAssetNamesForThisBind.PushBack(NewIssuedName);
+	return NewIssuedName;
+}
+
 void SSFBXImporter::GenerateImportedMaterialAssets()
 {
 	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
@@ -194,7 +257,8 @@ void SSFBXImporter::GenerateImportedMaterialAssets()
 		UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, Utf16Buffer, STR_BUFFER_SIZE);
 
 		OriginalMtlNodeName = Utf16Buffer;
-		SS::SHasherW MtlAssetName = _AssetManagerToImportAsset->GenerateAssetName(wsBoundFileName, OriginalMtlNodeName, EAssetType::Material);
+		
+		SS::SHasherW MtlAssetName = IssueNewAssetName(OriginalMtlNodeName, EAssetType::Material);
 		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(HASHER_FBX_IMPORT, MtlAssetName, _boundFileName);
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();
 
@@ -238,17 +302,13 @@ void SSFBXImporter::GenerateImportedMdlcAsset()
 	FbxNode* rootNode = _currentScene->GetRootNode();
 	uint32 childCount = rootNode->GetChildCount();
 
-	SS::StringW assetName;
-	assetName = _boundFileName.C_Str();
-	assetName += L".mdlc";
-
 	const int32 whoeChildCnt = rootNode->GetChildCount(true);
 	const int32 rootChildCnt = rootNode->GetChildCount();
 
 
 	
 	IModelCombinationAssetMutable* newMdlcAsset = 
-		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(HASHER_FBX_IMPORT, assetName.C_Str(), _boundFilePath.C_Str(), whoeChildCnt);
+		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(HASHER_FBX_IMPORT, _RepresentingAssetName, _boundFilePath.C_Str(), whoeChildCnt);
 
 
 	for (int32 i = 0; i < rootChildCnt; i++)
@@ -308,8 +368,8 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 
 			if (bIsMeshAssetAlreadyImported == false)
 			{
-				NewMeshName =
-					_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NodeNameString, EAssetType::Mesh);
+				
+				NewMeshName = IssueNewAssetName(NodeNameString, EAssetType::Mesh);
 
 
 				if (fbxMesh->GetDeformerCount() == 0)
@@ -333,8 +393,9 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 
 			NewAssetPlacementRef.MeshType = newMeshAsset->GetMeshRawData()->GetMeshType();
 
-			SS::SHasherW NewModelAssetName = 
-				_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NodeNameString, EAssetType::Model);
+
+			
+			SS::SHasherW NewModelAssetName = IssueNewAssetName(NodeNameString, EAssetType::Model);
 
 			
 			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(HASHER_FBX_IMPORT, NewModelAssetName, _boundFileName);
@@ -423,13 +484,6 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 		_currentScene->SetCurrentAnimationStack(CurAnimStack);
 
 
-		SS::StringW OriginalMdlcAssetNameOnly = _boundFileName.C_Str();
-
-		SS::StringW OriginalMdlcAssetName = OriginalMdlcAssetNameOnly;
-		OriginalMdlcAssetName += L".mdlc";
-
-
-
 		constexpr int32 STR_BUFFER_SIZE = 512;
 		utf16 u16AnimStackName[STR_BUFFER_SIZE];
 		FbxString fCurAnimStackName = CurAnimStack->GetNameOnly();
@@ -438,15 +492,16 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 		UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, u16AnimStackName, STR_BUFFER_SIZE);
 
 
-		SS::StringW NewRenderAnimNameOnly = OriginalMdlcAssetNameOnly;
+		SS::StringW NewRenderAnimNameOnly = _RepresentingAssetName.C_Str();
 		NewRenderAnimNameOnly += L"/";
 		NewRenderAnimNameOnly += u16AnimStackName;
 
-		SS::SHasherW NewRenderAnimName =
-			_AssetManagerToImportAsset->GenerateAssetName(_boundFileName.C_Str(), NewRenderAnimNameOnly, EAssetType::RenderAnim);
+
+		
+		SS::SHasherW NewRenderAnimName = IssueNewAssetName(NewRenderAnimNameOnly, EAssetType::RenderAnim);
 
 
-		IModelCombinationAsset* OriginalMdlcAsset = FindImportedAssetByName<IModelCombinationAsset>(OriginalMdlcAssetName.C_Str());
+		IModelCombinationAsset* OriginalMdlcAsset = FindImportedAssetByName<IModelCombinationAsset>(_RepresentingAssetName);
 		int ChildCnt = OriginalMdlcAsset->GetChildCnt();
 
 		IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(HASHER_FBX_IMPORT, NewRenderAnimName, _boundFileName);

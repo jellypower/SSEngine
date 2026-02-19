@@ -101,46 +101,6 @@ IRenderAnimAssetMutable* AssetManagerBase::CreateEmptyRenderAnimAsset(SS::SHashe
 	return DBG_NEW RenderAnimAsset(InDBNameSpace, InAssetName, InAssetPath);
 }
 
-
-SS::SHasherW AssetManagerBase::GenerateAssetName(const SS::StringW& fileName, const SS::StringW& nodeName, EAssetType InAssetType) const
-{
-	SS::StringW newAssetName = fileName;
-	newAssetName += L"/";
-	newAssetName += nodeName;
-	newAssetName += GetAssetSuffix(InAssetType);
-
-	SS::SHasherW NewAssetNameHasher;
-
-	IAssetBase* FoundAsset = FindAssetByName(newAssetName.C_Str(), InAssetType);
-	if (FoundAsset == nullptr)
-	{
-		NewAssetNameHasher = newAssetName.C_Str();
-		return NewAssetNameHasher;
-	}
-
-	int32 suffixNo = 1;
-
-	do
-	{
-		newAssetName = fileName;
-		newAssetName += L"/";
-		newAssetName += nodeName;
-		newAssetName += L"_";
-
-		SS::StringW SuffixNoStr = IntToString(suffixNo++);
-		newAssetName += SuffixNoStr;
-
-		newAssetName += GetAssetSuffix(InAssetType);
-
-		FoundAsset = FindAssetByName(newAssetName.C_Str(), InAssetType);
-
-	} while (FoundAsset != nullptr);
-
-
-	NewAssetNameHasher = newAssetName.C_Str();
-	return NewAssetNameHasher;
-}
-
 IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InAssetName, EAssetType InAssetType) const
 {
 	int32 i32InAssetName = (int32)InAssetType;

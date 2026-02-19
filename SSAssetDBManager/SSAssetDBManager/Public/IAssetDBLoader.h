@@ -25,7 +25,7 @@ public:
 
 public:
 	virtual void PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets) = 0;
-	virtual void CreateInterListFromAssetsToSaveToDB() = 0;
+	virtual void CreateInterListFromAssetsToSaveToDB(SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo) = 0;
 	virtual bool SaveInterAssetsToDB() = 0;
 	virtual void ClearAssetsToSaveToDB() = 0;
 };

@@ -1,5 +1,7 @@
 ﻿#define SSRENDERER_MODULE_EXPORT
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
+#include "SSRenderer/Public/RenderAssetSerializer/RenderAssetStrUtil.h"
+
 
 #include "ApakFileReader.h"
 #include "SSEngineDefault/Public/CommonSerializer/DefaultTypeSerializsers.h"
@@ -9,6 +11,7 @@
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
+
 
 
 int AppendDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefault* MeshDefaultData)
@@ -137,7 +140,11 @@ int32 AppendDataFromMeshAsset(
 	return WrittenBytes;
 }
 
-int64 AppendDataFromMdlcAsset(SS::PooledList<byte>& Data, const IModelCombinationAsset* MdlcData)
+int64 AppendDataFromMdlcAsset(
+	SS::PooledList<byte>& Data,
+	const IModelCombinationAsset* MdlcData,
+	SS::SHasherW MdlcChildNameSpaceReplaced,
+	SS::SHasherW MdlcChildNameSpaceToReplace)
 {
 	const int64 OriginalDataSize = Data.GetSize();
 
@@ -151,8 +158,18 @@ int64 AppendDataFromMdlcAsset(SS::PooledList<byte>& Data, const IModelCombinatio
 	for (int32 i = 0; i < ChildCnt; i++)
 	{
 		const AssetPlacementReference& Item = MdlcData->GetChildAt(i);
+		if (MdlcChildNameSpaceReplaced.IsEmpty() || Item.AssetName.IsEmpty())
+		{
+			AssetNames.PushBack(Item.AssetName);
+		}
+		else
+		{
+			SS::SHasherW ConvertedAssetName =
+				ReplaceAssestNameNameSpace(Item.AssetName, MdlcChildNameSpaceReplaced, MdlcChildNameSpaceToReplace);;
+			AssetNames.PushBack(ConvertedAssetName);
+		}
+
 		PlacementNames.PushBack(Item.PlacementName);
-		AssetNames.PushBack(Item.AssetName);
 		Transforms.PushBack(Item.Transform);
 		MeshTypes.PushBack(Item.MeshType);
 		ParentIndices.PushBack(Item.ParentIdx);
@@ -296,7 +313,11 @@ int32 FillMeshRawDataFromData(
 	return WrittenBytes;
 }
 
-int64 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledList<IAssetBase*>& AssetListToSerailize)
+int64 AppendApakDataFromAssetList(
+	SS::PooledList<byte>& Data,
+	const SS::PooledList<IAssetBase*>& AssetListToSerailize,
+	SS::SHasherW MdlcChildNameSpaceReplaced,
+	SS::SHasherW MdlcChildNameSpaceToReplace)
 {
 	int64 SerializeTrialCnt = AssetListToSerailize.GetSize();
 
@@ -315,7 +336,13 @@ int64 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 		}
 
 		SerializableAssets.PushBack(AssetItem);
-		SerializedAssetNames.PushBack(AssetItem->GetAssetName());
+
+		// Apak파일 안에있는 각 에셋들은 나중에 로드할 에셋의 네임스페이스를 따라서 이름이 붙는다.
+		// 그래서 네임스페이스를 떼고 명단에 넣어준다.
+		SS::SHasherW ConvertedAssetName =
+			ReplaceAssestNameNameSpace(AssetItem->GetAssetName(), MdlcChildNameSpaceReplaced, SS::SHasherW());
+
+		SerializedAssetNames.PushBack(ConvertedAssetName);
 	}
 
 	// Start Serialize
@@ -361,7 +388,11 @@ int64 AppendApakDataFromAssetList(SS::PooledList<byte>& Data, const SS::PooledLi
 		else if (AssetItemType == EAssetType::ModelCombination)
 		{
 			IModelCombinationAsset* MdlcAssetItem = static_cast<IModelCombinationAsset*>(AssetItem);
-			WrittenByteItem = AppendDataFromMdlcAsset(Data, MdlcAssetItem);
+			WrittenByteItem = AppendDataFromMdlcAsset(
+				Data,
+				MdlcAssetItem, 
+				MdlcChildNameSpaceReplaced,
+				MdlcChildNameSpaceToReplace);
 		}
 		else
 		{
@@ -510,6 +541,7 @@ int64 FillEmptyMdlcAssetFromData(
 	// 껍데기만 만들고
 	MdlcAssetToFill->ClearChilds();
 	MdlcAssetToFill->ReserveChilds(Header.ChildCnt);
+	MdlcAssetToFill->SetHeader(Header);
 
 	for (int32 i = 0; i < Header.ChildCnt; i++)
 	{

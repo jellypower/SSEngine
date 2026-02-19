@@ -164,6 +164,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderAsset\AssetManagerBase.cpp" />
     <ClCompile Include="Private\RenderAsset\CommonRenderAsset\CommonRenderAssetSet.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\ApakFileReader.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetStrUtil.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MaterialAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MeshAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\ModelAsset.cpp" />
@@ -186,6 +187,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Private\RenderAsset\AssetManagerBase.h" />
     <ClInclude Include="Private\RenderAsset\CommonRenderAsset\CommonRenderAssetSet.h" />
+    <ClInclude Include="Public\RenderAssetSerializer\RenderAssetStrUtil.h" />
     <ClInclude Include="Public\RenderAssetSerializer\ApakDataChunkOffsetDesc.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetSerializer\ApakFileReader.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MaterialAsset.h" />

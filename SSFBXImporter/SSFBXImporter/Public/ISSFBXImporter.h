@@ -10,6 +10,8 @@ class ISSFBXImporter : public INoncopyable
 public:
 	virtual SS::SHasherW GetBoundFilePath() const = 0;
 	virtual SS::SHasherW GetBoundFileName() const = 0;
+	virtual SS::SHasherW GetRepresentingAssetName() const = 0;
+
 	virtual SS::PooledList<IAssetBase*> GetImportedAssets() const = 0;
 
 

@@ -12,20 +12,29 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
 
-AssetDBRow_Mesh_v_0 AssetToDBRow_Mesh_v_0(const IMeshAsset* InAsset)
+#include "SSRenderer/Public/RenderAssetSerializer/RenderAssetStrUtil.h"
+
+
+AssetDBRow_Mesh_v_0 AssetToDBRow_Mesh_v_0(const IMeshAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo)
 {
 	AssetDBRow_Mesh_v_0 Row;
-	Row.AssetName = InAsset->GetAssetName();
+
+	SS::SHasherW ConvertedName = ReplaceAssestNameNameSpace(InAsset->GetAssetName(), NSConvertFrom, NSConvertTo);
+
+	Row.AssetName = ConvertedName;
 	Row.AssetPath = InAsset->GetAssetPath();
 	Row.LastUpdateTime = InAsset->GetLastUpdateTime();
 
 	return Row;
 }
 
-AssetDBRow_Tex_v_0 AssetToDBRow_Tex_v_0(const ITextureAsset* InAsset)
+AssetDBRow_Tex_v_0 AssetToDBRow_Tex_v_0(const ITextureAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo)
 {
 	AssetDBRow_Tex_v_0 Row;
-	Row.AssetName = InAsset->GetAssetName();
+
+	SS::SHasherW ConvertedName = ReplaceAssestNameNameSpace(InAsset->GetAssetName(), NSConvertFrom, NSConvertTo);
+
+	Row.AssetName = ConvertedName;
 	Row.AssetPath = InAsset->GetAssetPath();
 	Row.LastUpdateTime = InAsset->GetLastUpdateTime();
 	Row.TextureType = InAsset->GetTextureType();
@@ -34,10 +43,13 @@ AssetDBRow_Tex_v_0 AssetToDBRow_Tex_v_0(const ITextureAsset* InAsset)
 	return Row;
 }
 
-AssetDBRow_Mtl_DefaultPBR_v_0 AssetToDBRow_Mtl_DefaultPBR_v_0(const IMaterialAsset* InAsset)
+AssetDBRow_Mtl_DefaultPBR_v_0 AssetToDBRow_Mtl_DefaultPBR_v_0(const IMaterialAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo)
 {
 	AssetDBRow_Mtl_DefaultPBR_v_0 Row;
-	Row.AssetName = InAsset->GetAssetName();
+
+	SS::SHasherW ConvertedName = ReplaceAssestNameNameSpace(InAsset->GetAssetName(), NSConvertFrom, NSConvertTo);
+
+	Row.AssetName = ConvertedName;
 	Row.AssetPath = InAsset->GetAssetPath();
 	Row.LastUpdateTime = InAsset->GetLastUpdateTime();
 
@@ -64,14 +76,19 @@ AssetDBRow_Mtl_DefaultPBR_v_0 AssetToDBRow_Mtl_DefaultPBR_v_0(const IMaterialAss
 	return Row;
 }
 
-AssetDBRow_Mdl_v_0 AssetToDBRow_Mdl_v_0(const IModelAsset* InAsset)
+AssetDBRow_Mdl_v_0 AssetToDBRow_Mdl_v_0(const IModelAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo)
 {
 	AssetDBRow_Mdl_v_0 Row;
-	Row.AssetName = InAsset->GetAssetName();
+
+	SS::SHasherW ConvertedName = ReplaceAssestNameNameSpace(InAsset->GetAssetName(), NSConvertFrom, NSConvertTo);
+
+	Row.AssetName = ConvertedName;
 	Row.AssetPath = InAsset->GetAssetPath();
 	Row.LastUpdateTime = InAsset->GetLastUpdateTime();
 
-	Row.MeshName = InAsset->GetMeshAssetName();
+
+	ConvertedName = ReplaceAssestNameNameSpace(InAsset->GetMeshAssetName(), NSConvertFrom, NSConvertTo);
+	Row.MeshName = ConvertedName;
 
 
 	int SubMeshCnt = InAsset->GetSubMeshCnt();
@@ -79,23 +96,27 @@ AssetDBRow_Mdl_v_0 AssetToDBRow_Mdl_v_0(const IModelAsset* InAsset)
 
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
-		Row.MtlNames[i] = InAsset->GetMaterialAssetName(i);
+		ConvertedName = ReplaceAssestNameNameSpace(InAsset->GetMaterialAssetName(i), NSConvertFrom, NSConvertTo);
+		Row.MtlNames[i] = ConvertedName;
 	}
 
 	return Row;
 }
 
-AssetDBRow_Mdlc_v_0 AssetToDBRow_Mdlc_v_0(const IModelCombinationAsset* InAsset)
+AssetDBRow_Mdlc_v_0 AssetToDBRow_Mdlc_v_0(const IModelCombinationAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo)
 {
 	AssetDBRow_Mdlc_v_0 Row;
-	Row.AssetName = InAsset->GetAssetName();
+
+	SS::SHasherW ConvertedName = ReplaceAssestNameNameSpace(InAsset->GetAssetName(), NSConvertFrom, NSConvertTo);
+
+	Row.AssetName = ConvertedName;
 	Row.AssetPath = InAsset->GetAssetPath();
 	Row.LastUpdateTime = InAsset->GetLastUpdateTime();
 
 	return Row;
 }
 
-const utf16* CutOffNameSpacePath(SS::SHasherW InPath, SS::SHasherW InNameSpacePath)
+const utf16* CutOffNameFromFront(SS::SHasherW InPath, SS::SHasherW InNameSpacePath)
 {
 	const utf16* PathRaw = InPath.C_Str();
 	const utf16* NamespacePathRaw = InNameSpacePath.C_Str();

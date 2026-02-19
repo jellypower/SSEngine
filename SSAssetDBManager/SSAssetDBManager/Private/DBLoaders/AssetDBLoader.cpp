@@ -284,23 +284,48 @@ void AssetDBLoader::PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAs
 	}
 }
 
-void AssetDBLoader::CreateInterListFromAssetsToSaveToDB()
+void AssetDBLoader::CreateInterListFromAssetsToSaveToDB(SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo)
 {
 	for (const IAssetBase* AssetItem : _AssetsToSaveToDB)
 	{
 		EAssetType Type = AssetItem->GetAssetType();
-		switch (Type)
+		if (Type == EAssetType::Mesh)
 		{
-		case EAssetType::Mesh:
-			_DBInterMeshes.PushBack(AssetToDBRow_Mesh_v_0(reinterpret_cast<const IMeshAsset*>(AssetItem))); break;
-		case EAssetType::Material:
-			_DBInterDefaultMtls.PushBack(AssetToDBRow_Mtl_DefaultPBR_v_0(reinterpret_cast<const IMaterialAsset*>(AssetItem))); break;
-		case EAssetType::Model:
-			_DBInterMdls.PushBack(AssetToDBRow_Mdl_v_0(reinterpret_cast<const IModelAsset*>(AssetItem))); break;
-		case EAssetType::ModelCombination:
-			_DBInterMdlcs.PushBack(AssetToDBRow_Mdlc_v_0(reinterpret_cast<const IModelCombinationAsset*>(AssetItem))); break;
-		case EAssetType::Texture:
-			_DBInterTextures.PushBack(AssetToDBRow_Tex_v_0(reinterpret_cast<const ITextureAsset*>(AssetItem))); break;
+			AssetDBRow_Mesh_v_0 NewRow = AssetToDBRow_Mesh_v_0(
+				static_cast<const IMeshAsset*>(AssetItem), NSConvertFrom, NSConvertTo);
+			_DBInterMeshes.PushBack(NewRow);
+		}
+		else if (Type == EAssetType::Material)
+		{
+			AssetDBRow_Mtl_DefaultPBR_v_0 NewRow = AssetToDBRow_Mtl_DefaultPBR_v_0(
+				static_cast<const IMaterialAsset*>(AssetItem), NSConvertFrom, NSConvertTo);
+			_DBInterDefaultMtls.PushBack(NewRow);
+		}
+		else if (Type == EAssetType::Model)
+		{
+			AssetDBRow_Mdl_v_0 NewRow = AssetToDBRow_Mdl_v_0(
+				static_cast<const IModelAsset*>(AssetItem),
+				NSConvertFrom,
+				NSConvertTo
+			);
+
+			_DBInterMdls.PushBack(NewRow);
+		}
+		else if (Type == EAssetType::ModelCombination)
+		{
+			AssetDBRow_Mdlc_v_0 NewRow = AssetToDBRow_Mdlc_v_0(
+				static_cast<const IModelCombinationAsset*>(AssetItem), NSConvertFrom, NSConvertTo);
+			_DBInterMdlcs.PushBack(NewRow);
+		}
+		else if (Type == EAssetType::Texture)
+		{
+			AssetDBRow_Tex_v_0 NewRow = AssetToDBRow_Tex_v_0(
+				static_cast<const ITextureAsset*>(AssetItem), NSConvertFrom, NSConvertTo);
+			_DBInterTextures.PushBack(NewRow);
+		}
+		else
+		{
+			SS_ASSERT(false);
 		}
 	}
 }
@@ -749,16 +774,18 @@ bool AssetDBLoader::SaveAllInterMeshesToDB()
 
 	for (const AssetDBRow_Mesh_v_0& RowItem : _DBInterMeshes)
 	{
-		const utf16* NameSpacePathCutoff = CutOffNameSpacePath(RowItem.AssetPath, _BoundDBNameSpacePath);
+		const utf16* AssetNameCutoff = CutOffNameFromFront(RowItem.AssetName, _BoundDBNameSpace);
+		AssetNameCutoff++;
+		sqlite3_bind_text16(StmtResult, 1, AssetNameCutoff, -1, SQLITE_STATIC);
+
+		const utf16* NameSpacePathCutoff = CutOffNameFromFront(RowItem.AssetPath, _BoundDBNameSpacePath);
 		if (NameSpacePathCutoff == nullptr)
 		{
 			SS_ASSERT_MSG(false, L"Not a valid namespace path. If you want to save Asset path to a namespace, asset original file path must be located in same asset path directory.");
 			continue;
 		}
-
-		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
-
 		sqlite3_bind_text16(StmtResult, 2, NameSpacePathCutoff, -1, SQLITE_STATIC);
+
 		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
 
 
@@ -798,7 +825,10 @@ bool AssetDBLoader::SaveAllInterMtlsToDB()
 //		L"NormalTexScale, Metallic, Roughness, "
 //		L"BaseColor_Tex_ID, Normal_Tex_ID, Metallic_Tex_ID, Emissive_Tex_ID, Occlusion_Tex_ID) "
 
-		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
+		const utf16* AssetNameCutoff = CutOffNameFromFront(RowItem.AssetName, _BoundDBNameSpace);
+		AssetNameCutoff++;
+		sqlite3_bind_text16(StmtResult, 1, AssetNameCutoff, -1, SQLITE_STATIC);
+
 		sqlite3_bind_text16(StmtResult, 2, nullptr, -1, SQLITE_STATIC); // No Path to DefaultPBRMtls
 		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
 
@@ -851,7 +881,10 @@ bool AssetDBLoader::SaveAllInterMdlsToDB()
 
 	for (const AssetDBRow_Mdl_v_0& RowItem : _DBInterMdls)
 	{
-		sqlite3_bind_text16(StmtResult, 1, RowItem.AssetName.C_Str(), -1, SQLITE_STATIC);
+		const utf16* AssetNameCutoff = CutOffNameFromFront(RowItem.AssetName, _BoundDBNameSpace);
+		AssetNameCutoff++;
+		sqlite3_bind_text16(StmtResult, 1, AssetNameCutoff, -1, SQLITE_STATIC);
+
 		sqlite3_bind_text16(StmtResult, 2, nullptr, -1, SQLITE_STATIC);
 		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
 		sqlite3_bind_text16(StmtResult, 4, RowItem.MeshName.C_Str(), -1, SQLITE_STATIC);
@@ -881,5 +914,44 @@ bool AssetDBLoader::SaveAllInterMdlsToDB()
 
 bool AssetDBLoader::SaveAllInterMdlcsToDB()
 {
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		SAVE_Mdlc_v_0_QUERY,
+		sizeof(SAVE_Mdlc_v_0_QUERY),
+		SQLITE_OPEN_READWRITE,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	for (const AssetDBRow_Mdlc_v_0& RowItem : _DBInterMdlcs)
+	{
+		const utf16* AssetNameCutoff = CutOffNameFromFront(RowItem.AssetName, _BoundDBNameSpace);
+		AssetNameCutoff++;
+		sqlite3_bind_text16(StmtResult, 1, AssetNameCutoff, -1, SQLITE_STATIC);
+
+		const utf16* NameSpacePathCutoff = CutOffNameFromFront(RowItem.AssetPath, _BoundDBNameSpacePath);
+		if (NameSpacePathCutoff == nullptr)
+		{
+			SS_ASSERT_MSG(false, L"Not a valid namespace path. If you want to save Asset path to a namespace, asset original file path must be located in same asset path directory.");
+			continue;
+		}
+		sqlite3_bind_text16(StmtResult, 2, NameSpacePathCutoff, -1, SQLITE_STATIC);
+
+		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
+
+
+		sqlite3_step(StmtResult);
+		sqlite3_reset(StmtResult);
+	}
+
+	sqlite3_finalize(StmtResult);
 	return true;
 }

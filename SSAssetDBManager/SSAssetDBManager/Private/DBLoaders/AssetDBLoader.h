@@ -31,7 +31,7 @@ public:
 
 public:
 	virtual void PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets) override;
-	virtual void CreateInterListFromAssetsToSaveToDB() override;
+	virtual void CreateInterListFromAssetsToSaveToDB(SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo) override;
 	virtual void ClearAssetsToSaveToDB() override;
 	virtual bool SaveInterAssetsToDB() override;
 

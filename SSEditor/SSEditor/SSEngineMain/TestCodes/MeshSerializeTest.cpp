@@ -47,7 +47,7 @@ void MdlcSerializeTest(IRenderer* InRenderer, SS::SHasherW MdlcToTest)
 
 	SS::PooledList<byte> Data;
 	Data.Reserve(1024);
-	int64 WrittenBytes = AppendDataFromMdlcAsset(Data, MdlcAsset);
+	int64 WrittenBytes = AppendDataFromMdlcAsset(Data, MdlcAsset, SS::SHasherW(), SS::SHasherW());
 	SS_ASSERT(WrittenBytes > 0);
 
 

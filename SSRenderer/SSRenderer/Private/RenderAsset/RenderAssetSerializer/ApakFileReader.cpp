@@ -116,7 +116,11 @@ ApakFileReader::ApakFileReader(SS::SHasherW InFilePath, SS::SHasherW TargetDBNam
 
 ApakFileReader::~ApakFileReader()
 {
-	// noop
+	if (_hFile != nullptr)
+	{
+		fclose(_hFile);
+		_hFile = nullptr;
+	}
 }
 
 SS::SHasherW ApakFileReader::GetApakAssetName(int32 Idx) const
@@ -187,6 +191,7 @@ void ApakFileReader::HandleFailOnLoad()
 	if (_hFile != nullptr)
 	{
 		fclose(_hFile);
+		_hFile = nullptr;
 	}
 
 	_FilePath = SS::SHasherW();

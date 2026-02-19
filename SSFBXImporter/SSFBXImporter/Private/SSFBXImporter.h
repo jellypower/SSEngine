@@ -1,6 +1,7 @@
 #pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
+#include "SSFBXImporter/Public/FRAN.h"
 
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
@@ -23,13 +24,23 @@ private:
 	FbxManager* _FBXManager = nullptr;
 	FbxImporter* _FBXImporter = nullptr;
 	FbxScene* _currentScene = nullptr;
-	SS::SHasherW _boundFilePath;
-	SS::SHasherW _boundFileName;
 
-	SS::PooledList<SS::pair<::FbxMesh*, SS::SHasherW>> _importedMeshNames;
-
+private:
 	IAssetManagerMutable* _AssetManagerToImportAsset = nullptr;
 	ICommonRenderAssetSet* _CommonRenderAssetSetToImport = nullptr;
+
+private:
+	SS::SHasherW _boundFilePath;
+	SS::SHasherW _boundFileName;
+	SS::SHasherW _RepresentingAssetName;
+
+
+private:
+	SS::PooledList<SS::pair<::FbxMesh*, SS::SHasherW>> _importedMeshNames;
+	SS::HashMap<uint64, IMaterialAsset*> _FbxUniqueIDToMtlAsset;
+	SS::PooledList<IAssetBase*> _ImportedAssets;
+	SS::PooledList<SS::SHasherW> _IssuedAssetNamesForThisBind;
+
 
 public:
 	SSFBXImporter();
@@ -38,6 +49,8 @@ public:
 public:
 	virtual SS::SHasherW GetBoundFilePath() const override;
 	virtual SS::SHasherW GetBoundFileName() const override;
+	virtual SS::SHasherW GetRepresentingAssetName() const override;
+
 	virtual SS::PooledList<IAssetBase*> GetImportedAssets() const override;
 
 	virtual bool BindFbxSceneFile(const utf16* inFilePath) override;
@@ -61,16 +74,12 @@ private:
 	}
 
 private:
+	SS::SHasherW IssueNewAssetName(const SS::StringW& nodeName, EAssetType InAssetType);
+
 	void GenerateImportedMaterialAssets();
 	void GenerateImportedMdlcAsset();
 
 	void ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset);
 
 	void GenerateImportedRenderAnimAssets();
-
-
-private:
-	SS::HashMap<uint64, IMaterialAsset*> _FbxUniqueIDToMtlAsset;
-
-	SS::PooledList<IAssetBase*> _ImportedAssets;
 };
