@@ -24,19 +24,21 @@ public:
 
 
 private:
-	void ImGUI_DrawHierarchy();
-	void ImGUI_DrawHierarchy_Recursion(SGameObject* Object);
+	void ImGUI_Hierarchy();
+	void ImGUI_Hierarchy_Recursion(SGameObject* Object);
 
 private:
-	void ImGUI_ShowGameObjectDetail();
+	void ImGUI_GODetail();
+	void ImGUI_GODetail_Transform(SGameObject* PickedInstance);
+	void ImGUI_GODetail_CompItem(SComponentBase* ComponentToShow);
+	void ImGUI_GODetail_CompItem_LightComp(SRenderLightComponent* CompToShow);
+	void ImGUI_GODetail_CompItem_CubemapComp(SCubeMapRenderComponent* CubemapToShow);
+	void ImGUI_GODetail_CompItem_SkinnedMeshComp(SSkinnedMeshRenderComponent* SkinnedMeshToShow);
+	void ImGUI_GODetail_CompItem_SimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp);
 
-	void ImGUI_ShowGameObjectTransform(SGameObject* PickedInstance);
-	void ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow);
+private:
+	void ImGUI_Spawner();
 
-	void ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow);
-	void ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow);
-	void ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderComponent* SkinnedMeshToShow);
-	void ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp);
 
 private:
 	SWorld* _BoundWorld = nullptr;

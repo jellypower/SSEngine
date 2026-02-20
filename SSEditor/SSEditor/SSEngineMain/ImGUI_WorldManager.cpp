@@ -67,8 +67,9 @@ void ImGUI_WorldManager::PerFrame()
 	_LastPixelPickedObject = nullptr;
 	_LastHieararchyPickedObject = nullptr;
 
-	ImGUI_DrawHierarchy();
-	ImGUI_ShowGameObjectDetail();
+	ImGUI_Hierarchy();
+	ImGUI_GODetail();
+	ImGUI_Spawner();
 }
 
 SGameObject* ImGUI_WorldManager::GetPickedObject() const
@@ -76,7 +77,7 @@ SGameObject* ImGUI_WorldManager::GetPickedObject() const
 	return _PickedObject.Get();
 }
 
-void ImGUI_WorldManager::ImGUI_DrawHierarchy()
+void ImGUI_WorldManager::ImGUI_Hierarchy()
 {
 	if (ImGui::Begin("Node Debugger"))
 	{
@@ -89,7 +90,7 @@ void ImGUI_WorldManager::ImGUI_DrawHierarchy()
 
 			for (int i = 0; i < ChildCnt; i++)
 			{
-				ImGUI_DrawHierarchy_Recursion(RootObject->GetChild(i));
+				ImGUI_Hierarchy_Recursion(RootObject->GetChild(i));
 			}
 		}
 		ImGui::EndChild();
@@ -97,7 +98,7 @@ void ImGUI_WorldManager::ImGUI_DrawHierarchy()
 	ImGui::End();
 }
 
-void ImGUI_WorldManager::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
+void ImGUI_WorldManager::ImGUI_Hierarchy_Recursion(SGameObject* Object)
 {
 	int32 ChildCnt = Object->GetChildCnt();
 
@@ -129,7 +130,7 @@ void ImGUI_WorldManager::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
 
 		for (int i = 0; i < ChildCnt; i++)
 		{
-			ImGUI_DrawHierarchy_Recursion(Object->GetChild(i));
+			ImGUI_Hierarchy_Recursion(Object->GetChild(i));
 		}
 
 		ImGui::TreePop();
@@ -142,7 +143,7 @@ void ImGUI_WorldManager::ImGUI_DrawHierarchy_Recursion(SGameObject* Object)
 	}
 }
 
-void ImGUI_WorldManager::ImGUI_ShowGameObjectDetail()
+void ImGUI_WorldManager::ImGUI_GODetail()
 {
 	ImGui::Begin((utf8*)u8"Object Detail");
 	{
@@ -178,20 +179,20 @@ void ImGUI_WorldManager::ImGUI_ShowGameObjectDetail()
 
 		if (PickedGameObject != nullptr)
 		{
-			ImGUI_ShowGameObjectTransform(PickedGameObject);
+			ImGUI_GODetail_Transform(PickedGameObject);
 
 			int32 CompCnt = PickedGameObject->GetComponentCnt();
 			for (int32 i=0;i<CompCnt;i++)
 			{
 				SComponentBase* Comp = PickedGameObject->GetComponentByIdx(i);
-				ImGUI_ShowComponentDetailInfo(Comp);
+				ImGUI_GODetail_CompItem(Comp);
 			}
 		}
 	}
 	ImGui::End();
 }
 
-void ImGUI_WorldManager::ImGUI_ShowGameObjectTransform(SGameObject* PickedInstance)
+void ImGUI_WorldManager::ImGUI_GODetail_Transform(SGameObject* PickedInstance)
 {
 	const Transform& transform = PickedInstance->GetTransform();
 
@@ -259,27 +260,27 @@ void ImGUI_WorldManager::ImGUI_ShowGameObjectTransform(SGameObject* PickedInstan
 }
 
 
-void ImGUI_WorldManager::ImGUI_ShowComponentDetailInfo(SComponentBase* ComponentToShow)
+void ImGUI_WorldManager::ImGUI_GODetail_CompItem(SComponentBase* ComponentToShow)
 {
 	if (SRenderLightComponent* RenderLight = dynamic_cast<SRenderLightComponent*>(ComponentToShow))
 	{
-		ImGUI_ShowLightCompDetail(RenderLight);
+		ImGUI_GODetail_CompItem_LightComp(RenderLight);
 	}
 	else if (SCubeMapRenderComponent* CubemapComp = dynamic_cast<SCubeMapRenderComponent*>(ComponentToShow))
 	{
-		ImGUI_ShowCubemapCompDetail(CubemapComp);
+		ImGUI_GODetail_CompItem_CubemapComp(CubemapComp);
 	}
 	else if (SSkinnedMeshRenderComponent* SkinnedMeshComp = dynamic_cast<SSkinnedMeshRenderComponent*>(ComponentToShow))
 	{
-		ImGUI_ShowSkinnedMeshCompDetail(SkinnedMeshComp);
+		ImGUI_GODetail_CompItem_SkinnedMeshComp(SkinnedMeshComp);
 	}
 	else if (SSimpleAnimatorTestComponent* AnimatorComp = dynamic_cast<SSimpleAnimatorTestComponent*>(ComponentToShow))
 	{
-		ImGUI_ShowSimpleAnimTestComp(AnimatorComp);
+		ImGUI_GODetail_CompItem_SimpleAnimTestComp(AnimatorComp);
 	}
 }
 
-void ImGUI_WorldManager::ImGUI_ShowLightCompDetail(SRenderLightComponent* CompToShow)
+void ImGUI_WorldManager::ImGUI_GODetail_CompItem_LightComp(SRenderLightComponent* CompToShow)
 {
 	const utf8* u8CompName = (utf8*)u8"RenderLightComponent";
 
@@ -310,7 +311,7 @@ void ImGUI_WorldManager::ImGUI_ShowLightCompDetail(SRenderLightComponent* CompTo
 	}
 }
 
-void ImGUI_WorldManager::ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* CubemapToShow)
+void ImGUI_WorldManager::ImGUI_GODetail_CompItem_CubemapComp(SCubeMapRenderComponent* CubemapToShow)
 {
 	const utf8* u8CompName = (utf8*)u8"CubeMapComp";
 	if (ImGui::CollapsingHeader(u8CompName))
@@ -374,7 +375,7 @@ void ImGUI_WorldManager::ImGUI_ShowCubemapCompDetail(SCubeMapRenderComponent* Cu
 	}
 }
 
-void ImGUI_WorldManager::ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderComponent* SkinnedMeshToShow)
+void ImGUI_WorldManager::ImGUI_GODetail_CompItem_SkinnedMeshComp(SSkinnedMeshRenderComponent* SkinnedMeshToShow)
 {
 	const utf8* u8CompName = (utf8*)u8"SSkinnedMeshRenderComponent";
 	if (ImGui::CollapsingHeader(u8CompName))
@@ -406,7 +407,7 @@ void ImGUI_WorldManager::ImGUI_ShowSkinnedMeshCompDetail(SSkinnedMeshRenderCompo
 	}
 }
 
-void ImGUI_WorldManager::ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp)
+void ImGUI_WorldManager::ImGUI_GODetail_CompItem_SimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp)
 {
 	const utf8* u8CompName = (utf8*)u8"SSimpleAnimatorTestComponent";
 	if (ImGui::CollapsingHeader(u8CompName))
@@ -491,4 +492,9 @@ void ImGUI_WorldManager::ImGUI_ShowSimpleAnimTestComp(SSimpleAnimatorTestCompone
 		}
 		ImGui::PopID();
 	}
+}
+
+void ImGUI_WorldManager::ImGUI_Spawner()
+{
+
 }
