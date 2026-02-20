@@ -26,8 +26,6 @@ ImGUI_WorldManager::ImGUI_WorldManager(SWorld* InWorld)
 
 void ImGUI_WorldManager::PerFrame()
 {
-	ImGUI_DrawHierarchy();
-
 	if (SSInput::GetMouseDown(EMouseCode::MOUSE_LEFT))
 	{
 		Vector2i32 MousePos = SSInput::GetMousePos();
@@ -69,7 +67,7 @@ void ImGUI_WorldManager::PerFrame()
 	_LastPixelPickedObject = nullptr;
 	_LastHieararchyPickedObject = nullptr;
 
-
+	ImGUI_DrawHierarchy();
 	ImGUI_ShowGameObjectDetail();
 }
 

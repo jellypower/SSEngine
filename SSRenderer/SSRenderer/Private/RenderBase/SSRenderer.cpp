@@ -452,7 +452,7 @@ void SSRenderer::PerFrame()
 			_MainDeviceContext->BeginPostProcessing();
 			{
 
-				_MainDeviceContext->ClearRenderTarget(_RTPostProcessResult, { 0.5, 0.5, 0.5, 1 });
+				_MainDeviceContext->ClearRenderTarget(_RTPostProcessResult, { 0, 0, 0, 0 });
 				_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
 
 				if (_CubeMapToDraw != nullptr)
