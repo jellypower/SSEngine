@@ -74,6 +74,9 @@ private:
 	SS::StringW _importFileName_TMP;
 
 
+	utf16 _u16LastProfileResult[1024] = {0, };
+	utf8 _u8LastProfileResult[1024] = {0, };
+
 	ISSFBXImporter* _FbxImporter = nullptr;
 	IAssetDBLoader* _AssetDBLoader = nullptr;
 };

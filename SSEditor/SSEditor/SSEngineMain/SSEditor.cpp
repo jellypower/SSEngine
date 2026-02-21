@@ -2,7 +2,7 @@
 
 #include "SSEditor.h"
 
-#include <SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h>
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 
 #include "ImGUI_AssetManager.h"
 #include "ImGUI_WorldManager.h"
@@ -35,6 +35,7 @@
 
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopedProfile.h"
 #include "SSEngineDefault/Public/SystemUtilities.h"
 
 
@@ -258,21 +259,51 @@ void SSEditor::StartupEngine()
 
 void SSEditor::EnginePerFrame()
 {
-	Run_g_ImGuiInitializer__OnBeginFrameImGui();
+	static const SS::SHasherW EditorLoopName = L"EditorLoop";
+	ScopedProfile Prof(EditorLoopName);
 
-	ProcessImGUI();
+	{
+		static const SS::SHasherW ProfName = L"OnBeginFrameImGui";
+		ScopedProfile Prof(ProfName);
+		Run_g_ImGuiInitializer__OnBeginFrameImGui();
+	}
 
-	TEMP_ProcessContents();
+	{
+		static const SS::SHasherW ProfName = L"ProcessEditor";
+		ScopedProfile Prof(ProfName);
+		ProcessImGUI();
+	}
 
-	_DefaultWorld->PerFrameContents();
-	_DefaultWorld->PerFrameAnim();
 
-	_DefaultWorld->ProcessTransformCommit();
+	{
+		static const SS::SHasherW ProfName = L"ProcessContents";
+		ScopedProfile Prof(ProfName);
+		TEMP_ProcessContents();
+		_DefaultWorld->PerFrameContents();
+	}
 
-	_DefaultWorld->ProcessDebugDraw(_Renderer);
+	{
+		static const SS::SHasherW ProfName = L"ProcessAnim";
+		ScopedProfile Prof(ProfName);
+		_DefaultWorld->PerFrameAnim();
+	}
 
-	_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
-	_Renderer->PerFrame();
+	{
+		static const SS::SHasherW ProfName = L"TransformCommit";
+		ScopedProfile Prof(ProfName);
+		_DefaultWorld->ProcessTransformCommit();
+	}
+
+
+	{
+		static const SS::SHasherW ProfName = L"Render";
+		ScopedProfile Prof(ProfName);
+		_DefaultWorld->ProcessDebugDraw(_Renderer);
+		_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
+		_Renderer->PerFrame();
+	}
+
+	int a = 0;
 }
 
 void SSEditor::CleanupEngine()
@@ -516,6 +547,43 @@ void SSEditor::ImGUI_FrameInfo()
 		ImGui::Text("Elapsed time: %f", SSFrameInfo::GetElapsedTime());
 		ImGui::Text("Delta time: %f", SSFrameInfo::GetDeltaTime());
 		ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
+
+
+		if (ImGui::Button("Renew Profile Result"))
+		{
+			int32 WrittenWordCnt = 0;
+			int64 Frequency = GetPerformanceFrequency();
+			double DeltaTime = SSFrameInfo::GetDeltaTime();
+			const SS::PooledList<ProfileResultItem>& Results = g_FrameInfoProcessor->GetLastProfileResult();
+
+
+			WrittenWordCnt += swprintf_s(
+				_u16LastProfileResult + WrittenWordCnt,
+				sizeof(_u16LastProfileResult) / sizeof(utf16) - WrittenWordCnt,
+				L"FrameTime: %lf \n\n", DeltaTime);
+
+
+
+			for (const ProfileResultItem& Item : Results)
+			{
+				int64 ConsumedTick = Item.TickEnd - Item.TickStart;
+				double ConsumedMS = (double)ConsumedTick / (double)Frequency;
+
+				WrittenWordCnt += swprintf_s(
+					_u16LastProfileResult + WrittenWordCnt,
+					sizeof(_u16LastProfileResult) / sizeof(utf16) - WrittenWordCnt,
+					L"%ls:\t %.3lf ms\t %.3lf %% \n", Item.Name.C_Str(), ConsumedMS, (ConsumedMS / DeltaTime) * 100);
+				
+			}
+
+			UTF16StrToUtf8Str(_u16LastProfileResult, WrittenWordCnt, _u8LastProfileResult, sizeof(_u8LastProfileResult));
+		}
+
+		ImGui::Text(_u8LastProfileResult);
+
 	}
 	ImGui::End();
+
+
+
 }

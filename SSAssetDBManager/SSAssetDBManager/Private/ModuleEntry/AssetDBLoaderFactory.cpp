@@ -7,13 +7,17 @@
 
 
 IHasherPool* g_HasherPool = nullptr;
+IThreadManager* g_ThreadManager = nullptr;
 
 IAssetDBLoader* CreateAssetDBLoader()
 {
 	return DBG_NEW AssetDBLoader;
 }
 
-void SSAssetDBManagerModuleEntry(IHasherPool* InHasherPool)
+void SSAssetDBManagerModuleEntry(
+	IHasherPool* InHasherPool,
+	IThreadManager* InThreadManager)
 {
 	g_HasherPool = InHasherPool;
+	g_ThreadManager = InThreadManager;
 }

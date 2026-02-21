@@ -158,12 +158,16 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Private\PCommon\SSThread\PCommmonThreadManager.h" />
     <ClInclude Include="Private\PCommon\SHasher\HasherPoolBase.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestSerialize_Internal.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestFunction_Internal.h" />
+    <ClInclude Include="Private\PWin32\SSThread\Win32ThreadManager.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
+    <ClInclude Include="Public\SSThread\PWin32\SSThreadUtil_Win32.h" />
+    <ClInclude Include="Public\SSThread\IThreadManager.h" />
     <ClInclude Include="Public\RawInput\IRawInputProcessor.h" />
     <ClInclude Include="Public\RawInput\KeyCodeEnums.h" />
     <ClInclude Include="Public\RawInput\RawInputUtils.h" />
@@ -208,6 +212,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SSNativeKeywords.h" />
     <ClInclude Include="Public\SSNativeTypes.h" />
     <ClInclude Include="Public\SSStaticMath.h" />
+    <ClInclude Include="Public\RawProfiler\ScopedProfile.h" />
+    <ClInclude Include="Public\SSThread\SSThreadUtil.h" />
     <ClInclude Include="Public\SSVector.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.h" />
     <ClInclude Include="Public\SystemUtilities.h" />
@@ -216,10 +222,12 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp" />
+    <ClCompile Include="Private\PCommon\SSThread\PCommmonThreadManager.cpp" />
     <ClCompile Include="Private\PCommon\SHasher\HasherPoolBase.cpp" />
     <ClCompile Include="Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestSerialize_Internal.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestFunction_Internal.cpp" />
+    <ClCompile Include="Private\PWin32\SSThread\Win32ThreadManager.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputUtils.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.cpp" />
@@ -236,6 +244,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp" />
     <ClCompile Include="Private\PCommon\CommonSerializer\DefaultTypeSerializsers.cpp" />
     <ClCompile Include="Private\PCommon\SystemUtilities.cpp" />
+    <ClCompile Include="Private\PWin32\SSThread\SSThreadUtil_Win32.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

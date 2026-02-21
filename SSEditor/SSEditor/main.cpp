@@ -97,7 +97,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	MSG msg = { 0 };
 
-	g_FrameInfoProcessor->BeginFrameXXX();
+	g_FrameInfoProcessor->StartUpXXX();
 
 	int64 PC1 = GetPerofrmanceCounter();
 

@@ -80,6 +80,20 @@ namespace SS
 			}
 		}
 
+
+		void PopBack()
+		{
+			if (_size < 0)
+			{
+				SS_INTERRUPT();
+				return;
+			}
+
+			T* dataToRemovePtr = _allocator.GetData() + _size - 1;
+			dataToRemovePtr->~T();
+			_size--;
+		}
+
 		void PushBack(const T& newData)
 		{
 			if (_size >= _allocator.GetCapacity())

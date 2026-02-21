@@ -8,4 +8,5 @@ class SObjectGlobalHashMap;
 SOBJECT_MODULE_NATIVE SObjectGlobalHashMap* CreateSObjectGlobalHashMap();
 SOBJECT_MODULE_NATIVE void SObjectModuleEntry(
 	SObjectGlobalHashMap* InSObjectHashMap,
-	IHasherPool* InHasherPool);
+	IHasherPool* InHasherPool,
+	IThreadManager* InThreadManager);

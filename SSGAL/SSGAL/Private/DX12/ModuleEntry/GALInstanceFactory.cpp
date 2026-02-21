@@ -8,6 +8,8 @@
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 
 IHasherPool* g_HasherPool = nullptr;
+IThreadManager* g_ThreadManager = nullptr;
+
 ICommonRenderAssetSet* g_RenderAssetSet = nullptr;
 
 GALRenderDevice* CreateGALRenderDevice(
@@ -29,7 +31,10 @@ GALRenderDevice* CreateGALRenderDevice(
 	return NewRenderDevice;
 }
 
-void SSGALModuleEntry(IHasherPool* InHasherPool)
+void SSGALModuleEntry(
+	IHasherPool* InHasherPool,
+	IThreadManager* InThreadManager)
 {
 	g_HasherPool = InHasherPool;
+	g_ThreadManager = InThreadManager;
 }

@@ -154,7 +154,6 @@ void SWorld::ProcessTransformCommit()
 	PC2 = GetPerofrmanceCounter();
 	PF = GetPerformanceFrequency();
 	eTime = (PC2 - PC1) / (double)PF;
-	printf("%f", eTime);
 	int a = 0;
 }
 

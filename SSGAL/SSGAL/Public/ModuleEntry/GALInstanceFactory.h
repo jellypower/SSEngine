@@ -14,5 +14,7 @@ typedef decltype(&CreateGALRenderDevice) FuncPtr_CreateGALRenderDevice;
 #endif
 
 class IHasherPool;
-SSGAL_MODULE_NATIVE void SSGALModuleEntry(IHasherPool* InHasherPool);
+SSGAL_MODULE_NATIVE void SSGALModuleEntry(
+	IHasherPool* InHasherPool,
+	IThreadManager* InThreadManager);
 typedef decltype(&SSGALModuleEntry) FuncPtr_SSGALModuleEntry;

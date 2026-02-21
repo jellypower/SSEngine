@@ -4,16 +4,18 @@
 
 #include "SSBuildSettings.h"
 
-#include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "SSEngineDefault/Public/SSEngineInlineSettings.h"
-#include "SSEngineDefault/Public/SHasher/IHasherPool.h"
+#include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
+#include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "SSEngineDefault/Public/RawInput/IRawInputProcessor.h"
 #include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
-#include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
+#include "SSEngineDefault/Public/SHasher/IHasherPool.h"
+#include "SSEngineDefault/Public/SSThread/IThreadManager.h"
+#include "SSEngineDefault/Public/SSThread/PWin32/SSThreadUtil_Win32.h"
 
 #include "SObject/Public/SObjectGlobalHashMap.h"
-#include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
 #include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
+#include "SObject/Public/ModuleEntry/SObjectModuleEntry.h"
 
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
@@ -23,14 +25,21 @@
 #include "SSContentsBase/Public/ModuleEntry/SSContentsBaseModuleEntry.h"
 
 
-
+// SObjectGlobalVariableSet
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
+// ~SObjectGlobalVariableSet
 
+
+// GlobalVariableSet
 IHasherPool* g_HasherPool = nullptr;
 IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 IRawInputProcessor* g_RawInputProcessor = nullptr;
+IThreadManager* g_ThreadManager = nullptr;
+// ~GlobalVariableSet
 
+// SSRendererGlobalVariableSet
 IRenderer* g_Renderer = nullptr;
+// ~SSRendererGlobalVariableSet
 
 HWND g_hWnd = NULL;
 
@@ -77,17 +86,23 @@ void RunModuleEntryScript()
 	g_FrameInfoProcessor = CreateFrameInfo();
 	g_RawInputProcessor = CreateInputProcessor();
 	g_ObjectHashMap = CreateSObjectGlobalHashMap();
+	g_ThreadManager = CreateThreadManager();
 
+	HANDLE MainThread = ::GetCurrentThread();
+	SetMainThreadHandle(g_ThreadManager, MainThread);
+	SS_ASSERT(g_ThreadManager->IsInMainThread());
 
 	SSEngineDefaultModuleEntry(
 		SHASHER_DEFAULT_POOL_SIZE,
 		g_HasherPool,
 		g_FrameInfoProcessor,
-		g_RawInputProcessor);
+		g_RawInputProcessor,
+		g_ThreadManager);
 
 	SObjectModuleEntry(
 		g_ObjectHashMap,
-		g_HasherPool);
+		g_HasherPool,
+		g_ThreadManager);
 
 }
 
@@ -111,19 +126,27 @@ void RunModuleEntryScriptPostInitWindow(
 		FuncPtr_SSAssetDBManagerModuleEntry SSAssetDBManagerModuleEntry = (FuncPtr_SSAssetDBManagerModuleEntry)GetProcAddress(g_hInstSSAssetDBManager, "SSAssetDBManagerModuleEntry");
 		g_fpCreateAssetDBLoader = (FuncPtr_CreateAssetDBLoader)GetProcAddress(g_hInstSSAssetDBManager, "CreateAssetDBLoader");
 
-		SSGALModuleEntry(g_HasherPool);
+		SSGALModuleEntry(
+			g_HasherPool,
+			g_ThreadManager);
 		GALRenderDevice* NewRenderDevice = CreateGALRenderDevice(
 			hInst,
 			hWnd,
 			bEnableDebugLayer,
 			bEnableGPUBaseValidation);
 
-		SSRendererModuleEntry(g_HasherPool, g_FrameInfoProcessor);
+		SSRendererModuleEntry(
+			g_HasherPool, 
+			g_FrameInfoProcessor,
+			g_ThreadManager);
 		g_Renderer = CreateRenderer(NewRenderDevice);
 
-		SSFBXImporterModuleEntry(g_HasherPool, g_Renderer);
+		SSFBXImporterModuleEntry(
+			g_HasherPool,
+			g_ThreadManager,
+			g_Renderer);
 
-		SSAssetDBManagerModuleEntry(g_HasherPool);
+		SSAssetDBManagerModuleEntry(g_HasherPool, g_ThreadManager);
 	}
 
 
@@ -131,13 +154,16 @@ void RunModuleEntryScriptPostInitWindow(
 		g_Renderer,
 		g_HasherPool,
 		g_FrameInfoProcessor,
-		g_RawInputProcessor);
+		g_RawInputProcessor,
+		g_ThreadManager);
 
 }
 
 void RunModuleExitScript()
 {
 	// Cleanup Renderer
+	delete g_ThreadManager;
+	g_ThreadManager = nullptr;
 	delete g_ObjectHashMap;
 	g_ObjectHashMap = nullptr;
 	delete g_RawInputProcessor;

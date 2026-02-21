@@ -2,6 +2,15 @@
 #include "SSEngineDefault/Public/INoncopyable.h"
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 #include "SSEngineDefault/Public/SSVector.h"
+#include "SSEngineDefault/Public/SHasher/SHasherW.h"
+
+
+struct ProfileResultItem
+{
+	SS::SHasherW Name;
+	uint64 TickStart;
+	uint64 TickEnd;
+};
 
 class IFrameInfoProcessor : public INoncopyable
 {
@@ -11,8 +20,8 @@ protected:
 	uint64 _frameCount = 0;
 	double _deltaTime = 0;
 	double _elapsedTime = 0;
-	uint64 _previousTick = 0;
-	uint64 _currentTick = 0;
+	uint64 _PrevFrameStartTick = 0;
+	uint64 _FrameStartTick = 0;
 
 	double _FPSCheckStopWatch = 0;
 	uint64 _frameCntDuringInFPSCheckterval = 0;
@@ -35,10 +44,16 @@ public:
 	Vector2ui32 GetWindowSize() const { return _windowSize; }
 	uint64 GetFrameCnt() const { return _frameCount; }
 
+public:
+	virtual const SS::PooledList<ProfileResultItem> GetLastProfileResult() const = 0;
+
 
 public:
-	virtual void BeginFrameXXX() = 0;
+	virtual void StartUpXXX() = 0;
 	virtual void PerFrameXXX() = 0;
 	virtual void ProcessWindowResizeXXX(uint32 width, uint32 height) = 0;
+
+	virtual void BeginMainProfile(SS::SHasherW RecordName) = 0;
+	virtual void EndMainProfile(SS::SHasherW RecordName) = 0;
 };
 
