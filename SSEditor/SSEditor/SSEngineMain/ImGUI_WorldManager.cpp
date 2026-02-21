@@ -440,29 +440,58 @@ void ImGUI_WorldManager::ImGUI_Spawner()
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "SpawnTransform");
 		ImGUI_Transform_Edit(_SpawnerTransform);
 
-		ImGui::Separator();
-		ImGui::NewLine();
-
-		SS::SHasherW NewlySelectMdlc = ImGUI_ShowAssetListCombo(EAssetType::ModelCombination, "Mesh", _SpawnerSelectedMdlc);
-		if (NewlySelectMdlc.IsEmpty() == false)
 		{
-			_SpawnerSelectedMdlc = NewlySelectMdlc;
-		}
+			ImGui::Separator();
+			ImGui::NewLine();
 
-		if (ImGui::Button("SpawnMdlc"))
-		{
-			if (_SpawnerSelectedMdlc.IsEmpty() == false)
+			SS::SHasherW NewlySelectMdlc = ImGUI_ShowAssetListCombo(EAssetType::ModelCombination, "Selected Mdlc", _SpawnerSelectedMdlc);
+			if (NewlySelectMdlc.IsEmpty() == false)
 			{
-				SGameObject* NewMdlc = SRendererUtil::InstantiateModelObjTree(_SpawnerSelectedMdlc);
-				if (NewMdlc == nullptr)
-				{
-					return;
-				}
+				_SpawnerSelectedMdlc = NewlySelectMdlc;
+			}
 
-				NewMdlc->SetTransform(_SpawnerTransform);
-				_BoundWorld->AddToWorld(NewMdlc);
+			if (ImGui::Button("Spawn Mdlc"))
+			{
+				if (_SpawnerSelectedMdlc.IsEmpty() == false)
+				{
+					SGameObject* NewMdlc = SRendererUtil::InstantiateModelObjTree(_SpawnerSelectedMdlc);
+					if (NewMdlc == nullptr)
+					{
+						return;
+					}
+
+					NewMdlc->SetTransform(_SpawnerTransform);
+					_BoundWorld->AddToWorld(NewMdlc);
+				}
 			}
 		}
+
+		{
+			ImGui::Separator();
+			ImGui::NewLine();
+
+			SS::SHasherW NewlySelectMesh = ImGUI_ShowAssetListCombo(EAssetType::Mesh, "Selected Mesh", _SpawnerSelectedMesh);
+			if (NewlySelectMesh.IsEmpty() == false)
+			{
+				_SpawnerSelectedMesh = NewlySelectMesh;
+			}
+
+			if (ImGui::Button("Spawn Mesh"))
+			{
+				if (_SpawnerSelectedMesh.IsEmpty() == false)
+				{
+					SGameObject* NewMesh = SRendererUtil::InstantiateMesh(_SpawnerSelectedMesh);
+					if (NewMesh == nullptr)
+					{
+						return;
+					}
+
+					NewMesh->SetTransform(_SpawnerTransform);
+					_BoundWorld->AddToWorld(NewMesh);
+				}
+			}
+		}
+
 	}
 	ImGui::End();
 }

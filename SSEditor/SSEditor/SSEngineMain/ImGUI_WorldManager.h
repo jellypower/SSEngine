@@ -52,5 +52,6 @@ private:
 
 private:
 	SS::SHasherW _SpawnerSelectedMdlc;
+	SS::SHasherW _SpawnerSelectedMesh;
 	Transform _SpawnerTransform;
 };
