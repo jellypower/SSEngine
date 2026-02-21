@@ -10,6 +10,7 @@
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 
 #include "SSFBXImporter/Public/FRAN.h"
+#include "SSImGUIUtils/ImGUIAssetManagerUtils.h"
 
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
@@ -286,7 +287,7 @@ void ImGUI_AssetManager::ImGUI_AssetManager_Material()
 							SS::SHasherW EquippedTexName = PbrMtlData->_TextureAssetNames[i];
 
 
-							SS::SHasherW NewlySelectedAsset = ImGUI_ShowAssetCombo(EAssetType::Texture, TexTypeStr, EquippedTexName);
+							SS::SHasherW NewlySelectedAsset = ImGUI_ShowAssetListCombo(EAssetType::Texture, TexTypeStr, EquippedTexName);
 							if (NewlySelectedAsset.IsEmpty() == false)
 							{
 								PbrMtlData->_TextureAssetNames[i] = NewlySelectedAsset;
@@ -347,7 +348,7 @@ void ImGUI_AssetManager::ImGUI_AssetManager_Model()
 					SS::SHasherW SelectedMeshName = SelectedMesh->GetAssetName();
 
 
-					SS::SHasherW NewlySelectedMesh = ImGUI_ShowAssetCombo(EAssetType::Mesh, "Mesh", SelectedMeshName);
+					SS::SHasherW NewlySelectedMesh = ImGUI_ShowAssetListCombo(EAssetType::Mesh, "Mesh", SelectedMeshName);
 					if (NewlySelectedMesh.IsEmpty() == false)
 					{
 						ModelItem->SetMesh(NewlySelectedMesh);
@@ -369,7 +370,7 @@ void ImGUI_AssetManager::ImGUI_AssetManager_Model()
 					_itoa(MtlIdx, MtlHeader + 9, 10);
 
 
-					SS::SHasherW NewlySelectedMtl = ImGUI_ShowAssetCombo(EAssetType::Material, MtlHeader, SelectedMtlName);
+					SS::SHasherW NewlySelectedMtl = ImGUI_ShowAssetListCombo(EAssetType::Material, MtlHeader, SelectedMtlName);
 					if (NewlySelectedMtl.IsEmpty() == false)
 					{
 						ModelItem->SetMaterial(NewlySelectedMtl, MtlIdx);
@@ -523,54 +524,4 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 	_AssetDBLoaderToExport->ClearAssetsToSaveToDB();
 	_AssetDBLoaderToExport->SaveInterAssetsToDB();
 	_AssetDBLoaderToExport->ClearDB();
-}
-
-SS::SHasherW ImGUI_AssetManager::ImGUI_ShowAssetCombo(EAssetType InType, const utf8* LabelName, SS::SHasherW PrevSelectedAssetName, ImGuiComboFlags_ Flags)
-{
-	constexpr int32 BUFFER_SIZE = 512;
-
-	IAssetManager* AssetManager = _Renderer->GetAssetManager();
-	const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetList = AssetManager->GetAssetMap(InType);
-
-	uint32 PrevSelectedAssetNameStrLen = PrevSelectedAssetName.GetStrLen();
-	const utf16* PrevSelectedAssetNameCStr = PrevSelectedAssetName.C_Str();
-
-	utf8 u8EquippedTexName[BUFFER_SIZE] = "EMPTY";
-	UTF16StrToUtf8Str(PrevSelectedAssetNameCStr, PrevSelectedAssetNameStrLen, u8EquippedTexName, BUFFER_SIZE);
-
-
-	SS::SHasherW NewlySelectedAssetName;
-
-	if (ImGui::BeginCombo(LabelName, u8EquippedTexName, ImGuiComboFlags_WidthFitPreview))
-	{
-		for (const SS::pair<SS::SHasherW, IAssetBase*>& ItemPair : AssetList)
-		{
-			IAssetBase* AssetItem = ItemPair.second;
-			SS::SHasherW AssetItemName = AssetItem->GetAssetName();
-			uint32 AssetItemNameStrLen = AssetItemName.GetStrLen();
-			const utf16* AssetItemNameCStr = AssetItemName.C_Str();
-
-			utf8 u8SelectTexItemName[BUFFER_SIZE];
-			UTF16StrToUtf8Str(AssetItemNameCStr, AssetItemNameStrLen, u8SelectTexItemName, BUFFER_SIZE);
-
-			bool bIsSelectedAsset = false;
-			if (PrevSelectedAssetName == AssetItemName)
-			{
-				bIsSelectedAsset = true;
-			}
-
-			if (ImGui::Selectable(u8SelectTexItemName, bIsSelectedAsset))
-			{
-				NewlySelectedAssetName = AssetItem->GetAssetName();
-			}
-
-			if (bIsSelectedAsset)
-			{
-				ImGui::SetItemDefaultFocus();
-			}
-		}
-		ImGui::EndCombo();
-	}
-
-	return NewlySelectedAssetName;
 }

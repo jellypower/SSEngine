@@ -29,14 +29,6 @@ private:
 private:
 	void ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace);
 
-
-private:
-	/// <returns> return selected item name when combo item selected. </returns>
-	SS::SHasherW ImGUI_ShowAssetCombo(
-		EAssetType InType,
-		const utf8* LabelName,
-		SS::SHasherW PrevSelectedAssetName, 
-		ImGuiComboFlags_ ComboFlags = ImGuiComboFlags_WidthFitPreview);
 	
 
 private:

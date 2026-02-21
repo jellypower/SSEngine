@@ -1,9 +1,10 @@
 ﻿#include "pch.h"
 #include "ImGUI_WorldManager.h"
 
-#include <SSContentsBase/Public/ContentBase/SWorld.h>
-#include <SSEngineDefault/Public/RawInput/SSInput.h>
-#include <SSGAL/Public/SSGALInlineSettings.h>
+
+#include "SSContentsBase/Public/ContentBase/SWorld.h"
+#include "SSEngineDefault/Public/RawInput/SSInput.h"
+#include "SSGAL/Public/SSGALInlineSettings.h"
 
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
@@ -12,11 +13,13 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IRenderAnimAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
+#include "SSContentsBase/Public/SRenderContent/SRendererUtil.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SSkinnedMeshRenderComponent.h"
 #include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
+#include "SSImGUIUtils/ImGUIAssetManagerUtils.h"
 
 
 ImGUI_WorldManager::ImGUI_WorldManager(SWorld* InWorld)
@@ -81,7 +84,6 @@ void ImGUI_WorldManager::ImGUI_Hierarchy()
 {
 	if (ImGui::Begin("Node Debugger"))
 	{
-
 		if (ImGui::BeginChild("SceneTree", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
 		{
 			SGameObject* RootObject = _BoundWorld->GetWorldRootObject();
@@ -107,16 +109,15 @@ void ImGUI_WorldManager::ImGUI_Hierarchy_Recursion(SGameObject* Object)
 	const utf16* u16ObjectName = sObjectName.C_Str();
 
 	utf8 u8ObjectName[SHASHER_STRLEN_MAX];
-	UTF16StrToUtf8Str(u16ObjectName, iObjectNameLen, u8ObjectName, SHASHER_STRLEN_MAX);
+	UTF16StrToUtf8Str(u16ObjectName, iObjectNameLen, u8ObjectName, sizeof(u8ObjectName));
 
+	SS::StringW HashCodeStr = ToStringW(Object->GetHashCode());
+	const utf16* u16HashCodeStr = HashCodeStr.C_Str();
+	const int32 HashCodeStrLen = HashCodeStr.GetStrLen();
+	utf8 u8ObjectID[SHASHER_STRLEN_MAX];
+	UTF16StrToUtf8Str(u16HashCodeStr, HashCodeStrLen, u8ObjectID, sizeof(u8ObjectID));
 
-	bool bColorNode = _LastHieararchyPickedObject.GetHashCode() == Object->GetHashCode();
-
-	if (bColorNode)
-	{
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-	}
-
+	ImGui::PushID(u8ObjectID);
 	if (ImGui::TreeNodeEx(u8ObjectName,
 		ImGuiTreeNodeFlags_SpanLabelWidth |
 		ImGuiTreeNodeFlags_OpenOnArrow |
@@ -135,12 +136,7 @@ void ImGUI_WorldManager::ImGUI_Hierarchy_Recursion(SGameObject* Object)
 
 		ImGui::TreePop();
 	}
-
-
-	if (bColorNode)
-	{
-		ImGui::PopStyleColor(); // Pop the green text color
-	}
+	ImGui::PopID();
 }
 
 void ImGUI_WorldManager::ImGUI_GODetail()
@@ -194,68 +190,11 @@ void ImGUI_WorldManager::ImGUI_GODetail()
 
 void ImGUI_WorldManager::ImGUI_GODetail_Transform(SGameObject* PickedInstance)
 {
-	const Transform& transform = PickedInstance->GetTransform();
+	Transform CurTransform = PickedInstance->GetTransform();
 
-
-	// Set Scale
+	if (ImGUI_Transform_Edit(CurTransform))
 	{
-		float PickedScale[3];
-		PickedScale[0] = transform.Scale.X;
-		PickedScale[1] = transform.Scale.Y;
-		PickedScale[2] = transform.Scale.Z;
-		if (ImGui::InputFloat3("Scale", PickedScale))
-		{
-			Vector4f NewScale;
-			NewScale.X = PickedScale[0];
-			NewScale.Y = PickedScale[1];
-			NewScale.Z = PickedScale[2];
-			NewScale.W = 1;
-
-			PickedInstance->SetScale(NewScale);
-		}
-	}
-
-	// Set Rotation
-	{
-		Vector4f EulerRotation = XMEulerFromQuaternion(transform.Rotation.SimdVec);
-
-		float PickedRotation[3];
-		PickedRotation[0] = SS::RadToDegrees(EulerRotation.X);
-		PickedRotation[1] = SS::RadToDegrees(EulerRotation.Y);
-		PickedRotation[2] = SS::RadToDegrees(EulerRotation.Z);
-
-
-		ImGui::InputFloat3("Rotation", PickedRotation, "%.0f");
-		if (ImGui::IsItemDeactivatedAfterEdit())
-		{
-			Vector4f NewRot;
-
-			NewRot.X = SS::DegToRadians(PickedRotation[0]);
-			NewRot.Y = SS::DegToRadians(PickedRotation[1]);
-			NewRot.Z = SS::DegToRadians(PickedRotation[2]);
-			NewRot.W = 0;
-
-			Quaternion NewQuatRot = Quaternion::FromEulerRotation(NewRot);
-			PickedInstance->SetRotation(NewQuatRot);
-		}
-	}
-
-	// Move Position
-	{
-		float PickedPosition[3];
-		PickedPosition[0] = transform.Position.X;
-		PickedPosition[1] = transform.Position.Y;
-		PickedPosition[2] = transform.Position.Z;
-		if (ImGui::InputFloat3("Position", PickedPosition))
-		{
-			Vector4f NewPos;
-			NewPos.X = PickedPosition[0];
-			NewPos.Y = PickedPosition[1];
-			NewPos.Z = PickedPosition[2];
-			NewPos.W = 1;
-
-			PickedInstance->SetPosition(NewPos);
-		}
+		PickedInstance->SetTransform(CurTransform);
 	}
 }
 
@@ -496,5 +435,34 @@ void ImGUI_WorldManager::ImGUI_GODetail_CompItem_SimpleAnimTestComp(SSimpleAnima
 
 void ImGUI_WorldManager::ImGUI_Spawner()
 {
+	if (ImGui::Begin("Spawner"))
+	{
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "SpawnTransform");
+		ImGUI_Transform_Edit(_SpawnerTransform);
 
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		SS::SHasherW NewlySelectMdlc = ImGUI_ShowAssetListCombo(EAssetType::ModelCombination, "Mesh", _SpawnerSelectedMdlc);
+		if (NewlySelectMdlc.IsEmpty() == false)
+		{
+			_SpawnerSelectedMdlc = NewlySelectMdlc;
+		}
+
+		if (ImGui::Button("SpawnMdlc"))
+		{
+			if (_SpawnerSelectedMdlc.IsEmpty() == false)
+			{
+				SGameObject* NewMdlc = SRendererUtil::InstantiateModelObjTree(_SpawnerSelectedMdlc);
+				if (NewMdlc == nullptr)
+				{
+					return;
+				}
+
+				NewMdlc->SetTransform(_SpawnerTransform);
+				_BoundWorld->AddToWorld(NewMdlc);
+			}
+		}
+	}
+	ImGui::End();
 }

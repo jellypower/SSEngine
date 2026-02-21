@@ -9,7 +9,6 @@ SObjHashCode::SObjHashCode(SObjectBase* InObject)
 {
 	if (InObject == nullptr)
 	{
-		_NativeValue = SOBJ_NATIVEVALUE_NULL;
 		return;
 	}
 

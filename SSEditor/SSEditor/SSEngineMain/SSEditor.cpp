@@ -165,16 +165,16 @@ void SSEditor::StartupEngine()
 		_ImGUI_WorldManager = DBG_NEW ImGUI_WorldManager(_DefaultWorld);
 	}
 
-	// Floor
 	{
+		// Floor
 		SGameObject* Floor = SRendererUtil::InstantiateModel(L"__RUNTIME_CREATION__/Cube1m.mdl");
 		_DefaultWorld->AddToWorld(Floor);
 		Floor->SetPosition(Vector4f(0, -0.1, 0, 1));
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
-	}
 
-	// Arrow
-	{
+
+		/*
+
 		static const SS::SHasherW ArrowMeshName = _Renderer->GetCommonRenderAssetSet()->GetArrowMesh()->GetAssetName();
 
 		// X
@@ -194,22 +194,22 @@ void SSEditor::StartupEngine()
 		_DefaultWorld->AddToWorld(DirectionObject);
 		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(0, 0, 1, 0)));
 		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
-	}
 
-	{
+		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(L"ContentsAssets/SKM_Vivian.mdlc");
+		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
+		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
+
+
 
 		SS::SHasherW BoundAsset = _FbxImporter->GetRepresentingAssetName();
 
 		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundAsset.C_Str());
-		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
+		AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
+
+		*/
 	}
 
-	{
-		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(L"ContentsAssets/SKM_Vivian.mdlc");
-		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
-		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
-	}
 
 	{
 		SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");

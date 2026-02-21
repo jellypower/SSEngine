@@ -22,7 +22,7 @@ private:
 
 	SObjHashT<SGameObject> _StrongBindAncestor;
 
-	SObjHashCode _IncludedWorldHash = nullptr;
+	SObjHashCode _IncludedWorldHash;
 	SGameObject* _Parent = nullptr;
 
 	uint64 _TransformCommitedFrameCnt = 0;

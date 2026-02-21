@@ -212,7 +212,13 @@ void SGameObject::SetStrongBindAncestor(SGameObject* InAncestor)
 void SGameObject::OnEnterTheWorld(SObjHashCode WorldHashCode)
 {
 	_IncludedWorldHash = WorldHashCode;
-	MarkTransformCommitNeeded();
+
+
+	// AddToWorld전에 SetTransform하고 AddToWorld하면 _bTransformCommitReserved 가 true로 설정된다.
+	// 그러면 World->AddTransformCommitNeededObj 가 실행되지 않기 때문에 여기선 그냥 임의로 실행해준다.
+	_bTransformCommitReserved = true;
+	SWorld* World = GetIncludedWorldRef();
+	World->AddTransformCommitNeededObj(this);
 }
 
 void SGameObject::OnExitTheWorld()

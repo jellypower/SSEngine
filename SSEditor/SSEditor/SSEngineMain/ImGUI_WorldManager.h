@@ -49,4 +49,8 @@ private:
 	SObjHashT<SGameObject> _LastHieararchyPickedObject;
 
 	int32 _PixelPickingRequestFrameCounter = 0;
+
+private:
+	SS::SHasherW _SpawnerSelectedMdlc;
+	Transform _SpawnerTransform;
 };
