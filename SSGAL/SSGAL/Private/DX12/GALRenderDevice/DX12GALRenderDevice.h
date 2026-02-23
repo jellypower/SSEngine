@@ -13,7 +13,7 @@ class IRenderInstance;
 class DX12GALRenderDevice : public PCommonGALRenderDevice
 {
 public:
-	DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool EnableDebugLayer, bool EnableGPUBaseValidataion);
+	DX12GALRenderDevice(bool EnableDebugLayer, bool EnableGPUBaseValidataion);
 	virtual ~DX12GALRenderDevice();
 
 public:
@@ -35,30 +35,12 @@ public:
 public:
 	virtual void SyncGALRIMetadataWithRI(IRenderInstance* RIToSync) override;
 
-	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) override;
-
-
 
 	ID3D12Device5* GetD3DDevice() const { return _D3DDevice; }
-	ID3D12CommandQueue* GetD3DCommandQueue() const { return _D3DCommandQueue; }
-
-protected:
-	virtual void WaitForFence() override;
-	virtual void FenceFrame() override;
-
-private:
-	void Present();
+	IDXGIFactory4* GetDXGIFactory() const { return _DXGIFactory; }
 
 
 private:
-	HINSTANCE _hInst = NULL;
-	HWND _hWnd = NULL;
-
 	ID3D12Device5* _D3DDevice = nullptr;
-	ID3D12CommandQueue* _D3DCommandQueue = nullptr;
-
-
-	ID3D12Fence* _Fence = nullptr;
-	HANDLE _FenceEvent = nullptr;
-	uint32 _CurRenderTargetIdx = 0;
+	IDXGIFactory4* _DXGIFactory = nullptr;
 };

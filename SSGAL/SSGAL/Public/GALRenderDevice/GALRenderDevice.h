@@ -33,9 +33,6 @@ public:
 	SSCustomMemChunkAllocator* GetDescriptorTableAllocator() const { return _DescriptorTableAllocator; }
 	SSCustomMemChunkAllocator* GetDescriptorTableAllocatorForTex() const { return _DescriptorTableAllocatorForTex; }
 
-	GALRenderTarget* GetDefaultViewportRenderTarget() const { return _DefaultViewportRenderTarget; }
-	uint64 GetCurFrameCnt() const { return _CurFrameCnt; }
-
 	bool IsDebugEnabled() const { return _EnableDebug; }
 
 	virtual ERenderDevicePlatnform GetRenderDevicePlatform() const = 0;
@@ -55,13 +52,6 @@ public:
 public:
 	virtual void SyncGALRIMetadataWithRI(IRenderInstance* RIToSync) = 0;
 
-	virtual void ExecuteRenderContext(GALRenderDeviceContext* DeviceContext) = 0;
-
-
-protected:
-
-	virtual void WaitForFence() = 0;
-	virtual void FenceFrame() = 0;
 
 protected:
 	IRenderer* _OwnerRenderer = nullptr;
@@ -72,13 +62,7 @@ protected:
 	SSCustomMemChunkAllocator* _DescriptorTableAllocator = nullptr;
 	SSCustomMemChunkAllocator* _DescriptorTableAllocatorForTex = nullptr;
 
-
-	GALRenderTarget* _DefaultViewportRenderTarget = nullptr;
-
 	bool _EnableDebug = false;
 	int32 _NestedFrameCnt = SWAP_CHAIN_FRAME_COUNT;
 
-	uint64 _CurFrameCnt = 0;
-
-	SS::PooledList<GALRenderDeviceContext*, SS::InlineAllocator<10>> _ExecutedDeviceContext;
 };

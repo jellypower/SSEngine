@@ -67,8 +67,8 @@ private:
 	int32 _CurSwapChainIdx = 0;
 
 
-	FuncPtr_ExtractD3DDeviceInfo _fpExtractD3DDeviceInfo = nullptr;
-	FuncPtr_QueryCurrentD3DGALDeviceContext _fpQueryCurrentD3DGALDeviceContext = nullptr;
+	FuncPtr_QueryDX12GALDeviceContextInfo _fpExtractD3DDeviceInfo = nullptr;
+	FuncPtr_QueryD3DSwapChainInfo _fpQueryCurrentD3DGALDeviceContext = nullptr;
 
 	IRenderer* _Renderer = nullptr;
 

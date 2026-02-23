@@ -36,6 +36,8 @@
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopedProfile.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+
 #include "SSEngineDefault/Public/SystemUtilities.h"
 
 
@@ -259,45 +261,38 @@ void SSEditor::StartupEngine()
 
 void SSEditor::EnginePerFrame()
 {
-	static const SS::SHasherW EditorLoopName = L"EditorLoop";
-	ScopedProfile Prof(EditorLoopName);
+	SCOPE_PROFILE(Engine);
 
 	{
-		static const SS::SHasherW ProfName = L"OnBeginFrameImGui";
-		ScopedProfile Prof(ProfName);
+		SCOPE_PROFILE(BeginImGUI);
 		Run_g_ImGuiInitializer__OnBeginFrameImGui();
 	}
 
 	{
-		static const SS::SHasherW ProfName = L"ProcessEditor";
-		ScopedProfile Prof(ProfName);
+		SCOPE_PROFILE(Editor);
 		ProcessImGUI();
 	}
 
 
 	{
-		static const SS::SHasherW ProfName = L"ProcessContents";
-		ScopedProfile Prof(ProfName);
+		SCOPE_PROFILE(Contents);
 		TEMP_ProcessContents();
 		_DefaultWorld->PerFrameContents();
 	}
 
 	{
-		static const SS::SHasherW ProfName = L"ProcessAnim";
-		ScopedProfile Prof(ProfName);
+		SCOPE_PROFILE(Anim);
 		_DefaultWorld->PerFrameAnim();
 	}
 
 	{
-		static const SS::SHasherW ProfName = L"TransformCommit";
-		ScopedProfile Prof(ProfName);
+		SCOPE_PROFILE(TransformCommit);
 		_DefaultWorld->ProcessTransformCommit();
 	}
 
 
 	{
-		static const SS::SHasherW ProfName = L"Render";
-		ScopedProfile Prof(ProfName);
+		SCOPE_PROFILE(Render);
 		_DefaultWorld->ProcessDebugDraw(_Renderer);
 		_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
 		_Renderer->PerFrame();
@@ -572,7 +567,7 @@ void SSEditor::ImGUI_FrameInfo()
 				WrittenWordCnt += swprintf_s(
 					_u16LastProfileResult + WrittenWordCnt,
 					sizeof(_u16LastProfileResult) / sizeof(utf16) - WrittenWordCnt,
-					L"%ls:\t %.3lf ms\t %.3lf %% \n", Item.Name.C_Str(), ConsumedMS, (ConsumedMS / DeltaTime) * 100);
+					L"%ls:\t %.3lf ms\t %.2lf \n", Item.Name.C_Str(), ConsumedMS, (ConsumedMS / DeltaTime) * 100);
 				
 			}
 

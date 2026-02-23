@@ -2,6 +2,7 @@
 
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 #include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
 #include "DX12GALRenderDeviceContext.h"
 #include "DX12GALRenderDevice.h"
@@ -16,7 +17,7 @@
 #include "Private/DX12/GALRenderInstance/DX12GALRICubeMap.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIDirectionalLightShadowMapMetadata.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIMetadata_SKM.h"
-#include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
+#include "Private/DX12/GALRenderTarget/DX12GALSwapChainRenderTarget.h"
 #include "Private/PCommon/TestCodes/GALTestCodes.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALMeshAssetWrapper.h"
@@ -41,7 +42,6 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
@@ -59,15 +59,45 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 	_BoundRenderTargets(RT_NUM_MAX),
 	_RenderLightsToDraw(32)
 {
-	_OwnerRenderDevice = InRenderDevice;
+	HRESULT hr = S_OK;
 
 	ID3D12Device5* D3DDevice = InRenderDevice->GetD3DDevice();
 
+	_OwnerRenderDevice = InRenderDevice;
 	_DrawWorkerCommandAllocators.Reserve(SwapChainFrameCnt * 2);
 	_DrawWorkerCommandLists.Reserve(SwapChainFrameCnt * 2);
 
 
-	
+
+	// Create Command Queue
+	{
+		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+
+		hr = D3DDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&_D3DCommandQueue));
+		if (FAILED(hr))
+		{
+			DEBUG_BREAK();
+			return;
+		}
+		_D3DCommandQueue->SetName(L"D3DCommandQueue");
+
+
+		hr = D3DDevice->CreateFence(_CurFrameCnt, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_Fence));
+		if (FAILED(hr))
+		{
+			SS_INTERRUPT();
+		}
+		_Fence->SetName(L"RenderDeviceFence");
+
+		_FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (FAILED(_FenceEvent))
+		{
+			SS_INTERRUPT();
+		}
+	}
+
 	
 	for (int32 i = 0; i < SwapChainFrameCnt; i++)
 	{
@@ -75,15 +105,12 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 		ID3D12GraphicsCommandList* NewCommandList = nullptr;
 		if (FAILED(D3DDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&NewCommandAllocator))))
 		{
-			DEBUG_BREAK();
-			goto lb_cleanup;
+			SS_INTERRUPT();
 		}
 
 		if (FAILED(D3DDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, NewCommandAllocator, nullptr, IID_PPV_ARGS(&NewCommandList))))
 		{
-			NewCommandAllocator->Release();
-			DEBUG_BREAK();
-			goto lb_cleanup;
+			SS_INTERRUPT();
 		}
 
 
@@ -92,6 +119,7 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 		_DrawWorkerCommandAllocators.PushBack(NewCommandAllocator);
 		_DrawWorkerCommandLists.PushBack(NewCommandList);
 	}
+
 
 	_TransientCBAllocator = DBG_NEW DX12TransientConstantBufferAllocator(
 		this,
@@ -106,32 +134,15 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 	{
 		TestTransientAllocator(this);
 	}
-
-	return;
-
-lb_cleanup:
-	if (_ResourceUpdater != nullptr)
-	{
-		delete _ResourceUpdater;
-		_ResourceUpdater = nullptr;
-	}
-
-	for (ID3D12GraphicsCommandList* CommandListItem : _DrawWorkerCommandLists)
-	{
-		CommandListItem->Release();
-	}
-
-	for (ID3D12CommandAllocator* CommandAllocator : _DrawWorkerCommandAllocators)
-	{
-		CommandAllocator->Release();
-	}
-
-	_DrawWorkerCommandLists.Resize(0);
-	_DrawWorkerCommandAllocators.Resize(0);
 }
 
 DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 {
+	CloseHandle(_FenceEvent);
+	_Fence->Release();
+	_D3DCommandQueue->Release();
+
+
 	for (ID3D12CommandList* CommandListItem : _DrawWorkerCommandLists)
 	{
 		CommandListItem->Release();
@@ -142,8 +153,9 @@ DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 		AllocatorItem->Release();	
 	}
 
-	_DrawWorkerCommandLists.Resize(0);
-	_DrawWorkerCommandAllocators.Resize(0);
+
+	_DrawWorkerCommandLists.Clear();
+	_DrawWorkerCommandAllocators.Clear();
 
 	delete _ResourceUpdater;
 
@@ -951,6 +963,21 @@ void DX12GALRenderDeviceContext::EndDrawDebug()
 	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
 }
 
+void DX12GALRenderDeviceContext::Present(GALRenderTarget* SwapChainToPresent)
+{
+	if (SwapChainToPresent->GetRenderTargetType() != ERenderTargetType::SwapChain)
+	{
+		SS_INTERRUPT();
+	}
+
+	DX12GALSwapChainRenderTarget* DX12SwapChain = static_cast<DX12GALSwapChainRenderTarget*>(SwapChainToPresent);
+	HRESULT hr = DX12SwapChain->Present();
+	if (FAILED(hr))
+	{
+		SS_INTERRUPT();
+	}
+}
+
 void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 {
 	if (InRenderInstance->GetGALMetadata() == nullptr)
@@ -1320,6 +1347,24 @@ void DX12GALRenderDeviceContext::ResetRenderState()
 	_LastSetPSO = PipelineDesc(); // 초기화
 }
 
+void DX12GALRenderDeviceContext::FenceFrame()
+{
+	_CurFrameCnt++;
+	_D3DCommandQueue->Signal(_Fence, _CurFrameCnt);
+}
+
+void DX12GALRenderDeviceContext::WaitForFence()
+{
+	SCOPE_PROFILE(WaitForFence);
+
+	uint64 CompletedValue = _Fence->GetCompletedValue();
+	if (CompletedValue < _CurFrameCnt)
+	{
+		_Fence->SetEventOnCompletion(_CurFrameCnt, _FenceEvent);
+		WaitForSingleObject(_FenceEvent, INFINITE);
+	}
+}
+
 void DX12GALRenderDeviceContext::ResetCommandList()
 {
 	HRESULT hr;
@@ -1340,6 +1385,8 @@ void DX12GALRenderDeviceContext::ResetCommandList()
 
 void DX12GALRenderDeviceContext::BeginRender()
 {
+	WaitForFence();
+
 	if (_TaskPhase != ERenderDeviceTaskPhase::TaskDenial)
 	{
 		SS_INTERRUPT();
@@ -1349,7 +1396,7 @@ void DX12GALRenderDeviceContext::BeginRender()
 	ResetRenderState();
 }
 
-void DX12GALRenderDeviceContext::EndRender()
+void DX12GALRenderDeviceContext::WaitForCommandExecuteFinish()
 {
 	if (_TaskPhase != ERenderDeviceTaskPhase::TaskWaiting)
 	{
@@ -1357,8 +1404,20 @@ void DX12GALRenderDeviceContext::EndRender()
 	}
 	_TaskPhase = ERenderDeviceTaskPhase::TaskDenial;
 
-	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
-	HRESULT hr;
-	hr = CurCommandList->Close();
+	ID3D12GraphicsCommandList* CurGraphicsCommandList = GetCurrentDrawWorkerCmdList();
+	HRESULT hr = CurGraphicsCommandList->Close();
 	if (FAILED(hr)) SS_INTERRUPT();
+
+
+	{
+		SCOPE_PROFILE(ExecuteCommandList);
+
+		ID3D12CommandList* CurCommandList = CurGraphicsCommandList;
+		_D3DCommandQueue->ExecuteCommandLists(1, &CurCommandList);
+	}
+}
+
+void DX12GALRenderDeviceContext::EndRender()
+{
+	FenceFrame();
 }

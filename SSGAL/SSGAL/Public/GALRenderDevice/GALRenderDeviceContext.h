@@ -40,6 +40,13 @@ enum class ERenderDeviceTaskPhase
 
 class GALRenderDeviceContext : public INoncopyable
 {
+protected:
+	uint64 _CurFrameCnt = 0;
+
+	GALRenderDevice* _OwnerRenderDevice = nullptr;
+	GALResourceUpdater* _ResourceUpdater = nullptr;
+	SSTransientMemAllocator* _TransientCBAllocator = nullptr;
+
 public:
 	virtual bool IsValid() const = 0;
 	virtual ERenderDeviceTaskPhase GetTaskPhase() = 0;
@@ -48,10 +55,13 @@ public:
 	GALRenderDevice* GetOwnerRenderDevice() const { return _OwnerRenderDevice; }
 	GALResourceUpdater* GetResourceUpdater() const { return _ResourceUpdater; }
 	SSTransientMemAllocator* GetTransientCBAllocator() const { return _TransientCBAllocator; }
+	uint64 GetCurFrameCnt() const { return _CurFrameCnt; }
 
 public:
 	virtual void BeginRender() = 0;
+	virtual void WaitForCommandExecuteFinish() = 0;
 	virtual void EndRender() = 0;
+	virtual void Present(GALRenderTarget* SwapChainToPresent) = 0;
 
 
 	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) = 0;
@@ -114,10 +124,6 @@ public:
 
 protected:
 	virtual void ResetRenderState() = 0;
-
-
-protected:
-	GALRenderDevice* _OwnerRenderDevice = nullptr;
-	GALResourceUpdater* _ResourceUpdater = nullptr;
-	SSTransientMemAllocator* _TransientCBAllocator = nullptr;
+	virtual void FenceFrame() = 0;
+	virtual void WaitForFence() = 0;
 };

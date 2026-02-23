@@ -19,7 +19,7 @@ class IRenderWorld;
 class IRenderCamera;
 class GALRenderDevice;
 class GALRenderDeviceContext;
-
+class GALRenderTarget;
 
 
 
@@ -28,9 +28,12 @@ class IRenderer : public INoncopyable
 protected:
 	GALRenderDeviceContext* _MainDeviceContext = nullptr;
 	GALRenderDevice* _GALRenderDevice = nullptr;
+	GALRenderTarget* _MainViewportSwapChain = nullptr;
 
 public:
 	GALRenderDevice* GetRenderDevice() const { return _GALRenderDevice; }
+	GALRenderDeviceContext* GetMainDeviceContext() const { return _MainDeviceContext; }
+	GALRenderTarget* GetMainViewportSwapChain() const { return _MainViewportSwapChain; }
 
 public:
 	virtual ICommonRenderAssetSet* GetCommonRenderAssetSet() const = 0;
@@ -52,6 +55,7 @@ public:
 	virtual const IRenderCamera* GetMainRenderCamera() const = 0;
 
 public:
+	virtual void HandoverMainViewportSwapChain(GALRenderTarget* InMainViewportSwapChain) = 0;
 	virtual void SetMainRenderCamera(IRenderCamera* InCamera) = 0;
 	virtual void RequestPixelPicking(int32 X, int32 Y) = 0;
 

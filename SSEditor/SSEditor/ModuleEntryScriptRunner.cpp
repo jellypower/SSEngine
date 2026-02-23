@@ -116,6 +116,8 @@ void RunModuleEntryScriptPostInitWindow(
 	{
 		FuncPtr_SSGALModuleEntry SSGALModuleEntry = (FuncPtr_SSGALModuleEntry)GetProcAddress(g_hInstSSGAL, "SSGALModuleEntry");
 		FuncPtr_CreateGALRenderDevice CreateGALRenderDevice = (FuncPtr_CreateGALRenderDevice)GetProcAddress(g_hInstSSGAL, "CreateGALRenderDevice");
+		FuncPtr_CreateGALSwapChain CreateGALSwapChain = (FuncPtr_CreateGALSwapChain)GetProcAddress(g_hInstSSGAL, "CreateGALSwapChain");
+
 
 		FuncPtr_CreateRenderer CreateRenderer = (FuncPtr_CreateRenderer)GetProcAddress(g_hInstSSRenderer, "CreateRenderer");
 		FuncPtr_SSRendererModuleEntry SSRendererModuleEntry = (FuncPtr_SSRendererModuleEntry)GetProcAddress(g_hInstSSRenderer, "SSRendererModuleEntry");
@@ -128,10 +130,10 @@ void RunModuleEntryScriptPostInitWindow(
 
 		SSGALModuleEntry(
 			g_HasherPool,
+			g_FrameInfoProcessor,
 			g_ThreadManager);
+
 		GALRenderDevice* NewRenderDevice = CreateGALRenderDevice(
-			hInst,
-			hWnd,
 			bEnableDebugLayer,
 			bEnableGPUBaseValidation);
 
@@ -140,6 +142,10 @@ void RunModuleEntryScriptPostInitWindow(
 			g_FrameInfoProcessor,
 			g_ThreadManager);
 		g_Renderer = CreateRenderer(NewRenderDevice);
+
+
+		GALRenderTarget* SwapChainRenderTarget = CreateGALSwapChain(g_Renderer->GetMainDeviceContext(), hWnd);
+		g_Renderer->HandoverMainViewportSwapChain(SwapChainRenderTarget);
 
 		SSFBXImporterModuleEntry(
 			g_HasherPool,

@@ -2,6 +2,8 @@
 
 #include "SSImGUIInitializer.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+
 #include "ModuleEntryScriptRunner.h"
 
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
@@ -16,15 +18,15 @@ void SSImGUIInitializer::StartupImGui(IRenderer* InRenderer)
 	_Renderer = InRenderer;
 
 	// Extract D3D Devices
-	_fpExtractD3DDeviceInfo = (FuncPtr_ExtractD3DDeviceInfo)GetProcAddress(g_hInstSSGAL, "ExtractD3DDeviceInfo");
+	_fpExtractD3DDeviceInfo = (FuncPtr_QueryDX12GALDeviceContextInfo)GetProcAddress(g_hInstSSGAL, "QueryDX12GALDeviceContextInfo");
 	_fpExtractD3DDeviceInfo(
-		_Renderer->GetRenderDevice(),
+		_Renderer->GetMainDeviceContext(),
 		&_D3DDeviceCache,
 		&_D3DCommandQueueCache,
 		&_NestedFrameCnt);
 
 	_fpQueryCurrentD3DGALDeviceContext = 
-		(FuncPtr_QueryCurrentD3DGALDeviceContext)GetProcAddress(g_hInstSSGAL, "QueryCurrentD3DGALDeviceContext");
+		(FuncPtr_QueryD3DSwapChainInfo)GetProcAddress(g_hInstSSGAL, "QueryD3DSwapChainInfo");
 
 
 	// Command List
@@ -136,6 +138,9 @@ void SSImGUIInitializer::OnEndFrameImGui()
 	// Rendering
 // (Your code clears your framebuffer, renders your other stuff etc.)
 
+
+	SCOPE_PROFILE(EndImGUI);
+
 	ID3D12CommandAllocator* CurCommandAllocator = _CommandAllocator[_CurSwapChainIdx];
 	ID3D12GraphicsCommandList* CurCommandList = _CommandList[_CurSwapChainIdx];
 	D3D12_RESOURCE_BARRIER barrier = {};
@@ -151,7 +156,10 @@ void SSImGUIInitializer::OnEndFrameImGui()
 		ID3D12Resource* SwapChainBufferToDraw = nullptr;
 		D3D12_CPU_DESCRIPTOR_HANDLE SwapChainHandleToDraw;
 
-		_fpQueryCurrentD3DGALDeviceContext(_Renderer->GetRenderDevice(), &SwapChainBufferToDraw, &SwapChainHandleToDraw);
+		_fpQueryCurrentD3DGALDeviceContext(
+			_Renderer->GetMainViewportSwapChain(),
+			&SwapChainBufferToDraw,
+			&SwapChainHandleToDraw);
 
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;

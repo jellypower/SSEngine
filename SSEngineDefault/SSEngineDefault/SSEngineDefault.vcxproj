@@ -166,6 +166,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
+    <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h" />
     <ClInclude Include="Public\SSThread\PWin32\SSThreadUtil_Win32.h" />
     <ClInclude Include="Public\SSThread\IThreadManager.h" />
     <ClInclude Include="Public\RawInput\IRawInputProcessor.h" />

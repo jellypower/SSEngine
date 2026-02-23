@@ -9,11 +9,12 @@
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
 #include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
 
-DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDevice* InRenderDevice, HWND InhWnd, IDXGIFactory4* InFactory)
+DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDeviceContext* InRenderDeviceContext, HWND InhWnd, IDXGIFactory4* InFactory)
 {
-	_OwnerRenderDevice = InRenderDevice;
-	ID3D12Device5* D3DDevice = InRenderDevice->GetD3DDevice();
-	ID3D12CommandQueue* D3DCommandQueue = InRenderDevice->GetD3DCommandQueue();
+	_OwnerRenderDevice = InRenderDeviceContext->GetOwnerRenderDevice();
+	DX12GALRenderDevice* lDX12GALRenderDevice = static_cast<DX12GALRenderDevice*>(_OwnerRenderDevice);
+	ID3D12Device5* D3DDevice = lDX12GALRenderDevice->GetD3DDevice();
+	ID3D12CommandQueue* D3DCommandQueue = InRenderDeviceContext->GetD3DCommandQueue();
 
 	// Create Descriptor
 	{

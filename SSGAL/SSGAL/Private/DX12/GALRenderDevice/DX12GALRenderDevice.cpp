@@ -23,17 +23,14 @@
 
 
 
-DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool EnableDebugLayer, bool EnableGPUBaseValidataion):
+DX12GALRenderDevice::DX12GALRenderDevice(bool EnableDebugLayer, bool EnableGPUBaseValidataion):
 	PCommonGALRenderDevice(EnableDebugLayer)
 {
-	_hInst = InhInst;
-	_hWnd = InhWnd;
 
 	BOOL Result = FALSE;
 
 	HRESULT hr = S_OK;
 	ID3D12Debug* DebugController = nullptr;
-	IDXGIFactory4* Factory = nullptr;
 	IDXGIAdapter1* Adapter = nullptr;
 	DXGI_ADAPTER_DESC1 AdapterDesc = {};
 
@@ -61,7 +58,7 @@ DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool En
 		}
 	}
 
-	CreateDXGIFactory2(CreateFactoryFlags, IID_PPV_ARGS(&Factory));
+	CreateDXGIFactory2(CreateFactoryFlags, IID_PPV_ARGS(&_DXGIFactory));
 
 	D3D_FEATURE_LEVEL	featureLevels[] =
 	{
@@ -77,7 +74,7 @@ DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool En
 	for (DWORD featerLevelIndex = 0; featerLevelIndex < FeatureLevelNum; featerLevelIndex++)
 	{
 		UINT adapterIndex = 0;
-		while (DXGI_ERROR_NOT_FOUND != Factory->EnumAdapters1(adapterIndex, &Adapter))
+		while (DXGI_ERROR_NOT_FOUND != _DXGIFactory->EnumAdapters1(adapterIndex, &Adapter))
 		{
 			Adapter->GetDesc1(&AdapterDesc);
 
@@ -93,19 +90,6 @@ DX12GALRenderDevice::DX12GALRenderDevice(HINSTANCE InhInst, HWND InhWnd, bool En
 	}
 lb_loop:
 
-
-	hr = _D3DDevice->CreateFence(_CurFrameCnt, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_Fence));
-	if (FAILED(hr))
-	{
-		SS_INTERRUPT();
-	}
-	_Fence->SetName(L"RenderDeviceFence");
-
-	_FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	if (FAILED(_FenceEvent))
-	{
-		SS_INTERRUPT();
-	}
 
 	if (DebugController != nullptr)
 	{
@@ -138,24 +122,6 @@ lb_loop:
 		}
 	}
 
-
-	// Create Command Queue
-	{
-		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-
-		hr = _D3DDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&_D3DCommandQueue));
-		if (FAILED(hr))
-		{
-			DEBUG_BREAK();
-			return;
-		}
-		_D3DCommandQueue->SetName(L"D3DCommandQueue");
-	}
-
-	_DefaultViewportRenderTarget = DBG_NEW DX12GALSwapChainRenderTarget(this, InhWnd, Factory);
-
 	if (DebugController)
 	{
 		DebugController->Release();
@@ -166,12 +132,6 @@ lb_loop:
 		Adapter->Release();
 		Adapter = nullptr;
 	}
-	if (Factory)
-	{
-		Factory->Release();
-		Factory = nullptr;
-	}
-
 
 	constexpr int32 DESCRIPTOR_HEAP_PAGE_SIZE = 1024 * 10; // 10 KB
 	_DescriptorTableAllocator = DBG_NEW DX12DescriptorHeapCustomAllocator(
@@ -217,11 +177,6 @@ lb_loop:
 
 DX12GALRenderDevice::~DX12GALRenderDevice()
 {
-	// DX12GALRenderDevice를 제거하기 전에는 win32 API에서 WM_QUIT신호가 오기 때문에 PerFrame에서 BeginRender, EndRender를 부르지 않는다.
-	// 그래서 직접 Fence를 박아서 작업이 완료되기를 기다려야 한다.
-	DX12GALRenderDevice::FenceFrame();  
-	DX12GALRenderDevice::WaitForFence();
-
 	_PSOPool->ReleaseAllPSO();
 	delete _PSOPool;
 	_PSOPool = nullptr;
@@ -241,12 +196,7 @@ DX12GALRenderDevice::~DX12GALRenderDevice()
 	_DescriptorTableAllocator->ReleaseDefaultPages();
 	delete _DescriptorTableAllocator;
 
-	delete _DefaultViewportRenderTarget;
-
-	_D3DCommandQueue->Release();
-
-	_Fence->Release();
-	CloseHandle(_FenceEvent);
+	_DXGIFactory->Release();
 
 	int32 RefCnt = _D3DDevice->Release();
 	if (RefCnt > 0)
@@ -263,13 +213,10 @@ DX12GALRenderDevice::~DX12GALRenderDevice()
 
 void DX12GALRenderDevice::BeginRender()
 {
-	WaitForFence();
 }
 
 void DX12GALRenderDevice::EndRender()
 {
-	FenceFrame();
-	Present();
 }
 
 ERenderDevicePlatnform DX12GALRenderDevice::GetRenderDevicePlatform() const
@@ -277,38 +224,8 @@ ERenderDevicePlatnform DX12GALRenderDevice::GetRenderDevicePlatform() const
 	return ERenderDevicePlatnform::DX12Raster;
 }
 
-void DX12GALRenderDevice::ExecuteRenderContext(GALRenderDeviceContext* DeviceContext)
-{
-	// Valid 체크
-	if (this != DeviceContext->GetOwnerRenderDevice())
-	{
-		SS_INTERRUPT();
-	}
-
-	// 필요한 데이터 뽑아오기
-	DX12GALRenderDeviceContext* DX12DeviceContext = (DX12GALRenderDeviceContext*)DeviceContext;
-	ID3D12CommandList* CurCommandList = DX12DeviceContext->GetCurrentDrawWorkerCmdList();
-
-	// 실행
-	_D3DCommandQueue->ExecuteCommandLists(1, &CurCommandList);
-	_ExecutedDeviceContext.PushBack(DX12DeviceContext);
-}
-
-void DX12GALRenderDevice::Present()
-{
-	DX12GALSwapChainRenderTarget* DX12SwapChain = (DX12GALSwapChainRenderTarget*)_DefaultViewportRenderTarget;
-	HRESULT hr = DX12SwapChain->Present();
-	if (FAILED(hr))
-	{
-		SS_INTERRUPT();
-	}
-}
-
 GALRenderDeviceContext* DX12GALRenderDevice::CreateRenderDeviceContext()
 {
-	ID3D12CommandAllocator* NewCommandAllocator = nullptr;
-	ID3D12GraphicsCommandList* NewCommandList = nullptr;
-
 	DX12GALRenderDeviceContext* NewDeviceContext = DBG_NEW DX12GALRenderDeviceContext(this, SWAP_CHAIN_FRAME_COUNT);
 
 	if (NewDeviceContext->IsValid())
@@ -368,24 +285,4 @@ void DX12GALRenderDevice::SyncGALRIMetadataWithRI(IRenderInstance* RIToSync)
 		SS_ASSERT(GALRISkinned->GetMetadataRenderInstanceType() == ERenderInstanceType::SkinnedMesh);
 		GALRISkinned->SyncBonePose();
 	}
-}
-
-
-
-void DX12GALRenderDevice::WaitForFence()
-{
-	uint64 CompletedValue = _Fence->GetCompletedValue();
-	if (CompletedValue < _CurFrameCnt)
-	{
-		_Fence->SetEventOnCompletion(_CurFrameCnt, _FenceEvent);
-		WaitForSingleObject(_FenceEvent, INFINITE);
-	}
-
-	_ExecutedDeviceContext.Clear();
-}
-
-void DX12GALRenderDevice::FenceFrame()
-{
-	_CurFrameCnt++;
-	_D3DCommandQueue->Signal(_Fence, _CurFrameCnt);
 }

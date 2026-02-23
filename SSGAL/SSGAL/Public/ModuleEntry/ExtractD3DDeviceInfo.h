@@ -4,20 +4,22 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
 
+class GALRenderTarget;
+class GALRenderDeviceContext;
 class GALRenderDevice;
 
-SSGAL_MODULE_NATIVE void ExtractD3DDeviceInfo(
-	GALRenderDevice* DeviceToExtract,
+SSGAL_MODULE_NATIVE void QueryDX12GALDeviceContextInfo(
+	GALRenderDeviceContext* DeviceToQuery,
 	ID3D12Device** OutDevice,
 	ID3D12CommandQueue** OutCommandQueue,
 	int32* OutNestedFrameCnt);
-typedef decltype(&ExtractD3DDeviceInfo) FuncPtr_ExtractD3DDeviceInfo;
+typedef decltype(&QueryDX12GALDeviceContextInfo) FuncPtr_QueryDX12GALDeviceContextInfo;
 
 
-SSGAL_MODULE_NATIVE void QueryCurrentD3DGALDeviceContext(
-	GALRenderDevice* DeviceToQuery,
+SSGAL_MODULE_NATIVE void QueryD3DSwapChainInfo(
+	GALRenderTarget* SwapChainToQuery,
 	ID3D12Resource** OutBackBuffer,
 	D3D12_CPU_DESCRIPTOR_HANDLE* OutBackBufferDescHeap);
-typedef decltype(&QueryCurrentD3DGALDeviceContext) FuncPtr_QueryCurrentD3DGALDeviceContext;
+typedef decltype(&QueryD3DSwapChainInfo) FuncPtr_QueryD3DSwapChainInfo;
 
 #endif

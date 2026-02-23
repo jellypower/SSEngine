@@ -3,6 +3,7 @@
 #include "RenderWorld.h"
 
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
 #include "SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
@@ -92,8 +93,7 @@ SObjHashCode SSRenderer::GetPixelPickedObjectID() const
 
 Vector2f SSRenderer::GetViewportSize() const
 {
-	GALRenderTarget* ViewportRT = _GALRenderDevice->GetDefaultViewportRenderTarget();
-	const ViewportBox& VB = ViewportRT->GetViewportBoxSize();
+	const ViewportBox& VB = _MainViewportSwapChain->GetViewportBoxSize();
 	return VB.WidthHeight;
 }
 
@@ -102,6 +102,11 @@ const IRenderCamera* SSRenderer::GetMainRenderCamera() const
 	return _MainRenderCamera;
 }
 
+void SSRenderer::HandoverMainViewportSwapChain(GALRenderTarget* InMainViewportSwapChain)
+{
+	SS_ASSERT(_MainViewportSwapChain == nullptr); // TODO: 나중에 바꾸는 기능이 필요할까?
+	_MainViewportSwapChain = InMainViewportSwapChain;
+}
 
 void SSRenderer::AddGALStateChangedAsset(IAssetBase* AssetToChange)
 {
@@ -132,8 +137,7 @@ IRenderWorld* SSRenderer::CreateRenderWorld(const utf16* InWorldName)
 
 void SSRenderer::SetMainRenderCamera(IRenderCamera* InCamera)
 {
-	GALRenderTarget* SwapChainBuffer = _GALRenderDevice->GetDefaultViewportRenderTarget();
-	Vector2f ViewportWidthHeight = SwapChainBuffer->GetViewportBoxSize().WidthHeight;
+	Vector2f ViewportWidthHeight = _MainViewportSwapChain->GetViewportBoxSize().WidthHeight;
 	InCamera->SetAspectRatio(ViewportWidthHeight.X / ViewportWidthHeight.Y);
 
 	_MainRenderCamera = InCamera;
@@ -148,9 +152,7 @@ void SSRenderer::RequestPixelPicking(int32 X, int32 Y)
 
 void SSRenderer::StartUp()
 {
-
-	GALRenderTarget* SwapChainBuffer= _GALRenderDevice->GetDefaultViewportRenderTarget();
-	Vector2i32 SwapChainBufferSize = SwapChainBuffer->GetResourceSize();
+	Vector2i32 SwapChainBufferSize = _MainViewportSwapChain->GetResourceSize();
 
 	{
 		GALRenderTargetDesc IDDrawerRTDesc;
@@ -179,8 +181,8 @@ void SSRenderer::StartUp()
 		GALRenderTargetDesc DSVDesc;
 		DSVDesc.ResourceWidth = SwapChainBufferSize.X;
 		DSVDesc.ResourceHeight = SwapChainBufferSize.Y;
-		DSVDesc.ScissorRectSize = SwapChainBuffer->GetScissorRectSize();
-		DSVDesc.DrawBoxSize = SwapChainBuffer->GetViewportBoxSize();
+		DSVDesc.ScissorRectSize = _MainViewportSwapChain->GetScissorRectSize();
+		DSVDesc.DrawBoxSize = _MainViewportSwapChain->GetViewportBoxSize();
 		DSVDesc.Format = ERTColorFormat::D32_FLOAT;
 		DSVDesc.InitialResourceState = EResourceStateType::DepthWrite;
 		DSVDesc.bUseSRV = true;
@@ -304,9 +306,10 @@ void SSRenderer::StartUp()
 
 void SSRenderer::PerFrame()
 {
+	SCOPE_PROFILE(PerFrame);
 	// RenderTime
 	{
-		RenderWorld* WorldToScrap = (RenderWorld*)_MainRenderCamera->GetIcludedRenderWorld();
+		SCOPE_PROFILE(ScrapRenderInstsances);
 
 		_RenderInstancesToDraw.Clear();
 		_RenderLightsToDraw.Clear();
@@ -318,18 +321,22 @@ void SSRenderer::PerFrame()
 			_MainRenderCamera);
 	}
 
-
-	for (IRenderInstance* RIItem : _RenderInstancesToDraw)
 	{
-		_GALRenderDevice->SyncGALRIMetadataWithRI(RIItem);
+		SCOPE_PROFILE(SyncGALRIMetadata);
+		for (IRenderInstance* RIItem : _RenderInstancesToDraw)
+		{
+			_GALRenderDevice->SyncGALRIMetadataWithRI(RIItem);
+		}
 	}
 
 
-	_GALRenderDevice->BeginRender();
+	
 	{
 		// TEMP Read PixelPicker
 		if (_bPixelPickingReserved)
 		{
+			SCOPE_PROFILE(PixelPick);
+
 			_PixelPickerCPUReadableTex->BeginRead();
 
 			Vector2ui32 WindowSize = SSFrameInfo::GetWindowSize();
@@ -350,8 +357,15 @@ void SSRenderer::PerFrame()
 			_bPixelPickingReserved = false;
 		}
 
-		_MainDeviceContext->BeginRender();
+		// BeginRender
 		{
+			SCOPE_PROFILE(BeginRender);
+			_MainDeviceContext->BeginRender();
+		}
+
+		{
+			SCOPE_PROFILE(MainPass);
+
 			InstantiatePendingGALAssets(_MainDeviceContext);
 
 			// Set Camera Setting
@@ -446,7 +460,7 @@ void SSRenderer::PerFrame()
 			}
 
 			_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::Common, EResourceStateType::RenderTarget);
-			_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::Present, EResourceStateType::CopyDest);
+			_MainDeviceContext->ResourceBarrier(_MainViewportSwapChain, EResourceStateType::Present, EResourceStateType::CopyDest);
 
 			// Post Processing
 			_MainDeviceContext->BeginPostProcessing();
@@ -504,9 +518,9 @@ void SSRenderer::PerFrame()
 			_MainDeviceContext->EndDrawDebug();
 
 			_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
-			_MainDeviceContext->CopyRenderTarget(_GALRenderDevice->GetDefaultViewportRenderTarget(), _RTPostProcessResult);
+			_MainDeviceContext->CopyRenderTarget(_MainViewportSwapChain, _RTPostProcessResult);
 
-			_MainDeviceContext->ResourceBarrier(_GALRenderDevice->GetDefaultViewportRenderTarget(), EResourceStateType::CopyDest, EResourceStateType::Present);
+			_MainDeviceContext->ResourceBarrier(_MainViewportSwapChain, EResourceStateType::CopyDest, EResourceStateType::Present);
 			_MainDeviceContext->ResourceBarrier(_RTPostProcessResult, EResourceStateType::CopySrc, EResourceStateType::Common);
 
 
@@ -515,13 +529,27 @@ void SSRenderer::PerFrame()
 				_MainDeviceContext->CopyRenderTarget(_PixelPickerCPUReadableTex, _PixelPickerRenderTarget);
 			}
 		}
-		_MainDeviceContext->EndRender();
-		_GALRenderDevice->ExecuteRenderContext(_MainDeviceContext);
+
+		{
+			SCOPE_PROFILE(GALRDC_WaitForCommandExecuteFinish);
+			_MainDeviceContext->WaitForCommandExecuteFinish();
+		}
+
+		{
+			SCOPE_PROFILE(GALRDC_Before_EndRender);
+			Before_EndRender();
+		}
+
+		{
+			SCOPE_PROFILE(GALRDC_EndRender);
+			_MainDeviceContext->EndRender();
+		}
 	}
 
-
-	Before_GALRenderDevice_EndRender();
-	_GALRenderDevice->EndRender();
+	{
+		SCOPE_PROFILE(Present);
+		_MainDeviceContext->Present(_MainViewportSwapChain); // 보통 예제에서 present는 fence를 치고 그 다음에 한다.
+	}
 }
 
 void SSRenderer::CleanUp()
@@ -552,13 +580,11 @@ void SSRenderer::CleanUp()
 	_PixelPickerRenderTarget = nullptr;
 
 
-	_GALRenderDevice->BeginRender(); // WaitForFence
 	{
 		_MainDeviceContext->BeginRender();
 		InstantiatePendingGALAssets(_MainDeviceContext); // 잔여물이 남아있을 수도 있음
 		_MainDeviceContext->EndRender();
 	}
-	_GALRenderDevice->EndRender();
 
 
 	_AssetManager->ReleaseAllAssets();
@@ -568,13 +594,16 @@ void SSRenderer::CleanUp()
 	delete _MainDeviceContext;
 	_MainDeviceContext = nullptr;
 
+	delete _MainViewportSwapChain;
+	_MainViewportSwapChain = nullptr;
+
 	delete _GALRenderDevice;
 	_GALRenderDevice = nullptr;
 }
 
 void SSRenderer::ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* InCallback)())
 {
-	_OneTimeCallback_BeforeGALRenderDeviceEndRender.PushBack(InCallback);
+	_OneTimeCallback_BeforeGALRDCEndRender.PushBack(InCallback);
 }
 
 void SSRenderer::DrawWireFrame(const DebugDrawMeshDesc& Desc)
@@ -682,12 +711,12 @@ void SSRenderer::ScrapRenderInstsances(
 }
 
 
-void SSRenderer::Before_GALRenderDevice_EndRender()
+void SSRenderer::Before_EndRender()
 {
-	for (void (*CallbackItem)() : _OneTimeCallback_BeforeGALRenderDeviceEndRender)
+	for (void (*CallbackItem)() : _OneTimeCallback_BeforeGALRDCEndRender)
 	{
 		CallbackItem();
 	}
 
-	_OneTimeCallback_BeforeGALRenderDeviceEndRender.Clear();
+	_OneTimeCallback_BeforeGALRDCEndRender.Clear();
 }
