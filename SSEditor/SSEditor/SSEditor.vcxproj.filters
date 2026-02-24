@@ -51,6 +51,9 @@
     <ClInclude Include="SSEngineMain\ImGUI_Profiler.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SSEngineMain\SSImGUIUtils\ImGUIProfilerUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SSEngineMain\SSEditor.cpp">
@@ -84,6 +87,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SSEngineMain\ImGUI_Profiler.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineMain\SSImGUIUtils\ImGUIProfilerUtils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

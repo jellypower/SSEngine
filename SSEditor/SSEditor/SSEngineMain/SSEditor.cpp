@@ -76,12 +76,6 @@ void SSEditor::StartupEngine()
 	_Renderer->StartUp();
 	g_ImGuiInitializer->StartupImGui(_Renderer);
 
-	int64 PC1;
-	int64 PC2;
-	int64 PF;
-	double eTime;
-
-	PC1 = GetPerofrmanceCounter();
 	{
 		_AssetDBLoader = g_fpCreateAssetDBLoader();
 		_AssetDBLoader->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
@@ -98,13 +92,7 @@ void SSEditor::StartupEngine()
 		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
 		_AssetDBLoader->ClearDB();
 	}
-	PC2 = GetPerofrmanceCounter();
-	PF = GetPerformanceFrequency();
-	eTime = (PC2 - PC1) / (double)PF;
-	int a = 0;
 
-
-	PC1 = GetPerofrmanceCounter();
 	{
 		_FbxImporter = g_fpCreateSSFBXImporter();
 		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
@@ -112,10 +100,6 @@ void SSEditor::StartupEngine()
 		_FbxImporter->GenerateImportedAssets();
 		_FbxImporter->RelocateImportedAssetsToAssetManager();
 	}
-	PC2 = GetPerofrmanceCounter();
-	PF = GetPerformanceFrequency();
-	eTime = (PC2 - PC1) / (double)PF;
-	a = 0;
 
 	{
 		_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
@@ -158,7 +142,7 @@ void SSEditor::StartupEngine()
 
 	{
 		// Floor
-		SGameObject* Floor = SRendererUtil::InstantiateModel(L"__RUNTIME_CREATION__/Cube1m.mdl");
+		SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor");
 		_DefaultWorld->AddToWorld(Floor);
 		Floor->SetPosition(Vector4f(0, -0.1, 0, 1));
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));

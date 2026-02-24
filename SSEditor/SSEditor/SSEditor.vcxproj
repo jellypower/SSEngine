@@ -155,6 +155,7 @@
     <ClInclude Include="EngineUtils\PWin32\OpenFilePathDialogue.h" />
     <ClInclude Include="SSEngineMain\SSEditor.h" />
     <ClInclude Include="SSEngineMain\SSImGUIInitializer.h" />
+    <ClInclude Include="SSEngineMain\SSImGUIUtils\ImGUIProfilerUtils.h" />
     <ClInclude Include="SSEngineMain\TestCodes\MeshSerializeTest.h" />
     <ClInclude Include="SSEngineMain\SSImGUIUtils\ImGUIAssetManagerUtils.h" />
   </ItemGroup>
@@ -171,6 +172,7 @@
     <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp" />
     <ClCompile Include="SSEngineMain\SSEditor.cpp" />
     <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp" />
+    <ClCompile Include="SSEngineMain\SSImGUIUtils\ImGUIProfilerUtils.cpp" />
     <ClCompile Include="SSEngineMain\TestCodes\MeshSerializeTest.cpp" />
     <ClCompile Include="SSEngineMain\SSImGUIUtils\ImGUIAssetManagerUtils.cpp" />
   </ItemGroup>

@@ -3,6 +3,7 @@
 
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
+#include "SSImGUIUtils/ImGUIProfilerUtils.h"
 
 void ImGUI_Profiler::PerFrame()
 {
@@ -40,6 +41,7 @@ void ImGUI_Profiler::ProfileDetail()
 		ShowProfileResultCapture();
 
 
+		ImGui::Separator();
 		ImGui::NewLine();
 		if (ImGui::Button("Copy Capture To Clipboard"))
 		{
@@ -60,32 +62,21 @@ void ImGUI_Profiler::ShowProfileResultCapture()
 int ImGUI_Profiler::ShowProfilerItem_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, bool bShow)
 {
 	bool bIsTreeNodeOpen = false;
-	ProfileResultItem Item = _ProfileResultCapture[ProfileResultIdx];
+	const ProfileResultItem& Item = _ProfileResultCapture[ProfileResultIdx];
 	SS::SHasherW ItemProfileName = Item.Name;
 	int64 ItemConsumedTick = Item.TickEnd - Item.TickStart;
 
 
 	if (bShow)
 	{
-		double ConsumedMS = (double)ItemConsumedTick / (double)_FrequencyCapture;
-		double WholeConsumedRatio = (double)ItemConsumedTick / (double)_ConsumedTickCapture;
-		double ParentRelativeConsumedRatio = (double)ItemConsumedTick / (double)ParentConsumedTick;
-		WholeConsumedRatio *= 100;
-		ParentRelativeConsumedRatio *= 100;
-
-		int32 WrittenWordCnt = swprintf_s(
+		int32 WrittenWordCnt = ProfileResultItemToU16(
 			_u16StrWorkTable,
 			sizeof(_u16StrWorkTable) / sizeof(utf16),
-			L"%ls:\t"
-			L"%.3lf ms\t"
-			L"%.2lf(%.2lf) %%",
-			ItemProfileName.C_Str(),
-			ConsumedMS,
-			ParentRelativeConsumedRatio,
-			WholeConsumedRatio);
-
+			Item,
+			_ConsumedTickCapture,
+			_FrequencyCapture,
+			ParentConsumedTick);
 		UTF16StrToUtf8Str(_u16StrWorkTable, WrittenWordCnt, _u8StrWorkTable, sizeof(_u8StrWorkTable));
-
 
 
 		bIsTreeNodeOpen = ImGui::TreeNodeEx(_u8StrWorkTable,
@@ -144,23 +135,14 @@ int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int
 	SS::SHasherW ItemProfileName = Item.Name;
 	int64 ItemConsumedTick = Item.TickEnd - Item.TickStart;
 
-	double ConsumedMS = (double)ItemConsumedTick / (double)_FrequencyCapture;
-	double WholeConsumedRatio = (double)ItemConsumedTick / (double)_ConsumedTickCapture;
-	double ParentRelativeConsumedRatio = (double)ItemConsumedTick / (double)ParentConsumedTick;
-	WholeConsumedRatio *= 100;
-	ParentRelativeConsumedRatio *= 100;
 
-	swprintf_s(
+	ProfileResultItemToU16(
 		_u16StrWorkTable,
 		sizeof(_u16StrWorkTable) / sizeof(utf16),
-		L"%ls:\t"
-		L"%.3lf ms\t"
-		L"%.2lf(%.2lf) %%",
-		ItemProfileName.C_Str(),
-		ConsumedMS,
-		ParentRelativeConsumedRatio,
-		WholeConsumedRatio);
-
+		Item,
+		_ConsumedTickCapture,
+		_FrequencyCapture,
+		ParentConsumedTick);
 
 	for (int32 i = 0; i < Depth; i++)
 	{

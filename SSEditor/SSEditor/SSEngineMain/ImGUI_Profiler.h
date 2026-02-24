@@ -24,5 +24,5 @@ private:
 	int ShowProfilerItem_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, bool bShow);
 
 	void CopyProfilerResultToClipboard();
-	int CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, int32 Depth);
+	int CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, int Depth);
 };
