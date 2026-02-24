@@ -18,6 +18,7 @@ protected:
 	uint64 _perfFrequency = 0;
 
 	uint64 _frameCount = 0;
+	uint64 _deltaTick = 0;
 	double _deltaTime = 0;
 	double _elapsedTime = 0;
 	uint64 _PrevFrameStartTick = 0;
@@ -39,6 +40,7 @@ public:
 	* return DeltaTime in ms
 	*/
 	double GetDeltaTime() const { return _deltaTime; }
+	uint64 GetDeltaTick() const { return _deltaTick; }
 	double GetFPS() const { return _FPS; }
 	double GetElapsedTime() const { return _elapsedTime; }
 	Vector2ui32 GetWindowSize() const { return _windowSize; }

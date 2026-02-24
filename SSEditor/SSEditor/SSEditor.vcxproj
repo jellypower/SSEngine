@@ -150,6 +150,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SSBuildSettings.h" />
     <ClInclude Include="SSEngineMain\ImGUI_AssetManager.h" />
+    <ClInclude Include="SSEngineMain\ImGUI_Profiler.h" />
     <ClInclude Include="SSEngineMain\ImGUI_WorldManager.h" />
     <ClInclude Include="EngineUtils\PWin32\OpenFilePathDialogue.h" />
     <ClInclude Include="SSEngineMain\SSEditor.h" />
@@ -165,6 +166,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SSEngineMain\ImGUI_AssetManager.cpp" />
+    <ClCompile Include="SSEngineMain\ImGUI_Profiler.cpp" />
     <ClCompile Include="SSEngineMain\ImGUI_WorldManager.cpp" />
     <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp" />
     <ClCompile Include="SSEngineMain\SSEditor.cpp" />

@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class ImGUI_Profiler;
 class ImGUI_WorldManager;
 class IAssetDBLoader;
 class ImGUI_AssetManager;
@@ -42,10 +43,9 @@ public:
 private:
 	ImGUI_AssetManager* _ImGUI_AssetViewer = nullptr;
 	ImGUI_WorldManager* _ImGUI_WorldManager = nullptr;
+	ImGUI_Profiler* _ImGUI_Profiler = nullptr;
 
 	void ProcessImGUI();
-
-	void ImGUI_FrameInfo();
 
 
 #pragma endregion
@@ -72,10 +72,6 @@ private:
 private:
 	SS::HashMap<SS::SHasherW, SS::FixedStringW<PATH_LEN_MAX>> _hashMap_TMP;
 	SS::StringW _importFileName_TMP;
-
-
-	utf16 _u16LastProfileResult[2048] = {0, };
-	utf8 _u8LastProfileResult[2048] = {0, };
 
 	ISSFBXImporter* _FbxImporter = nullptr;
 	IAssetDBLoader* _AssetDBLoader = nullptr;

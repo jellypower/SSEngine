@@ -5,11 +5,10 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 
 #include "ImGUI_AssetManager.h"
+#include "ImGUI_Profiler.h"
 #include "ImGUI_WorldManager.h"
 #include "ModuleEntryScriptRunner.h"
 #include "SSImGUIInitializer.h"
-
-#include "EngineUtils/PWin32/OpenFilePathDialogue.h"
 
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
@@ -22,8 +21,6 @@
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 
-#include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
-
 
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
 
@@ -31,19 +28,14 @@
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
-#include "SSEngineDefault/Public/SSContainer/SSString/StringUtilityFunctions.h"
 
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopedProfile.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
-#include "SSEngineDefault/Public/SystemUtilities.h"
 
 
-
-
-#include "SSFBXImporter/Public/FRAN.h"
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
@@ -53,8 +45,6 @@
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
-#include "SSRenderer/Public/RenderAssetSerializer/IApakFileReader.h"
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
@@ -153,11 +143,7 @@ void SSEditor::StartupEngine()
 	// ~DEBUG
 
 
-	{
-		_ImGUI_AssetViewer = DBG_NEW ImGUI_AssetManager(_Renderer);
-	}
-
-
+	
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
 
@@ -165,7 +151,9 @@ void SSEditor::StartupEngine()
 	_DefaultWorld->InitializeWorld(NewRenderWorld);
 
 	{
+		_ImGUI_AssetViewer = DBG_NEW ImGUI_AssetManager(_Renderer);
 		_ImGUI_WorldManager = DBG_NEW ImGUI_WorldManager(_DefaultWorld);
+		_ImGUI_Profiler = DBG_NEW ImGUI_Profiler();
 	}
 
 	{
@@ -303,12 +291,16 @@ void SSEditor::EnginePerFrame()
 
 void SSEditor::CleanupEngine()
 {
-	delete _ImGUI_WorldManager;
-	_ImGUI_WorldManager = nullptr;
+	{
+		delete _ImGUI_Profiler;
+		_ImGUI_Profiler = nullptr;
 
-	delete _ImGUI_AssetViewer;
-	_ImGUI_AssetViewer = nullptr;
+		delete _ImGUI_WorldManager;
+		_ImGUI_WorldManager = nullptr;
 
+		delete _ImGUI_AssetViewer;
+		_ImGUI_AssetViewer = nullptr;
+	}
 
 	_DefaultWorld->DestroyAllObjectsInWorld();
 
@@ -529,56 +521,5 @@ void SSEditor::ProcessImGUI()
 
 	_ImGUI_AssetViewer->PerFrame();
 	_ImGUI_WorldManager->PerFrame();
-
-	ImGUI_FrameInfo();
-}
-
-
-
-void SSEditor::ImGUI_FrameInfo()
-{
-	ImGui::Begin("Frame Info");
-	{
-		ImGui::Text("Elapsed time: %f", SSFrameInfo::GetElapsedTime());
-		ImGui::Text("Delta time: %f", SSFrameInfo::GetDeltaTime());
-		ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
-
-
-		if (ImGui::Button("Renew Profile Result"))
-		{
-			int32 WrittenWordCnt = 0;
-			int64 Frequency = GetPerformanceFrequency();
-			double DeltaTime = SSFrameInfo::GetDeltaTime();
-			const SS::PooledList<ProfileResultItem>& Results = g_FrameInfoProcessor->GetLastProfileResult();
-
-
-			WrittenWordCnt += swprintf_s(
-				_u16LastProfileResult + WrittenWordCnt,
-				sizeof(_u16LastProfileResult) / sizeof(utf16) - WrittenWordCnt,
-				L"FrameTime: %lf \n\n", DeltaTime);
-
-
-
-			for (const ProfileResultItem& Item : Results)
-			{
-				int64 ConsumedTick = Item.TickEnd - Item.TickStart;
-				double ConsumedMS = (double)ConsumedTick / (double)Frequency;
-
-				WrittenWordCnt += swprintf_s(
-					_u16LastProfileResult + WrittenWordCnt,
-					sizeof(_u16LastProfileResult) / sizeof(utf16) - WrittenWordCnt,
-					L"%ls:\t %.3lf ms\t %.2lf \n", Item.Name.C_Str(), ConsumedMS, (ConsumedMS / DeltaTime) * 100);
-				
-			}
-
-			UTF16StrToUtf8Str(_u16LastProfileResult, WrittenWordCnt, _u8LastProfileResult, sizeof(_u8LastProfileResult));
-		}
-
-		ImGui::Text(_u8LastProfileResult);
-
-	}
-	ImGui::End();
-
-
-
+	_ImGUI_Profiler->PerFrame();
 }

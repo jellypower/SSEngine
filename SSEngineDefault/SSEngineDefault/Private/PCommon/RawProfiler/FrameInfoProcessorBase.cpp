@@ -34,16 +34,16 @@ void FrameInfoProcessorBase::PerFrameXXX()
 	_LastProfileResult = _ProfileInProgressResult;
 	_ProfileInProgressResult.Clear();
 
-	uint64 tickDiff = _FrameStartTick - _PrevFrameStartTick;
+	_deltaTick = _FrameStartTick - _PrevFrameStartTick;
 
-	if (tickDiff == 0)
+	if (_deltaTick == 0)
 	{
 		_deltaTime = FRAME_LOW_LIMIT;
-		__debugbreak();
+		SS_INTERRUPT();
 	}
 	else
 	{
-		_deltaTime = (double)tickDiff / (double)_perfFrequency;
+		_deltaTime = (double)_deltaTick / (double)_perfFrequency;
 	}
 
 	_FPSCheckStopWatch += _deltaTime;

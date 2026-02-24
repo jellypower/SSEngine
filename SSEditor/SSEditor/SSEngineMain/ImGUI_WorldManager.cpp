@@ -82,7 +82,7 @@ SGameObject* ImGUI_WorldManager::GetPickedObject() const
 
 void ImGUI_WorldManager::ImGUI_Hierarchy()
 {
-	if (ImGui::Begin("Node Debugger"))
+	if (ImGui::Begin("Hieararchy"))
 	{
 		if (ImGui::BeginChild("SceneTree", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
 		{
