@@ -14,7 +14,7 @@
 
 
 
-int AppendDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefault* MeshDefaultData)
+int64 AppendDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefault* MeshDefaultData)
 {
 	if (MeshDefaultData->_vertexData == nullptr ||
 		MeshDefaultData->_indexData == nullptr)
@@ -23,22 +23,22 @@ int AppendDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefau
 		return 0;
 	}
 
-	constexpr int32 VertexHeaderSize = sizeof(MeshRawDataVertexHeader);
+	constexpr int64 VertexHeaderSize = sizeof(MeshRawDataVertexHeader);
 
-	const int32 EachVertexSize = EachVertexSizeOfType(MeshDefaultData->GetMeshType());
-	const int32 VertexDataSize = EachVertexSize * MeshDefaultData->_VertexHeader.vertexCnt;
+	const int64 EachVertexSize = EachVertexSizeOfType(MeshDefaultData->GetMeshType());
+	const int64 VertexDataSize = EachVertexSize * MeshDefaultData->_VertexHeader.vertexCnt;
 
-	const int32 IndexDataSize = MeshDefaultData->_VertexHeader.wholeIndexDataCnt * sizeof(uint32);
+	const int64 IndexDataSize = MeshDefaultData->_VertexHeader.wholeIndexDataCnt * sizeof(uint32);
 
-	const int32 StreamSizeToFill = sizeof(int32) + VertexHeaderSize + VertexDataSize + IndexDataSize;
+	const int64 StreamSizeToFill = sizeof(int64) + VertexHeaderSize + VertexDataSize + IndexDataSize;
 	// 전체 데이터 크기 = 데이터크기4byte + 헤더크기 + 버텍스버퍼크기 + 인덱스버퍼크기
 
 
-	int32 OriginalSize = Data.GetSize();
+	int64 OriginalSize = Data.GetSize();
 	Data.Reserve(OriginalSize + StreamSizeToFill);
 
-	int32 WrittenBytes = 0;
-	WrittenBytes += AppendData(Data, &StreamSizeToFill, sizeof(int32));
+	int64 WrittenBytes = 0;
+	WrittenBytes += AppendData(Data, &StreamSizeToFill, sizeof(StreamSizeToFill));
 	WrittenBytes += AppendData(Data, &MeshDefaultData->_VertexHeader, VertexHeaderSize);
 	WrittenBytes += AppendData(Data, MeshDefaultData->_vertexData, VertexDataSize);
 	WrittenBytes += AppendData(Data, MeshDefaultData->_indexData, IndexDataSize);
@@ -53,7 +53,7 @@ int AppendDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefau
 	return WrittenBytes;
 }
 
-int AppendDataFromSkinnedMeshBone(SS::PooledList<byte>& Data, const MeshRawDataSkinned* MeshSkinnedData)
+int64 AppendDataFromSkinnedMeshBone(SS::PooledList<byte>& Data, const MeshRawDataSkinned* MeshSkinnedData)
 {
 	const int32 BonePlacementsCnt = MeshSkinnedData->_BonePlacements.GetSize();
 	const int32 BoneNameCnt = MeshSkinnedData->_BoneNames.GetSize();
@@ -71,7 +71,7 @@ int AppendDataFromSkinnedMeshBone(SS::PooledList<byte>& Data, const MeshRawDataS
 	const int32 BoneCnt = MeshSkinnedData->_BoneHeader._BoneCnt;
 	SS_ASSERT(BoneCnt == BonePlacementsCnt);
 	int32 BoneStrStreamSize = 0;
-	BoneStrStreamSize += sizeof(int32);
+	BoneStrStreamSize += sizeof(int64);
 	for (int32 i = 0; i < BoneCnt; i++)
 	{
 		int BoneNameLen = MeshSkinnedData->_BoneNames[i].GetStrLen();
@@ -80,15 +80,15 @@ int AppendDataFromSkinnedMeshBone(SS::PooledList<byte>& Data, const MeshRawDataS
 
 
 	const int32 BoneTransformStreamSize = BoneCnt * sizeof(Transform);
-	const int32 StreamSize = sizeof(int32) + BoneHeaderSize + BoneStrStreamSize + BoneTransformStreamSize;
-	// 전체 데이터 크기 = 스트림사이즈4byte + 본헤더크기 + 본 데이터 크기
+	const int64 StreamSize = sizeof(int64) + BoneHeaderSize + BoneStrStreamSize + BoneTransformStreamSize;
+	// 전체 데이터 크기 = 스트림사이즈8byte + 본헤더크기 + 본 데이터 크기
 
 
-	int32 OriginalSize = Data.GetSize();
+	int64 OriginalSize = Data.GetSize();
 	Data.Reserve(OriginalSize + StreamSize);
 
-	int32 WrittenBytes = 0;
-	WrittenBytes += AppendData(Data, &StreamSize, sizeof(int32));
+	int64 WrittenBytes = 0;
+	WrittenBytes += AppendData(Data, &StreamSize, sizeof(StreamSize));
 	WrittenBytes += AppendData(Data, &MeshSkinnedData->_BoneHeader, BoneHeaderSize);
 	WrittenBytes += AppendDataFromHashers(Data, MeshSkinnedData->_BoneNames);
 	WrittenBytes += AppendData(Data, MeshSkinnedData->_BonePlacements.GetData(), BoneTransformStreamSize);
@@ -103,11 +103,11 @@ int AppendDataFromSkinnedMeshBone(SS::PooledList<byte>& Data, const MeshRawDataS
 }
 
 
-int32 AppendDataFromMeshAsset(
+int64 AppendDataFromMeshAsset(
 	SS::PooledList<byte>& Data,
 	const MeshRawDataBase* MeshData)
 {
-	const int OriginalDataSize = Data.GetSize();
+	const int64 OriginalDataSize = Data.GetSize();
 
 	const MeshRawDataBase* MeshRawData = MeshData;
 
@@ -115,8 +115,8 @@ int32 AppendDataFromMeshAsset(
 
 
 
-	int32 WrittenBytes = 0;
-	WrittenBytes += AppendData(Data, &WrittenBytes, sizeof(int32));
+	int64 WrittenBytes = 0;
+	WrittenBytes += AppendData(Data, &WrittenBytes, sizeof(WrittenBytes));
 	// 첫 4바이트에 전체 데이터 사이즈를 우선 0으로 적어줍니다.
 
 	if (Type == EMeshType::Rigid || Type == EMeshType::Skinned)
@@ -131,10 +131,10 @@ int32 AppendDataFromMeshAsset(
 		WrittenBytes += AppendDataFromSkinnedMeshBone(Data, MeshSkinnedData);
 	}
 
-	const int CurDataSize = Data.GetSize();
+	const int64 CurDataSize = Data.GetSize();
 	SS_ASSERT(WrittenBytes == CurDataSize - OriginalDataSize);
 
-	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(int32), &WrittenBytes, sizeof(int32));
+	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(WrittenBytes), &WrittenBytes, sizeof(WrittenBytes));
 	// 실제로 적어낸 데이터 사이즈를 다시 기입해줍니다.
 
 	return WrittenBytes;
@@ -193,14 +193,12 @@ int64 AppendDataFromMdlcAsset(
 }
 
 
-int FillMeshVertexDataOnly(MeshRawDataDefault* MeshDataToFill, const MeshRawDataVertexHeader& DecodedHeader, const SS::PooledList<byte>& Data, const int Offset)
+int64 FillMeshVertexDataOnly(MeshRawDataDefault* MeshDataToFill, const MeshRawDataVertexHeader& DecodedHeader, const SS::PooledList<byte>& Data, const int64 Offset)
 {
 	const int32 EachVertexSize = EachVertexSizeOfType(DecodedHeader.MeshType);
 	const int32 VertexDataSize = EachVertexSize * DecodedHeader.vertexCnt;
 
 	const int32 IndexDataSize = DecodedHeader.wholeIndexDataCnt * sizeof(uint32);
-
-	const int32 StreamSizeToFill = VertexDataSize + IndexDataSize;
 
 
 	if (MeshDataToFill->_vertexData != nullptr)
@@ -216,19 +214,19 @@ int FillMeshVertexDataOnly(MeshRawDataDefault* MeshDataToFill, const MeshRawData
 	MeshDataToFill->_vertexData = DBG_MALLOC(VertexDataSize);
 	MeshDataToFill->_indexData = (uint32*)DBG_MALLOC(IndexDataSize);
 
-	int32 WrittenBytes = 0;
+	int64 WrittenBytes = 0;
 	WrittenBytes += FillMemoryFromData(MeshDataToFill->_vertexData, VertexDataSize, Data, Offset + WrittenBytes);
 	WrittenBytes += FillMemoryFromData(MeshDataToFill->_indexData, IndexDataSize, Data, Offset + WrittenBytes);
 
 	return WrittenBytes;
 }
 
-int FillMeshBoneDataWithHeader(MeshRawDataSkinned* MeshDataToFill, const SS::PooledList<byte>& Data, const int Offset)
+int64 FillMeshBoneDataWithHeader(MeshRawDataSkinned* MeshDataToFill, const SS::PooledList<byte>& Data, const int64 Offset)
 {
-	int32 BoneDataSizeIncludingHeader = 0;
+	int64 BoneDataSizeIncludingHeader = 0;
 
-	int32 WrittenBytes = 0;
-	WrittenBytes += FillMemoryFromData(&BoneDataSizeIncludingHeader, sizeof(int32), Data, Offset + WrittenBytes);
+	int64 WrittenBytes = 0;
+	WrittenBytes += FillMemoryFromData(&BoneDataSizeIncludingHeader, sizeof(BoneDataSizeIncludingHeader), Data, Offset + WrittenBytes);
 	WrittenBytes += FillMemoryFromData(&MeshDataToFill->_BoneHeader, sizeof(MeshRawDataBoneHeader), Data, Offset + WrittenBytes);
 
 
@@ -248,20 +246,26 @@ int FillMeshBoneDataWithHeader(MeshRawDataSkinned* MeshDataToFill, const SS::Poo
 }
 
 
-int32 FillMeshAssetHeaaderOnly(
+int64 FillMeshAssetHeaaderOnly(
 	MeshRawDataDefault*& InOutMeshRawData, 
 	const SS::PooledList<byte>& Data, 
-	int Offset)
+	int64 Offset)
 {
-	int32 OriginalOffset = Offset;
-	int32 WholeMeshDataSize = 0; // Vertex/Index + BoneStructure + (BLAS cache, etc) size
-	Offset += FillMemoryFromData(&WholeMeshDataSize, sizeof(int32), Data, Offset);
+	int64 OriginalOffset = Offset;
+	int64 WholeMeshDataSize = 0; // Vertex/Index + BoneStructure + (BLAS cache, etc) size
+	Offset += FillMemoryFromData(&WholeMeshDataSize, sizeof(WholeMeshDataSize), Data, Offset);
 
-	int32 VertexDataSize = 0; // VertexBuffer + IndexBuffer + Header size
+	int64 VertexDataSize = 0; // 자기자신 + Header +  VertexBuffer + IndexBuffer
 	MeshRawDataVertexHeader DecodedHeader;
-	Offset += FillMemoryFromData(&VertexDataSize, sizeof(int32), Data, Offset);
-	Offset += FillMemoryFromData(&DecodedHeader, sizeof(MeshRawDataVertexHeader), Data, Offset);
+	Offset += FillMemoryFromData(&VertexDataSize, sizeof(VertexDataSize), Data, Offset);
+	Offset += FillMemoryFromData(&DecodedHeader, sizeof(DecodedHeader), Data, Offset);
 
+	SS_ASSERT(
+		VertexDataSize ==
+		sizeof(int64) + 
+		EachVertexSizeOfType(DecodedHeader.MeshType) * DecodedHeader.vertexCnt +
+		sizeof(uint32) * DecodedHeader.wholeIndexDataCnt +
+		sizeof(MeshRawDataVertexHeader));
 
 	if (InOutMeshRawData == nullptr)// Create If null
 	{
@@ -294,12 +298,12 @@ int32 FillMeshAssetHeaaderOnly(
 	return Offset - OriginalOffset;
 }
 
-int32 FillMeshRawDataFromData(
+int64 FillMeshRawDataFromData(
 	MeshRawDataDefault*& InOutMeshRawData,
 	const SS::PooledList<byte>& Data,
-	int Offset)
+	int64 Offset)
 {
-	int32 OriginalOffset = Offset;
+	int64 OriginalOffset = Offset;
 	Offset += FillMeshAssetHeaaderOnly(InOutMeshRawData, Data, Offset); // Create InOutMeshRawData if null only with header
 	Offset += FillMeshVertexDataOnly(InOutMeshRawData, InOutMeshRawData->_VertexHeader, Data, Offset);
 
@@ -309,7 +313,7 @@ int32 FillMeshRawDataFromData(
 		Offset += FillMeshBoneDataWithHeader(SkinnedRawData, Data, Offset);
 	}
 
-	int32 WrittenBytes = Offset - OriginalOffset;
+	int64 WrittenBytes = Offset - OriginalOffset;
 	return WrittenBytes;
 }
 
@@ -371,7 +375,7 @@ int64 AppendApakDataFromAssetList(
 
 
 	// Serialize Assets
-	for (int32 i = 0; i < Header.SerializableAssetCnt; i++)
+	for (int64 i = 0; i < Header.SerializableAssetCnt; i++)
 	{
 		IAssetBase* AssetItem = SerializableAssets[i];
 		EAssetType AssetItemType = AssetItem->GetAssetType();
@@ -439,7 +443,7 @@ int64 CreateAssetsFromApakData(
 
 	SS::PooledList<ApakDataChunkOffsetDesc> AssetOffsets;
 	AssetOffsets.SetSizeDirectly(Header.SerializableAssetCnt);
-	const int32 AssetOffsetDataSize = Header.SerializableAssetCnt * sizeof(ApakDataChunkOffsetDesc);
+	const int64 AssetOffsetDataSize = Header.SerializableAssetCnt * sizeof(ApakDataChunkOffsetDesc);
 	Offset += FillMemoryFromData(AssetOffsets.GetData(), AssetOffsetDataSize, Data, Offset);
 
 
@@ -452,7 +456,7 @@ int64 CreateAssetsFromApakData(
 		IAssetBase* NewAsset = nullptr;
 		int32 ReadBytes = 0;
 
-		const int32 ThisAssetOffset = OriginalOffset + OffsetDescItem.Offset;
+		const int64 ThisAssetOffset = OriginalOffset + OffsetDescItem.Offset;
 
 		if (AssetTypeItem == EAssetType::Mesh)
 		{
@@ -484,7 +488,7 @@ int64 CreateAssetsFromApakData(
 	return Offset;
 }
 
-int32 CreateMeshAssetFromData(
+int64 CreateMeshAssetFromData(
 	IMeshAsset*& OutMeshAsset, 
 	SS::SHasherW AssetName, 
 	SS::SHasherW AssetPath,
@@ -498,7 +502,7 @@ int32 CreateMeshAssetFromData(
 
 	// 실제 Raw데이터 만들어서 삽입
 	MeshRawDataDefault* CreatedDefaultData = nullptr;
-	int32 AssetSize = FillMeshRawDataFromData(CreatedDefaultData, Data, Offset);
+	int64 AssetSize = FillMeshRawDataFromData(CreatedDefaultData, Data, Offset);
 	NewAsset->InjectRawDataXXX(CreatedDefaultData);
 
 	OutMeshAsset = NewAsset;

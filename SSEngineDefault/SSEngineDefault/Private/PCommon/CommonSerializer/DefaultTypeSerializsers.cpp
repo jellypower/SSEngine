@@ -32,11 +32,11 @@ int64 AppendData(SS::PooledList<byte>& ToData, const void* From, int64 FromDataS
 }
 
 
-int32 FillMemoryFromData(
-	void* Dest, int CopySize,
-	const SS::PooledList<byte>& FromData, int FromOffset)
+int64 FillMemoryFromData(
+	void* Dest, int64 CopySize,
+	const SS::PooledList<byte>& FromData, int64 FromOffset)
 {
-	int32 FromCapacity = FromData.GetSize() - FromOffset;
+	int64 FromCapacity = FromData.GetSize() - FromOffset;
 	if (CopySize > FromCapacity)
 	{
 		SS_ASSERT(false);
@@ -56,7 +56,7 @@ int32 FillMemoryFromData(
 	return CopySize;
 }
 
-int32 AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS::StringW>& Strings)
+int64 AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS::StringW>& Strings)
 {
 	int32 TotalStrLen = 0;
 	for (const SS::StringW& StringItem : Strings)
@@ -65,15 +65,15 @@ int32 AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS:
 		TotalStrLen += (ItemStrLen + 1);
 	}
 
-	int32 TotalByteSizeToWrite = sizeof(int32) + (TotalStrLen * sizeof(utf16));
-	// 전체 데이터 크기 = 데이터크기4byte + 전체스트링크기
+	int64 TotalByteSizeToWrite = sizeof(int64) + (TotalStrLen * sizeof(utf16));
+	// 전체 데이터 크기 = 데이터크기8byte + 전체스트링크기
 
-	int OriginalByteSize = Data.GetSize();
+	int64 OriginalByteSize = Data.GetSize();
 	Data.Reserve(TotalByteSizeToWrite + OriginalByteSize);
 
 
-	int32 ByteCursor = 0;
-	ByteCursor += AppendData(Data, &TotalByteSizeToWrite, sizeof(int32));
+	int64 ByteCursor = 0;
+	ByteCursor += AppendData(Data, &TotalByteSizeToWrite, sizeof(TotalByteSizeToWrite));
 
 	for (const SS::StringW& StringItem : Strings)
 	{
@@ -89,22 +89,23 @@ int32 AppendDataFromStrings(SS::PooledList<byte>& Data, const SS::PooledList<SS:
 	return ByteCursor;
 }
 
-int32 FillStringFromData(SS::PooledList<SS::StringW>& Strings, const SS::PooledList<byte>& Data, int Offset)
+int64 FillStringFromData(SS::PooledList<SS::StringW>& Strings, const SS::PooledList<byte>& Data, int64 Offset)
 {
 	Strings.Clear();
 
 	const byte* RawData = Data.GetData() + Offset;
 
-	int32 ReadDataSize;
-	memcpy_s(&ReadDataSize, sizeof(int32), RawData, sizeof(int32));
+	int64 ReadDataSize;
+	memcpy_s(&ReadDataSize, sizeof(ReadDataSize), RawData, sizeof(ReadDataSize));
 
 
-	const int32 TotalStrLen = (ReadDataSize - sizeof(int32)) / sizeof(utf16); // TotalStrLen is including L'\0'
-	const utf16* StrRawData = reinterpret_cast<const utf16*>(RawData + sizeof(int32));
+	const int32 TotalStrLen = (ReadDataSize - sizeof(int64)) / sizeof(utf16); // TotalStrLen is including L'\0'
+	const utf16* StrRawData = reinterpret_cast<const utf16*>(RawData + sizeof(int64));
 
 
 	if (StrRawData[TotalStrLen - 1] != L'\0')
 	{
+		SS_ASSERT(false);
 		return 0;
 	}
 
@@ -119,11 +120,11 @@ int32 FillStringFromData(SS::PooledList<SS::StringW>& Strings, const SS::PooledL
 		StrCursor += (PushedStrLen + 1);
 	}
 
-	SS_ASSERT(StrCursor * 2 + sizeof(int32) == ReadDataSize);
+	SS_ASSERT(StrCursor * 2 + sizeof(int64) == ReadDataSize);
 	return ReadDataSize;
 }
 
-int32 AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS::SHasherW>& Hashers)
+int64 AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS::SHasherW>& Hashers)
 {
 	int32 TotalStrLen = 0;
 	for (SS::SHasherW HasherItem : Hashers)
@@ -132,54 +133,55 @@ int32 AppendDataFromHashers(SS::PooledList<byte>& Data, const SS::PooledList<SS:
 		TotalStrLen += (ItemStrLen + 1);
 	}
 
-	int32 TotalByteSizeToWrite = sizeof(int32) + (TotalStrLen * sizeof(utf16));
-	// 전체 데이터 크기 = 데이터크기4byte + 전체스트링크기
+	int64 TotalByteSizeToWrite = sizeof(int64) + (TotalStrLen * sizeof(utf16));
+	// 전체 데이터 크기 = 데이터크기8byte + 전체스트링크기
 
-	int CurByteSize = Data.GetSize();
+	int64 CurByteSize = Data.GetSize();
 	Data.Reserve(CurByteSize + TotalByteSizeToWrite);
 
 
 
-	int32 ByteCursor = 0;
-	ByteCursor += AppendData(Data, &TotalByteSizeToWrite, sizeof(int32));
+	int64 WrittenBytes = 0;
+	WrittenBytes += AppendData(Data, &TotalByteSizeToWrite, sizeof(TotalByteSizeToWrite));
 
 	for (SS::SHasherW HasherItem : Hashers)
 	{
-		int32 ItemStrLen = HasherItem.GetStrLen();
-		int32 ItemByteLen = (ItemStrLen + 1) * sizeof(utf16);
+		const int32 ItemStrLen = HasherItem.GetStrLen();
+		const int32 ItemByteLen = (ItemStrLen + 1) * sizeof(utf16);
 
 		const utf16* ItemCStr = HasherItem.C_Str();
 
 		if (ItemCStr != nullptr)
 		{
-			ByteCursor += AppendData(Data, ItemCStr, ItemByteLen);
+			WrittenBytes += AppendData(Data, ItemCStr, ItemByteLen);
 		}
 		else
 		{
-			ByteCursor += AppendData(Data, L"", ItemByteLen);
+			WrittenBytes += AppendData(Data, L"", ItemByteLen);
 		}
 	}
 
-	SS_ASSERT(TotalByteSizeToWrite == ByteCursor);
-	return ByteCursor;
+	SS_ASSERT(TotalByteSizeToWrite == WrittenBytes);
+	return WrittenBytes;
 }
 
-int32 FillHashersFromData(SS::PooledList<SS::SHasherW>& Hashers, const SS::PooledList<byte>& Data, int Offset)
+int64 FillHashersFromData(SS::PooledList<SS::SHasherW>& Hashers, const SS::PooledList<byte>& Data, int64 Offset)
 {
 	Hashers.Clear();
 
 	const byte* RawData = Data.GetData() + Offset;
 
-	int32 ReadDataSize; // 해당 값은 ReadDataSize자체의 크기도 포함한다.
-	memcpy_s(&ReadDataSize, sizeof(int32), RawData, sizeof(int32));
+	int64 ReadDataSize; // 해당 값은 ReadDataSize자체의 크기도 포함한다.
+	memcpy_s(&ReadDataSize, sizeof(int64), RawData, sizeof(int64));
 
 
-	const int32 TotalStrLen = (ReadDataSize - sizeof(int32)) / sizeof(utf16); // TotalStrLen is including L'\0'
-	const utf16* StrRawData = reinterpret_cast<const utf16*>(RawData + sizeof(int32));
+	const int32 TotalStrLen = (ReadDataSize - sizeof(int64)) / sizeof(utf16); // TotalStrLen is including L'\0'
+	const utf16* StrRawData = reinterpret_cast<const utf16*>(RawData + sizeof(int64));
 
 
 	if (StrRawData[TotalStrLen - 1] != L'\0')
 	{
+		SS_ASSERT(false);
 		return 0;
 	}
 
@@ -194,6 +196,6 @@ int32 FillHashersFromData(SS::PooledList<SS::SHasherW>& Hashers, const SS::Poole
 		StrCursor += (PushedStrLen + 1);
 	}
 
-	SS_ASSERT(StrCursor * 2 + sizeof(int32) == ReadDataSize);
+	SS_ASSERT(StrCursor * 2 + sizeof(int64) == ReadDataSize);
 	return ReadDataSize;
 }

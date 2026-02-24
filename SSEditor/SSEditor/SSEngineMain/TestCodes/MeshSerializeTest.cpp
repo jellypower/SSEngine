@@ -21,7 +21,7 @@ void MeshSerializeTest(IRenderer* InRenderer, SS::SHasherW MeshToTest)
 
 	const MeshRawDataBase* MeshRawData = MeshAsset->GetMeshRawData();
 	SS::PooledList<byte> Data;
-	int WrittenBytes = AppendDataFromMeshAsset(Data, MeshRawData);
+	int64 WrittenBytes = AppendDataFromMeshAsset(Data, MeshRawData);
 	SS_ASSERT(WrittenBytes > 0);
 
 
@@ -34,7 +34,7 @@ void MeshSerializeTest(IRenderer* InRenderer, SS::SHasherW MeshToTest)
 	}
 
 	MeshRawDataDefault* MeshRawDataDefaultMutable = static_cast<MeshRawDataDefault*>(MeshRawDataMutable);
-	int ReadBytes = FillMeshRawDataFromData(MeshRawDataDefaultMutable, Data);
+	int64 ReadBytes = FillMeshRawDataFromData(MeshRawDataDefaultMutable, Data);
 
 	SS_ASSERT(WrittenBytes == ReadBytes);
 	if (_CrtCheckMemory() == false) SS_INTERRUPT();
