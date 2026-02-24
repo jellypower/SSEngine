@@ -537,7 +537,8 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 			uint32 ChildNodeNameLen = ChildItem.PlacementName.GetStrLen();
 			const utf16* ChildNodeName = ChildItem.PlacementName.C_Str();
 
-			RKFTrack NewTrack;
+
+			RKFTrack& NewTrack = NewRawData->_Tracks.Create();
 
 			if (ChildNodeNameLen > 0)
 			{
@@ -548,12 +549,8 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 
 				SS_ASSERT(currentNode != nullptr);
 
-				NewTrack._TrackItemCnt = frameCnt;
-				NewTrack._Type = ERKFTrackItemType::BoneTransform;
+				NewTrack._TrackItems.SetSizeDirectly(frameCnt);
 				NewTrack._TrackName = ChildItem.PlacementName;
-
-				RKFTrackItemTransform* NewTrackItems = (RKFTrackItemTransform*)DBG_MALLOC(sizeof(RKFTrackItemTransform) * frameCnt);
-				NewTrack._TrackItems = NewTrackItems;
 
 
 				for (int64 CurFrameIdx = frameStart; CurFrameIdx < frameEnd; ++CurFrameIdx)
@@ -563,14 +560,13 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 
 					int32 FrameIdx = CurFrameIdx - frameStart;
 					float CurTimeRatio = (float)FrameIdx / (float)frameCnt;
-					NewTrackItems[FrameIdx]._TimeRatio = CurTimeRatio;
-					NewTrackItems[FrameIdx]._Transform = SSFBXImporterUtils::ExtractTransformFromNode(currentNode, currTime);
+					NewTrack._TrackItems[FrameIdx]._TimeRatio = CurTimeRatio;
+					NewTrack._TrackItems[FrameIdx]._Method = EInterpMethod::Linear;
+					NewTrack._TrackItems[FrameIdx]._Padding = 0;
+					NewTrack._TrackItems[FrameIdx]._Transform = SSFBXImporterUtils::ExtractTransformFromNode(currentNode, currTime);
 
 					int a = 0;
 				}
-
-				NewRawData->_Tracks.PushBack(NewTrack);
-
 			}
 		}
 

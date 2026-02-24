@@ -13,13 +13,6 @@ RenderAnimAsset::~RenderAnimAsset()
 {
 	if (_AnimRawData != nullptr)
 	{
-		for (RKFTrack& TrackItem : _AnimRawData->_Tracks)
-		{
-			if (TrackItem._TrackItems != nullptr)
-			{
-				free(TrackItem._TrackItems);
-			}
-		}
 		delete _AnimRawData;
 		_AnimRawData = nullptr;
 	}

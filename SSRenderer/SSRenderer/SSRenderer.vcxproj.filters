@@ -242,13 +242,7 @@
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderAnimData.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemTransform.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\ERKFTrackItemType.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemBase.h">
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RKFTrackItem.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IRenderAnimAssetMutable.h">

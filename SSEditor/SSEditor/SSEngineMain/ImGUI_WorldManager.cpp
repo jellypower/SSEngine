@@ -460,6 +460,7 @@ void ImGUI_WorldManager::ImGUI_Spawner()
 						return;
 					}
 
+					NewMdlc->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
 					NewMdlc->SetTransform(_SpawnerTransform);
 					_BoundWorld->AddToWorld(NewMdlc);
 				}
