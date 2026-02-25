@@ -12,6 +12,7 @@
 
 
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCreationUtils.h"
 
 
 void CommonRenderAssetSet::InitializeCommonAssets()
@@ -38,22 +39,22 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	static const SS::SHasherW NS_RUNTIME_CREATION_HASHER = CRAN::NS_RUNTIME_CREATION;
 
 
-	_Cube1mMesh = AssetManager->CreateEmptyMeshAsset(NS_RUNTIME_CREATION_HASHER, NAME_CUBE1M_MESH, NS_RUNTIME_CREATION_HASHER);
+	_Cube1mMesh = CreateEmptyMeshAsset(NS_RUNTIME_CREATION_HASHER, NAME_CUBE1M_MESH, NS_RUNTIME_CREATION_HASHER);
 	MeshRawDataDefault* CubeRawData = CreateCube1mRawData();
 	static_cast<IMeshAssetMutable*>(_Cube1mMesh)->InjectRawDataXXX(CubeRawData);
 	AssetManager->AddToAssetPool(_Cube1mMesh);
 
-	_Cube1mModel = AssetManager->CreateEmptyModelAsset(NS_RUNTIME_CREATION_HASHER, CRAN::CUBE1M_MDL, NS_RUNTIME_CREATION_HASHER);
+	_Cube1mModel = CreateEmptyModelAsset(NS_RUNTIME_CREATION_HASHER, CRAN::CUBE1M_MDL, NS_RUNTIME_CREATION_HASHER);
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMesh(NAME_CUBE1M_MESH);
 	static_cast<IModelAssetMutable*>(_Cube1mModel)->SetMaterial(NAME_EMPTY_PBR_MTL, 0);
 	AssetManager->AddToAssetPool(_Cube1mModel);
 
-	_Sphere1mMesh = AssetManager->CreateEmptyMeshAsset(NS_RUNTIME_CREATION_HASHER, NAME_SPHERE1M_MESH, NS_RUNTIME_CREATION_HASHER);
+	_Sphere1mMesh = CreateEmptyMeshAsset(NS_RUNTIME_CREATION_HASHER, NAME_SPHERE1M_MESH, NS_RUNTIME_CREATION_HASHER);
 	MeshRawDataDefault* SphereRawData = CreateSphere1mRawData(8);
 	static_cast<IMeshAssetMutable*>(_Sphere1mMesh)->InjectRawDataXXX(SphereRawData);
 	AssetManager->AddToAssetPool(_Sphere1mMesh);
 
-	_Sphere1mModel = AssetManager->CreateEmptyModelAsset(NS_RUNTIME_CREATION_HASHER, CRAN::SPHERE1M_MDL, NS_RUNTIME_CREATION_HASHER);
+	_Sphere1mModel = CreateEmptyModelAsset(NS_RUNTIME_CREATION_HASHER, CRAN::SPHERE1M_MDL, NS_RUNTIME_CREATION_HASHER);
 	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMesh(NAME_SPHERE1M_MESH);
 	static_cast<IModelAssetMutable*>(_Sphere1mModel)->SetMaterial(NAME_EMPTY_PBR_MTL, 0);
 	AssetManager->AddToAssetPool(_Sphere1mModel);

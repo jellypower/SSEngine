@@ -69,38 +69,6 @@ void AssetManagerBase::ReleaseAllAssets()
 	}
 }
 
-ITextureAssetMutable* AssetManagerBase::CreateEmptyTextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
-{
-	return DBG_NEW TextureAsset(InDBNameSpace, InAssetName, InAssetPath, InType);
-}
-
-IMeshAssetMutable* AssetManagerBase::CreateEmptyMeshAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
-{
-	return DBG_NEW MeshAsset(InDBNameSpace, InAssetName, InAssetPath);
-}
-
-IModelAssetMutable* AssetManagerBase::CreateEmptyModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
-{
-	return DBG_NEW ModelAsset(InDBNameSpace, InAssetName, InAssetPath);
-}
-
-IModelCombinationAssetMutable* AssetManagerBase::CreateEmptyModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName,
-	SS::SHasherW InAssetPath, int32 ReservedChildCnt)
-{
-	return DBG_NEW ModelCombinationAsset(InDBNameSpace, InAssetName, InAssetPath, ReservedChildCnt);
-}
-
-IMaterialAssetMutable* AssetManagerBase::CreateEmptyMaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
-{
-	return DBG_NEW MaterialAsset(InDBNameSpace, InAssetName, InAssetPath);
-}
-
-IRenderAnimAssetMutable* AssetManagerBase::CreateEmptyRenderAnimAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName,
-	SS::SHasherW InAssetPath)
-{
-	return DBG_NEW RenderAnimAsset(InDBNameSpace, InAssetName, InAssetPath);
-}
-
 IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InAssetName, EAssetType InAssetType) const
 {
 	int32 i32InAssetName = (int32)InAssetType;

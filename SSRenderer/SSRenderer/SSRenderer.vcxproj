@@ -181,6 +181,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetCreationUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
@@ -224,6 +225,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\ITextureAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RAFileOutline\MeshRawDataHeaders.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderAssetCreationUtils.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderAnimData.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RKFTrackItem.h" />

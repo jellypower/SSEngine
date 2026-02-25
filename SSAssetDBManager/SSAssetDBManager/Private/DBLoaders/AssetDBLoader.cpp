@@ -7,7 +7,7 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
-
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCreationUtils.h"
 
 #include "SSRenderer/Public/RenderAssetSerializer/IApakFileReader.h"
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
@@ -159,7 +159,7 @@ void AssetDBLoader::CreateAssetInstancesFromInter()
 	for (const AssetDBRow_Tex_v_0& TexRowItem : _DBInterTextures)
 	{
 		
-		ITextureAssetMutable* NewTex = _BoundAssetManager->CreateEmptyTextureAsset(_BoundDBNameSpace,
+		ITextureAssetMutable* NewTex = CreateEmptyTextureAsset(_BoundDBNameSpace,
 			TexRowItem.AssetName, TexRowItem.AssetPath, TexRowItem.TextureType);
 
 		_AllAssetInstancesSortedByPath.PushBack(NewTex);
@@ -168,7 +168,7 @@ void AssetDBLoader::CreateAssetInstancesFromInter()
 
 	for (const AssetDBRow_Mtl_DefaultPBR_v_0& DefaultMtlRowItem : _DBInterDefaultMtls)
 	{
-		IMaterialAssetMutable* NewMtl = _BoundAssetManager->CreateEmptyMaterialAsset(_BoundDBNameSpace,
+		IMaterialAssetMutable* NewMtl = CreateEmptyMaterialAsset(_BoundDBNameSpace,
 			DefaultMtlRowItem.AssetName, DefaultMtlRowItem.AssetPath);
 
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR;
@@ -191,7 +191,7 @@ void AssetDBLoader::CreateAssetInstancesFromInter()
 
 	for (const AssetDBRow_Mesh_v_0& MeshRowItem : _DBInterMeshes)
 	{
-		IMeshAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyMeshAsset(_BoundDBNameSpace,
+		IMeshAssetMutable* NewAsset = CreateEmptyMeshAsset(_BoundDBNameSpace,
 			MeshRowItem.AssetName, MeshRowItem.AssetPath);
 
 		_AllAssetInstancesSortedByPath.PushBack(NewAsset);
@@ -200,7 +200,7 @@ void AssetDBLoader::CreateAssetInstancesFromInter()
 
 	for (const AssetDBRow_Mdl_v_0& MdlRowItem : _DBInterMdls)
 	{
-		IModelAssetMutable* NewMdl = _BoundAssetManager->CreateEmptyModelAsset(
+		IModelAssetMutable* NewMdl = CreateEmptyModelAsset(
 			_BoundDBNameSpace, MdlRowItem.AssetName, MdlRowItem.AssetPath);
 
 		NewMdl->SetMesh(MdlRowItem.MeshName);
@@ -222,7 +222,7 @@ void AssetDBLoader::CreateAssetInstancesFromInter()
 
 	for (const AssetDBRow_Mdlc_v_0& MdlcRowItem : _DBInterMdlcs)
 	{
-		IModelCombinationAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyModelCombinationAsset(_BoundDBNameSpace,
+		IModelCombinationAssetMutable* NewAsset = CreateEmptyModelCombinationAsset(_BoundDBNameSpace,
 			MdlcRowItem.AssetName, MdlcRowItem.AssetPath, 0);
 
 		_AllAssetInstancesSortedByPath.PushBack(NewAsset);
@@ -231,7 +231,7 @@ void AssetDBLoader::CreateAssetInstancesFromInter()
 
 	for (const AssetDBRow_RAnim_v_0& RAnimRowItem : _DBInterRAnims)
 	{
-		IRenderAnimAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyRenderAnimAsset(_BoundDBNameSpace,
+		IRenderAnimAssetMutable* NewAsset = CreateEmptyRenderAnimAsset(_BoundDBNameSpace,
 			RAnimRowItem.AssetName, RAnimRowItem.AssetPath);
 
 		_AllAssetInstancesSortedByPath.PushBack(NewAsset);

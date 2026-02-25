@@ -1,16 +1,17 @@
 #include "pch.h"
 #include "SSFBXImporterUtils.h"
 
-#include <SSEngineDefault/Public/RawProfiler/ProfilerUtils.h>
-#include <SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h>
-
-#include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
+#include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+
 #include "SSFBXImporter/Public/FRAN.h"
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCreationUtils.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
@@ -316,7 +317,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
 
-	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(HASHER_FBX_IMPORT, NewAssetName, InAssetPath);
+	IMeshAssetMutable* NewMeshAsset = CreateEmptyMeshAsset(HASHER_FBX_IMPORT, NewAssetName, InAssetPath);
 	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
 
 	// - Load num
@@ -578,8 +579,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	const utf16* AssetStr = NewAssetName.C_Str();
 
 
-	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
-	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(HASHER_FBX_IMPORT, NewAssetName, InAssetPath);
+	IMeshAssetMutable* NewMeshAsset = CreateEmptyMeshAsset(HASHER_FBX_IMPORT, NewAssetName, InAssetPath);
 	MeshRawDataSkinned* NewSkinnedMeshRawData = DBG_NEW MeshRawDataSkinned();
 
 	// 1. Load num

@@ -6,6 +6,7 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IRenderAnimAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCreationUtils.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
@@ -53,7 +54,7 @@ void MdlcSerializeTest(IRenderer* InRenderer, SS::SHasherW MdlcToTest)
 
 	static const SS::SHasherW HASHSER_RUNTIME_CREATION = CRAN::NS_RUNTIME_CREATION;
 
-	IModelCombinationAssetMutable* CreatedMdlcAsset = AssetManager->CreateEmptyModelCombinationAsset(
+	IModelCombinationAssetMutable* CreatedMdlcAsset = CreateEmptyModelCombinationAsset(
 		HASHSER_RUNTIME_CREATION,
 		MdlcAsset->GetAssetName(),
 		MdlcAsset->GetAssetPath(),

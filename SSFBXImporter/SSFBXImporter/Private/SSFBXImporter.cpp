@@ -3,26 +3,22 @@
 
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 
-#include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 #include "SSFBXImporterUtils.h"
+#include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IRenderAnimAssetMutable.h"
-
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
-
-#include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
-
-#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
-
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
-
-#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 
 #include "SSFBXImporter/Public/FRAN.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IRenderAnimAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCreationUtils.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 
 namespace SSFbxName
 {
@@ -259,7 +255,7 @@ void SSFBXImporter::GenerateImportedMaterialAssets()
 		OriginalMtlNodeName = Utf16Buffer;
 		
 		SS::SHasherW MtlAssetName = IssueNewAssetName(OriginalMtlNodeName, EAssetType::Material);
-		IMaterialAssetMutable* NewMtlAsset = _AssetManagerToImportAsset->CreateEmptyMaterialAsset(HASHER_FBX_IMPORT, MtlAssetName, _boundFileName);
+		IMaterialAssetMutable* NewMtlAsset = CreateEmptyMaterialAsset(HASHER_FBX_IMPORT, MtlAssetName, _boundFileName);
 		MtlDataDefaultPBR* NewDefaultPBRMtlData = DBG_NEW MtlDataDefaultPBR();
 
 
@@ -308,7 +304,7 @@ void SSFBXImporter::GenerateImportedMdlcAsset()
 
 	
 	IModelCombinationAssetMutable* newMdlcAsset = 
-		_AssetManagerToImportAsset->CreateEmptyModelCombinationAsset(HASHER_FBX_IMPORT, _RepresentingAssetName, _boundFilePath.C_Str(), whoeChildCnt);
+		CreateEmptyModelCombinationAsset(HASHER_FBX_IMPORT, _RepresentingAssetName, _boundFilePath.C_Str(), whoeChildCnt);
 
 
 	for (int32 i = 0; i < rootChildCnt; i++)
@@ -398,7 +394,7 @@ void SSFBXImporter::ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int
 			SS::SHasherW NewModelAssetName = IssueNewAssetName(NodeNameString, EAssetType::Model);
 
 			
-			IModelAssetMutable* newModel = _AssetManagerToImportAsset->CreateEmptyModelAsset(HASHER_FBX_IMPORT, NewModelAssetName, _boundFileName);
+			IModelAssetMutable* newModel = CreateEmptyModelAsset(HASHER_FBX_IMPORT, NewModelAssetName, _boundFileName);
 			SS_ASSERT(newMeshAsset);
 			newModel->SetMesh(NewMeshName);
 
@@ -500,7 +496,7 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 		IModelCombinationAsset* OriginalMdlcAsset = FindImportedAssetByName<IModelCombinationAsset>(_RepresentingAssetName);
 		int ChildCnt = OriginalMdlcAsset->GetChildCnt();
 
-		IRenderAnimAssetMutable* NewRenderAnimAsset = _AssetManagerToImportAsset->CreateEmptyRenderAnimAsset(HASHER_FBX_IMPORT, NewRenderAnimName, _boundFileName);
+		IRenderAnimAssetMutable* NewRenderAnimAsset = CreateEmptyRenderAnimAsset(HASHER_FBX_IMPORT, NewRenderAnimName, _boundFileName);
 
 		// ========================================================================================================================
 		FbxTakeInfo* takeInfo = _currentScene->GetTakeInfo(fCurAnimStackName);
