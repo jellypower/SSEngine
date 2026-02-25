@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
 #include "SSDX12Utils.h"
 
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "Public/SSGALCommonEnums.h"
 #include "Public/GALRenderTarget/GALRTCommonEnums.h"
 

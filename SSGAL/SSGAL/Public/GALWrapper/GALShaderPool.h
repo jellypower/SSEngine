@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 
 struct ShaderConstructDesc;
 class GALShaderWrapper;

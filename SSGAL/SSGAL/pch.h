@@ -7,3 +7,5 @@
 #include <dxgi1_4.h>
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
+
+#include "SSEngineDefault/Public/SSEngineDefault.h"

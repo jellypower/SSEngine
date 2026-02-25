@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 
 class GALRenderDevice;
 

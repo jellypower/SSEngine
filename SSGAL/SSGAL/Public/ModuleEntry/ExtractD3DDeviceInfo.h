@@ -1,7 +1,6 @@
 ﻿#pragma once
 #ifdef _WINDOWS
 #include "SSGAL/ModuleExportKeyword.h"
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 
 
 class GALRenderTarget;
