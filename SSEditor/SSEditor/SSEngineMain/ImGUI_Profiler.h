@@ -12,12 +12,17 @@ private:
 	utf16 _u16StrWorkTable[1024] = { 0, };
 	utf8 _u8StrWorkTable[1024] = { 0, };
 
+
+	bool _bOverFrameAutoCapture = false;
+
 public:
 	void PerFrame();
 
 private:
 	void FrameOutline();
 
+
+private:
 	void ProfileDetail();
 
 	void ShowProfileResultCapture();
@@ -25,4 +30,8 @@ private:
 
 	void CopyProfilerResultToClipboard();
 	int CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, int Depth);
+
+
+	void OverFrameAutoCapture();
+
 };

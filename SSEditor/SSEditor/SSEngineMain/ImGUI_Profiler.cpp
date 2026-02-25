@@ -47,6 +47,8 @@ void ImGUI_Profiler::ProfileDetail()
 		{
 			CopyProfilerResultToClipboard();
 		}
+
+		OverFrameAutoCapture();
 	}
 }
 
@@ -171,4 +173,25 @@ int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int
 	}
 
 	return NextIdx;
+}
+
+void ImGUI_Profiler::OverFrameAutoCapture()
+{
+	ImGui::Checkbox("Draw Debug Pose", &_bOverFrameAutoCapture);
+
+	if (_bOverFrameAutoCapture == false)
+	{
+		return;
+	}
+
+	double DeltaTime = g_FrameInfoProcessor->GetDeltaTime();
+	if (DeltaTime < 0.016)
+	{
+		// 60fps 가 되면 일단 패스
+		return;
+	}
+
+	_ConsumedTickCapture = g_FrameInfoProcessor->GetDeltaTick();
+	_FrequencyCapture = GetPerformanceFrequency();
+	_ProfileResultCapture = g_FrameInfoProcessor->GetLastProfileResult();
 }

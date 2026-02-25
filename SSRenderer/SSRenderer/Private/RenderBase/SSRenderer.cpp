@@ -383,6 +383,7 @@ void SSRenderer::PerFrame()
 
 			// Shadow Map Draw
 			{
+				SCOPE_PROFILE(DrawShadowMap);
 				for (IRenderLight* LightItem : _RenderLightsToDraw)
 				{
 					if (LightItem->IsShadowMapEnabled() == false)
@@ -408,6 +409,8 @@ void SSRenderer::PerFrame()
 
 			// Default Render Target
 			{
+				SCOPE_PROFILE(DrawMesh);
+
 				{
 					_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
 
@@ -465,6 +468,7 @@ void SSRenderer::PerFrame()
 			// Post Processing
 			_MainDeviceContext->BeginPostProcessing();
 			{
+				SCOPE_PROFILE(PostProcess);
 
 				_MainDeviceContext->ClearRenderTarget(_RTPostProcessResult, { 0, 0, 0, 0 });
 				_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
@@ -481,6 +485,8 @@ void SSRenderer::PerFrame()
 			// DrawDebug
 			_MainDeviceContext->BeginDrawDebug();
 			{
+				SCOPE_PROFILE(DebugDraw);
+
 				if (_DebugDrawItemsWithDepth.GetSize() > 0)
 				{
 					_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, _DSVRenderTarget);
@@ -620,6 +626,8 @@ void SSRenderer::DrawWireFrame(const DebugDrawMeshDesc& Desc)
 
 void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 {
+	SCOPE_PROFILE(GPUAssetUpdate);
+
 	for (IMeshAssetMutable* MeshAssetItem : _GALStateChangedMeshAsset)
 	{
 		if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->GetGALMeshAsset() == nullptr)
