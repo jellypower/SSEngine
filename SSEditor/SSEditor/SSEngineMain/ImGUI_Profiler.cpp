@@ -27,7 +27,7 @@ void ImGUI_Profiler::FrameOutline()
 
 void ImGUI_Profiler::ProfileDetail()
 {
-	if (ImGui::CollapsingHeader("ProfileDetail"))
+	if (ImGui::CollapsingHeader("Capture Profile"))
 	{
 		ImGui::NewLine();
 		if (ImGui::Button("Capture"))

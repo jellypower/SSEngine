@@ -25,9 +25,6 @@ private:
 	FbxImporter* _FBXImporter = nullptr;
 	FbxScene* _currentScene = nullptr;
 
-private:
-	IAssetManagerMutable* _AssetManagerToImportAsset = nullptr;
-	ICommonRenderAssetSet* _CommonRenderAssetSetToImport = nullptr;
 
 private:
 	SS::SHasherW _boundFilePath;
@@ -56,10 +53,7 @@ public:
 	virtual bool BindFbxSceneFile(const utf16* inFilePath) override;
 	virtual void ClearFbxSceneFile() override;
 
-	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* inCommonRenderAssetSet = nullptr) override;
-	virtual void ClearRendererToImportAsset() override;
-
-	virtual void RelocateImportedAssetsToAssetManager() override;
+	virtual void RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList) override;
 
 	virtual void GenerateImportedAssets() override;
 

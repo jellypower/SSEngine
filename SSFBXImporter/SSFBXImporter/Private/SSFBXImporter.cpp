@@ -132,24 +132,12 @@ void SSFBXImporter::ClearFbxSceneFile()
 	_RepresentingAssetName = SS::SHasherW::GetEmpty();
 }
 
-void SSFBXImporter::BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet)
-{
-	_AssetManagerToImportAsset = InAssetMnanager;
-	_CommonRenderAssetSetToImport = InCommonRenderAssetSet;
-}
 
-void SSFBXImporter::ClearRendererToImportAsset()
-{
-	_AssetManagerToImportAsset = nullptr;
-	_CommonRenderAssetSetToImport = nullptr;
-}
-
-
-void SSFBXImporter::RelocateImportedAssetsToAssetManager()
+void SSFBXImporter::RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList)
 {
 	for (IAssetBase* ImportAssetItem : _ImportedAssets)
 	{
-		_AssetManagerToImportAsset->AddToAssetPool(ImportAssetItem);
+		OutAssetList.PushBack(ImportAssetItem);
 	}
 
 	_ImportedAssets.Clear();

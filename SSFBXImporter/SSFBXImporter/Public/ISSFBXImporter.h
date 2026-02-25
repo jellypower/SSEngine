@@ -19,10 +19,8 @@ public:
 	virtual bool BindFbxSceneFile(const utf16* inFilePath) = 0;
 	virtual void ClearFbxSceneFile() = 0;
 
-	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet) = 0;
-	virtual void ClearRendererToImportAsset() = 0;
 
-	virtual void RelocateImportedAssetsToAssetManager() = 0;
+	virtual void RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList) = 0;
 
 	virtual void GenerateImportedAssets() = 0;
 

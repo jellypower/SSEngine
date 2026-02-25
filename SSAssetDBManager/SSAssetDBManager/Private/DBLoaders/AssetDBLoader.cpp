@@ -255,50 +255,37 @@ void AssetDBLoader::ClearInterData()
 	_DBInterRAnims.Clear();
 }
 
-void AssetDBLoader::BindAssetManagerToImportAsset(
-	IAssetManagerMutable* InAssetMnanager,
-	ICommonRenderAssetSet* InCommonRenderAssetSet)
-{
-	_BoundAssetManager = InAssetMnanager;
-	_BoundCommonRenderAssets = InCommonRenderAssetSet;
-}
 
-void AssetDBLoader::ClearAssetManagerToImportAsset()
-{
-	_BoundAssetManager = nullptr;
-	_BoundCommonRenderAssets = nullptr;
-}
-
-void AssetDBLoader::RelocateCreatedAssetInstancesToAssetManager()
+void AssetDBLoader::RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList)
 {
 	for (ITextureAsset* TexAssetItem : _CreatedTextures)
 	{
-		_BoundAssetManager->AddToAssetPool(TexAssetItem);
+		OutAssetList.PushBack(TexAssetItem);
 	}
 
 	for (IMeshAsset* MeshAssetItem : _CreatedMeshes)
 	{
-		_BoundAssetManager->AddToAssetPool(MeshAssetItem);
+		OutAssetList.PushBack(MeshAssetItem);
 	}
 
 	for (IMaterialAsset* MtlAssetItem : _CreatedMaterials)
 	{
-		_BoundAssetManager->AddToAssetPool(MtlAssetItem);
+		OutAssetList.PushBack(MtlAssetItem);
 	}
 
 	for (IModelAsset* MdlAssetItem : _CreatedMdls)
 	{
-		_BoundAssetManager->AddToAssetPool(MdlAssetItem);
+		OutAssetList.PushBack(MdlAssetItem);
 	}
 
 	for (IModelCombinationAsset* MdlcAssetITem : _CreatedMdlcs)
 	{
-		_BoundAssetManager->AddToAssetPool(MdlcAssetITem);
+		OutAssetList.PushBack(MdlcAssetITem);
 	}
 
 	for (IRenderAnimAsset* RAnimAssetItem : _CreatedRAnims)
 	{
-		_BoundAssetManager->AddToAssetPool(RAnimAssetItem);
+		OutAssetList.PushBack(RAnimAssetItem);
 	}
 
 	_CreatedTextures.Clear();

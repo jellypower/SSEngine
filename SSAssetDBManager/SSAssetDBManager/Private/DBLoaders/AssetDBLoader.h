@@ -19,16 +19,13 @@ public:
 	void ClearDB() override;
 
 
-	void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet) override;
-	void ClearAssetManagerToImportAsset() override;
-
 public:
 	virtual void ClearInterData() override;
 
 public:
 	virtual bool LoadAllAssetDataFromDB() override;
 	virtual void CreateAssetInstancesFromInter() override;
-	virtual void RelocateCreatedAssetInstancesToAssetManager() override;
+	virtual void RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList) override;
 
 public:
 	virtual void PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets) override;
@@ -61,9 +58,6 @@ private:
 	SS::SHasherW _BoundDBSqlFilePath;
 	SS::SHasherW _BoundDBNameSpace;
 	bool _bIsEngineDefaultAssetDB = false;
-
-	IAssetManagerMutable* _BoundAssetManager = nullptr;
-	ICommonRenderAssetSet* _BoundCommonRenderAssets = nullptr;
 
 
 private:

@@ -11,9 +11,7 @@ public:
 	virtual bool StartLoadDB(SS::SHasherW inFilePath) = 0;
 	virtual void ClearDB() = 0;
 
-	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* InCommonRenderAssetSet) = 0;
-	virtual void ClearAssetManagerToImportAsset() = 0;
-
+	
 
 public:
 	virtual void ClearInterData() = 0;
@@ -21,7 +19,7 @@ public:
 public:
 	virtual bool LoadAllAssetDataFromDB() = 0;
 	virtual void CreateAssetInstancesFromInter() = 0;
-	virtual void RelocateCreatedAssetInstancesToAssetManager() = 0;
+	virtual void RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList) = 0;
 
 public:
 	virtual void PushAssetsToSaveToDB(const SS::PooledList<IAssetBase*>& InAssets) = 0;

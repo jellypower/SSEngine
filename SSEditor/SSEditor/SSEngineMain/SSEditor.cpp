@@ -76,29 +76,36 @@ void SSEditor::StartupEngine()
 	_Renderer->StartUp();
 	g_ImGuiInitializer->StartupImGui(_Renderer);
 
+
 	{
+		SS::PooledList<IAssetBase*> AssetListToImport(1024);
+
 		_AssetDBLoader = g_fpCreateAssetDBLoader();
-		_AssetDBLoader->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 
 		_AssetDBLoader->StartLoadDB(CRAN::NS_DEFAULT_ASSET);
 		_AssetDBLoader->LoadAllAssetDataFromDB();
 		_AssetDBLoader->CreateAssetInstancesFromInter();
-		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
+		_AssetDBLoader->RelocateCreatedAssets(AssetListToImport);
 		_AssetDBLoader->ClearDB();
 
 		_AssetDBLoader->StartLoadDB(L"ContentsAssets");
 		_AssetDBLoader->LoadAllAssetDataFromDB();
 		_AssetDBLoader->CreateAssetInstancesFromInter();
-		_AssetDBLoader->RelocateCreatedAssetInstancesToAssetManager();
+		_AssetDBLoader->RelocateCreatedAssets(AssetListToImport);
 		_AssetDBLoader->ClearDB();
-	}
 
-	{
 		_FbxImporter = g_fpCreateSSFBXImporter();
-		_FbxImporter->BindAssetManagerToImportAsset(_Renderer->GetMutableAssetManager(), _Renderer->GetCommonRenderAssetSet());
 		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
 		_FbxImporter->GenerateImportedAssets();
-		_FbxImporter->RelocateImportedAssetsToAssetManager();
+		_FbxImporter->RelocateCreatedAssets(AssetListToImport);
+
+
+		IAssetManagerMutable* AM = _Renderer->GetMutableAssetManager();
+
+		for (IAssetBase* AssetItem : AssetListToImport)
+		{
+			AM->AddToAssetPool(AssetItem);
+		}
 	}
 
 	{
@@ -304,7 +311,6 @@ void SSEditor::CleanupEngine()
 
 
 	_FbxImporter->ClearFbxSceneFile();
-	_FbxImporter->ClearRendererToImportAsset();
 	delete _FbxImporter;
 	_FbxImporter = nullptr;
 
