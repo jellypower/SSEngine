@@ -17,6 +17,7 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IRenderAnimAssetMutable.h"
 
 
 
@@ -27,11 +28,22 @@
 
 AssetDBLoader::AssetDBLoader()
 {
-	_DBInterTextures.Reserve(128);
-	_DBInterMeshes.Reserve(128);
-	_DBInterDefaultMtls.Reserve(128);
-	_DBInterMdls.Reserve(128);
-	_DBInterMdlcs.Reserve(128);
+	constexpr int32 RESERVE_SIZE = 128;
+
+	_DBInterTextures.Reserve(RESERVE_SIZE);
+	_DBInterMeshes.Reserve(RESERVE_SIZE);
+	_DBInterDefaultMtls.Reserve(RESERVE_SIZE);
+	_DBInterMdls.Reserve(RESERVE_SIZE);
+	_DBInterMdlcs.Reserve(RESERVE_SIZE);
+	_DBInterRAnims.Reserve(RESERVE_SIZE);
+
+	_AllAssetInstancesSortedByPath.Reserve(RESERVE_SIZE * 2);
+	_CreatedTextures.Reserve(RESERVE_SIZE);
+	_CreatedMeshes.Reserve(RESERVE_SIZE);
+	_CreatedMaterials.Reserve(RESERVE_SIZE);
+	_CreatedMdls.Reserve(RESERVE_SIZE);
+	_CreatedMdlcs.Reserve(RESERVE_SIZE);
+	_CreatedRAnims.Reserve(RESERVE_SIZE);
 }
 
 bool AssetDBLoader::StartLoadDB(SS::SHasherW InNameSpace)
@@ -126,6 +138,13 @@ bool AssetDBLoader::LoadAllAssetDataFromDB()
 		return false;
 	}
 
+	bResult = LoadDBInterAllRAnims();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
 	return true;
 }
 
@@ -210,6 +229,15 @@ void AssetDBLoader::CreateAssetInstancesFromInter()
 		_CreatedMdlcs.PushBack(NewAsset);
 	}
 
+	for (const AssetDBRow_RAnim_v_0& RAnimRowItem : _DBInterRAnims)
+	{
+		IRenderAnimAssetMutable* NewAsset = _BoundAssetManager->CreateEmptyRenderAnimAsset(_BoundDBNameSpace,
+			RAnimRowItem.AssetName, RAnimRowItem.AssetPath);
+
+		_AllAssetInstancesSortedByPath.PushBack(NewAsset);
+		_CreatedRAnims.PushBack(NewAsset);
+	}
+
 	int32 AllAssetCnt = _AllAssetInstancesSortedByPath.GetSize();
 	IAssetBase** AllAssetDataRaw = _AllAssetInstancesSortedByPath.GetData();
 	std::sort(AllAssetDataRaw, AllAssetDataRaw + AllAssetCnt, SortByAssetPath);
@@ -224,6 +252,7 @@ void AssetDBLoader::ClearInterData()
 	_DBInterDefaultMtls.Clear();
 	_DBInterMdls.Clear();
 	_DBInterMdlcs.Clear();
+	_DBInterRAnims.Clear();
 }
 
 void AssetDBLoader::BindAssetManagerToImportAsset(
@@ -267,11 +296,17 @@ void AssetDBLoader::RelocateCreatedAssetInstancesToAssetManager()
 		_BoundAssetManager->AddToAssetPool(MdlcAssetITem);
 	}
 
+	for (IRenderAnimAsset* RAnimAssetItem : _CreatedRAnims)
+	{
+		_BoundAssetManager->AddToAssetPool(RAnimAssetItem);
+	}
+
 	_CreatedTextures.Clear();
 	_CreatedMeshes.Clear();
 	_CreatedMaterials.Clear();
 	_CreatedMdls.Clear();
 	_CreatedMdlcs.Clear();
+	_CreatedRAnims.Clear();
 	_AllAssetInstancesSortedByPath.Clear();
 }
 
@@ -323,6 +358,12 @@ void AssetDBLoader::CreateInterListFromAssetsToSaveToDB(SS::SHasherW NSConvertFr
 				static_cast<const ITextureAsset*>(AssetItem), NSConvertFrom, NSConvertTo);
 			_DBInterTextures.PushBack(NewRow);
 		}
+		else if (Type == EAssetType::RenderAnim)
+		{
+			AssetDBRow_RAnim_v_0 NewRow = AssetToDBRow_RAnim_v_0(
+				static_cast<const IRenderAnimAsset*>(AssetItem), NSConvertFrom, NSConvertTo);
+			_DBInterRAnims.PushBack(NewRow);
+		}
 		else
 		{
 			SS_ASSERT(false);
@@ -359,6 +400,13 @@ bool AssetDBLoader::SaveInterAssetsToDB()
 	}
 
 	bResult = SaveAllInterMdlcsToDB();
+	if (bResult == false)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	bResult = SaveAllInterRAnimsToDB();
 	if (bResult == false)
 	{
 		SS_ASSERT(false);
@@ -425,9 +473,17 @@ void AssetDBLoader::FillEmptyAssetsFromApakFile()
 			IModelCombinationAssetMutable* MdlcAsset = static_cast<IModelCombinationAssetMutable*>(AssetItem);
 			FillEmptyMdlcAssetFromData(MdlcAsset, ApakFileAccessor->GetCursoredData());
 		}
+		else if (AssetTypeItem == EAssetType::RenderAnim)
+		{
+			IRenderAnimAssetMutable* RanimAsset = static_cast<IRenderAnimAssetMutable*>(AssetItem);
+			RenderAnimRawData* AnimRawData = nullptr;
+			FillRenderAnimFromData(AnimRawData, ApakFileAccessor->GetCursoredData());
+
+			RanimAsset->InjectRawDataXXX(AnimRawData);
+		}
 		else
 		{
-			SS_ASSERT_MSG(false, L"TODO: Impl");
+			SS_INTERRUPT();
 		}
 	}
 
@@ -753,6 +809,58 @@ bool AssetDBLoader::LoadDBInterAllMdlcs()
 	return true;
 }
 
+bool AssetDBLoader::LoadDBInterAllRAnims()
+{
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		ALL_RANIM_QUERY,
+		sizeof(ALL_RANIM_QUERY),
+		SQLITE_OPEN_READONLY,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	while (sqlite3_step(StmtResult) == SQLITE_ROW)
+	{
+		AssetDBRow_RAnim_v_0 NewRow;
+
+
+		SS::StringW AssetNameStr = _BoundDBNameSpace.C_Str();
+		AssetNameStr += L"/";
+		SS::StringW AssetPathStr = _BoundDBNameSpacePath.C_Str();
+
+		const utf16* db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 0);
+		AssetNameStr += db_c_str;
+
+		db_c_str = (const utf16*)sqlite3_column_text16(StmtResult, 1);
+		if (db_c_str != nullptr)
+		{
+			AssetPathStr += db_c_str;
+		}
+
+		time_t UpdateTime = sqlite3_column_int64(StmtResult, 2);
+
+
+		NewRow.AssetName = AssetNameStr.C_Str();
+		NewRow.AssetPath = AssetPathStr.C_Str();
+		NewRow.LastUpdateTime = UpdateTime;
+
+		_DBInterRAnims.PushBack(NewRow);
+	}
+
+
+	sqlite3_finalize(StmtResult);
+	return true;
+}
+
 bool AssetDBLoader::SaveAllInterMeshesToDB()
 {
 	sqlite3_stmt* StmtResult = nullptr;
@@ -932,6 +1040,50 @@ bool AssetDBLoader::SaveAllInterMdlcsToDB()
 	}
 
 	for (const AssetDBRow_Mdlc_v_0& RowItem : _DBInterMdlcs)
+	{
+		const utf16* AssetNameCutoff = CutOffNameFromFront(RowItem.AssetName, _BoundDBNameSpace);
+		AssetNameCutoff++;
+		sqlite3_bind_text16(StmtResult, 1, AssetNameCutoff, -1, SQLITE_STATIC);
+
+		const utf16* NameSpacePathCutoff = CutOffNameFromFront(RowItem.AssetPath, _BoundDBNameSpacePath);
+		if (NameSpacePathCutoff == nullptr)
+		{
+			SS_ASSERT_MSG(false, L"Not a valid namespace path. If you want to save Asset path to a namespace, asset original file path must be located in same asset path directory.");
+			continue;
+		}
+		sqlite3_bind_text16(StmtResult, 2, NameSpacePathCutoff, -1, SQLITE_STATIC);
+
+		sqlite3_bind_int64(StmtResult, 3, RowItem.LastUpdateTime);
+
+
+		sqlite3_step(StmtResult);
+		sqlite3_reset(StmtResult);
+	}
+
+	sqlite3_finalize(StmtResult);
+	return true;
+}
+
+bool AssetDBLoader::SaveAllInterRAnimsToDB()
+{
+	sqlite3_stmt* StmtResult = nullptr;
+	const void* __Temp = nullptr;
+
+	int Result = sqlite3_prepare16_v3(
+		_hLoadedDB,
+		SAVE_RAnim_v_0_QUERY,
+		sizeof(SAVE_RAnim_v_0_QUERY),
+		SQLITE_OPEN_READWRITE,
+		&StmtResult,
+		&__Temp);
+	if (Result)
+	{
+		SS_ASSERT_MSG(false, L"Cannot compile stmt.");
+		sqlite3_finalize(StmtResult);
+		return false;
+	}
+
+	for (const AssetDBRow_RAnim_v_0& RowItem : _DBInterRAnims)
 	{
 		const utf16* AssetNameCutoff = CutOffNameFromFront(RowItem.AssetName, _BoundDBNameSpace);
 		AssetNameCutoff++;

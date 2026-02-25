@@ -467,6 +467,7 @@ void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace
 	IAssetManager* AM = _Renderer->GetAssetManager();
 	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::Mesh);
 	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::ModelCombination);
+	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::RenderAnim);
 
 	if (AssetListToSerialize.GetSize() == 0)
 	{

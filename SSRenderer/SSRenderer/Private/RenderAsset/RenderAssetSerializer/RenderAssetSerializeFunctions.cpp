@@ -9,6 +9,7 @@
 #include "SSRenderer/Public/RenderAssetSerializer/ApakDataChunkOffsetDesc.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/MeshAsset.h"
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IRenderAnimAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
@@ -232,7 +233,7 @@ int64 AppendDataFromRenderAnim(SS::PooledList<byte>& Data, const RenderAnimRawDa
 
 
 		const int32 DataSize = sizeof(RKFTrackItem) * TrackItemCnt;
-		WrittenBytes += AppendData(Data, &TrackItemsRaw, DataSize);
+		WrittenBytes += AppendData(Data, TrackItemsRaw, DataSize);
 		// 5. 각 트랙 데이터
 	}
 
@@ -417,6 +418,8 @@ int64 FillRenderAnimFromData(RenderAnimRawData*& OutAnimData, const SS::PooledLi
 		const int32 DataSize = TrackItemCnt * sizeof(RKFTrackItem);
 		Offset += FillMemoryFromData(TrackItemsRaw, DataSize, Data, Offset);
 		// 5. 각 트랙 데이터 채우기
+
+		int a = 0;
 	}
 
 	if (Offset - OriginalOffset != WholeAnimDataSize) SS_INTERRUPT();
@@ -438,10 +441,13 @@ int64 AppendApakDataFromAssetList(
 	for (IAssetBase* AssetItem : AssetListToSerailize)
 	{
 		EAssetType AssetItemType = AssetItem->GetAssetType();
-		if (AssetItemType != EAssetType::Mesh &&
-			AssetItemType != EAssetType::ModelCombination)
+		if (
+			AssetItemType != EAssetType::Mesh &&
+			AssetItemType != EAssetType::ModelCombination &&
+			AssetItemType != EAssetType::RenderAnim
+			)
 		{
-			SS_ASSERT(false);
+			SS_INTERRUPT();
 			continue;
 		}
 
@@ -504,9 +510,17 @@ int64 AppendApakDataFromAssetList(
 				MdlcChildNameSpaceReplaced,
 				MdlcChildNameSpaceToReplace);
 		}
+		else if (AssetItemType == EAssetType::RenderAnim)
+		{
+			IRenderAnimAsset* AnimAssetItem = static_cast<IRenderAnimAsset*>(AssetItem);
+			const RenderAnimRawData* RenderAnimData = AnimAssetItem->GetKeyFrameAnimData();
+			WrittenByteItem = AppendDataFromRenderAnim(
+				Data,
+				RenderAnimData);
+		}
 		else
 		{
-			SS_ASSERT(false);
+			SS_INTERRUPT();
 		}
 
 		ApakDataChunkOffsetDesc* DataChunkOffsetDescRaw = reinterpret_cast<ApakDataChunkOffsetDesc*>(Data.GetData() + DataChunkOffsetDescOffset);

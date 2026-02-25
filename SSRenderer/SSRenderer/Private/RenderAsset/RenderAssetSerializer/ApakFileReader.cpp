@@ -184,6 +184,8 @@ bool ApakFileReader::SetDataCursorToAsset(SS::SHasherW AssetName)
 		SS_ASSERT(false);
 		return false;
 	}
+
+	return true;
 }
 
 void ApakFileReader::HandleFailOnLoad()

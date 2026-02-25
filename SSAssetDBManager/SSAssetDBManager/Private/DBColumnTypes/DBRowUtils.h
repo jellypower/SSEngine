@@ -13,7 +13,7 @@ AssetDBRow_Tex_v_0 AssetToDBRow_Tex_v_0(const ITextureAsset* InAsset, SS::SHashe
 AssetDBRow_Mtl_DefaultPBR_v_0 AssetToDBRow_Mtl_DefaultPBR_v_0(const IMaterialAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo);
 AssetDBRow_Mdl_v_0 AssetToDBRow_Mdl_v_0(const IModelAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo);
 AssetDBRow_Mdlc_v_0 AssetToDBRow_Mdlc_v_0(const IModelCombinationAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo);
-
+AssetDBRow_RAnim_v_0 AssetToDBRow_RAnim_v_0(const IRenderAnimAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo);
 
 ///
 ///

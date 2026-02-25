@@ -28,6 +28,11 @@ struct AssetDBRow_Mdlc_v_0 : public AssetDBRowBase_v_0
 	// No metadata -> Located in file
 };
 
+struct AssetDBRow_RAnim_v_0 : public AssetDBRowBase_v_0
+{
+	// No metadata -> Located in file
+};
+
 struct AssetDBRow_Mtl_DefaultPBR_v_0 : public AssetDBRowBase_v_0
 {
 	Vector4f _BaseColorScale;

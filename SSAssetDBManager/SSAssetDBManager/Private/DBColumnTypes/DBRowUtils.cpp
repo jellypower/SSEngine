@@ -116,6 +116,19 @@ AssetDBRow_Mdlc_v_0 AssetToDBRow_Mdlc_v_0(const IModelCombinationAsset* InAsset,
 	return Row;
 }
 
+AssetDBRow_RAnim_v_0 AssetToDBRow_RAnim_v_0(const IRenderAnimAsset* InAsset, SS::SHasherW NSConvertFrom, SS::SHasherW NSConvertTo)
+{
+	AssetDBRow_RAnim_v_0 Row;
+
+	SS::SHasherW ConvertedName = ReplaceAssestNameNameSpace(InAsset->GetAssetName(), NSConvertFrom, NSConvertTo);
+
+	Row.AssetName = ConvertedName;
+	Row.AssetPath = InAsset->GetAssetPath();
+	Row.LastUpdateTime = InAsset->GetLastUpdateTime();
+
+	return Row;
+}
+
 const utf16* CutOffNameFromFront(SS::SHasherW InPath, SS::SHasherW InNameSpacePath)
 {
 	const utf16* PathRaw = InPath.C_Str();

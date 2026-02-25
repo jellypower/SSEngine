@@ -492,12 +492,8 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 		UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, u16AnimStackName, STR_BUFFER_SIZE);
 
 
-		SS::StringW NewRenderAnimNameOnly = _RepresentingAssetName.C_Str();
-		NewRenderAnimNameOnly += L"/";
-		NewRenderAnimNameOnly += u16AnimStackName;
+		SS::StringW NewRenderAnimNameOnly = u16AnimStackName;
 
-
-		
 		SS::SHasherW NewRenderAnimName = IssueNewAssetName(NewRenderAnimNameOnly, EAssetType::RenderAnim);
 
 

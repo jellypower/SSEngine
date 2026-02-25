@@ -2,6 +2,7 @@
 #include "SSAssetDBManager/Private/DBColumnTypes/Rows_v_0.h"
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
+class IRenderAnimAsset;
 class IModelCombinationAsset;
 class IModelAsset;
 class IMeshAsset;
@@ -44,12 +45,14 @@ private:
 	bool LoadDBInterAllMdls();
 	bool LoadDBInterAllMeshes();
 	bool LoadDBInterAllMdlcs();
+	bool LoadDBInterAllRAnims();
 
 private:
 	bool SaveAllInterMeshesToDB();
 	bool SaveAllInterMtlsToDB();
 	bool SaveAllInterMdlsToDB();
 	bool SaveAllInterMdlcsToDB();
+	bool SaveAllInterRAnimsToDB();
 
 private:
 	sqlite3* _hLoadedDB = nullptr;
@@ -69,6 +72,7 @@ private:
 	SS::PooledList<AssetDBRow_Mtl_DefaultPBR_v_0> _DBInterDefaultMtls;
 	SS::PooledList<AssetDBRow_Mdl_v_0> _DBInterMdls;
 	SS::PooledList<AssetDBRow_Mdlc_v_0> _DBInterMdlcs;
+	SS::PooledList<AssetDBRow_RAnim_v_0> _DBInterRAnims;
 
 
 
@@ -79,6 +83,7 @@ private:
 	SS::PooledList<IMaterialAsset*> _CreatedMaterials;
 	SS::PooledList<IModelAsset*> _CreatedMdls;
 	SS::PooledList<IModelCombinationAsset*> _CreatedMdlcs;
+	SS::PooledList<IRenderAnimAsset*> _CreatedRAnims;
 
 private:
 	SS::PooledList<IAssetBase*> _AssetsToSaveToDB;
