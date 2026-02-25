@@ -11,7 +11,7 @@
 #include "SSRenderer/Private/RenderAsset/RenderAssetType/ModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
-
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 
 
 int64 AppendDataFromDefaultMesh(SS::PooledList<byte>& Data, const MeshRawDataDefault* MeshDefaultData)
@@ -176,7 +176,7 @@ int64 AppendDataFromMdlcAsset(
 	}
 
 	MdlcAssetHeader Header = MdlcData->GetAssetHeader();
-	
+
 	int64 WrittenBytes = 0;
 	WrittenBytes += AppendData(Data, &WrittenBytes, sizeof(WrittenBytes));
 	WrittenBytes += AppendData(Data, &Header, sizeof(Header));
@@ -188,6 +188,59 @@ int64 AppendDataFromMdlcAsset(
 
 	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(WrittenBytes),
 		&WrittenBytes, sizeof(WrittenBytes));
+
+	return WrittenBytes;
+}
+
+int64 AppendDataFromRenderAnim(SS::PooledList<byte>& Data, const RenderAnimRawData* AnimData)
+{
+	const int32 TrackCnt = AnimData->_Header.TrackCnt;
+	SS_ASSERT(TrackCnt == AnimData->_Tracks.GetSize());
+
+	const int64 OriginalDataSize = Data.GetSize();
+
+
+	int64 WrittenBytes = 0;
+	WrittenBytes += AppendData(Data, &WrittenBytes, sizeof(WrittenBytes));
+	// 1. 전체 데이터 사이즈를 우선 0으로 적어줍니다.
+
+	WrittenBytes += AppendData(Data, &AnimData->_Header, sizeof(AnimDataHeader));
+	// 2. 헤더 적어주기
+
+
+	SS::PooledList<SS::SHasherW> TrackNames(TrackCnt);
+
+	for (int32 i = 0; i < TrackCnt; i++)
+	{
+		SS::SHasherW TrackNameItem = AnimData->_Tracks[i]._TrackName;
+		SS_ASSERT(TrackNameItem.IsEmpty() == false);
+		TrackNames.PushBack(TrackNameItem);
+	}
+
+	WrittenBytes += AppendDataFromHashers(Data, TrackNames);
+	// 3. 트랙 이름들
+
+	for (int32 iTrack = 0; iTrack < TrackCnt; iTrack++)
+	{
+		const RKFTrack& Track = AnimData->_Tracks[iTrack];
+		const int32 TrackItemCnt = Track._TrackItems.GetSize();
+		RKFTrackItem* TrackItemsRaw = Track._TrackItems.GetData();
+
+
+		WrittenBytes += AppendData(Data, &TrackItemCnt, sizeof(TrackItemCnt));
+		// 4. 각 트랙 카운트
+
+
+		const int32 DataSize = sizeof(RKFTrackItem) * TrackItemCnt;
+		WrittenBytes += AppendData(Data, &TrackItemsRaw, DataSize);
+		// 5. 각 트랙 데이터
+	}
+
+
+	const int64 CurDataSize = Data.GetSize();
+	SS_ASSERT(WrittenBytes == CurDataSize - OriginalDataSize);
+	memcpy_s(Data.GetData() + OriginalDataSize, sizeof(WrittenBytes), &WrittenBytes, sizeof(WrittenBytes));
+	// 6. 실제로 적어낸 데이터 사이즈를 다시 기입해줍니다.
 
 	return WrittenBytes;
 }
@@ -247,8 +300,8 @@ int64 FillMeshBoneDataWithHeader(MeshRawDataSkinned* MeshDataToFill, const SS::P
 
 
 int64 FillMeshAssetHeaaderOnly(
-	MeshRawDataDefault*& InOutMeshRawData, 
-	const SS::PooledList<byte>& Data, 
+	MeshRawDataDefault*& InOutMeshRawData,
+	const SS::PooledList<byte>& Data,
 	int64 Offset)
 {
 	int64 OriginalOffset = Offset;
@@ -262,7 +315,7 @@ int64 FillMeshAssetHeaaderOnly(
 
 	SS_ASSERT(
 		VertexDataSize ==
-		sizeof(int64) + 
+		sizeof(int64) +
 		EachVertexSizeOfType(DecodedHeader.MeshType) * DecodedHeader.vertexCnt +
 		sizeof(uint32) * DecodedHeader.wholeIndexDataCnt +
 		sizeof(MeshRawDataVertexHeader));
@@ -315,6 +368,59 @@ int64 FillMeshRawDataFromData(
 
 	int64 WrittenBytes = Offset - OriginalOffset;
 	return WrittenBytes;
+}
+
+int64 FillRenderAnimFromData(RenderAnimRawData*& OutAnimData, const SS::PooledList<byte>& Data, int64 Offset)
+{
+	if (OutAnimData != nullptr)
+	{
+		SS_INTERRUPT();
+	}
+	RenderAnimRawData* AnimDataToFill = DBG_NEW RenderAnimRawData;
+	OutAnimData = AnimDataToFill;
+
+
+	const int64 OriginalOffset = Offset;
+
+
+	int64 WholeAnimDataSize = 0;
+	Offset += FillMemoryFromData(&WholeAnimDataSize, sizeof(WholeAnimDataSize), Data, Offset);
+	// 1. 전체 데이터 사이즈
+	Offset += FillMemoryFromData(&AnimDataToFill->_Header, sizeof(AnimDataToFill->_Header), Data, Offset);
+	// 2. 트랙 헤더
+
+	SS::PooledList<SS::SHasherW> TrackNames;
+	Offset += FillHashersFromData(TrackNames, Data, Offset);
+	// 3. 트랙 이름들 읽어오기
+
+	if (AnimDataToFill->_Header.TrackCnt != TrackNames.GetSize()) SS_INTERRUPT();
+	const int32 TrackCnt = AnimDataToFill->_Header.TrackCnt;
+
+	AnimDataToFill->_Tracks.Resize(TrackCnt);
+	for (int32 i=0;i<TrackCnt;i++)
+	{
+		AnimDataToFill->_Tracks[i]._TrackName = TrackNames[i];
+		// 3. 트랙 이름들 채우기
+	}
+
+
+	for (int32 i = 0; i < TrackCnt; i++)
+	{
+		int32 TrackItemCnt;
+		Offset += FillMemoryFromData(&TrackItemCnt, sizeof(TrackItemCnt), Data, Offset);
+		// 4. 각 트랙 카운트 읽어오기
+
+		RKFTrack& ThisTrack = AnimDataToFill->_Tracks[i];
+		ThisTrack._TrackItems.SetSizeDirectly(TrackItemCnt);
+		RKFTrackItem* TrackItemsRaw = ThisTrack._TrackItems.GetData();
+
+		const int32 DataSize = TrackItemCnt * sizeof(RKFTrackItem);
+		Offset += FillMemoryFromData(TrackItemsRaw, DataSize, Data, Offset);
+		// 5. 각 트랙 데이터 채우기
+	}
+
+	if (Offset - OriginalOffset != WholeAnimDataSize) SS_INTERRUPT();
+	return Offset - OriginalOffset;
 }
 
 int64 AppendApakDataFromAssetList(
@@ -394,7 +500,7 @@ int64 AppendApakDataFromAssetList(
 			IModelCombinationAsset* MdlcAssetItem = static_cast<IModelCombinationAsset*>(AssetItem);
 			WrittenByteItem = AppendDataFromMdlcAsset(
 				Data,
-				MdlcAssetItem, 
+				MdlcAssetItem,
 				MdlcChildNameSpaceReplaced,
 				MdlcChildNameSpaceToReplace);
 		}
@@ -489,11 +595,11 @@ int64 CreateAssetsFromApakData(
 }
 
 int64 CreateMeshAssetFromData(
-	IMeshAsset*& OutMeshAsset, 
-	SS::SHasherW AssetName, 
+	IMeshAsset*& OutMeshAsset,
+	SS::SHasherW AssetName,
 	SS::SHasherW AssetPath,
 	SS::SHasherW AssetNamespace,
-	const SS::PooledList<byte>& Data, 
+	const SS::PooledList<byte>& Data,
 	int Offset)
 {
 	// 껍데기만 만들고

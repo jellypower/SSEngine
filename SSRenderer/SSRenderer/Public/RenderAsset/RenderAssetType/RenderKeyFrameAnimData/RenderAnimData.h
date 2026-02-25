@@ -5,8 +5,8 @@
 struct AnimDataHeader
 {
 	int32 TrackCnt = 0;
+	float KeyFrameDuration = 0;
 
-	int32 PAD01 = 0;
 	int64 PAD02 = 0;
 	int64 PAD03 = 0;
 	int64 PAD04 = 0;
@@ -23,5 +23,4 @@ struct RenderAnimRawData
 {
 	AnimDataHeader _Header;
 	SS::PooledList<RKFTrack> _Tracks;
-	float _KeyFrameDuration = 0;
 };

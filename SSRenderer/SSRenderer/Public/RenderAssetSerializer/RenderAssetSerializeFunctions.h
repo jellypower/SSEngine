@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
 
+struct RenderAnimRawData;
 class IModelCombinationAssetMutable;
 class IApakFileReader;
 class IMeshAsset;
@@ -27,6 +28,10 @@ SSRENDERER_MODULE int64 AppendDataFromMdlcAsset(
 	SS::SHasherW MdlcChildNameSpaceReplaced,
 	SS::SHasherW MdlcChildNameSpaceToReplace);
 
+SSRENDERER_MODULE int64 AppendDataFromRenderAnim(
+	SS::PooledList<byte>& Data,
+	const RenderAnimRawData* AnimData);
+
 
 SSRENDERER_MODULE int64 FillMeshAssetHeaaderOnly(
 	MeshRawDataDefault*& InOutMeshRawData,
@@ -37,6 +42,12 @@ SSRENDERER_MODULE int64 FillMeshRawDataFromData(
 	MeshRawDataDefault*& InOutMeshRawData,
 	const SS::PooledList<byte>& Data,
 	int64 Offset = 0);
+
+SSRENDERER_MODULE int64 FillRenderAnimFromData(
+	RenderAnimRawData*& OutAnimData,
+	const SS::PooledList<byte>& Data,
+	int64 Offset = 0);
+
 
 
 SSRENDERER_MODULE int64 AppendApakDataFromAssetList(

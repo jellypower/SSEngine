@@ -8,7 +8,7 @@ Transform EvaluateRenderKFTransform(const RenderAnimRawData* AnimRawData, int32 
 	const RKFTrack& Track = AnimRawData->_Tracks[TrackIdx];
 	const int32 TrackItemCnt = Track._TrackItems.GetSize();
 
-	const float Duration = AnimRawData->_KeyFrameDuration;
+	const float Duration = AnimRawData->_Header.KeyFrameDuration;
 
 	float CurTimeRatio = CurTime / Duration;
 	CurTimeRatio = CurTimeRatio < 0 ? 0 : CurTimeRatio; // clamp01

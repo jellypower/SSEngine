@@ -1,14 +1,14 @@
 ﻿#include "pch.h"
-
 #include "MeshSerializeTest.h"
 
-#include <SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h>
-
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IModelCombinationAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IRenderAnimAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
@@ -87,4 +87,61 @@ void MdlcSerializeTest(IRenderer* InRenderer, SS::SHasherW MdlcToTest)
 	}
 
 	delete CreatedMdlcAsset;
+}
+
+void RenderAnimSerializeTest(IRenderer* InRenderer, SS::SHasherW RenderAnimToTest)
+{
+	IAssetManagerMutable* AssetManager = InRenderer->GetMutableAssetManager();
+	IRenderAnimAssetMutable* AnimAsset = AssetManager->FindAssetByName<IRenderAnimAssetMutable>(RenderAnimToTest);
+
+	SS::PooledList<byte> Data;
+	Data.Reserve(1024);
+
+	const RenderAnimRawData* OriginalRenderAnimData = AnimAsset->GetKeyFrameAnimData();
+	int64 WrittenBytes = AppendDataFromRenderAnim(Data, AnimAsset->GetKeyFrameAnimData());
+	SS_ASSERT(WrittenBytes > 0);
+
+	RenderAnimRawData* NewRenderAnimData = nullptr;
+	int64 ReadBytes = FillRenderAnimFromData(NewRenderAnimData, Data);
+	SS_ASSERT(ReadBytes > 0);
+
+	SS_ASSERT(WrittenBytes == ReadBytes);
+
+	{
+		SS_ASSERT(OriginalRenderAnimData->_Header.KeyFrameDuration == NewRenderAnimData->_Header.KeyFrameDuration);
+		SS_ASSERT(OriginalRenderAnimData->_Header.TrackCnt == NewRenderAnimData->_Header.TrackCnt);
+
+		const int32 TrackCnt = NewRenderAnimData->_Header.TrackCnt;
+		for (int32 i = 0; i < TrackCnt; i++)
+		{
+			const RKFTrack& OriginalTrack = OriginalRenderAnimData->_Tracks[i];
+			const RKFTrack& NewTrack = NewRenderAnimData->_Tracks[i];
+
+			SS_ASSERT(OriginalTrack._TrackName == NewTrack._TrackName);
+			SS_ASSERT(OriginalTrack._TrackItems.GetSize() == NewTrack._TrackItems.GetSize());
+
+			const int32 TrackItemCnt = OriginalTrack._TrackItems.GetSize();
+			for (int32 j = 0; j < TrackItemCnt; j++)
+			{
+				const RKFTrackItem& OriginalTrackItem = OriginalTrack._TrackItems[j];
+				const RKFTrackItem& NewTrackItem = OriginalTrack._TrackItems[j];
+
+				SS_ASSERT(OriginalTrackItem._TimeRatio == NewTrackItem._TimeRatio);
+				SS_ASSERT(OriginalTrackItem._Method == NewTrackItem._Method);
+				SS_ASSERT(OriginalTrackItem._Padding == NewTrackItem._Padding);
+
+				bool bResult = XMAlmostEqual(
+					OriginalTrackItem._Transform.Scale.SimdVec, NewTrackItem._Transform.Scale.SimdVec);
+				SS_ASSERT(bResult);
+				bResult = XMAlmostEqual(
+					OriginalTrackItem._Transform.Rotation.SimdVec, NewTrackItem._Transform.Rotation.SimdVec);
+				SS_ASSERT(bResult);
+				bResult = XMAlmostEqual(
+					OriginalTrackItem._Transform.Position.SimdVec, NewTrackItem._Transform.Position.SimdVec);
+				SS_ASSERT(bResult);
+			}
+		}
+	}
+
+	delete NewRenderAnimData;
 }

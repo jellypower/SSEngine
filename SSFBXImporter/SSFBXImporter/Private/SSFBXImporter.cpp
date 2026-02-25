@@ -522,7 +522,8 @@ void SSFBXImporter::GenerateImportedRenderAnimAssets()
 
 		RenderAnimRawData* NewRawData = DBG_NEW RenderAnimRawData();
 		NewRawData->_Tracks.Reserve(frameCnt);
-		NewRawData->_KeyFrameDuration = frameEndSeconds - frameStartSeconds;
+		NewRawData->_Header.TrackCnt = ChildCnt;
+		NewRawData->_Header.KeyFrameDuration = frameEndSeconds - frameStartSeconds;
 
 
 		NewRenderAnimAsset->SetOriginMdlcAsset(OriginalMdlcAsset);

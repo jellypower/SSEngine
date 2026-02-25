@@ -123,6 +123,14 @@ void SSEditor::StartupEngine()
 			MdlcSerializeTest(_Renderer, MdlcAssetItemPair.first);
 		}
 
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& RenderAnimMap =
+			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::RenderAnim);
+
+		for (const SS::pair<SS::SHasherW, IAssetBase*>& RenderAnimAssetItemPair : RenderAnimMap)
+		{
+			RenderAnimSerializeTest(_Renderer, RenderAnimAssetItemPair.first);
+		}
+
 	}
 	// ~DEBUG
 
