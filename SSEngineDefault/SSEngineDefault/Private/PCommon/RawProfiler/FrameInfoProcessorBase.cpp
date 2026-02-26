@@ -68,7 +68,7 @@ void FrameInfoProcessorBase::BeginMainProfile(SS::SHasherW RecordItemName)
 {
 	SS_ASSERT(SSThreadUtil::IsInMainThread());
 
-	ProfileNameTickCntPair LastProfile = GetLastProfile();
+	ProfileNameTickCntPair LastProfile = GetProfStackTop();
 	SS::StringW NameConcat = LastProfile.Name.C_Str();
 
 	NameConcat += L"/";
@@ -88,21 +88,21 @@ void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 {
 	SS_ASSERT(SSThreadUtil::IsInMainThread());
 
-	ProfileNameTickCntPair LastProfile = GetLastProfile();
+	const ProfileNameTickCntPair& ProfStackTop = GetProfStackTop();
 
-	const utf16* LastProfileNameRaw = LastProfile.Name.C_Str();
-	const int32 LastProfileNameStrLen = LastProfile.Name.GetStrLen();
+	const utf16* ProfStackTopNameRaw = ProfStackTop.Name.C_Str();
+	const int32 ProfStackTopNameStrLen = ProfStackTop.Name.GetStrLen();
 
 	const utf16* RecordItemNameRaw = RecordItemName.C_Str();
 	const int32 RecordItemNameStrLen = RecordItemName.GetStrLen();
 
-	if (LastProfileNameStrLen <= RecordItemNameStrLen)
+	if (ProfStackTopNameStrLen <= RecordItemNameStrLen)
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	int32 CmpResult = wcscmp(LastProfileNameRaw + LastProfileNameStrLen - RecordItemNameStrLen, RecordItemNameRaw);
+	int32 CmpResult = wcscmp(ProfStackTopNameRaw + ProfStackTopNameStrLen - RecordItemNameStrLen, RecordItemNameRaw);
 	if (CmpResult != 0)
 	{
 		SS_ASSERT(false);
@@ -113,14 +113,36 @@ void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 	// TODO: Lock?
 	{
 		_ProfilingNameStack.PopBack();
+
 		const uint64 NewTickCnt = GetPerofrmanceCounter();
-		_ProfileInProgressResult.PushBack(
-			{ LastProfile.Name, LastProfile.TickCnt, NewTickCnt }
-		);
+
+		int32 ProfLastIdx = _ProfileInProgressResult.GetSize() - 1;
+		if (ProfLastIdx >= 0)
+		{
+			ProfileResultItem& ProfLastItem = _ProfileInProgressResult[ProfLastIdx];
+
+			if (ProfLastItem.Name == ProfStackTop.Name) // 갱신만 함
+			{
+				ProfLastItem.TickEnd = NewTickCnt;
+			}
+			else
+			{
+				_ProfileInProgressResult.PushBack(
+					{ ProfStackTop.Name, ProfStackTop.TickCnt, NewTickCnt }
+				);
+			}
+		}
+		else
+		{
+			_ProfileInProgressResult.PushBack(
+				{ ProfStackTop.Name, ProfStackTop.TickCnt, NewTickCnt }
+			);
+		}
+
 	}
 }
 
-ProfileNameTickCntPair FrameInfoProcessorBase::GetLastProfile() const
+ProfileNameTickCntPair FrameInfoProcessorBase::GetProfStackTop() const
 {
 	int64 LastIdx = _ProfilingNameStack.GetSize() - 1;
 	if (LastIdx == -1)

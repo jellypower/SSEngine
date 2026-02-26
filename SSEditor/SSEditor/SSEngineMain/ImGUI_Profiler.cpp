@@ -128,7 +128,7 @@ void ImGUI_Profiler::CopyProfilerResultToClipboard()
 		ResultIdx = CopyCaptureToClipboard_Recursion(ResultIdx, _ConsumedTickCapture, 0);
 	}
 
-	int a = 0;
+	SS_ASSERT(false); // HACK:
 }
 
 int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, int32 Depth)
@@ -177,7 +177,7 @@ int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int
 
 void ImGUI_Profiler::OverFrameAutoCapture()
 {
-	ImGui::Checkbox("Draw Debug Pose", &_bOverFrameAutoCapture);
+	ImGui::Checkbox("Auto Frame Capture", &_bOverFrameAutoCapture);
 
 	if (_bOverFrameAutoCapture == false)
 	{

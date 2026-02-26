@@ -383,7 +383,7 @@ void SSRenderer::PerFrame()
 
 			// Shadow Map Draw
 			{
-				SCOPE_PROFILE(DrawShadowMap);
+				SCOPE_PROFILE(ShadowPass);
 				for (IRenderLight* LightItem : _RenderLightsToDraw)
 				{
 					if (LightItem->IsShadowMapEnabled() == false)
@@ -392,12 +392,12 @@ void SSRenderer::PerFrame()
 					}
 
 					_MainDeviceContext->BeginDrawShadowMap(LightItem);
-
-					for (IRenderInstance* ShadowCastingInstance : _RenderInstancesToDraw)
 					{
-						_MainDeviceContext->DrawShadow(ShadowCastingInstance);
+						for (IRenderInstance* ShadowCastingInstance : _RenderInstancesToDraw)
+						{
+							_MainDeviceContext->DrawShadow(ShadowCastingInstance);
+						}
 					}
-
 					_MainDeviceContext->EndDrawShadowMap();
 				}
 			}
@@ -409,9 +409,11 @@ void SSRenderer::PerFrame()
 
 			// Default Render Target
 			{
-				SCOPE_PROFILE(DrawMesh);
+				SCOPE_PROFILE(MeshPass);
 
 				{
+					SCOPE_PROFILE(RB_ToRT);
+
 					_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::CopySrc, EResourceStateType::RenderTarget);
 
 					_MainDeviceContext->ResourceBarrier(_RTGBufferNormal, EResourceStateType::Common, EResourceStateType::RenderTarget);
@@ -422,6 +424,7 @@ void SSRenderer::PerFrame()
 				}
 
 				{
+					SCOPE_PROFILE(ClearRT);
 					_MainDeviceContext->ClearRenderTarget(_RTGBufferNormal, Vector4f::Zero);
 					_MainDeviceContext->ClearRenderTarget(_RTGBufferAlbedo, Vector4f::Zero);
 					_MainDeviceContext->ClearRenderTarget(_RTGBufferWorldPos, Vector4f::Zero);
@@ -434,6 +437,7 @@ void SSRenderer::PerFrame()
 				}
 
 
+
 				GALRenderTarget* RenderTargets[RT_NUM_MAX] = { nullptr, };
 				RenderTargets[0] = _RTGBufferNormal;
 				RenderTargets[1] = _RTGBufferAlbedo;
@@ -443,15 +447,20 @@ void SSRenderer::PerFrame()
 				RenderTargets[5] = _PixelPickerRenderTarget;
 				_MainDeviceContext->SetRenderTarget(6, RenderTargets, _DSVRenderTarget);
 
-				// TODO: BeginDrawMesh ¶û EndDrawMesh ¸¸µé±â
+
 				_MainDeviceContext->BeginDrawMesh();
-				for (IRenderInstance* Item : _RenderInstancesToDraw)
 				{
-					_MainDeviceContext->DrawMesh(Item);
+					SCOPE_PROFILE(DrawMeshes);
+					for (IRenderInstance* Item : _RenderInstancesToDraw)
+					{
+						_MainDeviceContext->DrawMesh(Item);
+					}
 				}
 				_MainDeviceContext->EndDrawMesh();
 
+
 				{
+					SCOPE_PROFILE(RB_ToUse);
 					_MainDeviceContext->ResourceBarrier(_PixelPickerRenderTarget, EResourceStateType::RenderTarget, EResourceStateType::CopySrc);
 
 					_MainDeviceContext->ResourceBarrier(_RTGBufferNormal, EResourceStateType::RenderTarget, EResourceStateType::Common);

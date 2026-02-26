@@ -255,6 +255,7 @@ bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAssetMutable*
 
 void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance)
 {
+	SCOPE_PROFILE(GenGALRIMetadata);
 	ERenderInstanceType RIType = InRenderInstance->GetRIType();
 
 	if (RIType == ERenderInstanceType::StaticMesh)
@@ -466,6 +467,7 @@ void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget
 
 void DX12GALRenderDeviceContext::SetPSOAndRootSignature(const PipelineDesc& InPSODesc)
 {
+	SCOPE_PROFILE(Set_PSO_RS);
 	if (_LastSetPSO == InPSODesc)
 	{
 		return;
@@ -481,14 +483,19 @@ void DX12GALRenderDeviceContext::SetPSOAndRootSignature(const PipelineDesc& InPS
 	const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(InPSODesc.RootSignatureType);
 	const DX12RootSignatureWrapper* lDX12RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignatureWrapper;
 
-	CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
-	CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
+	{
+		SCOPE_PROFILE(DX12_SetPSO_RS);
+		CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
+		CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
+	}
+
 }
 
 
 void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets,
                                                  GALRenderTarget* InDepthStencilView)
 {
+	SCOPE_PROFILE(SetRT);
 	if (NumRenderTargets > RT_NUM_MAX)
 	{
 		SS_ASSERT(false);
@@ -723,6 +730,7 @@ void DX12GALRenderDeviceContext::BeginDrawMesh()
 
 void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 {
+	SCOPE_PROFILE(DrawMeshItem);
 	if (_TaskPhase != ERenderDeviceTaskPhase::DrawMesh)
 	{
 		SS_INTERRUPT();
@@ -980,6 +988,7 @@ void DX12GALRenderDeviceContext::Present(GALRenderTarget* SwapChainToPresent)
 
 void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 {
+	SCOPE_PROFILE(DrawShadowItem);
 	if (InRenderInstance->GetGALMetadata() == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
@@ -1009,6 +1018,7 @@ void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 
 void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat)
 {
+	SCOPE_PROFILE(Draw_SM);
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
@@ -1104,6 +1114,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {
+	SCOPE_PROFILE(Draw_SKM);
 	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
@@ -1205,6 +1216,7 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat,
                                                       const XMMATRIX& DrawRotMat)
 {
+	SCOPE_PROFILE(DrawShadow_SM);
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SM*>(RIToDraw->GetGALMetadata());
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
@@ -1265,6 +1277,7 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
 void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {
+	SCOPE_PROFILE(DrawShadow_SKM);
 	DX12GALRIMetadata_SKM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();

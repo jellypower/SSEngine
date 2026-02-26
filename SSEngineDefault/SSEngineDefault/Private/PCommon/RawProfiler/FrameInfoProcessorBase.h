@@ -29,6 +29,6 @@ public:
 	virtual void EndMainProfile(SS::SHasherW RecordItemName) override;
 
 private:
-	ProfileNameTickCntPair GetLastProfile() const;
+	ProfileNameTickCntPair GetProfStackTop() const;
 };
 
