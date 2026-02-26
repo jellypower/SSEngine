@@ -19,19 +19,23 @@ public:
 	void PerFrame();
 
 private:
-	void FrameOutline();
+	void Show_FrameOutline();
 
 
 private:
-	void ProfileDetail();
+	void Show_ProfileDetail();
 
-	void ShowProfileResultCapture();
-	int ShowProfilerItem_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, bool bShow);
+
+
+	void Show_ProfileResultCapture();
+	int Show_ProfilerItem_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, bool bShow);
 
 	void CopyProfilerResultToClipboard();
 	int CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, int Depth);
 
 
+private:
+	void CaptureFrame();
 	void OverFrameAutoCapture();
 
 };

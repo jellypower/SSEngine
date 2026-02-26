@@ -9,13 +9,13 @@ void ImGUI_Profiler::PerFrame()
 {
 	ImGui::Begin("Profiler");
 	{
-		FrameOutline();
-		ProfileDetail();
+		Show_FrameOutline();
+		Show_ProfileDetail();
 	}
 	ImGui::End();
 }
 
-void ImGUI_Profiler::FrameOutline()
+void ImGUI_Profiler::Show_FrameOutline()
 {
 	if (ImGui::CollapsingHeader("Frame Outline"))
 	{
@@ -25,20 +25,18 @@ void ImGUI_Profiler::FrameOutline()
 	}
 }
 
-void ImGUI_Profiler::ProfileDetail()
+void ImGUI_Profiler::Show_ProfileDetail()
 {
 	if (ImGui::CollapsingHeader("Capture Profile"))
 	{
 		ImGui::NewLine();
 		if (ImGui::Button("Capture"))
 		{
-			_ConsumedTickCapture = g_FrameInfoProcessor->GetDeltaTick();
-			_FrequencyCapture = GetPerformanceFrequency();
-			_ProfileResultCapture = g_FrameInfoProcessor->GetLastProfileResult();
+			CaptureFrame();
 		}
 
 		ImGui::NewLine();
-		ShowProfileResultCapture();
+		Show_ProfileResultCapture();
 
 
 		ImGui::Separator();
@@ -52,16 +50,16 @@ void ImGUI_Profiler::ProfileDetail()
 	}
 }
 
-void ImGUI_Profiler::ShowProfileResultCapture()
+void ImGUI_Profiler::Show_ProfileResultCapture()
 {
 	int32 ResultIdx = _ProfileResultCapture.GetSize() - 1;
 	while (ResultIdx >= 0)
 	{
-		ResultIdx = ShowProfilerItem_Recursion(ResultIdx, _ConsumedTickCapture, true);
+		ResultIdx = Show_ProfilerItem_Recursion(ResultIdx, _ConsumedTickCapture, true);
 	}
 }
 
-int ImGUI_Profiler::ShowProfilerItem_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, bool bShow)
+int ImGUI_Profiler::Show_ProfilerItem_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, bool bShow)
 {
 	bool bIsTreeNodeOpen = false;
 	const ProfileResultItem& Item = _ProfileResultCapture[ProfileResultIdx];
@@ -84,22 +82,27 @@ int ImGUI_Profiler::ShowProfilerItem_Recursion(int32 ProfileResultIdx, int64 Par
 		bIsTreeNodeOpen = ImGui::TreeNodeEx(_u8StrWorkTable,
 			ImGuiTreeNodeFlags_SpanLabelWidth |
 			ImGuiTreeNodeFlags_OpenOnArrow |
-			ImGuiTreeNodeFlags_Selected |
-			ImGuiTreeNodeFlags_DefaultOpen);
+			ImGuiTreeNodeFlags_Selected);
 	}
 
 	int NextIdx = ProfileResultIdx - 1;
 	while (NextIdx >= 0)
 	{
 		SS::SHasherW NextProfileName = _ProfileResultCapture[NextIdx].Name;
+		if (NextProfileName == ItemProfileName)
+		{
+			break; // 같은놈이면 자식이라고 생각 안하고 다음으로 넘어가게 한다.
+		}
+
 		int Result = wcsncmp(
 			NextProfileName.C_Str(),
 			ItemProfileName.C_Str(), ItemProfileName.GetStrLen());
 
 		if (Result == 0)
 		{
-			// 자기 자신이 안보이거나, 트리가 닫혀있으면 그 순간부터 모든 자식들은 카운트만 세고 보여지면 안됨.
-			NextIdx = ShowProfilerItem_Recursion(NextIdx, ItemConsumedTick, bShow && bIsTreeNodeOpen);
+			// bShow && bIsTreeNodeOpen -> 자기 자신이 안보이거나, 트리가 닫혀있으면 그 순간부터 모든 자식들은 카운트만 세고 보여지면 안됨.
+			// 만약 NextProfileName와 네임스페이스가 겹치면 자식이니까 안으로 들어간다.
+			NextIdx = Show_ProfilerItem_Recursion(NextIdx, ItemConsumedTick, bShow && bIsTreeNodeOpen);
 		}
 		else
 		{
@@ -158,6 +161,11 @@ int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int
 	while (NextIdx >= 0)
 	{
 		SS::SHasherW NextProfileName = _ProfileResultCapture[NextIdx].Name;
+		if (NextProfileName == ItemProfileName)
+		{
+			break; // 같은놈이면 자식이라고 생각 안하고 다음으로 넘어가게 한다.
+		}
+
 		int Result = wcsncmp(
 			NextProfileName.C_Str(),
 			ItemProfileName.C_Str(), ItemProfileName.GetStrLen());
@@ -173,6 +181,13 @@ int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int
 	}
 
 	return NextIdx;
+}
+
+void ImGUI_Profiler::CaptureFrame()
+{
+	_ConsumedTickCapture = g_FrameInfoProcessor->GetDeltaTick();
+	_FrequencyCapture = GetPerformanceFrequency();
+	_ProfileResultCapture = g_FrameInfoProcessor->GetLastProfileResult();
 }
 
 void ImGUI_Profiler::OverFrameAutoCapture()
@@ -191,6 +206,7 @@ void ImGUI_Profiler::OverFrameAutoCapture()
 		return;
 	}
 
+	_bOverFrameAutoCapture = false; // If Captured once, It disabled.
 	_ConsumedTickCapture = g_FrameInfoProcessor->GetDeltaTick();
 	_FrequencyCapture = GetPerformanceFrequency();
 	_ProfileResultCapture = g_FrameInfoProcessor->GetLastProfileResult();

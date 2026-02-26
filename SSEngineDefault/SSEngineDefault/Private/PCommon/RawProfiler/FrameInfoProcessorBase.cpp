@@ -115,30 +115,9 @@ void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 		_ProfilingNameStack.PopBack();
 
 		const uint64 NewTickCnt = GetPerofrmanceCounter();
-
-		int32 ProfLastIdx = _ProfileInProgressResult.GetSize() - 1;
-		if (ProfLastIdx >= 0)
-		{
-			ProfileResultItem& ProfLastItem = _ProfileInProgressResult[ProfLastIdx];
-
-			if (ProfLastItem.Name == ProfStackTop.Name) // 갱신만 함
-			{
-				ProfLastItem.TickEnd = NewTickCnt;
-			}
-			else
-			{
-				_ProfileInProgressResult.PushBack(
-					{ ProfStackTop.Name, ProfStackTop.TickCnt, NewTickCnt }
-				);
-			}
-		}
-		else
-		{
-			_ProfileInProgressResult.PushBack(
-				{ ProfStackTop.Name, ProfStackTop.TickCnt, NewTickCnt }
-			);
-		}
-
+		_ProfileInProgressResult.PushBack(
+			{ ProfStackTop.Name, ProfStackTop.TickCnt, NewTickCnt }
+		);
 	}
 }
 
