@@ -7,4 +7,5 @@ int32 ProfileResultItemToU16(
 	const ProfileResultItem& Item,
 	uint64 FrameDeltaTick, 
 	uint64 FrameFrequency,
-	uint64 ParentConsumedTick);
+	uint64 ParentConsumedTick,
+	bool bSimplify = false);

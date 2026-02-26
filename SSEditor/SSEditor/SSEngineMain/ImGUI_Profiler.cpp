@@ -75,7 +75,8 @@ int ImGUI_Profiler::Show_ProfilerItem_Recursion(int32 ProfileResultIdx, int64 Pa
 			Item,
 			_ConsumedTickCapture,
 			_FrequencyCapture,
-			ParentConsumedTick);
+			ParentConsumedTick,
+			true);
 		UTF16StrToUtf8Str(_u16StrWorkTable, WrittenWordCnt, _u8StrWorkTable, sizeof(_u8StrWorkTable));
 
 
