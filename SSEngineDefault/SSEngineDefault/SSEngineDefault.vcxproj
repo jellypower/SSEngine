@@ -167,6 +167,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
     <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h" />
+    <ClInclude Include="Public\SHasher\SHaserUtils.h" />
     <ClInclude Include="Public\SSThread\PWin32\SSThreadUtil_Win32.h" />
     <ClInclude Include="Public\SSThread\IThreadManager.h" />
     <ClInclude Include="Public\RawInput\IRawInputProcessor.h" />
@@ -246,6 +247,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PCommon\CommonSerializer\DefaultTypeSerializsers.cpp" />
     <ClCompile Include="Private\PCommon\SystemUtilities.cpp" />
     <ClCompile Include="Private\PWin32\SSThread\SSThreadUtil_Win32.cpp" />
+    <ClCompile Include="Private\PCommon\SHasher\SHaserUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

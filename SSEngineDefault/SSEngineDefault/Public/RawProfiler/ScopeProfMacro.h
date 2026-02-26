@@ -15,6 +15,9 @@
 	static const SS::SHasherW UNIQUE_NAME(__ProfName_) = L#NAME; \
 	ScopedProfile UNIQUE_NAME(__Prof_)(UNIQUE_NAME(__ProfName_))
 
+#define SCOPE_PROFILE_INDEXED(NAME, IDX) \
+	ScopedProfileIndexed UNIQUE_NAME(__Prof_)(L#NAME, IDX)
+
 #else
 
 #define SCOPE_PROFILE(NAME)

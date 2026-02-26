@@ -730,7 +730,7 @@ void DX12GALRenderDeviceContext::BeginDrawMesh()
 
 void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 {
-	SCOPE_PROFILE(DrawMeshItem);
+	SCOPE_PROFILE_INDEXED(DrawMeshItem, InRenderInstance->GetGameObjectID().GetNativeValue());
 	if (_TaskPhase != ERenderDeviceTaskPhase::DrawMesh)
 	{
 		SS_INTERRUPT();
