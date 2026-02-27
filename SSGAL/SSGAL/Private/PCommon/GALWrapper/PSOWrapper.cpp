@@ -5,6 +5,8 @@
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 #include "PSOWrapper.h"
 
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RAFileOutline/MeshRawDataHeaders.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
@@ -24,7 +26,11 @@ PSOWrapper::~PSOWrapper()
 PipelineDesc ConstructPSODescToDrawMesh(EMeshType InMeshType, EMaterialType InMtlType, int32 NumRenderTarget,
 	GALRenderTarget* const* InRenderTargets, GALRenderTarget* InDSV)
 {
+	SCOPE_PROFILE(PSOConstructUtil);
 	PipelineDesc NewPipelineDesc;
+
+//	static const SS::SHasherW VS_SMToDefaultPSInput("VS_SMToDefaultPSInput");
+//	static const SS::SHasherW VS_SKMToDefaultPSInput("VS_SKMToDefaultPSInput");
 
 	switch (InMeshType)
 	{

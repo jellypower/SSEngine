@@ -12,7 +12,7 @@ private:
 	utf16 _u16StrWorkTable[1024] = { 0, };
 	utf8 _u8StrWorkTable[1024] = { 0, };
 
-
+	bool _bIsProfileEnabled = false;
 	bool _bOverFrameAutoCapture = false;
 
 public:
@@ -35,7 +35,7 @@ private:
 
 
 private:
-	void CaptureFrame();
+	void CaptureLastProfile();
 	void OverFrameAutoCapture();
 
 };

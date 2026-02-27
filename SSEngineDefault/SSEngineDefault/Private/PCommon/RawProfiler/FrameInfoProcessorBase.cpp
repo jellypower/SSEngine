@@ -11,6 +11,11 @@ const SS::PooledList<ProfileResultItem> FrameInfoProcessorBase::GetLastProfileRe
 	return _LastProfileResult;
 }
 
+bool FrameInfoProcessorBase::IsProfileEnabled() const
+{
+	return _bIsProfileEnabled;
+}
+
 void FrameInfoProcessorBase::StartUpXXX()
 {
 	_ProfilingNameStack.Reserve(128);
@@ -30,9 +35,6 @@ void FrameInfoProcessorBase::PerFrameXXX()
 
 	_PrevFrameStartTick = _FrameStartTick;
 	_FrameStartTick = GetPerofrmanceCounter();
-
-	_LastProfileResult = _ProfileInProgressResult;
-	_ProfileInProgressResult.Clear();
 
 	_deltaTick = _FrameStartTick - _PrevFrameStartTick;
 
@@ -54,6 +56,30 @@ void FrameInfoProcessorBase::PerFrameXXX()
 		_frameCntDuringInFPSCheckterval = 0;
 	}
 
+	// Profiling
+	{
+		if (_bIsProfileEnabled)
+		{
+			_LastProfileResult = _ProfileInProgressResult;
+			_ProfileInProgressResult.Clear();
+		}
+
+		if (_atomic_ProfileEnableReseve != 0 && _atomic_ProfileEnableReseve != 1)
+		{
+			SS_INTERRUPT();
+		}
+
+		if (_bIsProfileEnabled && _atomic_ProfileEnableReseve == 0)
+		{
+			_bIsProfileEnabled = false;
+		}
+
+		if (_bIsProfileEnabled == false && _atomic_ProfileEnableReseve == 1)
+		{
+			_bIsProfileEnabled = true;
+		}
+	}
+
 
 	_elapsedTime += _deltaTime;
 }
@@ -67,6 +93,13 @@ void FrameInfoProcessorBase::ProcessWindowResizeXXX(uint32 width, uint32 height)
 void FrameInfoProcessorBase::BeginMainProfile(SS::SHasherW RecordItemName)
 {
 	SS_ASSERT(SSThreadUtil::IsInMainThread());
+	if (_bIsProfileEnabled == false)
+	{
+		return;
+	}
+
+	uint64 TickCnt = GetPerofrmanceCounter();
+
 
 	ProfileNameTickCntPair LastProfile = GetProfStackTop();
 	SS::StringW NameConcat = LastProfile.Name.C_Str();
@@ -79,7 +112,6 @@ void FrameInfoProcessorBase::BeginMainProfile(SS::SHasherW RecordItemName)
 
 	// TODO: Lock?
 	{
-		uint64 TickCnt = GetPerofrmanceCounter();
 		_ProfilingNameStack.PushBack({ NewName, TickCnt });
 	}
 }
@@ -87,6 +119,10 @@ void FrameInfoProcessorBase::BeginMainProfile(SS::SHasherW RecordItemName)
 void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 {
 	SS_ASSERT(SSThreadUtil::IsInMainThread());
+	if (_bIsProfileEnabled == false)
+	{
+		return;
+	}
 
 	const ProfileNameTickCntPair& ProfStackTop = GetProfStackTop();
 
@@ -119,6 +155,12 @@ void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 			{ ProfStackTop.Name, ProfStackTop.TickCnt, NewTickCnt }
 		);
 	}
+}
+
+void FrameInfoProcessorBase::RequestProfileEnable(bool bEnable)
+{
+	long TargetValue = bEnable ? 1 : 0;
+	_InterlockedExchange(&_atomic_ProfileEnableReseve, TargetValue);
 }
 
 ProfileNameTickCntPair FrameInfoProcessorBase::GetProfStackTop() const

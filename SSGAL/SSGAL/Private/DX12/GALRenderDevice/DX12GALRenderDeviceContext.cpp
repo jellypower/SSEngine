@@ -1044,7 +1044,6 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 	{
 		SCOPE_PROFILE(MeshBind);
 
-		CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawMesh(
 			EMeshType::Rigid,
 			EMaterialType::DefaultPBR,
@@ -1054,9 +1053,13 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 		SetPSOAndRootSignature(NewPipelineDesc);
 
 
-		CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
-		CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
-		CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+		{
+			SCOPE_PROFILE(DX12);
+			CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+			CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
+			CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+		}
 	}
 
 
@@ -1144,7 +1147,6 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 
 	{
 		SCOPE_PROFILE(MeshBind);
-		CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawMesh(
 			EMeshType::Skinned,
 			EMaterialType::DefaultPBR,
@@ -1154,9 +1156,13 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 		SetPSOAndRootSignature(NewPipelineDesc);
 
 		// Set Vertex Buffer and Mesh Transform, RenderEnv CB
-		CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
-		CurCommandList->SetGraphicsRootConstantBufferView(0, DX12SkinnedRIMetaData->_ModelCBGPUMemAddr);
-		CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+		{
+			SCOPE_PROFILE(DX12);
+			CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+			CurCommandList->SetGraphicsRootConstantBufferView(0, DX12SkinnedRIMetaData->_ModelCBGPUMemAddr);
+			CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+		}
 	}
 
 

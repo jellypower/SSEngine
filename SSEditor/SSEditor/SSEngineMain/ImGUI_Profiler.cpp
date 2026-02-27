@@ -30,9 +30,17 @@ void ImGUI_Profiler::Show_ProfileDetail()
 	if (ImGui::CollapsingHeader("Capture Profile"))
 	{
 		ImGui::NewLine();
+		if (ImGui::Button(_bIsProfileEnabled ? "Profile Enabled" : "Profile Disabled"))
+		{
+			_bIsProfileEnabled = !_bIsProfileEnabled;
+			g_FrameInfoProcessor->RequestProfileEnable(_bIsProfileEnabled);
+		}
+
+
+		ImGui::NewLine();
 		if (ImGui::Button("Capture"))
 		{
-			CaptureFrame();
+			CaptureLastProfile();
 		}
 
 		ImGui::NewLine();
@@ -184,7 +192,7 @@ int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int
 	return NextIdx;
 }
 
-void ImGUI_Profiler::CaptureFrame()
+void ImGUI_Profiler::CaptureLastProfile()
 {
 	_ConsumedTickCapture = g_FrameInfoProcessor->GetDeltaTick();
 	_FrequencyCapture = GetPerformanceFrequency();

@@ -48,7 +48,7 @@ public:
 
 public:
 	virtual const SS::PooledList<ProfileResultItem> GetLastProfileResult() const = 0;
-
+	virtual bool IsProfileEnabled() const = 0;
 
 public:
 	virtual void StartUpXXX() = 0;
@@ -57,5 +57,7 @@ public:
 
 	virtual void BeginMainProfile(SS::SHasherW RecordName) = 0;
 	virtual void EndMainProfile(SS::SHasherW RecordName) = 0;
+
+	virtual void RequestProfileEnable(bool bEnable) = 0;
 };
 

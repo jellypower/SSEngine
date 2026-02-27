@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 #include "SSEngineDefault/Public/SHasher/SHaserUtils.h"
 #include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/SHasher/SHasherW.h"
