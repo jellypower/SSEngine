@@ -246,7 +246,7 @@ void SSEditor::StartupEngine()
 
 void SSEditor::EnginePerFrame()
 {
-	SCOPE_PROFILE_INDEXED(Engine, SSFrameInfo::GetFrameCnt());
+	SCOPE_PROFILE(Engine);
 
 	{
 		SCOPE_PROFILE(BeginImGUI);

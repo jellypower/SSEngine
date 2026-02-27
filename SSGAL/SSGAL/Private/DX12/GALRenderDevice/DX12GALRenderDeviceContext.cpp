@@ -988,7 +988,7 @@ void DX12GALRenderDeviceContext::Present(GALRenderTarget* SwapChainToPresent)
 
 void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 {
-	SCOPE_PROFILE(DrawShadowItem);
+	SCOPE_PROFILE_INDEXED(DrawShadowItem, InRenderInstance->GetGameObjectID().GetNativeValue());
 	if (InRenderInstance->GetGALMetadata() == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);

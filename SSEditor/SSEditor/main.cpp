@@ -80,7 +80,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	g_hInst = hInstance;
 
 	// 2. ======================================================================
-	RunModuleEntryScriptPostInitWindow(g_hInst, g_hWnd, ENABLE_DEBUG_LAYER, ENABLE_GPU_BASE_VALIDATIION);
+	RunModuleEntryScriptPostInitWindow(g_hInst, g_hWnd, false, false);
 	// ======================================================================
 
 
