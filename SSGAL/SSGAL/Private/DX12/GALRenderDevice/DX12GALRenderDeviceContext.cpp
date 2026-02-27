@@ -737,25 +737,18 @@ void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 		return;
 	}
 
-
 	if (InRenderInstance->GetGALMetadata() == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
 	}
 
-	XMMATRIX ObjTransformMat = InRenderInstance->GetWorldTransformMatrix();
-	XMMATRIX ObjRotMat = InRenderInstance->GetWorldRotationMatrix();
-
-
 	if (InRenderInstance->GetRIType() == ERenderInstanceType::StaticMesh)
 	{
-		IRIMesh* RIMesh = (IRIMesh*)InRenderInstance;
-		DrawStaticMesh(RIMesh, ObjTransformMat, ObjRotMat);
+		DrawStaticMesh(static_cast<IRIMesh*>(InRenderInstance));
 	}
 	else if (InRenderInstance->GetRIType() == ERenderInstanceType::SkinnedMesh)
 	{
-		IRISkinnedMesh* RIMesh = (IRISkinnedMesh*)InRenderInstance;
-		DrawSkinnedMesh(RIMesh, ObjTransformMat, ObjRotMat);
+		DrawSkinnedMesh(static_cast<IRISkinnedMesh*>(InRenderInstance));
 	}
 	else
 	{
@@ -1016,12 +1009,20 @@ void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 }
 
 
-void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat)
+void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 {
 	SCOPE_PROFILE(Draw_SM);
-	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
-
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+
+
+	// GAL Info
+	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
+	{
+		SCOPE_PROFILE(UpdateTransform);
+		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(RIToDraw->GetWorldTransformMatrix());
+		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(RIToDraw->GetWorldRotationMatrix());
+		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
+	}
 
 
 	// Scrap Mesh Asset
@@ -1029,18 +1030,21 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 	const DX12GALMeshAssetWrapper* GALMeshAsset = (const DX12GALMeshAssetWrapper*)lMeshAsset->GetGALMeshAsset();
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
-
-
 	if (MeshRawData->GetMeshType() != EMeshType::Rigid)
 	{
 		SS_INTERRUPT(false);
 		return;
 	}
+
 	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(MeshRawData);
 	int32 SubMeshCnt = DefaultMeshRawData->_VertexHeader.subMeshCnt;
 
 
+
 	{
+		SCOPE_PROFILE(MeshBind);
+
+		CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawMesh(
 			EMeshType::Rigid,
 			EMaterialType::DefaultPBR,
@@ -1048,76 +1052,79 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 			_BoundRenderTargets.GetData(),
 			GetThisFrameBoundDSV());
 		SetPSOAndRootSignature(NewPipelineDesc);
-	}
 
-	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+
+		CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+		CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
+		CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+	}
 
 
 	{
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(DrawMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
+		SCOPE_PROFILE(SubMeshBindAndDraw);
 
-	}
-
-	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
-	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
-
-
-	for (int32 i = 0; i < SubMeshCnt; i++)
-	{
-		IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
-		DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
-		if (MtlAsset != nullptr)
+		for (int32 i = 0; i < SubMeshCnt; i++)
 		{
-			const MtlDataBase* MtlData = MtlAsset->GetMtlData();
-			if (MtlData->_Type == EMaterialType::DefaultPBR)
+			IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
+			DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
+			if (MtlAsset != nullptr)
 			{
-				GALMaterial = (DX12GALDefaultPBRMaterialAsset*)MtlAsset->GetGALMaterialAsset();
+				const MtlDataBase* MtlData = MtlAsset->GetMtlData();
+				if (MtlData->_Type == EMaterialType::DefaultPBR)
+				{
+					GALMaterial = (DX12GALDefaultPBRMaterialAsset*)MtlAsset->GetGALMaterialAsset();
+				}
 			}
-		}
 
-		if (MtlAsset == nullptr || GALMaterial == nullptr)
-		{
-			const IMaterialAsset* EmptyMtl = g_CommonRenderAssetSet->GetEmptyPBRMaterial();
-			GALMaterial = (DX12GALDefaultPBRMaterialAsset*)EmptyMtl->GetGALMaterialAsset();
+			if (MtlAsset == nullptr || GALMaterial == nullptr)
+			{
+				const IMaterialAsset* EmptyMtl = g_CommonRenderAssetSet->GetEmptyPBRMaterial();
+				GALMaterial = (DX12GALDefaultPBRMaterialAsset*)EmptyMtl->GetGALMaterialAsset();
+			}
 
-		}
-
-		CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2
+			int32 CurIdxDataCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[i];
 
 
+			_UniqueDescHeapWorkTable.Clear();
+			ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_CachedMtlTexSRVDescHeap); // 메테리얼용
+			ListPushBackUnique(_UniqueDescHeapWorkTable, _CurRenderWorldGALData->GetLightSettingDescHeap()); // 섀도우맵용
 
-		// TODO: BeginDrawMesh랑 EndDrawMesh구현하면서 SetDescriptorHeaps, SetPipelineState, SetGraphicsRootSignature 하는거 몰아서 하기
-		_UniqueDescHeapWorkTable.Clear();
-		ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_CachedMtlTexSRVDescHeap);
-		ListPushBackUnique(_UniqueDescHeapWorkTable, _CurRenderWorldGALData->GetLightSettingDescHeap());
-		CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+			// DescHeaps 
+			CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+			// ~DescHeaps 
 
+			// Material
+			CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2 -> Mtl용 CB
+			CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // 메테리얼 디스크립터 테이블 바인딩
+			// ~Material
 
-
-		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // 메테리얼 디스크립터 테이블 바인딩
-
-		{
-			CurCommandList->SetGraphicsRootConstantBufferView(4, _CurRenderWorldGALData->GetRenderLightParamCB()); // GALWorld의 RenderEnv 바인딩
+			// RenderEnv
+			CurCommandList->SetGraphicsRootConstantBufferView(4, _CurRenderWorldGALData->GetRenderLightParamCB()); // b4 -> RenderEnv용 CB
 			CurCommandList->SetGraphicsRootDescriptorTable(5, _CurRenderWorldGALData->GetLightSeetingDescTable()); // ShadowMapBinding
-		} // RenderEnv
+			// ~RenderEnv
 
-		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[i];
-		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
-		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
+			// Draw
+			CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
+			CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
+			// ~Draw
+		}
 	}
 }
 
-void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat,
-	const XMMATRIX& DrawRotMat)
+void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 {
 	SCOPE_PROFILE(Draw_SKM);
-	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
-
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+
+	// Mesh Transform Update
+	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
+	{
+		SCOPE_PROFILE(UpdateTransform);
+		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(RIToDraw->GetWorldTransformMatrix());
+		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(RIToDraw->GetWorldRotationMatrix());
+		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
+	}
+
 
 
 	// Scrap Mesh Asset
@@ -1130,86 +1137,85 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 	}
 	const MeshRawDataSkinned* SkinnedMeshRawData = static_cast<const MeshRawDataSkinned*>(MeshRawData);
 	int32 SubMeshCnt = SkinnedMeshRawData->_VertexHeader.subMeshCnt;
-
 	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(lMeshAsset->GetGALMeshAsset());
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 
 
+
 	{
+		SCOPE_PROFILE(MeshBind);
+		CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawMesh(
 			EMeshType::Skinned,
 			EMaterialType::DefaultPBR,
 			_BoundRenderTargets.GetSize(),
 			_BoundRenderTargets.GetData(),
 			GetThisFrameBoundDSV());
-
 		SetPSOAndRootSignature(NewPipelineDesc);
-	}
 
-	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+		// Set Vertex Buffer and Mesh Transform, RenderEnv CB
+		CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+		CurCommandList->SetGraphicsRootConstantBufferView(0, DX12SkinnedRIMetaData->_ModelCBGPUMemAddr);
+		CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+	}
 
 
 	{
-		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(DrawMat);
-		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
-		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
-
-	}
-
-	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12SkinnedRIMetaData->_ModelCBGPUMemAddr);
-	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
-
-
-	for (int32 i = 0; i < SubMeshCnt; i++)
-	{
-		IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
-		DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
-		if (MtlAsset != nullptr)
+		SCOPE_PROFILE(SubMeshBindAndDraw);
+		for (int32 i = 0; i < SubMeshCnt; i++)
 		{
-			const MtlDataBase* MtlData = MtlAsset->GetMtlData();
-			if (MtlData->_Type == EMaterialType::DefaultPBR)
+			IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
+			DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
+			if (MtlAsset != nullptr)
 			{
-				GALMaterial = (DX12GALDefaultPBRMaterialAsset*)MtlAsset->GetGALMaterialAsset();
+				const MtlDataBase* MtlData = MtlAsset->GetMtlData();
+				if (MtlData->_Type == EMaterialType::DefaultPBR)
+				{
+					GALMaterial = static_cast<DX12GALDefaultPBRMaterialAsset*>(MtlAsset->GetGALMaterialAsset());
+				}
 			}
-		}
 
-		if (MtlAsset == nullptr || GALMaterial == nullptr)
-		{
-			const IMaterialAsset* EmptyMtl = g_CommonRenderAssetSet->GetEmptyPBRMaterial();
-			GALMaterial = (DX12GALDefaultPBRMaterialAsset*)EmptyMtl->GetGALMaterialAsset();
+			if (MtlAsset == nullptr || GALMaterial == nullptr)
+			{
+				const IMaterialAsset* EmptyMtl = g_CommonRenderAssetSet->GetEmptyPBRMaterial();
+				GALMaterial = static_cast<DX12GALDefaultPBRMaterialAsset*>(EmptyMtl->GetGALMaterialAsset());
 
-		}
+			}
 
-		CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2
-
-
-
-		// TODO: BeginDrawMesh랑 EndDrawMesh구현하면서 SetDescriptorHeaps, SetPipelineState, SetGraphicsRootSignature 하는거 몰아서 하기
-		_UniqueDescHeapWorkTable.Clear();
-		ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_CachedMtlTexSRVDescHeap);
-		ListPushBackUnique(_UniqueDescHeapWorkTable, _CurRenderWorldGALData->GetLightSettingDescHeap());
-		ListPushBackUnique(_UniqueDescHeapWorkTable, DX12SkinnedRIMetaData->_CachedJointSRVDescHeap);
-		CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+			int32 CurIdxDataCnt = SkinnedMeshRawData->_VertexHeader.indexDataCnt[i];
 
 
 
-		CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // 메테리얼 디스크립터 테이블 바인딩
 
-		{
+			_UniqueDescHeapWorkTable.Clear();
+			ListPushBackUnique(_UniqueDescHeapWorkTable, GALMaterial->_CachedMtlTexSRVDescHeap); // Mtl
+			ListPushBackUnique(_UniqueDescHeapWorkTable, _CurRenderWorldGALData->GetLightSettingDescHeap()); // ShadowMap
+			ListPushBackUnique(_UniqueDescHeapWorkTable, DX12SkinnedRIMetaData->_CachedJointSRVDescHeap); // Bone
+
+			// DescHeaps
+			CurCommandList->SetDescriptorHeaps(_UniqueDescHeapWorkTable.GetSize(), _UniqueDescHeapWorkTable.GetData());
+			// ~DescHeaps
+
+			// Mtl
+			CurCommandList->SetGraphicsRootConstantBufferView(2, GALMaterial->_MtlCBGPUMemAddr); // b2 -> Mtl용 CB
+			CurCommandList->SetGraphicsRootDescriptorTable(3, GALMaterial->_MtlTexSRVDescTableGPU); // 메테리얼 디스크립터 테이블 바인딩
+			// ~Mtl
+
+
+			// RenderEnv
 			CurCommandList->SetGraphicsRootConstantBufferView(4, _CurRenderWorldGALData->GetRenderLightParamCB()); // GALWorld의 RenderEnv 바인딩
 			CurCommandList->SetGraphicsRootDescriptorTable(5, _CurRenderWorldGALData->GetLightSeetingDescTable()); // ShadowMapBinding
-		} // RenderEnv
+			// ~RenderEnv
 
-		{
+			// Skinning
 			CurCommandList->SetGraphicsRootDescriptorTable(6, DX12SkinnedRIMetaData->_JointSRVDescTableGPU); // SkinningBinding
+			// ~Skinning
 
-		} // Skinning
-
-		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = SkinnedMeshRawData->_VertexHeader.indexDataCnt[i];
-		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
-		// CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, IdxDataOffset, 0, 0); => IdxDataOffset이 이미 GALMeshAsset->_IndexBufferView에 포함돼있어서 안넣어줘도 됨
+			// Draw
+			CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
+			CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
+			// ~Draw
+		}
 	}
 }
 

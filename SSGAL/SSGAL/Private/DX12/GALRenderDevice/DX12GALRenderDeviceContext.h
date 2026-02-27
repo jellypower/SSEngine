@@ -93,8 +93,8 @@ public:
 	// ERenderDeviceTaskPhase::~DrawDebug
 
 private:
-	void DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
-	void DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
+	void DrawStaticMesh(IRIMesh* RIToDraw);
+	void DrawSkinnedMesh(IRISkinnedMesh* RIToDraw);
 
 	void DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 	void DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
