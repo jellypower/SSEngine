@@ -255,7 +255,7 @@ bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAssetMutable*
 
 void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance)
 {
-	SCOPE_PROFILE(GenGALRIMetadata);
+//	SCOPE_PROFILE(GenGALRIMetadata);
 	ERenderInstanceType RIType = InRenderInstance->GetRIType();
 
 	if (RIType == ERenderInstanceType::StaticMesh)
@@ -467,7 +467,7 @@ void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget
 
 void DX12GALRenderDeviceContext::SetPSOAndRootSignature(const PipelineDesc& InPSODesc)
 {
-	SCOPE_PROFILE(Set_PSO_RS);
+//	SCOPE_PROFILE(Set_PSO_RS);
 	if (_LastSetPSO == InPSODesc)
 	{
 		return;
@@ -484,7 +484,7 @@ void DX12GALRenderDeviceContext::SetPSOAndRootSignature(const PipelineDesc& InPS
 	const DX12RootSignatureWrapper* lDX12RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignatureWrapper;
 
 	{
-		SCOPE_PROFILE(DX12_SetPSO_RS);
+//		SCOPE_PROFILE(DX12_SetPSO_RS);
 		CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
 		CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
 	}
@@ -495,7 +495,7 @@ void DX12GALRenderDeviceContext::SetPSOAndRootSignature(const PipelineDesc& InPS
 void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets,
                                                  GALRenderTarget* InDepthStencilView)
 {
-	SCOPE_PROFILE(SetRT);
+//	SCOPE_PROFILE(SetRT);
 	if (NumRenderTargets > RT_NUM_MAX)
 	{
 		SS_ASSERT(false);
@@ -730,7 +730,7 @@ void DX12GALRenderDeviceContext::BeginDrawMesh()
 
 void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 {
-	SCOPE_PROFILE_INDEXED(DrawMeshItem, InRenderInstance->GetGameObjectID().GetNativeValue());
+//	SCOPE_PROFILE_INDEXED(DrawMeshItem, InRenderInstance->GetGameObjectID().GetNativeValue());
 	if (_TaskPhase != ERenderDeviceTaskPhase::DrawMesh)
 	{
 		SS_INTERRUPT();
@@ -981,7 +981,7 @@ void DX12GALRenderDeviceContext::Present(GALRenderTarget* SwapChainToPresent)
 
 void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 {
-	SCOPE_PROFILE_INDEXED(DrawShadowItem, InRenderInstance->GetGameObjectID().GetNativeValue());
+//	SCOPE_PROFILE_INDEXED(DrawShadowItem, InRenderInstance->GetGameObjectID().GetNativeValue());
 	if (InRenderInstance->GetGALMetadata() == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
@@ -1011,14 +1011,14 @@ void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 
 void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 {
-	SCOPE_PROFILE(Draw_SM);
+//	SCOPE_PROFILE(Draw_SM);
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// GAL Info
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
 	{
-		SCOPE_PROFILE(UpdateTransform);
+//		SCOPE_PROFILE(UpdateTransform);
 		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(RIToDraw->GetWorldTransformMatrix());
 		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(RIToDraw->GetWorldRotationMatrix());
 		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
@@ -1042,7 +1042,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 
 
 	{
-		SCOPE_PROFILE(MeshBind);
+//		SCOPE_PROFILE(MeshBind);
 
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawMesh(
 			EMeshType::Rigid,
@@ -1054,7 +1054,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 
 
 		{
-			SCOPE_PROFILE(DX12);
+//			SCOPE_PROFILE(DX12);
 			CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 			CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
@@ -1064,7 +1064,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 
 
 	{
-		SCOPE_PROFILE(SubMeshBindAndDraw);
+//		SCOPE_PROFILE(SubMeshBindAndDraw);
 
 		for (int32 i = 0; i < SubMeshCnt; i++)
 		{
@@ -1116,13 +1116,13 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 
 void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 {
-	SCOPE_PROFILE(Draw_SKM);
+//	SCOPE_PROFILE(Draw_SKM);
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 	// Mesh Transform Update
 	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
 	{
-		SCOPE_PROFILE(UpdateTransform);
+//		SCOPE_PROFILE(UpdateTransform);
 		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(RIToDraw->GetWorldTransformMatrix());
 		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(RIToDraw->GetWorldRotationMatrix());
 		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
@@ -1146,7 +1146,7 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 
 
 	{
-		SCOPE_PROFILE(MeshBind);
+//		SCOPE_PROFILE(MeshBind);
 		PipelineDesc NewPipelineDesc = ConstructPSODescToDrawMesh(
 			EMeshType::Skinned,
 			EMaterialType::DefaultPBR,
@@ -1157,7 +1157,7 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 
 		// Set Vertex Buffer and Mesh Transform, RenderEnv CB
 		{
-			SCOPE_PROFILE(DX12);
+//			SCOPE_PROFILE(DX12);
 			CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 			CurCommandList->SetGraphicsRootConstantBufferView(0, DX12SkinnedRIMetaData->_ModelCBGPUMemAddr);
@@ -1167,7 +1167,7 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 
 
 	{
-		SCOPE_PROFILE(SubMeshBindAndDraw);
+//		SCOPE_PROFILE(SubMeshBindAndDraw);
 		for (int32 i = 0; i < SubMeshCnt; i++)
 		{
 			IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
@@ -1228,7 +1228,7 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat,
                                                       const XMMATRIX& DrawRotMat)
 {
-	SCOPE_PROFILE(DrawShadow_SM);
+//	SCOPE_PROFILE(DrawShadow_SM);
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SM*>(RIToDraw->GetGALMetadata());
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
@@ -1289,7 +1289,7 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
 void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {
-	SCOPE_PROFILE(DrawShadow_SKM);
+//	SCOPE_PROFILE(DrawShadow_SKM);
 	DX12GALRIMetadata_SKM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();

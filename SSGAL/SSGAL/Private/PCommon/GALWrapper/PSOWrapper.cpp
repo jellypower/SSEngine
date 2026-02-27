@@ -26,7 +26,7 @@ PSOWrapper::~PSOWrapper()
 PipelineDesc ConstructPSODescToDrawMesh(EMeshType InMeshType, EMaterialType InMtlType, int32 NumRenderTarget,
 	GALRenderTarget* const* InRenderTargets, GALRenderTarget* InDSV)
 {
-	SCOPE_PROFILE(PSOConstructUtil);
+//	SCOPE_PROFILE(PSOConstructUtil);
 	PipelineDesc NewPipelineDesc;
 
 //	static const SS::SHasherW VS_SMToDefaultPSInput("VS_SMToDefaultPSInput");
