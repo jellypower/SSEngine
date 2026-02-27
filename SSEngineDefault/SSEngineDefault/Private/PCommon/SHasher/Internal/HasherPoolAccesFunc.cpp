@@ -1,14 +1,13 @@
 ﻿#define SSENGINEDEFAULT_MODULE_EXPORT
 #include "SSEngineDefault/Public/SHasher/Internal/HasherPoolAccesFunc.h"
 
-#include <cwchar>
+#include "SSEngineDefault/Public/WInWrapper/WinWrapper.h"
 
 #include "HasherPoolCreationFunction.h"
 #include "SSEngineDefault/Public/SSDebugLogger.h"
 #include "SSEngineDefault/Public/SSEngineInlineSettings.h"
 #include "SSEngineDefault/Public/SHasher/IHasherPool.h"
 #include "SSEngineDefault/Public/SSContainer/CityHash.h"
-#include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
 IHasherPool* g_HasherPool = nullptr;
 

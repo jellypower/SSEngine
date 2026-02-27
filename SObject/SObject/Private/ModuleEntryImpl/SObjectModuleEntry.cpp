@@ -10,8 +10,6 @@
 
 
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
-
-IHasherPool* g_HasherPool = nullptr;
 IThreadManager* g_ThreadManager = nullptr;
 
 SObjectGlobalHashMap* CreateSObjectGlobalHashMap()
@@ -22,10 +20,8 @@ SObjectGlobalHashMap* CreateSObjectGlobalHashMap()
 
 void SObjectModuleEntry(
 	SObjectGlobalHashMap* InSObjectHashMap, 
-	IHasherPool* InHasherPool,
 	IThreadManager* InThreadManager)
 {
 	g_ObjectHashMap = InSObjectHashMap;
-	g_HasherPool = InHasherPool;
 	g_ThreadManager = InThreadManager;
 }

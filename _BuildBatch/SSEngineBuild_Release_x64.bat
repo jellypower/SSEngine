@@ -9,11 +9,11 @@ set "BUILD_OPTION=/m /nologo /verbosity:minimal /clp:Summary;ErrorsOnly /p:Confi
 
 
 set MODULE_NAMES[0]=SSEngineDefault
-set MODULE_NAMES[1]=SSGAL
-set MODULE_NAMES[2]=SSRenderer
-set MODULE_NAMES[3]=SSFBXImporter
-set MODULE_NAMES[4]=SSAssetDBManager
-set MODULE_NAMES[5]=SObject
+set MODULE_NAMES[1]=SObject
+set MODULE_NAMES[2]=SSGAL
+set MODULE_NAMES[3]=SSRenderer
+set MODULE_NAMES[4]=SSFBXImporter
+set MODULE_NAMES[5]=SSAssetDBManager
 set MODULE_NAMES[6]=SSContentsBase
 set MODULE_NAMES[7]=SSEditor
 

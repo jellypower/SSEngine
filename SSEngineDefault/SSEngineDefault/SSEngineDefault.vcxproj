@@ -220,6 +220,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SSThread\SSThreadUtil.h" />
     <ClInclude Include="Public\SSVector.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.h" />
+    <ClInclude Include="Public\WInWrapper\WinWrapper.h" />
     <ClInclude Include="Public\SystemUtilities.h" />
     <ClInclude Include="Public\TestCodes\TestFunctions.h" />
   </ItemGroup>
