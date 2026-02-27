@@ -140,8 +140,6 @@ void SSEditor::StartupEngine()
 
 	}
 	// ~DEBUG
-
-
 	
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
@@ -248,7 +246,7 @@ void SSEditor::StartupEngine()
 
 void SSEditor::EnginePerFrame()
 {
-	SCOPE_PROFILE(Engine);
+	SCOPE_PROFILE_INDEXED(Engine, SSFrameInfo::GetFrameCnt());
 
 	{
 		SCOPE_PROFILE(BeginImGUI);

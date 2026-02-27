@@ -11,6 +11,7 @@ void TEST_ExecuteTestFunctions()
 	CustomHeapAllocatorTest();
 	SHasherPoolTest();
 	SHasherTest();
+	SHasherGlobalStaticTest();
 	StringTest();
 	DirectXMathTest();
 	StringSerializerTest();

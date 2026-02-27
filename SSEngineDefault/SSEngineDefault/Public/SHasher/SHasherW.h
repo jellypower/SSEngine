@@ -1,12 +1,10 @@
 #pragma once
 #include "IHasherPool.h"
+#include "Internal/HasherPoolAccesFunc.h"
 #include "SSEngineDefault/Public/SSDebugLogger.h"
 
-#include "SSEngineDefault/Public/SSEngineInlineSettings.h"
-#include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 #include "SSEngineDefault/Public/SSContainer/CityHash.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
-#include "SSEngineDefault/Public/SSContainer/SSString/StringUtilityFunctions.h"
 
 
 namespace SS {
@@ -38,20 +36,7 @@ namespace SS {
 				SS_INTERRUPT();
 			}
 
-			uint32 StrLen = wcslen(inStr);
-			if (StrLen > SHASHER_STRLEN_MAX)
-			{
-				SS_INTERRUPT();
-			}
-
-			if (StrLen <= 0)
-			{
-				_StoredNode = nullptr;
-				return;
-			}
-
-			uint32 HashedValue = CityHash32(reinterpret_cast<const char*>(inStr), StrLen * (sizeof(utf16) / sizeof(char)));
-			_StoredNode = g_HasherPool->FindOrAddHasherValue(inStr, StrLen, HashedValue);
+			_StoredNode = FindOrAddHasherNode(inStr);
 		}
 
 		SHasherW(const char* inStr)

@@ -9,7 +9,6 @@
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
 
-IHasherPool* g_HasherPool = nullptr;
 IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 IThreadManager* g_ThreadManager = nullptr;
 
@@ -39,11 +38,9 @@ GALRenderDevice* CreateGALRenderDevice(
 }
 
 void SSGALModuleEntry(
-	IHasherPool* InHasherPool,
 	IFrameInfoProcessor* InFrameInfoProcessor,
 	IThreadManager* InThreadManager)
 {
-	g_HasherPool = InHasherPool;
 	g_FrameInfoProcessor = InFrameInfoProcessor;
 	g_ThreadManager = InThreadManager;
 }

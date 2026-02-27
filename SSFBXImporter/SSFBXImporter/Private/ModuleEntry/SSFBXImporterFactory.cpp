@@ -5,7 +5,6 @@
 #include "SSFBXImporter/Private/SSFBXImporter.h"
 
 
-IHasherPool* g_HasherPool = nullptr;
 IThreadManager* g_ThreadManager = nullptr;
 
 IRenderer* g_Renderer = nullptr;
@@ -16,11 +15,9 @@ ISSFBXImporter* CreateSSFBXImporter()
 }
 
 void SSFBXImporterModuleEntry(
-	IHasherPool* InHasherPool,
 	IThreadManager* InThreadManager, 
 	IRenderer* InRenderer)
 {
-	g_HasherPool = InHasherPool;
 	g_ThreadManager = InThreadManager;
 	g_Renderer = InRenderer;
 }

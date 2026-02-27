@@ -10,6 +10,5 @@ typedef decltype(&CreateAssetDBLoader) FuncPtr_CreateAssetDBLoader;
 
 
 SSASSETDBMANAGER_MODULE_NATIVE void SSAssetDBManagerModuleEntry(
-	IHasherPool* InHasherPool,
 	IThreadManager* InThreadManager);
 typedef decltype(&SSAssetDBManagerModuleEntry) FuncPtr_SSAssetDBManagerModuleEntry;

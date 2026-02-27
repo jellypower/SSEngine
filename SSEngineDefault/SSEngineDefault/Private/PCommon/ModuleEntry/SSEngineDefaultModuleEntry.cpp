@@ -8,19 +8,15 @@
 #include "SSEngineDefault/Public/SSDebugLogger.h"
 
 
-IHasherPool* g_HasherPool = nullptr;
 IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 IRawInputProcessor* g_RawInputProcessor = nullptr;
 IThreadManager* g_ThreadManager = nullptr;
 
 void SSEngineDefaultModuleEntry(
-	uint32 InHasherPoolCnt,
-	IHasherPool* InHasherPool,
 	IFrameInfoProcessor* InFrameInfo,
 	IRawInputProcessor* InRawInputProcessor,
 	IThreadManager* InThreadManager)
 {
-	g_HasherPool = InHasherPool;
 	g_FrameInfoProcessor = InFrameInfo;
 	g_RawInputProcessor = InRawInputProcessor;
 	g_ThreadManager = InThreadManager;
@@ -36,12 +32,6 @@ IFrameInfoProcessor* CreateFrameInfo()
 {
 	IFrameInfoProcessor* FrameInfo = DBG_NEW FrameInfoProcessorBase();
 	return FrameInfo;
-}
-
-IHasherPool* CreateHasherPool(int32 InBucketCnt)
-{
-	HasherPoolBase* NewHasherPool = DBG_NEW HasherPoolBase(InBucketCnt);
-	return NewHasherPool;
 }
 
 IThreadManager* CreateThreadManager()

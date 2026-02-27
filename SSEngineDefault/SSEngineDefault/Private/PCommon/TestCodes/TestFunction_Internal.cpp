@@ -5,8 +5,8 @@
 #include <unordered_map>
 
 
+#include "SSEngineDefault/Private/PCommon/SHasher/Internal/HasherPoolCreationFunction.h"
 #include "SSEngineDefault/Public/SSDirectXMathCustom.h"
-#include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/SHasher/IHasherPool.h"
@@ -631,6 +631,57 @@ void SHasherTest()
 	}
 
 	if (_CrtCheckMemory() == false) SS_INTERRUPT();
+}
+
+static const SS::SHasherW g_HasherTestS[10] =
+{
+L"TEST01",
+L"TEST02",
+L"TEST03",
+L"TEST04",
+L"TEST05",
+L"TEST06",
+L"TEST07",
+L"TEST08",
+L"TEST09",
+L"TEST010",
+};
+static const SS::SHasherW g_HasherTestD[10] =
+{
+L"TEST01",
+L"TEST02",
+L"TEST03",
+L"TEST04",
+L"TEST05",
+L"TEST06",
+L"TEST07",
+L"TEST08",
+L"TEST09",
+L"TEST010",
+};
+
+
+void SHasherGlobalStaticTest()
+{
+	for (int32 i=0;i<10;i++)
+	{
+		if (g_HasherTestS[i].IsEmpty())
+		{
+			SS_INTERRUPT();
+		}
+
+		if (g_HasherTestD[i].IsEmpty())
+		{
+			SS_INTERRUPT();
+		}
+
+		if (g_HasherTestS[i] != g_HasherTestD[i])
+		{
+			SS_INTERRUPT();
+		}
+	}
+
+	int a = 0;
 }
 
 void StringTest()

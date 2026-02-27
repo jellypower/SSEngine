@@ -6,7 +6,6 @@
 #include "SSAssetDBManager/Private/DBLoaders/AssetDBLoader.h"
 
 
-IHasherPool* g_HasherPool = nullptr;
 IThreadManager* g_ThreadManager = nullptr;
 
 IAssetDBLoader* CreateAssetDBLoader()
@@ -15,9 +14,7 @@ IAssetDBLoader* CreateAssetDBLoader()
 }
 
 void SSAssetDBManagerModuleEntry(
-	IHasherPool* InHasherPool,
 	IThreadManager* InThreadManager)
 {
-	g_HasherPool = InHasherPool;
 	g_ThreadManager = InThreadManager;
 }

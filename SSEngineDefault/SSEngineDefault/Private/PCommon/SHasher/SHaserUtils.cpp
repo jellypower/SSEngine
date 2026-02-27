@@ -1,6 +1,9 @@
 ﻿#define SSENGINEDEFAULT_MODULE_EXPORT
 #include "SSEngineDefault/Public/SHasher/SHaserUtils.h"
 
+#include "SSEngineDefault/Public/SSEngineInlineSettings.h"
+#include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
+
 SS::SHasherW MakeIndexedHasher(const utf16* InStr, int64 Idx)
 {
 	utf16 ItoaBuffer[21];

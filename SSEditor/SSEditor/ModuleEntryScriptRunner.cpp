@@ -31,7 +31,6 @@ SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 
 
 // GlobalVariableSet
-IHasherPool* g_HasherPool = nullptr;
 IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 IRawInputProcessor* g_RawInputProcessor = nullptr;
 IThreadManager* g_ThreadManager = nullptr;
@@ -82,7 +81,6 @@ void RunLoadLibraries()
 
 void RunModuleEntryScript()
 {
-	g_HasherPool = CreateHasherPool(SHASHER_DEFAULT_POOL_SIZE);
 	g_FrameInfoProcessor = CreateFrameInfo();
 	g_RawInputProcessor = CreateInputProcessor();
 	g_ObjectHashMap = CreateSObjectGlobalHashMap();
@@ -93,15 +91,12 @@ void RunModuleEntryScript()
 	SS_ASSERT(g_ThreadManager->IsInMainThread());
 
 	SSEngineDefaultModuleEntry(
-		SHASHER_DEFAULT_POOL_SIZE,
-		g_HasherPool,
 		g_FrameInfoProcessor,
 		g_RawInputProcessor,
 		g_ThreadManager);
 
 	SObjectModuleEntry(
 		g_ObjectHashMap,
-		g_HasherPool,
 		g_ThreadManager);
 
 }
@@ -129,7 +124,6 @@ void RunModuleEntryScriptPostInitWindow(
 		g_fpCreateAssetDBLoader = (FuncPtr_CreateAssetDBLoader)GetProcAddress(g_hInstSSAssetDBManager, "CreateAssetDBLoader");
 
 		SSGALModuleEntry(
-			g_HasherPool,
 			g_FrameInfoProcessor,
 			g_ThreadManager);
 
@@ -138,7 +132,6 @@ void RunModuleEntryScriptPostInitWindow(
 			bEnableGPUBaseValidation);
 
 		SSRendererModuleEntry(
-			g_HasherPool, 
 			g_FrameInfoProcessor,
 			g_ThreadManager);
 		g_Renderer = CreateRenderer(NewRenderDevice);
@@ -148,17 +141,15 @@ void RunModuleEntryScriptPostInitWindow(
 		g_Renderer->HandoverMainViewportSwapChain(SwapChainRenderTarget);
 
 		SSFBXImporterModuleEntry(
-			g_HasherPool,
 			g_ThreadManager,
 			g_Renderer);
 
-		SSAssetDBManagerModuleEntry(g_HasherPool, g_ThreadManager);
+		SSAssetDBManagerModuleEntry(g_ThreadManager);
 	}
 
 
 	SSContentsBaseModuleEntry(
 		g_Renderer,
-		g_HasherPool,
 		g_FrameInfoProcessor,
 		g_RawInputProcessor,
 		g_ThreadManager);
@@ -176,8 +167,8 @@ void RunModuleExitScript()
 	g_RawInputProcessor = nullptr;
 	delete g_FrameInfoProcessor;
 	g_FrameInfoProcessor = nullptr;
-	delete g_HasherPool;
-	g_HasherPool = nullptr;
+
+	DestroyGlobalHasherPool();
 }
 
 void RunUnloadLibraries()

@@ -13,7 +13,6 @@ typedef decltype(&CreateRenderer) FuncPtr_CreateRenderer;
 
 
 SSRENDERER_MODULE_NATIVE void SSRendererModuleEntry(
-	IHasherPool* InHasherPool,
 	IFrameInfoProcessor* InFrameInfoProcessor,
 	IThreadManager* InThreadManager);
 typedef decltype(&SSRendererModuleEntry) FuncPtr_SSRendererModuleEntry;

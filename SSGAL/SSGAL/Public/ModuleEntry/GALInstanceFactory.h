@@ -22,7 +22,6 @@ SSGAL_MODULE_NATIVE GALRenderDevice* CreateGALRenderDevice(
 typedef decltype(&CreateGALRenderDevice) FuncPtr_CreateGALRenderDevice;
 
 SSGAL_MODULE_NATIVE void SSGALModuleEntry(
-	IHasherPool* InHasherPool,
 	IFrameInfoProcessor* InFrameInfoProcessor,
 	IThreadManager* InThreadManager);
 typedef decltype(&SSGALModuleEntry) FuncPtr_SSGALModuleEntry;
