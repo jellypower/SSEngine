@@ -2,6 +2,7 @@
 #include "SSRenderer/Public/RenderInstance/IRISkinnedMesh.h"
 
 
+class IMeshAsset;
 
 class RISkinnedMesh : public IRISkinnedMesh
 {
@@ -28,17 +29,27 @@ public:
 
 	virtual IRenderWorld* GetIncludedRenderWorld() const override;
 
-	virtual IModelAsset* GetModelAsset() const override;
-	virtual void SetModelAsset(IModelAsset* InAsset) override;
 
+public:
+	virtual IMeshAsset* GetMeshAsset() const override;
+	virtual IMaterialAsset* GetMaterialAsset(int MtlIdx) const override;
+
+	virtual void SetMeshAsset(IMeshAsset* InAsset) override;
+	virtual void SetMaterialAsset(IMaterialAsset* InAsset, int32 MtlIdx) override;
+
+
+public:
 	virtual const SS::PooledList<SBASkinningJointMatrix>& GetSkeletonPose() const override;
 	virtual void UpdateSkeletonPose(int32 BoneIdx, const XMMATRIX& WMatrix, const XMMATRIX& RotMatrix) override;
+
+private:
+	IMeshAsset* _MeshRef = nullptr;
+	SS::PooledList<IMaterialAsset*, SS::InlineAllocator<8>> _MtlRef;
 
 private:
 	XMMATRIX _WorldTransformMatrix;
 	XMMATRIX _WorldRotationMatrix;
 	SObjHashCode _GameObjectHashCode = nullptr;
-	IModelAsset* _ModelRef = nullptr;
 	GALRIMetadata* _MetaData = nullptr;
 	IRenderWorld* _IncludedRenderWorld = nullptr;
 

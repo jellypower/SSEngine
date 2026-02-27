@@ -3,12 +3,14 @@
 
 class GALTextureAssetWrapperBase;
 
-enum class ETextureType
+enum class ETextureType : int32
 {
 	None = -1,
 
-	Texture2D,
-	CubeMap
+	Texture2D = 0,
+	CubeMap = 1,
+
+	Count
 };
 
 class ITextureAsset : public IAssetBase

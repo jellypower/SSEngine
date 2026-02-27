@@ -168,10 +168,49 @@
     <ClInclude Include="Public\SSCommonUtil\TransientChunkHeader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\CommonSerializer\StringSerializer\StringSerailizerContainer.h">
+    <ClInclude Include="Private\PCommon\TestCodes\TestFunction_Internal.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\CommonSerializer\StringSerializer\SerializerUtilFunctions.h">
+    <ClInclude Include="Private\PCommon\TestCodes\TestSerialize_Internal.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SystemUtilities.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SSThread\IThreadManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PCommon\SSThread\PCommmonThreadManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PWin32\SSThread\Win32ThreadManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SSThread\PWin32\SSThreadUtil_Win32.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SSThread\SSThreadUtil.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawProfiler\ScopedProfile.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SHasher\SHaserUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SHasher\Internal\HasherPoolAccesFunc.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PCommon\SHasher\Internal\HasherPoolCreationFunction.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\WInWrapper\WinWrapper.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -230,7 +269,34 @@
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\PCommon\CommonSerializer\SerializerUtilFunctions.cpp">
+    <ClCompile Include="Private\PCommon\TestCodes\TestFunction_Internal.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\TestCodes\TestSerialize_Internal.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\CommonSerializer\DefaultTypeSerializsers.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SystemUtilities.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SSThread\PCommmonThreadManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\SSThread\Win32ThreadManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\SSThread\SSThreadUtil_Win32.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SHasher\SHaserUtils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SHasher\Internal\HasherPoolAccesFunc.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PCommon\SHasher\Internal\HasherPoolCreationFunction.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

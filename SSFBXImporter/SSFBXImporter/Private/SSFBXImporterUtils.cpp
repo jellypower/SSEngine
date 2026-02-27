@@ -1,11 +1,17 @@
+#include "pch.h"
 #include "SSFBXImporterUtils.h"
 
-#include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
+#include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+
+#include "SSFBXImporter/Public/FRAN.h"
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCreationUtils.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
@@ -24,14 +30,16 @@ int32 SSFBXImporterUtils::CalcWholeNodeCnt_Recursion(const FbxNode* node)
 
 Transform SSFBXImporterUtils::ExtractTransformFromNode(FbxNode* node, FbxTime fbxTime)
 {
-	FbxAMatrix fbxMat;
-	fbxMat.SetIdentity();
-	fbxMat.SetT(node->GetGeometricTranslation(FbxNode::eSourcePivot));
-	fbxMat.SetR(node->GetGeometricRotation(FbxNode::eSourcePivot));
-	fbxMat.SetS(node->GetGeometricScaling(FbxNode::eSourcePivot));
+	//	FbxAMatrix fbxMat;
+	//	fbxMat.SetIdentity();
+	//	fbxMat.SetT(node->GetGeometricTranslation(FbxNode::eSourcePivot));
+	//	fbxMat.SetR(node->GetGeometricRotation(FbxNode::eSourcePivot));
+	//	fbxMat.SetS(node->GetGeometricScaling(FbxNode::eSourcePivot));
 
-	const FbxAMatrix& AnimTransform = node->EvaluateLocalTransform(fbxTime);
-	fbxMat = AnimTransform * fbxMat;
+
+	const FbxAMatrix& fbxMat = node->EvaluateLocalTransform(fbxTime);
+	//	const FbxAMatrix& AnimTransform = node->EvaluateLocalTransform(fbxTime);
+	//	fbxMat = AnimTransform * fbxMat;
 
 	Transform transform;
 
@@ -73,7 +81,7 @@ Transform SSFBXImporterUtils::ExtractBoneRootRelativeTransform(FbxNode* InNode, 
 		return Result;
 	}
 
-	
+
 	FbxNode* NodeItem = InNode;
 	Result = ExtractTransformFromNode(NodeItem, fbxTime);
 
@@ -83,7 +91,7 @@ Transform SSFBXImporterUtils::ExtractBoneRootRelativeTransform(FbxNode* InNode, 
 
 		Transform TransformItem = ExtractTransformFromNode(NodeItem, fbxTime);
 		Result = Result * TransformItem;
-	} 
+	}
 
 	return Result;
 }
@@ -140,9 +148,9 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 	{
 		fbxNormalIdx = fbxMesh->GetPolygonVertexIndex(polygonIdx) + positionInPolygon;
 	}
-	else 
+	else
 	{
-		fbxNormalIdx = fbxMesh->GetPolygonVertex(polygonIdx, positionInPolygon); 
+		fbxNormalIdx = fbxMesh->GetPolygonVertex(polygonIdx, positionInPolygon);
 	}
 
 	bool bResult;
@@ -161,8 +169,8 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 		bResult = fbxMesh->GetPolygonVertexNormal(polygonIdx, positionInPolygon, normalVector);
 		SS_ASSERT(bResult);
 
-//		fbxNormalIdx = fbxNormal->GetIndexArray().GetAt(outControlPointIdx); // TODO: 여기가 문제다
-//		normalVector = fbxNormal->GetDirectArray().GetAt(fbxNormalIdx);
+		//		fbxNormalIdx = fbxNormal->GetIndexArray().GetAt(outControlPointIdx); // TODO: 여기가 문제다
+		//		normalVector = fbxNormal->GetDirectArray().GetAt(fbxNormalIdx);
 
 		break;
 	default:
@@ -212,8 +220,8 @@ SSDefaultVertex ExtractVertex(::FbxMesh* fbxMesh, uint32 polygonIdx, uint32 posi
 				fbxMesh->GetPolygonVertexUV(polygonIdx, positionInPolygon, UVName, uvVector, bUnmapped);
 				SS_ASSERT(bResult && bUnmapped == false);
 
-//				uvIdx = fbxUV->GetIndexArray().GetAt(outControlPointIdx);
-//				uvVector = fbxUV->GetDirectArray().GetAt(uvIdx);
+				//				uvIdx = fbxUV->GetIndexArray().GetAt(outControlPointIdx);
+				//				uvVector = fbxUV->GetDirectArray().GetAt(uvIdx);
 
 				break;
 			default:
@@ -289,7 +297,7 @@ SSSkinnedVertex ExtractSkinnedVertexWithoutSkinData(FbxMesh* fbxMesh, uint32 pol
 	outVertex.Uv[0] = DefaultVertex.Uv[0];
 	outVertex.Uv[1] = DefaultVertex.Uv[1];
 
-	
+
 	// Skinning
 	for (int32 i = 0; i < VERTEX_SKINNING_BONE_COUNT_MAX; i++)
 	{
@@ -302,12 +310,14 @@ SSSkinnedVertex ExtractSkinnedVertexWithoutSkinData(FbxMesh* fbxMesh, uint32 pol
 
 IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMesh, SS::SHasherW NewAssetName, const utf16* InAssetPath)
 {
+	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+
 	SS_ASSERT(fbxMesh != nullptr);
 
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
-	
-	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
+
+	IMeshAssetMutable* NewMeshAsset = CreateEmptyMeshAsset(HASHER_FBX_IMPORT, NewAssetName, InAssetPath);
 	MeshRawDataDefault* NewMeshRawData = DBG_NEW MeshRawDataDefault();
 
 	// - Load num
@@ -397,8 +407,9 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 
 	// - alloc vertex memory
 	NewMeshRawData->_VertexHeader.vertexCnt = ssVertexBuffer.GetSize();
-	NewMeshRawData->_VertexHeader.eachVertexSize = sizeof(SSDefaultVertex);
-	uint32 validVertexBufferSize = NewMeshRawData->_VertexHeader.eachVertexSize * NewMeshRawData->_VertexHeader.vertexCnt;
+	NewMeshRawData->_VertexHeader.MeshType = EMeshType::Rigid;
+	uint32 validVertexBufferSize = EachVertexSizeOfType(EMeshType::Rigid) * NewMeshRawData->_VertexHeader.vertexCnt;
+
 	NewMeshRawData->_vertexData = DBG_MALLOC(validVertexBufferSize);
 	SSDefaultVertex* ssVertex = (SSDefaultVertex*)NewMeshRawData->_vertexData;
 
@@ -539,7 +550,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewMeshAssestFromFbxMesh(FbxMesh* fbxMes
 				}
 				else
 				{
-					Vector4f tangent = Vector4f(1,0,0,0);
+					Vector4f tangent = Vector4f(1, 0, 0, 0);
 					v2.Tangent = v1.Tangent = v0.Tangent = tangent;
 				}
 
@@ -557,6 +568,8 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	SS::SHasherW NewAssetName,
 	const utf16* InAssetPath)
 {
+	static const SS::SHasherW HASHER_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
+
 	if (fbxMesh == nullptr)
 	{
 		SS_INTERRUPT();
@@ -566,8 +579,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	const utf16* AssetStr = NewAssetName.C_Str();
 
 
-	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
-	IMeshAssetMutable* NewMeshAsset = AssetManager->CreateEmptyMeshAsset(NewAssetName, InAssetPath);
+	IMeshAssetMutable* NewMeshAsset = CreateEmptyMeshAsset(HASHER_FBX_IMPORT, NewAssetName, InAssetPath);
 	MeshRawDataSkinned* NewSkinnedMeshRawData = DBG_NEW MeshRawDataSkinned();
 
 	// 1. Load num
@@ -680,7 +692,7 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	SS_ASSERT(fbxSkin != nullptr);
 
 	ExtractOriginalBoneFromFbxSkin(NewAssetName, NewSkinnedMeshRawData, fbxSkin);
-	
+
 	uint32 ClusterCnt = fbxSkin->GetClusterCount();
 	for (int32 BoneIdx = 0; BoneIdx < ClusterCnt; BoneIdx++)
 	{
@@ -734,8 +746,8 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 
 	// 2. alloc vertex memory
 	NewSkinnedMeshRawData->_VertexHeader.vertexCnt = ssVertexBuffer.GetSize();
-	NewSkinnedMeshRawData->_VertexHeader.eachVertexSize = sizeof(SSSkinnedVertex);
-	uint32 validVertexBufferSize = NewSkinnedMeshRawData->_VertexHeader.eachVertexSize * NewSkinnedMeshRawData->_VertexHeader.vertexCnt;
+	NewSkinnedMeshRawData->_VertexHeader.MeshType = EMeshType::Skinned;
+	uint32 validVertexBufferSize = EachVertexSizeOfType(EMeshType::Skinned) * NewSkinnedMeshRawData->_VertexHeader.vertexCnt;
 	NewSkinnedMeshRawData->_vertexData = DBG_MALLOC(validVertexBufferSize);
 	SSSkinnedVertex* ssSkinnedVertex = (SSSkinnedVertex*)NewSkinnedMeshRawData->_vertexData;
 
@@ -886,18 +898,64 @@ IMeshAsset* SSFBXImporterUtils::GenerateNewSkinnedMeshAssestFromFbxMesh(
 	return NewMeshAsset;
 }
 
+SS::SHasherW SSFBXImporterUtils::FindPBRTextureNameFromFBXMaterial(
+	const FbxSurfaceMaterial* FbxMtl,
+	EDefaultPBRMatTexTypes InTexType)
+{
+	const char* FbxTexName = nullptr;
+	switch (InTexType)
+	{
+	case EDefaultPBRMatTexTypes::BaseColor: FbxTexName = FbxSurfaceMaterial::sDiffuse; break;
+	case EDefaultPBRMatTexTypes::Normal: FbxTexName = FbxSurfaceMaterial::sDiffuse; break;
+	case EDefaultPBRMatTexTypes::Metallic: FbxTexName = FbxSurfaceMaterial::sDiffuse; break;
+	case EDefaultPBRMatTexTypes::Emissive: FbxTexName = FbxSurfaceMaterial::sDiffuse; break;
+	case EDefaultPBRMatTexTypes::Occlusion: FbxTexName = FbxSurfaceMaterial::sDiffuse; break;
+	}
+
+	if (FbxTexName == nullptr)
+	{
+		SS_ASSERT(false);
+		return SS::SHasherW::GetEmpty();
+	}
+
+	FbxProperty prop = FbxMtl->FindProperty(FbxTexName);
+	if (prop.IsValid() == false)
+	{
+		SS_ASSERT(false);
+		return SS::SHasherW::GetEmpty();
+	}
+
+	const FbxFileTexture* fbxTexture = prop.GetSrcObject<FbxFileTexture>();
+	if (fbxTexture == nullptr)
+	{
+		SS_ASSERT(false);
+		return SS::SHasherW::GetEmpty();
+	}
+
+
+	SS::StringW strTextureAssetName;
+	SS::StringW TextureAssetPath = fbxTexture->GetFileName();
+	ExtractFileNameFromPath(strTextureAssetName, TextureAssetPath.C_Str());
+
+	SS::SHasherW TextureAssetName = strTextureAssetName.C_Str();
+
+	return TextureAssetName;
+}
+
 void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneName, MeshRawDataSkinned* RawDataToSaveBone, FbxSkin* fbxSkin)
 {
 	uint32 ClusterCnt = fbxSkin->GetClusterCount();
 
 	RawDataToSaveBone->_BoneHeader._BoneCnt = ClusterCnt;
-	SS::PooledList<BonePlacement>& OutBones = RawDataToSaveBone->_BonePlacements;
-	OutBones.Reserve(ClusterCnt);
+	SS::PooledList<Transform>& OutBoneTransforms = RawDataToSaveBone->_BonePlacements;
+	SS::PooledList<SS::SHasherW>& OutBoneNames = RawDataToSaveBone->_BoneNames;
+	OutBoneTransforms.Reserve(ClusterCnt);
+	OutBoneNames.Reserve(ClusterCnt);
 
 	SS::PooledList<int32, SS::InlineAllocator<200>> BoneParentIndices(ClusterCnt);
 	SS::PooledList<FbxNode*, SS::InlineAllocator<200>> BoneMatchingNodes(ClusterCnt);
 
-	
+
 	constexpr int32 STR_BUFFER_SIZE = 512;
 	utf16 Utf16Buffer[STR_BUFFER_SIZE];
 
@@ -912,13 +970,12 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 		char8_t* u8Name = reinterpret_cast<char8_t*>(fStrName.Buffer());
 		UTF8StrToUTF16Str(reinterpret_cast<char*>(u8Name), StrLen, Utf16Buffer, STR_BUFFER_SIZE);
 
-		
+
 		SS::SHasherW CurBoneName = Utf16Buffer;
 
-		BonePlacement NewBonePlacement;
-		NewBonePlacement.BoneName = CurBoneName;
 
-		OutBones.PushBack(NewBonePlacement);
+		OutBoneTransforms.PushBack(Transform::Identity);
+		OutBoneNames.PushBack(CurBoneName);
 		BoneMatchingNodes.PushBack(CurBoneNode);
 	}
 
@@ -941,7 +998,7 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 		BoneParentIndices.PushBack(ParentNodeIdx); // 부모노드의 인덱스를 찾는다
 	}
 
-	
+
 
 	for (int32 BoneItemIdx = 0; BoneItemIdx < ClusterCnt; BoneItemIdx++)
 	{
@@ -954,7 +1011,7 @@ void SSFBXImporterUtils::ExtractOriginalBoneFromFbxSkin(SS::SHasherW RootBoneNam
 		const char8_t* FORDEBUG_CurNodeName = (char8_t*)CurNode->GetName();
 
 		BoneTransformResult = ExtractBoneRootRelativeTransform(CurNode); // 현재 노드의 Transform을 가지고온다.
-		OutBones[BoneItemIdx].BoneTransform = BoneTransformResult;
+		OutBoneTransforms[BoneItemIdx] = BoneTransformResult;
 	}
 
 	int a = 0;

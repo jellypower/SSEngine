@@ -80,6 +80,36 @@ namespace SS
 			}
 		}
 
+
+		void PopBack()
+		{
+			if (_size < 0)
+			{
+				SS_INTERRUPT();
+				return;
+			}
+
+			T* dataToRemovePtr = _allocator.GetData() + _size - 1;
+			dataToRemovePtr->~T();
+			_size--;
+		}
+
+		template<typename... Args>
+		T& Create(Args&&... args)
+		{
+			if (_size >= _allocator.GetCapacity())
+			{
+				Reserve((GetCapacity() + 1) * 2);
+			}
+
+			if  constexpr (std::is_trivially_constructible_v<T> == false)
+			{
+				new(_allocator.GetData() + _size) T(std::forward<Args>(args)...);
+			}
+
+			return _allocator.GetData()[_size++];
+		}
+
 		void PushBack(const T& newData)
 		{
 			if (_size >= _allocator.GetCapacity())
@@ -174,10 +204,25 @@ namespace SS
 
 		void Clear()
 		{
-			for (int64 i = 0; i < _size; i++) {
-				_allocator.GetData()[i].~T();
+			if  constexpr (std::is_trivially_destructible_v<T> == false)
+			{
+				for (int64 i = 0; i < _size; i++)
+				{
+					_allocator.GetData()[i].~T();
+				}
 			}
+
 			_size = 0;
+		}
+
+		void FlushMem()
+		{
+			Clear();
+
+			if (_allocator.GetData() != nullptr)
+			{
+				_allocator.Free();
+			}
 		}
 
 

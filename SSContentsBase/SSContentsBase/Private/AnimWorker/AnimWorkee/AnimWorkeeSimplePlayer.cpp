@@ -100,7 +100,7 @@ void AnimWorkeeSimplePlayer::UpdateAnimation(float DeltaTime)
 
 
 	double Time = _WholeFrameTime;
-	Time = fmod(Time, AnimRawData->_KeyFrameDuration);
+	Time = fmod(Time, AnimRawData->_Header.KeyFrameDuration);
 
 	int32 BindingCnt = _ResultPose.BoneTransforms.GetSize();
 

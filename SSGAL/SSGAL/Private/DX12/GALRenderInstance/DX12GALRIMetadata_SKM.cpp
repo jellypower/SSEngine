@@ -25,7 +25,7 @@ DX12GALRIMetadata_SKM::DX12GALRIMetadata_SKM(GALRenderDevice* InRenderDevice, co
 	int32 DescriptorIncrementalSize = D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 
-	IMeshAsset* OwnerMesh = InOwnerRenderInstance->GetModelAsset()->GetMeshAsset();
+	IMeshAsset* OwnerMesh = InOwnerRenderInstance->GetMeshAsset();
 	SS::SHasherW MeshAssetName = OwnerMesh->GetAssetName();
 	const MeshRawDataBase* MeshRawData = OwnerMesh->GetMeshRawData();
 	if (MeshRawData->GetMeshType() != EMeshType::Skinned)

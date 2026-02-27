@@ -29,3 +29,18 @@ inline int64 ListFindItemIdx(const SS::PooledList<ItemType, AllocatorType>& InPo
 
 	return INVALID_IDX;
 }
+
+template<typename ItemType, typename AllocatorType>
+inline bool ListContainsItem(const SS::PooledList<ItemType, AllocatorType>& InPooledList, ItemType FindingItem)
+{
+	int64 ListSize = InPooledList.GetSize();
+	for (int64 i = 0; i < ListSize; i++)
+	{
+		if (InPooledList[i] == FindingItem)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

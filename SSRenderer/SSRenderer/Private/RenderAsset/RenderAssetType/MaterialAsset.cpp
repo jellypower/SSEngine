@@ -8,8 +8,11 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataDefaultPBR.h"
 
-MaterialAsset::MaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+#include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
+
+MaterialAsset::MaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
+	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
 }
@@ -36,20 +39,24 @@ void MaterialAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
 		}
 	}
 
-	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
-	_AssetInstanceReferencers.PushBack(Referencer);
 
+	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
 	if (PrevReferencerCnt == 0)
 	{
+
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
-		for (ITextureAsset* TexItem : _ReferencingTextures)
+		for (ITextureAsset* TexItem : _ReferencingTextureCache)
 		{
 			TexItem->AddAssetReference(ThisAssetReferencer);
 		}
 
+
 		SSRenderer* Renderer = (SSRenderer*)g_Renderer;
 		Renderer->AddGALStateChangedAsset(this);
 	}
+
+	_AssetInstanceReferencers.PushBack(Referencer);
+
 }
 
 void MaterialAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerName)
@@ -71,11 +78,11 @@ void MaterialAsset::RemoveAssetReference(const AssetInstanceReferencer& Referenc
 		return;
 	}
 
-	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
+	int32 ReferencerCnt = GetAssetInstanceReferenceCnt();
 	if (ReferencerCnt == 0)
 	{
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
-		for (ITextureAsset* TexItem : _ReferencingTextures)
+		for (ITextureAsset* TexItem : _ReferencingTextureCache)
 		{
 			TexItem->RemoveAssetReference(ThisAssetReferencer);
 		}
@@ -86,46 +93,67 @@ void MaterialAsset::RemoveAssetReference(const AssetInstanceReferencer& Referenc
 
 }
 
+void MaterialAsset::BindAssetManager(IAssetManager* InAssetManager)
+{
+	_BoundAssetManager = InAssetManager;
+	ApplyMtlDataModify();
+}
+
 void MaterialAsset::ReleaseGALData()
 {
 	delete _GALMaterialAsset;
 	_GALMaterialAsset = nullptr;
 }
 
-void MaterialAsset::NotifyMtlDataModified()
+void MaterialAsset::ApplyMtlDataModify()
 {
-	bool bIsMaterialInstantiated = _AssetInstanceReferencers.GetSize() > 0;
-	AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
+	time(&_LastUpdateTime);
 
-	if (bIsMaterialInstantiated) // 레퍼런스를 잡고있는 경우 메테리얼이 변경되면
+	if (_BoundAssetManager == nullptr)
 	{
-		for (ITextureAsset* TexItem : _ReferencingTextures) // 기존에 잡아놨던 텍스쳐 레퍼런스를 전부 날린다.
+		return;
+	}
+
+	const bool bIsThisAssetAlive = GetAssetInstanceReferenceCnt() > 0;
+	const AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
+
+	// 레퍼런스를 잡고있는 경우 메테리얼이 변경되면 해당 메테리얼이 가지고 있는 텍스처의 레퍼런스도 바뀌어야 한다.
+	// 텍스처 레퍼런스를 변경하기 위해 기존에 가지고 있던 레퍼런스를 다 날리고 다시 구축한다.
+	if (bIsThisAssetAlive)
+	{
+		for (ITextureAsset* TexItem : _ReferencingTextureCache)
 		{
 			TexItem->RemoveAssetReference(ThisReferencer);
 		}
 	}
 
-	_ReferencingTextures.Clear();
+
+	// 레퍼런스하고있는 텍스처의 리스트들을 재구축한다.
+	_ReferencingTextureCache.Clear();
 	if (_MtlData->_Type == EMaterialType::DefaultPBR)
 	{
-		const MtlDataDefaultPBR* PbrMtlData = (MtlDataDefaultPBR*)_MtlData;
+		MtlDataDefaultPBR* PbrMtlData = static_cast<MtlDataDefaultPBR*>(_MtlData);
 
-		for (ITextureAsset* NewReferencingTex : PbrMtlData->_Textures)
+		for (int32 i = 0; i < (int32)EDefaultPBRMatTexTypes::Count; i++)
 		{
-			bool bAlreadyReferencing = false;
-			for (ITextureAsset* ReferencingTextureItem : _ReferencingTextures)
+			SS::SHasherW NewReferencingTexName = PbrMtlData->_TextureAssetNames[i];
+			if (NewReferencingTexName.IsEmpty())
 			{
-				if (NewReferencingTex == ReferencingTextureItem) 
-				{
-					bAlreadyReferencing = true; // 새로 포함하려는 텍스쳐가 이미 ReferencingTexture에 포함돼있으면 한 번 더 포함시키지 않는다.
-					break;
-				}
+				SS_ASSERT(false);
+				PbrMtlData->_CachedTextureRefs[i] = nullptr;
+				continue;
 			}
 
-			if (bAlreadyReferencing == false && NewReferencingTex != nullptr)
+			ITextureAsset* NewReferencingTexture = _BoundAssetManager->FindAssetByName<ITextureAsset>(NewReferencingTexName);
+			if (NewReferencingTexture == nullptr)
 			{
-				_ReferencingTextures.PushBack(NewReferencingTex); // ReferencingTexture 를 재구축해준다.
+				SS_ASSERT(false);
+				PbrMtlData->_CachedTextureRefs[i] = nullptr;
+				continue;
 			}
+
+			PbrMtlData->_CachedTextureRefs[i] = NewReferencingTexture;
+			ListPushBackUnique(_ReferencingTextureCache, NewReferencingTexture);
 		}
 	}
 	else
@@ -133,21 +161,17 @@ void MaterialAsset::NotifyMtlDataModified()
 		SS_ASSERT(false);
 	}
 
-	if (bIsMaterialInstantiated)
+
+	// 새로운 텍스쳐 레퍼런스들을 전부 추가한다.
+	if (bIsThisAssetAlive)
 	{
-		for (ITextureAsset* TexItem : _ReferencingTextures) // 새로운 텍스쳐 레퍼런스들을 전부 추가한다.
+		for (ITextureAsset* TexItem : _ReferencingTextureCache) 
 		{
-			if (TexItem != nullptr)
-			{
-				TexItem->AddAssetReference(ThisReferencer);
-			}
+			TexItem->AddAssetReference(ThisReferencer);
 		}
-	}
 
-
-	if (bIsMaterialInstantiated)
-	{
-		SSRenderer* Renderer = (SSRenderer*)g_Renderer; // GAL 상태를 변화하도록 유도한다.
+		// GAL 상태를 변화하도록 유도한다.
+		SSRenderer* Renderer = (SSRenderer*)g_Renderer; 
 		Renderer->AddGALStateChangedAsset(this);
 	}
 }

@@ -1,15 +1,15 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
-#include <SSRenderer/Public/RenderBase/IRenderer.h>
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 
 
 #include "SSContentsBase/Private/AnimWorker/AnimWorkerBase.h"
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 
-#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
-
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
@@ -100,6 +100,12 @@ void SWorld::DestroyAllObjectsInWorld()
 
 void SWorld::ProcessTransformCommit()
 {
+	int64 PC1;
+	int64 PC2;
+	int64 PF;
+	double eTime;
+	PC1 = GetPerofrmanceCounter();
+
 	uint64 CurFrameCnt = SSFrameInfo::GetFrameCnt();
 
 	for (SS::pair<SObjHashCode, SGameObject*>& PairItem : _TransformCommitNeededObjs)
@@ -144,6 +150,11 @@ void SWorld::ProcessTransformCommit()
 
 
 	_TransformCommitNeededObjs.Clear();
+
+	PC2 = GetPerofrmanceCounter();
+	PF = GetPerformanceFrequency();
+	eTime = (PC2 - PC1) / (double)PF;
+	int a = 0;
 }
 
 void SWorld::AddTransformCommitNeededObj(SGameObject* InObj)

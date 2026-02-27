@@ -1,9 +1,8 @@
 #pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
+#include "SSFBXImporter/Public/FRAN.h"
 
-#define FBXSDK_SHARED
-#include <fbxsdk.h>
 
 #include "SSFBXImporter/Public/ISSFBXImporter.h"
 
@@ -25,13 +24,20 @@ private:
 	FbxManager* _FBXManager = nullptr;
 	FbxImporter* _FBXImporter = nullptr;
 	FbxScene* _currentScene = nullptr;
+
+
+private:
 	SS::SHasherW _boundFilePath;
 	SS::SHasherW _boundFileName;
+	SS::SHasherW _RepresentingAssetName;
 
+
+private:
 	SS::PooledList<SS::pair<::FbxMesh*, SS::SHasherW>> _importedMeshNames;
+	SS::HashMap<uint64, IMaterialAsset*> _FbxUniqueIDToMtlAsset;
+	SS::PooledList<IAssetBase*> _ImportedAssets;
+	SS::PooledList<SS::SHasherW> _IssuedAssetNamesForThisBind;
 
-	IAssetManagerMutable* _AssetManagerToImportAsset = nullptr;
-	ICommonRenderAssetSet* _CommonRenderAssetSetToImport = nullptr;
 
 public:
 	SSFBXImporter();
@@ -40,15 +46,14 @@ public:
 public:
 	virtual SS::SHasherW GetBoundFilePath() const override;
 	virtual SS::SHasherW GetBoundFileName() const override;
+	virtual SS::SHasherW GetRepresentingAssetName() const override;
+
 	virtual SS::PooledList<IAssetBase*> GetImportedAssets() const override;
 
 	virtual bool BindFbxSceneFile(const utf16* inFilePath) override;
 	virtual void ClearFbxSceneFile() override;
 
-	virtual void BindAssetManagerToImportAsset(IAssetManagerMutable* InAssetMnanager, ICommonRenderAssetSet* inCommonRenderAssetSet = nullptr) override;
-	virtual void ClearRendererToImportAsset() override;
-
-	virtual void RelocateImportedAssetsToAssetManager() override;
+	virtual void RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList) override;
 
 	virtual void GenerateImportedAssets() override;
 
@@ -63,16 +68,12 @@ private:
 	}
 
 private:
+	SS::SHasherW IssueNewAssetName(const SS::StringW& nodeName, EAssetType InAssetType);
+
 	void GenerateImportedMaterialAssets();
 	void GenerateImportedMdlcAsset();
 
 	void ImportCurrentFileToModelAsset_Recursion(::FbxNode* node, int32 parentReferenceIdx, IModelCombinationAssetMutable* MdlcAsset);
 
 	void GenerateImportedRenderAnimAssets();
-
-
-private:
-	SS::HashMap<uint64, IMaterialAsset*> _FbxUniqueIDToMtlAsset;
-
-	SS::PooledList<IAssetBase*> _ImportedAssets;
 };

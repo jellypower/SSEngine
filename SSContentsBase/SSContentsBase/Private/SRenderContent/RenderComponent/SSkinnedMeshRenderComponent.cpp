@@ -59,17 +59,9 @@ void SSkinnedMeshRenderComponent::PostConstructHierarchy()
 
 void SSkinnedMeshRenderComponent::ConstructRenderInstance()
 {
-	IRISkinnedMesh* NewSkinnedMeshRI = g_Renderer->CreateRISkinnedMesh();
-	_RenderInstance = NewSkinnedMeshRI;
-
-	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-
-	SS_ASSERT(_ModelAssetName.IsEmpty() == false);
-	IModelAsset* FoundModelRef = AssetManager->FindAssetByName<IModelAsset>(_ModelAssetName);
-
-
-	NewSkinnedMeshRI->SetModelAsset(FoundModelRef);
-	NewSkinnedMeshRI->SetGameObjectIDXXX(GetHashCode());
+	_RenderInstance = g_Renderer->CreateRISkinnedMesh();
+	_RenderInstance->SetGameObjectIDXXX(GetHashCode());
+	SnycMeshRIWithAssetBindingIfExists();
 }
 
 void SSkinnedMeshRenderComponent::DestructRenderInstance()
@@ -80,6 +72,12 @@ void SSkinnedMeshRenderComponent::DestructRenderInstance()
 		return;
 	}
 
+	if (GetIncludedWorld() != nullptr)
+	{
+		SS_INTERRUPT(); // Must be removed from world before destruct.
+		return;
+	}
+
 	_RenderInstance->ReleaseGALMetaData();
 	delete _RenderInstance;
 }
@@ -87,7 +85,7 @@ void SSkinnedMeshRenderComponent::DestructRenderInstance()
 
 void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGameObject)
 {
-	if (_ModelAssetName.IsEmpty())
+	if (_CachedMeshAsset == nullptr || _CachedMeshAsset->GetMeshType() != EMeshType::Skinned)
 	{
 		SS_ASSERT(false);
 		return;
@@ -96,17 +94,7 @@ void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGa
 	_RootBone = RootBoneGameObject;
 
 
-	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
-	IModelAsset* FoundModelRef = AssetManager->FindAssetByName<IModelAsset>(_ModelAssetName);
-	IMeshAsset* BoundMesh = FoundModelRef->GetMeshAsset();
-
-	if (BoundMesh->GetMeshType() != EMeshType::Skinned)
-	{
-		SS_INTERRUPT();
-		return;
-	}
-
-	const MeshRawDataSkinned* SkinnedRawMesh = (MeshRawDataSkinned*)BoundMesh->GetMeshRawData();
+	const MeshRawDataSkinned* SkinnedRawMesh = (MeshRawDataSkinned*)_CachedMeshAsset->GetMeshRawData();
 	int32 NewBoneCnt = SkinnedRawMesh->_BoneHeader._BoneCnt;
 
 	SS::PooledList<SGameObject*> ScrapedDecendants(200);
@@ -115,14 +103,15 @@ void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGa
 
 	_BoneBindings.Clear();
 	_BoneBindings.Reserve(200);
-	const SS::PooledList<BonePlacement>& OriginalBones = SkinnedRawMesh->_BonePlacements;
+	const SS::PooledList<Transform>& BoneTransforms = SkinnedRawMesh->_BonePlacements;
+	const SS::PooledList<SS::SHasherW>& BoneNames = SkinnedRawMesh->_BoneNames;
 	for (int32 i = 0; i < NewBoneCnt; i++)
 	{
 		SGameObject* MatchingObject = nullptr;
 
 		for (SGameObject* Item : ScrapedDecendants)
 		{
-			if (OriginalBones[i].BoneName == Item->GetObjectName())
+			if (BoneNames[i] == Item->GetObjectName())
 			{
 				MatchingObject = Item;
 				break;

@@ -1,16 +1,26 @@
 #include "FrameInfoProcessorBase.h"
 
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
+#include "SSEngineDefault/Public/SSThread/SSThreadUtil.h"
 
 constexpr double FRAME_LOW_LIMIT = 1 / 1000.0;
 
 
-
-void FrameInfoProcessorBase::BeginFrameXXX()
+const SS::PooledList<ProfileResultItem> FrameInfoProcessorBase::GetLastProfileResult() const
 {
+	return _LastProfileResult;
+}
+
+void FrameInfoProcessorBase::StartUpXXX()
+{
+	_ProfilingNameStack.Reserve(128);
+	_ProfileInProgressResult.Reserve(128);
+	_LastProfileResult.Reserve(128);
+
+
 	_perfFrequency = GetPerformanceFrequency();
-	_currentTick = GetPerofrmanceCounter();
-	_lastFPSCheckTick = _currentTick;
+	_FrameStartTick = GetPerofrmanceCounter();
+	_lastFPSCheckTick = _FrameStartTick;
 }
 
 void FrameInfoProcessorBase::PerFrameXXX()
@@ -18,19 +28,22 @@ void FrameInfoProcessorBase::PerFrameXXX()
 	_frameCount++;
 	_frameCntDuringInFPSCheckterval++;
 
-	_previousTick = _currentTick;
-	_currentTick = GetPerofrmanceCounter();
+	_PrevFrameStartTick = _FrameStartTick;
+	_FrameStartTick = GetPerofrmanceCounter();
 
-	uint64 tickDiff = _currentTick - _previousTick;
+	_LastProfileResult = _ProfileInProgressResult;
+	_ProfileInProgressResult.Clear();
 
-	if (tickDiff == 0)
+	_deltaTick = _FrameStartTick - _PrevFrameStartTick;
+
+	if (_deltaTick == 0)
 	{
 		_deltaTime = FRAME_LOW_LIMIT;
-		__debugbreak();
+		SS_INTERRUPT();
 	}
 	else
 	{
-		_deltaTime = (double)tickDiff / (double)_perfFrequency;
+		_deltaTime = (double)_deltaTick / (double)_perfFrequency;
 	}
 
 	_FPSCheckStopWatch += _deltaTime;
@@ -49,4 +62,73 @@ void FrameInfoProcessorBase::ProcessWindowResizeXXX(uint32 width, uint32 height)
 {
 	_windowSize.X = width;
 	_windowSize.Y = height;
+}
+
+void FrameInfoProcessorBase::BeginMainProfile(SS::SHasherW RecordItemName)
+{
+	SS_ASSERT(SSThreadUtil::IsInMainThread());
+
+	ProfileNameTickCntPair LastProfile = GetProfStackTop();
+	SS::StringW NameConcat = LastProfile.Name.C_Str();
+
+	NameConcat += L"/";
+	NameConcat += RecordItemName.C_Str();
+
+	SS::SHasherW NewName = NameConcat.C_Str();
+
+
+	// TODO: Lock?
+	{
+		uint64 TickCnt = GetPerofrmanceCounter();
+		_ProfilingNameStack.PushBack({ NewName, TickCnt });
+	}
+}
+
+void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
+{
+	SS_ASSERT(SSThreadUtil::IsInMainThread());
+
+	const ProfileNameTickCntPair& ProfStackTop = GetProfStackTop();
+
+	const utf16* ProfStackTopNameRaw = ProfStackTop.Name.C_Str();
+	const int32 ProfStackTopNameStrLen = ProfStackTop.Name.GetStrLen();
+
+	const utf16* RecordItemNameRaw = RecordItemName.C_Str();
+	const int32 RecordItemNameStrLen = RecordItemName.GetStrLen();
+
+	if (ProfStackTopNameStrLen <= RecordItemNameStrLen)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	int32 CmpResult = wcscmp(ProfStackTopNameRaw + ProfStackTopNameStrLen - RecordItemNameStrLen, RecordItemNameRaw);
+	if (CmpResult != 0)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+
+	// TODO: Lock?
+	{
+		_ProfilingNameStack.PopBack();
+
+		const uint64 NewTickCnt = GetPerofrmanceCounter();
+		_ProfileInProgressResult.PushBack(
+			{ ProfStackTop.Name, ProfStackTop.TickCnt, NewTickCnt }
+		);
+	}
+}
+
+ProfileNameTickCntPair FrameInfoProcessorBase::GetProfStackTop() const
+{
+	int64 LastIdx = _ProfilingNameStack.GetSize() - 1;
+	if (LastIdx == -1)
+	{
+		static const SS::SHasherW PerFrame = L"PER_FRAME";
+		return { PerFrame, _FrameStartTick };
+	}
+
+	return _ProfilingNameStack[LastIdx];
 }

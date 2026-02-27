@@ -5,6 +5,6 @@
 class IModelAssetMutable : public IModelAsset
 {
 public:
-	virtual void SetMesh(IMeshAsset* InMeshAsset) = 0;
-	virtual void SetMaterial(IMaterialAsset* InMaterialAsset, int32 materialIdx) = 0;
+	virtual void SetMesh(SS::SHasherW InMeshAssetName) = 0;
+	virtual void SetMaterial(SS::SHasherW InMaterialAssetName, int32 materialIdx) = 0;
 };

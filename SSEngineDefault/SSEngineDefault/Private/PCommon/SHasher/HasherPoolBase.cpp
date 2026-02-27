@@ -34,41 +34,7 @@ HasherPoolBase::~HasherPoolBase()
 	free(_HasherBucket);
 }
 
-const utf16* HasherPoolBase::FindC_Str(uint64 InHashX, uint32* const OutStrLen) const
-{
-	static constexpr utf16 EMPTY_STR[] = L"EMPTY";
-	if (InHashX == 0)
-	{
-		return EMPTY_STR;
-	}
-
-	union {
-		struct {
-			uint32 HashedValue; // 해쉬 상위 32비트
-			uint32 CurNodeCnt; // 해쉬 하위 32비트
-		};
-		uint64 HashX; // 해쉬 64비트 전체값
-	};
-
-	HashX = InHashX;
-
-
-	HasherPoolNode* CurHashPoolNode = _HasherBucket[HashedValue % _HasherBucketCnt];
-
-	for (uint32 i = 0; i < CurNodeCnt; i++)
-	{
-		CurHashPoolNode = CurHashPoolNode->_next;
-	}
-
-	if (OutStrLen != nullptr)
-	{
-		*OutStrLen = CurHashPoolNode->_strLen;
-	}
-
-	return CurHashPoolNode->_str;
-}
-
-uint64 HasherPoolBase::FindOrAddHasherValue(const utf16* InStr, uint32 InStrLen, uint32 InHashedValue)
+const HasherPoolNode* HasherPoolBase::FindOrAddHasherValue(const utf16* InStr, uint32 InStrLen, uint32 InHashedValue)
 {
 	if (InStr == nullptr || InStrLen == 0)
 	{
@@ -96,35 +62,37 @@ uint64 HasherPoolBase::FindOrAddHasherValue(const utf16* InStr, uint32 InStrLen,
 
 
 	uint64 InStrSpaceSize = sizeof(utf16) * (InStrLen + 1);
-	if (CurHasherPoolNode == nullptr)
+	if (CurHasherPoolNode == nullptr) // 해당 해시 버킷에 노드가 들어간 적이 없는 경우
 	{
 		HasherPoolNode* NewNode = (HasherPoolNode*)DBG_MALLOC(sizeof(HasherPoolNode) + InStrSpaceSize);
 		NewNode->_next = nullptr;
+		NewNode->_hashX = HashX;
 		NewNode->_strLen = InStrLen;
 		wcscpy(NewNode->_str, InStr);
 		_HasherBucket[BucketIdx] = NewNode;
 
-		return HashX;
+		return NewNode;
 	}
 
 
 	while (true)
 	{
-		if (wcscmp(CurHasherPoolNode->_str, InStr) == 0)
+		if (wcscmp(CurHasherPoolNode->_str, InStr) == 0) // 원하는 노드를 찾은 경우
 		{
-			return HashX;
+			return CurHasherPoolNode;
 		}
 
-		if (CurHasherPoolNode->_next == nullptr)
+		if (CurHasherPoolNode->_next == nullptr) // 원하는 노드가 없는 경우 새로 만들기
 		{
 			HasherPoolNode* NewNode = (HasherPoolNode*)DBG_MALLOC(sizeof(HasherPoolNode) + InStrSpaceSize);
 			NewNode->_next = nullptr;
+			NewNode->_hashX = HashX;
 			NewNode->_strLen = InStrLen;
 			wcscpy(NewNode->_str, InStr);
 			CurHasherPoolNode->_next = NewNode;
 			CurNodeCnt++;
 
-			return HashX;
+			return NewNode;
 		}
 
 		CurHasherPoolNode = CurHasherPoolNode->_next;

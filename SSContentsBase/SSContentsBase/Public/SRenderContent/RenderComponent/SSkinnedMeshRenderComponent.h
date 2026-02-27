@@ -3,7 +3,7 @@
 #include "SMeshRenderComponentBase.h"
 
 
-class SSkinnedMeshRenderComponent : public SMeshRenderComponentBase
+class SSCONTENTBASE_MODULE SSkinnedMeshRenderComponent : public SMeshRenderComponentBase
 {
 private:
 	SS::PooledList<SObjHashT<SGameObject>> _BoneBindings;
@@ -20,9 +20,6 @@ protected:
 
 	virtual void ConstructRenderInstance() override;
 	virtual void DestructRenderInstance() override;
-
-public:
-	SS::SHasherW GetModelAssetName() const { return _ModelAssetName; }
 
 private:
 	void ReconstructBoneBinding(SGameObject* RootBoneGameObject);

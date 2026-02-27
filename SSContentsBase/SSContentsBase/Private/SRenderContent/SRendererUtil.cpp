@@ -1,6 +1,7 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/SRendererUtil.h"
 
+
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SSkinnedMeshRenderComponent.h"
 
@@ -8,10 +9,12 @@
 
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SStaticMeshRenderComponent.h"
 
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelCombinationAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
@@ -24,7 +27,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 		return nullptr;
 	}
 
-	SGameObject* NewGameObj = NewSObject<SGameObject>(MdlcAssetName);
+	SGameObject* NewGameObjRoot = NewSObject<SGameObject>(MdlcAssetName);
 
 	if (MdlcAsset->GetChildCnt() == 2) // 단일 모델이면 -> GetChildCnt중 1개는 루트오브젝트, 1개는 실제 인스턴스
 	{
@@ -32,7 +35,7 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 
 		if (AssetPlacement.MeshType == EMeshType::Rigid)
 		{
-			SMeshRenderComponentBase* NewRenderComponent = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(MdlcAsset->GetAssetName());
+			SMeshRenderComponentBase* NewRenderComponent = NewGameObjRoot->CreateComponent<SStaticMeshRenderComponent>(MdlcAsset->GetAssetName());
 			NewRenderComponent->SetModelAsset(AssetPlacement.AssetName);
 			NewRenderComponent->PostConstructHierarchy();
 		}
@@ -41,14 +44,66 @@ SGameObject* SRendererUtil::InstantiateModelObjTree(SS::SHasherW MdlcAssetName)
 			SS_ASSERT(false); // 일어나면 안되는 상황
 		}
 
-		return NewGameObj;
+		return NewGameObjRoot;
 	}
 	else
 	{
-		NewGameObj->SetStrongBindAncestor(NewGameObj);
-		InstantiateModelObjTree_Recursion(MdlcAsset, MDLC_PLACEMENTREF_ROOT_IDX, NewGameObj, NewGameObj);
-		SGameObjectConstructor::FinishConstructHierarchy(NewGameObj);
-		return NewGameObj;
+		NewGameObjRoot->SetStrongBindAncestor(NewGameObjRoot);
+		int32 ChildCnt = MdlcAsset->GetChildCnt();
+		SS::PooledList<SGameObject*, SS::InlineAllocator<200>> GameObjectsCreation(ChildCnt);
+
+
+		// 오브젝트들 만들기
+		for (int32 i = 0; i < ChildCnt; i++)
+		{
+			const AssetPlacementReference& ThisAssetPlacement = MdlcAsset->GetChildAt(i);
+			SGameObject* NewChildObj = NewSObject<SGameObject>(ThisAssetPlacement.PlacementName);
+			NewChildObj->SetStrongBindAncestor(NewGameObjRoot);
+			NewChildObj->SetTransform(ThisAssetPlacement.Transform);
+
+			GameObjectsCreation.PushBack(NewChildObj);
+
+
+			if (ThisAssetPlacement.AssetName.IsEmpty() == false)
+			{
+				if (ThisAssetPlacement.MeshType == EMeshType::Rigid)
+				{
+					SMeshRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SStaticMeshRenderComponent>(ThisAssetPlacement.PlacementName);
+					NewRenderComp->SetModelAsset(ThisAssetPlacement.AssetName);
+				}
+				else if (ThisAssetPlacement.MeshType == EMeshType::Skinned)
+				{
+					SMeshRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SSkinnedMeshRenderComponent>(ThisAssetPlacement.PlacementName);
+					NewRenderComp->SetModelAsset(ThisAssetPlacement.AssetName);
+				}
+				else
+				{
+					SS_ASSERT(false);
+				}
+			}
+		}
+
+
+		// 부모 구성하기
+		for (int32 i = 0; i < ChildCnt; i++)
+		{
+			const AssetPlacementReference& ThisAssetPlacement = MdlcAsset->GetChildAt(i);
+			int32 ParentIdx = ThisAssetPlacement.ParentIdx;
+
+			SGameObject* ThisGameObject = GameObjectsCreation[i];
+
+			SGameObject* ParentGameObject = NewGameObjRoot; // 부모가 없으면 루트에 바로 등록
+			if (ParentIdx != -1)
+			{
+				ParentGameObject = GameObjectsCreation[ParentIdx]; // 부모를 오버라이드
+			}
+
+			ThisGameObject->SetParent(ParentGameObject);
+		}
+
+
+		SGameObjectConstructor::FinishConstructHierarchy(NewGameObjRoot);
+		return NewGameObjRoot;
 	}
 }
 
@@ -79,43 +134,37 @@ SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName, SS::SH
 	return NewGameObj;
 }
 
-void SRendererUtil::InstantiateModelObjTree_Recursion(const IModelCombinationAsset* MdlcAsset, int32 CurAssetIdx,
-                                                      SGameObject* ParentObject, SGameObject* StrongBindAncestor)
+SGameObject* SRendererUtil::InstantiateMesh(SS::SHasherW MeshAssetName, SS::SHasherW ObjectNameOverride)
 {
-	const AssetPlacementReference& ThisAssetPlacement = MdlcAsset->GetChildAt(CurAssetIdx);
-
-	for (int32 ChildIdx : ThisAssetPlacement.ChildIndices)
+	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
+	const ICommonRenderAssetSet* CommRenderAssets = g_Renderer->GetCommonRenderAssetSet();
+	const IMeshAsset* lMeshAsset = AssetManager->FindAssetByName<IMeshAsset>(MeshAssetName);
+	if (lMeshAsset == nullptr)
 	{
-		const AssetPlacementReference& ChildAssetPlacement = MdlcAsset->GetChildAt(ChildIdx);
-		SGameObject* NewChildObj = NewSObject<SGameObject>(ChildAssetPlacement.PlacementName);
-		NewChildObj->SetParent(ParentObject);
-		NewChildObj->SetStrongBindAncestor(StrongBindAncestor);
-		NewChildObj->SetTransform(ChildAssetPlacement.Transform);
-
-		if(ChildAssetPlacement.AssetName.IsEmpty() == false)
-		{
-			if (ChildAssetPlacement.MeshType == EMeshType::Rigid)
-			{
-				SMeshRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SStaticMeshRenderComponent>(ChildAssetPlacement.PlacementName);
-				NewRenderComp->SetModelAsset(ChildAssetPlacement.AssetName);
-			}
-			else if (ChildAssetPlacement.MeshType == EMeshType::Skinned)
-			{
-				SMeshRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SSkinnedMeshRenderComponent>(ChildAssetPlacement.PlacementName);
-				NewRenderComp->SetModelAsset(ChildAssetPlacement.AssetName);
-			}
-			else
-			{
-				SS_ASSERT(false);
-			}
-		}
-		else
-		{
-//			SRenderComponentBase* NewRenderComp = NewChildObj->CreateComponent<SStaticMeshRenderComponent>(ChildAssetPlacement.PlacementName);
-//			NewRenderComp->SetModelAsset("directionmesh/direction.mdl");
-		}
-		
-		InstantiateModelObjTree_Recursion(MdlcAsset, ChildIdx, NewChildObj, StrongBindAncestor);
+		SS_ASSERT(false);
+		return nullptr;
 	}
 
+	SGameObject* NewGameObj = nullptr;
+	if (ObjectNameOverride.IsEmpty())
+	{
+		NewGameObj = NewSObject<SGameObject>(MeshAssetName);
+	}
+	else
+	{
+		NewGameObj = NewSObject<SGameObject>(ObjectNameOverride);
+	}
+
+	SStaticMeshRenderComponent* NewStaticMeshComp = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(L"MeshAssetName");
+	NewStaticMeshComp->SetMeshAsset(MeshAssetName);
+
+	static const SS::SHasherW EmptyMtlAssetName = CRAN::EMPTY_PBR_MTL;
+	const int32 SubMeshCnt = lMeshAsset->GetSubMeshCnt();
+	for (int32 i=0;i<SubMeshCnt;i++)
+	{
+		NewStaticMeshComp->SetMaterialAsset(EmptyMtlAssetName, i);
+	}
+	NewStaticMeshComp->PostConstructHierarchy();
+
+	return NewGameObj;
 }

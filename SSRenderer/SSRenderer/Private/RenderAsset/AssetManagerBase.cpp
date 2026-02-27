@@ -21,7 +21,6 @@ AssetManagerBase::AssetManagerBase(int32 AssetHashMapCapacity, int32 AssetHashMa
 		SS::HashMap<SS::SHasherW, IAssetBase*>(AssetHashMapCapacity, AssetHashMapBucketCapacity),
 		SS::HashMap<SS::SHasherW, IAssetBase*>(AssetHashMapCapacity, AssetHashMapBucketCapacity),
 		SS::HashMap<SS::SHasherW, IAssetBase*>(AssetHashMapCapacity, AssetHashMapBucketCapacity),
-		SS::HashMap<SS::SHasherW, IAssetBase*>(AssetHashMapCapacity, AssetHashMapBucketCapacity),
 	}
 {
 }
@@ -42,6 +41,7 @@ void AssetManagerBase::AddToAssetPool(IAssetBase* newAsset)
 	}
 
 	AssetMapOfType.Add(newAsset->GetAssetName(), newAsset);
+	newAsset->BindAssetManager(this);
 }
 
 void AssetManagerBase::ReleaseAllAssets()
@@ -69,84 +69,26 @@ void AssetManagerBase::ReleaseAllAssets()
 	}
 }
 
-ITextureAssetMutable* AssetManagerBase::CreateEmptyTextureAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
+IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InAssetName, EAssetType InAssetType) const
 {
-	return DBG_NEW TextureAsset(InAssetName, InAssetPath, InType);
-}
+	int32 i32InAssetName = (int32)InAssetType;
 
-IMeshAssetMutable* AssetManagerBase::CreateEmptyMeshAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
-{
-	return DBG_NEW MeshAsset(InAssetName, InAssetName);
-}
-
-IModelAssetMutable* AssetManagerBase::CreateEmptyModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
-{
-	return DBG_NEW ModelAsset(InAssetName, InAssetPath);
-}
-
-IModelCombinationAssetMutable* AssetManagerBase::CreateEmptyModelCombinationAsset(SS::SHasherW InAssetName,
-	SS::SHasherW InAssetPath, int32 ReservedChildCnt)
-{
-	return DBG_NEW ModelCombinationAsset(InAssetName, InAssetPath, ReservedChildCnt);
-}
-
-IMaterialAssetMutable* AssetManagerBase::CreateEmptyMaterialAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
-{
-	return DBG_NEW MaterialAsset(InAssetName, InAssetPath);
-}
-
-IRenderAnimAssetMutable* AssetManagerBase::CreateEmptyRenderAnimAsset(SS::SHasherW InAssetName,
-	SS::SHasherW InAssetPath)
-{
-	return DBG_NEW RenderAnimAsset(InAssetName, InAssetPath);
-}
-
-
-SS::SHasherW AssetManagerBase::GenerateAssetName(const SS::StringW& fileName, const SS::StringW& nodeName, EAssetType InAssetType) const
-{
-	SS::StringW newAssetName = fileName;
-	newAssetName += L"/";
-	newAssetName += nodeName;
-	newAssetName += GetAssetSuffix(InAssetType);
-
-	SS::SHasherW NewAssetNameHasher;
-
-	IAssetBase* FoundAsset = FindAssetByName(newAssetName.C_Str(), InAssetType);
-	if (FoundAsset == nullptr)
+	if (i32InAssetName <= (int32)EAssetType::None || i32InAssetName >= (int32)EAssetType::Count)
 	{
-		NewAssetNameHasher = newAssetName.C_Str();
-		return NewAssetNameHasher;
+		SS_ASSERT(false);
+		return nullptr;
 	}
 
-	int32 suffixNo = 1;
-
-	do
+	if (InAssetName.IsEmpty())
 	{
-		newAssetName = fileName;
-		newAssetName += L"/";
-		newAssetName += nodeName;
-		newAssetName += L"_";
+		SS_ASSERT(false);
+		return nullptr;
+	}
 
-		SS::StringW SuffixNoStr = IntToString(suffixNo++);
-		newAssetName += SuffixNoStr;
-
-		newAssetName += GetAssetSuffix(InAssetType);
-
-		FoundAsset = FindAssetByName(newAssetName.C_Str(), InAssetType);
-
-	} while (FoundAsset != nullptr);
-
-
-	NewAssetNameHasher = newAssetName.C_Str();
-	return NewAssetNameHasher;
-}
-
-IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InModelAssetName, EAssetType InAssetType) const
-{
 	const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetMapOfType =
 		_assetHashMap[(int32)InAssetType];
 
-	IAssetBase* const* ppFoundModelAsset = AssetMapOfType.Find(InModelAssetName);
+	IAssetBase* const* ppFoundModelAsset = AssetMapOfType.Find(InAssetName);
 	if (ppFoundModelAsset == nullptr)
 	{
 		return nullptr;
@@ -157,7 +99,51 @@ IAssetBase* AssetManagerBase::FindAssetByName(SS::SHasherW InModelAssetName, EAs
 	return FoundModelAsset;
 }
 
+bool AssetManagerBase::AddAssetReferencer(SS::SHasherW InAssetName, EAssetType InAssetType,
+	const AssetInstanceReferencer& Referencer)
+{
+	IAssetBase* FoundAsset = FindAssetByName(InAssetName, InAssetType);
+	if (FoundAsset == nullptr)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	FoundAsset->AddAssetReference(Referencer);
+	return true;
+}
+
+bool AssetManagerBase::RemoveAssetReferencer(SS::SHasherW InAssetName, EAssetType InAssetType,
+	const AssetInstanceReferencer& Referencer)
+{
+	IAssetBase* FoundAsset = FindAssetByName(InAssetName, InAssetType);
+	if (FoundAsset == nullptr)
+	{
+		SS_ASSERT(false);
+		return false;
+	}
+
+	FoundAsset->RemoveAssetReference(Referencer);
+	return true;
+}
+
 const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetManagerBase::GetAssetMap(EAssetType InAssetType) const
 {
 	return _assetHashMap[(int32)InAssetType];
+}
+
+void AssetManagerBase::FindAssetsOfNamespace(SS::PooledList<IAssetBase*>& AssetListToFill, SS::SHasherW Namespace,
+	EAssetType InAssetType) const
+{
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetMap = _assetHashMap[(int32)InAssetType];
+
+
+	for (const SS::pair<SS::SHasherW, IAssetBase*>& AssetPairItem : AssetMap)
+	{
+		IAssetBase* AssetItem = AssetPairItem.second;
+		if (AssetItem->GetDBNameSpace() == Namespace)
+		{
+			AssetListToFill.PushBack(AssetItem);
+		}
+	}
 }

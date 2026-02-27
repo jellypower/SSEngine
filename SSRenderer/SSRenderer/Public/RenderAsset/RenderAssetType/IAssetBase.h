@@ -3,6 +3,10 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "RenderAssetCommon/CommonDataType.h"
 
+#include <ctime>
+
+class IAssetManager;
+
 enum class EAssetInstanceReferenceType : uint8
 {
 	None,
@@ -56,8 +60,12 @@ public:
 class IAssetBase : public INoncopyable
 {
 protected:
+	SS::SHasherW _DBNameSpace;
 	SS::SHasherW _assetName;
 	SS::SHasherW _assetPath;
+	time_t _LastUpdateTime = 0;
+
+	IAssetManager* _BoundAssetManager = nullptr;
 
 	SS::PooledList<AssetInstanceReferencer> _AssetInstanceReferencers;
 
@@ -71,10 +79,16 @@ public:
 		return ThisAssetReferencer;
 	}
 
+	SS::SHasherW GetDBNameSpace() const { return _DBNameSpace; }
 	SS::SHasherW GetAssetName() const { return _assetName; }
 	SS::SHasherW GetAssetPath() const { return _assetPath; }
+	time_t GetLastUpdateTime() const { return _LastUpdateTime; }
+
 	int32 GetAssetInstanceReferenceCnt() const { return _AssetInstanceReferencers.GetSize(); }
 
+public:
+	void MarkAsUpdated(){ time(&_LastUpdateTime); }
+	void SetAssetPathXXX(SS::SHasherW InPath) { _assetPath = InPath; }
 
 public:
 	virtual EAssetType GetAssetType() const = 0;
@@ -82,5 +96,5 @@ public:
 	virtual void AddAssetReference(const AssetInstanceReferencer& Referencer) = 0;
 	virtual void RemoveAssetReference(const AssetInstanceReferencer& ReferencerName) = 0;
 
-	//TODO: virtual void Serialize() = 0;
+	virtual void BindAssetManager(IAssetManager* InAssetManager) = 0;
 };

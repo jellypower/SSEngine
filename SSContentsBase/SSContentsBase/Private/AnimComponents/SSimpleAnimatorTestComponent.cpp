@@ -126,7 +126,7 @@ float SSimpleAnimatorTestComponent::GetAnimDuration() const
 		return 0;
 	}
 
-	return AnimRawData->_KeyFrameDuration;
+	return AnimRawData->_Header.KeyFrameDuration;
 }
 
 double SSimpleAnimatorTestComponent::GetWholeFrameTime() const

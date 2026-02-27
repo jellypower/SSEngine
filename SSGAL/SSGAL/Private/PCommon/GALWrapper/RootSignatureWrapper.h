@@ -1,6 +1,5 @@
 #pragma once
 #include "Public/SSGALCommonEnums.h"
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 
 class RootSignaturePool;
 

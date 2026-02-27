@@ -3,6 +3,8 @@
 
 #include "PSOPool.h"
 
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+
 
 constexpr int32 TEMP_PSOMAP_CAPACITY = 5000;
 
@@ -21,6 +23,7 @@ const PSOWrapper* PSOPool::FindOrAddPSO(const PipelineDesc& PipelineDesc)
 
 	if(Result == nullptr)
 	{
+		SCOPE_PROFILE(CreatePSO);
 		PSOWrapper* NewWrapper = CreatePSO(PipelineDesc);
 		if(NewWrapper != nullptr)
 		{

@@ -1,12 +1,18 @@
 ﻿#include "ModelAsset.h"
 
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderAsset/IAssetManager.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
-ModelAsset::ModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+ModelAsset::ModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
+	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
 }
@@ -14,6 +20,38 @@ ModelAsset::ModelAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 EAssetType ModelAsset::GetAssetType() const
 {
 	return ThisAssetType;
+}
+
+IMeshAsset* ModelAsset::GetMeshAsset() const
+{
+	return _MeshAssetCache;
+}
+
+IMaterialAsset* ModelAsset::GetMaterialAsset(int32 materialIdx) const
+{
+	if (_SubMeshCntCache <= materialIdx || materialIdx < 0)
+	{
+		SS_ASSERT(false);
+		return nullptr;
+	}
+
+	return _MaterialAssetCache[materialIdx];
+}
+
+SS::SHasherW ModelAsset::GetMeshAssetName() const
+{
+	return _MeshAssetName;
+}
+
+SS::SHasherW ModelAsset::GetMaterialAssetName(int32 materialIdx) const
+{
+	if (_SubMeshCntCache <= materialIdx || materialIdx < 0)
+	{
+		SS_ASSERT(false);
+		return SS::SHasherW::GetEmpty();
+	}
+
+	return _MaterialAssetNames[materialIdx];
 }
 
 void ModelAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
@@ -33,16 +71,12 @@ void ModelAsset::AddAssetReference(const AssetInstanceReferencer& Referencer)
 	if (PrevReferencerCnt == 0)
 	{
 		AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
-		_MeshAsset->AddAssetReference(ThisReferencer);
 
-		int32 SubMeshCnt = GetSubMeshCnt();
-		for (int32 i = 0; i < SubMeshCnt; i++)
+		_MeshAssetCache->AddAssetReference(ThisReferencer);
+
+		for (int32 i = 0; i < _SubMeshCntCache; i++)
 		{
-			IMaterialAsset* MtlItem = _MaterialAssets[i]; // TODO: MtlItem이 nullptr이 되지 않고 EmptyMaterial을 넣어주도록 수정하기
-			if (MtlItem != nullptr)
-			{
-				MtlItem->AddAssetReference(ThisReferencer);
-			}
+			_MaterialAssetCache[i]->AddAssetReference(ThisReferencer);
 		}
 	}
 
@@ -71,21 +105,21 @@ void ModelAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerN
 	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
 	if (ReferencerCnt == 0)
 	{
-		AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
-		_MeshAsset->RemoveAssetReference(ThisReferencer);
+		const AssetInstanceReferencer ThisReferencer = MakeThisAssetReferencer();
+		_MeshAssetCache->RemoveAssetReference(ThisReferencer);
 
 
 		SS::PooledList<IMaterialAsset*, SS::InlineAllocator<SUBMESH_COUNT_MAX>> ReferencingMaterialSet;
 
-		int32 SubMeshCnt = GetSubMeshCnt();
-		for (int32 i = 0; i < SubMeshCnt; i++)
+
+		for (int32 i = 0; i < _SubMeshCntCache; i++)
 		{
-			IMaterialAsset* MtlItem = _MaterialAssets[i];
+			IMaterialAsset* MtlNameItem = _MaterialAssetCache[i];
 
 			bool bIsItemAlreadyInSet = false;
-			for (IMaterialAsset* ItemAlreadyInSet : ReferencingMaterialSet)
+			for (IMaterialAsset* ItemInSet : ReferencingMaterialSet)
 			{
-				if (ItemAlreadyInSet == MtlItem)
+				if (ItemInSet == MtlNameItem)
 				{
 					bIsItemAlreadyInSet = true;
 					break;
@@ -94,83 +128,157 @@ void ModelAsset::RemoveAssetReference(const AssetInstanceReferencer& ReferencerN
 
 			if (bIsItemAlreadyInSet == false)
 			{
-				ReferencingMaterialSet.PushBack(MtlItem);
+				ReferencingMaterialSet.PushBack(MtlNameItem);
 			}
 		}
 
 
-		for (IMaterialAsset* ReferencingMtlItem : ReferencingMaterialSet)
+		for (IMaterialAsset* MtlItem : ReferencingMaterialSet)
 		{
-			ReferencingMtlItem->RemoveAssetReference(ThisReferencer);
+			MtlItem->RemoveAssetReference(ThisReferencer);
 		}
 	}
 
 
+}
+
+void ModelAsset::BindAssetManager(IAssetManager* InAssetManager)
+{
+	_BoundAssetManager = InAssetManager;
+
+	IMeshAsset* FoundMeshAsset = _BoundAssetManager->FindAssetByName<IMeshAsset>(_MeshAssetName);
+	if (FoundMeshAsset == nullptr)
+	{
+		SS_ASSERT(false);
+		_SubMeshCntCache = 0;
+		_MeshAssetName = SS::SHasherW();
+		_MeshAssetCache = nullptr;
+		return;
+	}
+
+	_MeshAssetCache = FoundMeshAsset;
+	_SubMeshCntCache = FoundMeshAsset->GetSubMeshCnt();
+
+	static SS::SHasherW EmptyMtlName = CRAN::EMPTY_PBR_MTL;
+	ICommonRenderAssetSet* CommRenderAssetSet = g_Renderer->GetCommonRenderAssetSet();
+
+	for (int32 i = 0; i < _SubMeshCntCache; i++)
+	{
+		IMaterialAsset* FoudnMtl = _BoundAssetManager->FindAssetByName<IMaterialAsset>(_MaterialAssetNames[i]);
+
+		if (FoudnMtl == nullptr)
+		{
+			_MaterialAssetNames[i] = EmptyMtlName;
+			FoudnMtl = CommRenderAssetSet->GetEmptyPBRMaterial();
+			SS_ASSERT(FoudnMtl != nullptr);
+		}
+
+		_MaterialAssetCache[i] = FoudnMtl;
+	}
 }
 
 int32 ModelAsset::GetSubMeshCnt() const
 {
-	if (_MeshAsset == nullptr)
-	{
-		return 0;
-	}
-
-	return _MeshAsset->GetSubMeshCnt();
+	return _SubMeshCntCache;
 }
 
-void ModelAsset::SetMesh(IMeshAsset* InMeshAsset)
+void ModelAsset::SetMesh(SS::SHasherW InMeshAssetName)
 {
+	if (_BoundAssetManager == nullptr)
+	{
+		_MeshAssetName = InMeshAssetName;
+		return;
+	}
+
+	if (_MeshAssetName == InMeshAssetName)
+	{
+		return;
+	}
+
+	IMeshAsset* NewMeshAsset = _BoundAssetManager->FindAssetByName<IMeshAsset>(InMeshAssetName);
+	if (NewMeshAsset == nullptr)
+	{
+		SS_ASSERT_MSG(false, L"No such asset");
+		return;
+	}
+
+	IMeshAsset* PrevMeshAssetCache = _MeshAssetCache;
+	const int32 PrevSubMeshCnt = _SubMeshCntCache;
+
+	_MeshAssetCache = NewMeshAsset;
+	_SubMeshCntCache = NewMeshAsset->GetSubMeshCnt();
+	_MeshAssetName = InMeshAssetName;
+	time(&_LastUpdateTime);
+
 	if (GetAssetInstanceReferenceCnt() > 0)
 	{
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
-
-		int32 PrevSubMeshCnt = _MeshAsset->GetSubMeshCnt();
-		int32 NewSubMeshCnt = InMeshAsset->GetSubMeshCnt();
-		for (int32 i = NewSubMeshCnt; i < PrevSubMeshCnt; i++)
+		
+		for (int32 i = _SubMeshCntCache; i < PrevSubMeshCnt; i++)
 		{
-			if (_MaterialAssets[i] != nullptr) // TODO: MtlItem이 nullptr이 되지 않고 EmptyMaterial을 넣어주도록 수정하기
+			if (_MaterialAssetCache[i] != nullptr)
 			{
-				_MaterialAssets[i]->RemoveAssetReference(ThisAssetReferencer);
-				_MaterialAssets[i] = nullptr; // 서브메시의 개수가 줄어들면 줄어든 만큼 메테리얼 레퍼런스를 날려줘야 함.
+				_MaterialAssetCache[i]->RemoveAssetReference(ThisAssetReferencer);
+				_MaterialAssetCache[i] = nullptr;
 			}
 		}
 
-		_MeshAsset->RemoveAssetReference(ThisAssetReferencer);
-		InMeshAsset->AddAssetReference(ThisAssetReferencer);
+		if (PrevMeshAssetCache != nullptr)
+		{
+			PrevMeshAssetCache->RemoveAssetReference(ThisAssetReferencer);
+		}
+		_MeshAssetCache->AddAssetReference(ThisAssetReferencer);
 	}
-
-	_MeshAsset = InMeshAsset;
 }
 
-void ModelAsset::SetMaterial(IMaterialAsset* InMaterialAsset, int32 InMaterialIdx)
+void ModelAsset::SetMaterial(SS::SHasherW InMaterialAssetName, int32 InMaterialIdx)
 {
 	if (InMaterialIdx >= SUBMESH_COUNT_MAX)
 	{
-		SS_ASSERT(false);
+		SS_INTERRUPT(); // Out of Bounds
 		return;
 	}
 
-	int32 SubMeshCnt = GetSubMeshCnt();
-	if (SubMeshCnt <= InMaterialIdx)
+	if (_BoundAssetManager == nullptr)
 	{
-		SS_ASSERT(false);
+		_MaterialAssetNames[InMaterialIdx] = InMaterialAssetName;
 		return;
 	}
+
+	if (InMaterialIdx >= _SubMeshCntCache)
+	{
+		SS_INTERRUPT(); // Out of Bounds
+		return;
+	}
+
+	if (_MaterialAssetNames[InMaterialIdx] == InMaterialAssetName)
+	{
+		return;
+	}
+
+
+
+	IMaterialAsset* NewMaterial = _BoundAssetManager->FindAssetByName<IMaterialAsset>(InMaterialAssetName);
+	if (NewMaterial == nullptr)
+	{
+		SS_ASSERT_MSG(false, L"No Such Mtl");
+		return;
+	}
+
+	IMaterialAsset* PrevMaterial = _MaterialAssetCache[InMaterialIdx];
+	_MaterialAssetCache[InMaterialIdx] = nullptr;
 
 	if (GetAssetInstanceReferenceCnt() > 0)
 	{
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
-
-		IMaterialAsset* PrevMaterial = _MaterialAssets[InMaterialIdx];
-		_MaterialAssets[InMaterialIdx] = nullptr;
 
 		if (PrevMaterial != nullptr)
 		{
 			bool bShouldPrevMtlRefRelease = true;
 
-			for (int32 i=0;i<SubMeshCnt;i++)
+			for (int32 i = 0; i < _SubMeshCntCache; i++)
 			{
-				if (_MaterialAssets[i] == PrevMaterial)
+				if (_MaterialAssetCache[i] == PrevMaterial)
 				{
 					bShouldPrevMtlRefRelease = false;
 					break;
@@ -183,13 +291,13 @@ void ModelAsset::SetMaterial(IMaterialAsset* InMaterialAsset, int32 InMaterialId
 			}
 		}
 
-		if (InMaterialAsset != nullptr)
+		if (NewMaterial != nullptr)
 		{
 			bool bShouldNewMtlAddRef = true;
 
-			for (int32 i=0;i<SubMeshCnt;i++)
+			for (int32 i = 0; i < _SubMeshCntCache; i++)
 			{
-				if (_MaterialAssets[i] == InMaterialAsset)
+				if (_MaterialAssetCache[i] == NewMaterial)
 				{
 					bShouldNewMtlAddRef = false;
 					break;
@@ -198,11 +306,12 @@ void ModelAsset::SetMaterial(IMaterialAsset* InMaterialAsset, int32 InMaterialId
 
 			if (bShouldNewMtlAddRef)
 			{
-				InMaterialAsset->AddAssetReference(ThisAssetReferencer);
+				NewMaterial->AddAssetReference(ThisAssetReferencer);
 			}
 		}
-
 	}
 
-	_MaterialAssets[InMaterialIdx] = InMaterialAsset;
+	_MaterialAssetCache[InMaterialIdx] = NewMaterial;
+	_MaterialAssetNames[InMaterialIdx] = InMaterialAssetName;
+	time(&_LastUpdateTime);
 }

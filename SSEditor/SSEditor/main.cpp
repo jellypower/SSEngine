@@ -1,13 +1,9 @@
-﻿#include "targetver.h"
-#include "Resource.h"
-#define WIN32_LEAN_AND_MEAN
-#include <stdlib.h>
-#include <malloc.h>
-#include <Windows.h>
-#include <shellapi.h>
-#include <shobjidl.h>
+﻿#include "pch.h"
 
-#include "imgui/imgui.h"
+
+#include "Resource.h"
+
+
 
 #include "SSBuildSettings.h"
 
@@ -27,6 +23,8 @@
 #include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
 #include "SSRenderer/Public/RenderCommon/SSRendererInlineSettings.h"
 
+#include "EngineUtils/PWin32/OpenFilePathDialogue.h"
+
 
 #define MAX_LOADSTRING 100
 
@@ -44,65 +42,14 @@ INT_PTR CALLBACK		About(HWND, UINT, WPARAM, LPARAM);
 void					AnalyzeCommandLineArgs();
 
 
-// HINSTANCE는 해당 어플리케이션에 해당하는 값. ("프로그램"에 대응, 똑같은 프로그램을 두 개 띄워도 HINSTANCE임)
-// HWND는 해당 어플리케이션의 하나의 "윈도우"에 해당하는 값 ("윈도우"에 대흥, 똑같은 프로그램을 두 개 띄우면 두 HWND는 다름)
 
-HRESULT FindFilePathWithOpenDialog(SS::FixedStringW<PATH_LEN_MAX>& OutFilePath)
-{
-	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
-		COINIT_DISABLE_OLE1DDE);
-	if (SUCCEEDED(hr))
-	{
-		IFileOpenDialog* pFileOpen;
-
-		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
-			IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
-
-		if (SUCCEEDED(hr))
-		{
-			hr = pFileOpen->Show(NULL);
-
-			// Get the file name from the dialog box.
-			if (SUCCEEDED(hr))
-			{
-				IShellItem* pItem;
-				hr = pFileOpen->GetResult(&pItem);
-				if (SUCCEEDED(hr))
-				{
-					PWSTR pszFilePath;
-					hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
-
-					// Display the file name to the user.
-					if (SUCCEEDED(hr))
-					{
-						OutFilePath = pszFilePath;
-						CoTaskMemFree(pszFilePath);
-					}
-					pItem->Release();
-				}
-			}
-			pFileOpen->Release();
-		}
-		CoUninitialize();
-	}
-	return hr;
-}
-
-void TempInstantiatePSOInstances()
-{
-	{
-		// PipelineDesc desc;
-		// g_PSOPool->FindOrAddPSO(desc);
-		
-	}
-}
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 {
 	SS_LOG("========================== Select file to Open ==========================\n");
-	SS::FixedStringW<PATH_LEN_MAX> FbxFilePathToLoad;
-	FindFilePathWithOpenDialog(FbxFilePathToLoad);
-	if (FbxFilePathToLoad.GetLen() == 0)
+	SS::StringW FilePathToLoad;
+	OpenSystemPathDialogue(FilePathToLoad);
+	if (FilePathToLoad.GetStrLen() == 0)
 	{
 		return 0;
 	}
@@ -133,14 +80,14 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	g_hInst = hInstance;
 
 	// 2. ======================================================================
-	RunModuleEntryScriptPostInitWindow(g_hInst, g_hWnd, ENABLE_DEBUG_LAYER, ENABLE_GPU_BASE_VALIDATIION);
+	RunModuleEntryScriptPostInitWindow(g_hInst, g_hWnd, false, false);
 	// ======================================================================
 
 
 
 	g_Editor = DBG_NEW SSEditor(g_Renderer);
 
-	g_Editor->InjectImportFilePath_TMP(FbxFilePathToLoad.C_Str());
+	g_Editor->InjectImportFilePath_TMP(FilePathToLoad.C_Str());
 	
 
 	
@@ -150,19 +97,19 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 	MSG msg = { 0 };
 
-	g_FrameInfoProcessor->BeginFrameXXX();
+	g_FrameInfoProcessor->StartUpXXX();
+
+	int64 PC1 = GetPerofrmanceCounter();
 
 	for (int32 i=0;i<10;i++)
 	{
-		ContainerTest_PooledLinkedList();
-		ContainerTest_HashMap();
-		CustomHeapAllocatorTest();
-		SHasherPoolTest();
-		SHasherTest();
-		StringTest();
-		DirectXMathTest();
-		CommonStringSerializerTest();
+		TEST_ExecuteTestFunctions();
 	}
+	int64 PC2 = GetPerofrmanceCounter();
+	int64 PF = GetPerformanceFrequency();
+	double eTime = (PC2 - PC1) / (double)PF;
+	int a = 0;
+
 
 
 	g_Editor->StartupEngine();

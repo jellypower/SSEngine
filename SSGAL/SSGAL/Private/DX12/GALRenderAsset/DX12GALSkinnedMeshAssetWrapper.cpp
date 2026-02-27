@@ -89,8 +89,8 @@ DX12GALSkinnedMeshAssetWrapper::DX12GALSkinnedMeshAssetWrapper(IMeshAsset* owner
 
 		for (int32 i = 0; i < BoneCnt; i++)
 		{
-			JointInverseData[i].WMatrix = XMMatrixTranspose(SkinnedMeshData->_BonePlacements[i].BoneTransform.AsInverseMatrix());
-			JointInverseData[i].RotMatrix = XMMatrixTranspose(SkinnedMeshData->_BonePlacements[i].BoneTransform.Rotation.AsInverseMatrix());
+			JointInverseData[i].WMatrix = XMMatrixTranspose(SkinnedMeshData->_BonePlacements[i].AsInverseMatrix());
+			JointInverseData[i].RotMatrix = XMMatrixTranspose(SkinnedMeshData->_BonePlacements[i].Rotation.AsInverseMatrix());
 		}
 
 		_OriginalJointInverseResource->Unmap(0, nullptr);

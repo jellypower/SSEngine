@@ -48,7 +48,7 @@
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MaterialAsset.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\RenderAsset\CommonRenderAssetSet.cpp">
+    <ClCompile Include="Private\RenderAsset\CommonRenderAsset\CommonRenderAssetSet.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\RenderInstance\RenderLightDirectional.cpp">
@@ -72,7 +72,16 @@
     <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp">
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\ApakFileReader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetStrUtil.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RenderAsset\RenderAssetCreationUtils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -191,10 +200,10 @@
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MaterialAsset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\RenderAsset\CommonRenderAssetSet.h">
+    <ClInclude Include="Private\RenderAsset\CommonRenderAsset\CommonRenderAssetSet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderBase\ICommonRenderAssetSet.h">
+    <ClInclude Include="Public\RenderAsset\CommonRenderAsset\ICommonRenderAssetSet.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\RenderInstance\Light\IRenderLight.h">
@@ -236,13 +245,7 @@
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderAnimData.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemTransform.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\ERKFTrackItemType.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemBase.h">
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RKFTrackItem.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\RenderAsset\Mutable\RenderAssetType\IRenderAnimAssetMutable.h">
@@ -260,10 +263,25 @@
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RAFileOutline\MeshRawDataHeaders.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderAssetSerializer\MeshAssetSerializer.h">
+    <ClInclude Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.h">
+    <ClInclude Include="Public\RenderAsset\CommonRenderAsset\CRAN.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAssetSerializer\IApakFileReader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\RenderAsset\RenderAssetSerializer\ApakFileReader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAssetSerializer\ApakDataChunkOffsetDesc.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAssetSerializer\RenderAssetStrUtil.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderAssetCreationUtils.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,19 +1,26 @@
 #pragma once
-#include "RenderKeyFrameTrackItemTypes/ERKFTrackItemType.h"
-#include "RenderKeyFrameTrackItemTypes/RKFTrackItemTransform.h"
+#include "RKFTrackItem.h"
 
+
+struct AnimDataHeader
+{
+	int32 TrackCnt = 0;
+	float KeyFrameDuration = 0;
+
+	int64 PAD02 = 0;
+	int64 PAD03 = 0;
+	int64 PAD04 = 0;
+};
 
 struct RKFTrack // RenderKeyFrameTrack
 {
-	ERKFTrackItemType _Type = ERKFTrackItemType::None;
 	SS::SHasherW _TrackName;
-	int _TrackItemCnt = 0;
-	RKFTrackItemBase* _TrackItems = nullptr;
+	SS::PooledList<RKFTrackItem> _TrackItems;
 };
 
 
 struct RenderAnimRawData
 {
+	AnimDataHeader _Header;
 	SS::PooledList<RKFTrack> _Tracks;
-	float _KeyFrameDuration = 0;
 };

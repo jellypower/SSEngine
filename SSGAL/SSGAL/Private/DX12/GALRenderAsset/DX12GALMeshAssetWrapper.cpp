@@ -37,7 +37,7 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 
 	// Create Vertex buffer and Update
 	{
-		int32 EachVertexSize = DefaultMeshRawData->_VertexHeader.eachVertexSize;
+		int32 EachVertexSize = EachVertexSizeOfType(DefaultMeshRawData->_VertexHeader.MeshType);
 		int32 VertexCnt = DefaultMeshRawData->_VertexHeader.vertexCnt;
 		uint64 VertexBufferSize = VertexCnt * EachVertexSize;
 		const void* VertexData = DefaultMeshRawData->_vertexData;

@@ -2,7 +2,6 @@
 #include "Public/SSGALInlineSettings.h"
 #include "Public/GALRenderTarget/GALRTCommonEnums.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/BasicHashFunctionCollection.h"
 
 

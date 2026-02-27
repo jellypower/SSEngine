@@ -36,7 +36,7 @@ private:
 	SS::PooledList<IMeshAssetMutable*> _GALStateChangedMeshAsset;
 	SS::PooledList<ITextureAssetMutable*> _GALStateChangedTextureAsset;
 
-	SS::PooledList<void(*)()> _OneTimeCallback_BeforeGALRenderDeviceEndRender;
+	SS::PooledList<void(*)()> _OneTimeCallback_BeforeGALRDCEndRender;
 
 	SS::PooledList<DebugDrawMeshDesc> _DebugDrawItemsWithoutDepth;
 	SS::PooledList<DebugDrawMeshDesc> _DebugDrawItemsWithDepth;
@@ -88,6 +88,7 @@ public:
 	virtual const IRenderCamera* GetMainRenderCamera() const override;
 
 public:
+	virtual void HandoverMainViewportSwapChain(GALRenderTarget* InMainViewportSwapChain) override;
 	virtual void SetMainRenderCamera(IRenderCamera* InCamera) override;
 	virtual void RequestPixelPicking(int32 X, int32 Y) override;
 
@@ -120,6 +121,6 @@ private:
 
 	
 
-	void Before_GALRenderDevice_EndRender();
+	void Before_EndRender();
 };
 

@@ -162,7 +162,9 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\ModuleEntry\SSRendererFactory.cpp" />
     <ClCompile Include="Private\RenderAsset\AssetManagerBase.cpp" />
-    <ClCompile Include="Private\RenderAsset\CommonRenderAssetSet.cpp" />
+    <ClCompile Include="Private\RenderAsset\CommonRenderAsset\CommonRenderAssetSet.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\ApakFileReader.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetStrUtil.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MaterialAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\MeshAsset.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\ModelAsset.cpp" />
@@ -178,13 +180,17 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderInstance\RISkinnedMesh.cpp" />
     <ClCompile Include="Private\RenderInstance\RIStaticMesh.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.cpp" />
-    <ClCompile Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp" />
+    <ClCompile Include="Private\RenderAsset\RenderAssetCreationUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Private\RenderAsset\AssetManagerBase.h" />
-    <ClInclude Include="Private\RenderAsset\CommonRenderAssetSet.h" />
+    <ClInclude Include="Private\RenderAsset\CommonRenderAsset\CommonRenderAssetSet.h" />
+    <ClInclude Include="Public\RenderAssetSerializer\RenderAssetStrUtil.h" />
+    <ClInclude Include="Public\RenderAssetSerializer\ApakDataChunkOffsetDesc.h" />
+    <ClInclude Include="Private\RenderAsset\RenderAssetSerializer\ApakFileReader.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MaterialAsset.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\MeshAsset.h" />
     <ClInclude Include="Private\RenderAsset\RenderAssetType\ModelAsset.h" />
@@ -201,7 +207,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\RenderInstance\RIStaticMesh.h" />
     <ClInclude Include="Public\DEBUG\DebugDrawDesc.h" />
     <ClInclude Include="Public\ModuleEntry\SSRendererFactory.h" />
-    <ClInclude Include="Public\RenderAssetSerializer\MeshAssetSerializer.h" />
+    <ClInclude Include="Public\RenderAssetSerializer\IApakFileReader.h" />
     <ClInclude Include="Public\RenderAssetSerializer\RenderAssetSerializeFunctions.h" />
     <ClInclude Include="Public\RenderAsset\IAssetManager.h" />
     <ClInclude Include="Public\RenderAsset\Mutable\IAssetManagerMutable.h" />
@@ -219,18 +225,18 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\ITextureAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RAFileOutline\MeshRawDataHeaders.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderAssetCreationUtils.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderAnimData.h" />
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\ERKFTrackItemType.h" />
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemBase.h" />
-    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderKeyFrameTrackItemTypes\RKFTrackItemTransform.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RKFTrackItem.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataSkinned.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataBase.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshDataDefault.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataBase.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\MtlData\MtlDataDefaultPBR.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderAssetCommon\CommonDataType.h" />
-    <ClInclude Include="Public\RenderBase\ICommonRenderAssetSet.h" />
+    <ClInclude Include="Public\RenderAsset\CommonRenderAsset\CRAN.h" />
+    <ClInclude Include="Public\RenderAsset\CommonRenderAsset\ICommonRenderAssetSet.h" />
     <ClInclude Include="Public\RenderBase\IRenderer.h" />
     <ClInclude Include="Public\RenderBase\IRenderWorld.h" />
     <ClInclude Include="Public\RenderCommon\SSRendererInlineSettings.h" />

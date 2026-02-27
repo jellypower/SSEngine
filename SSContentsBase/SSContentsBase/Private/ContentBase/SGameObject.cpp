@@ -199,10 +199,10 @@ void SGameObject::SetStrongBindAncestor(SGameObject* InAncestor)
 	}
 
 	SGameObject* Parent = GetParent();
-
-	if (Parent->GetStrongBindAncestor() != InAncestor)
+	if (Parent != nullptr && // This오브젝트가 아직 Enter World하지 않고 생성되는 중간인 경우에는 Parent가 없을 수도 있음
+		Parent->GetStrongBindAncestor() != InAncestor)
 	{
-		SS_ASSERT(false);
+		SS_ASSERT(false); 
 		return;
 	}
 
@@ -212,7 +212,13 @@ void SGameObject::SetStrongBindAncestor(SGameObject* InAncestor)
 void SGameObject::OnEnterTheWorld(SObjHashCode WorldHashCode)
 {
 	_IncludedWorldHash = WorldHashCode;
-	MarkTransformCommitNeeded();
+
+
+	// AddToWorld전에 SetTransform하고 AddToWorld하면 _bTransformCommitReserved 가 true로 설정된다.
+	// 그러면 World->AddTransformCommitNeededObj 가 실행되지 않기 때문에 여기선 그냥 임의로 실행해준다.
+	_bTransformCommitReserved = true;
+	SWorld* World = GetIncludedWorldRef();
+	World->AddTransformCommitNeededObj(this);
 }
 
 void SGameObject::OnExitTheWorld()

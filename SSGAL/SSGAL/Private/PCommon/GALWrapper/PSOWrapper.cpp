@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 #include "PSOWrapper.h"
 
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/RAFileOutline/MeshRawDataHeaders.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
 

@@ -2,19 +2,14 @@
 #include "MeshDataDefault.h"
 
 
-struct alignas(16) BonePlacement
-{
-	SS::SHasherW BoneName;
-	Transform BoneTransform;
-};
 
 class MeshRawDataSkinned : public MeshRawDataDefault
 {
 public:
 	MeshRawDataBoneHeader _BoneHeader;
 
-	SS::PooledList<BonePlacement> _BonePlacements;
-	
+	SS::PooledList<SS::SHasherW> _BoneNames;
+	SS::PooledList<Transform> _BonePlacements;
 
 public:
 	virtual EMeshType GetMeshType() const override
@@ -24,6 +19,7 @@ public:
 
 	virtual void ReleaseData() override
 	{
+		_BonePlacements.FlushMem();
 		__super::ReleaseData();
 	}
 };

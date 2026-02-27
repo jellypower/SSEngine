@@ -1,13 +1,7 @@
 #pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
-enum class EMeshType
-{
-	None = 0,
-	Rigid = 1,
-	Skinned = 2,
-};
-
+enum class EMeshType : int32;
 
 struct MeshRawDataBase : public INoncopyable
 {

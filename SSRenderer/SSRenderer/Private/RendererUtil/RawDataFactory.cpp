@@ -285,7 +285,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 
 
 	CubeRawData->_vertexData = Vertices;
-	CubeRawData->_VertexHeader.eachVertexSize = sizeof(SSDefaultVertex);
+	CubeRawData->_VertexHeader.MeshType = EMeshType::Rigid;
 	CubeRawData->_VertexHeader.vertexCnt = 24;
 
 	CubeRawData->_VertexHeader.subMeshCnt = 1;
@@ -500,7 +500,7 @@ MeshRawDataDefault* CreateSphere1mRawData(int32 DetailLevel)
 
 
 	SphereRawData->_vertexData = Vertices;
-	SphereRawData->_VertexHeader.eachVertexSize = sizeof(SSDefaultVertex);
+	SphereRawData->_VertexHeader.MeshType = EMeshType::Rigid;
 	SphereRawData->_VertexHeader.vertexCnt = VertexCnt;
 
 	SphereRawData->_VertexHeader.subMeshCnt = 1;

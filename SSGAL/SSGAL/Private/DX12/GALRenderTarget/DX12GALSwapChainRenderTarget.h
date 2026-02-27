@@ -3,13 +3,13 @@
 
 #include "SSGAL/Public/SSGALInlineSettings.h"
 
+class DX12GALRenderDeviceContext;
 class GALRenderDeviceContext;
-class DX12GALRenderDevice;
 
 class DX12GALSwapChainRenderTarget : public DX12GALRenderTargetBase
 {
 public:
-	DX12GALSwapChainRenderTarget(DX12GALRenderDevice* InRenderDevice, HWND InhWnd, IDXGIFactory4* InFactory);
+	DX12GALSwapChainRenderTarget(DX12GALRenderDeviceContext* InRenderDeviceContext, HWND InhWnd, IDXGIFactory4* InFactory);
 	virtual ~DX12GALSwapChainRenderTarget();
 
 public:

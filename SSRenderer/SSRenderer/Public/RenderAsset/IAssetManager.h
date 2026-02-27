@@ -4,11 +4,15 @@
 
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
+struct AssetInstanceReferencer;
 class IAssetBase;
 
 class IAssetManager : public INoncopyable
 {
 public:
+	virtual const SS::HashMap<SS::SHasherW, IAssetBase*>& GetAssetMap(EAssetType InAssetType) const = 0;
+	virtual void FindAssetsOfNamespace(SS::PooledList<IAssetBase*>& AssetListToFill, SS::SHasherW Namespace, EAssetType AssetType) const = 0;
+
 	virtual IAssetBase* FindAssetByName(SS::SHasherW InModelAssetName, EAssetType InAssetType) const = 0;
 	template<typename TAsset>
 	TAsset* FindAssetByName(SS::SHasherW InAssetName) const
@@ -17,5 +21,14 @@ public:
 		return (TAsset*)FindAssetByName(InAssetName, TAsset::ThisAssetType);
 	}
 
-	virtual const SS::HashMap<SS::SHasherW, IAssetBase*>& GetAssetMap(EAssetType InAssetType) const = 0;
+public:
+	virtual bool AddAssetReferencer(
+		SS::SHasherW InAssetName, 
+		EAssetType InAssetType, 
+		const AssetInstanceReferencer& Referencer) = 0;
+
+	virtual bool RemoveAssetReferencer(
+		SS::SHasherW InAssetName,
+		EAssetType InAssetType,
+		const AssetInstanceReferencer& Referencer) = 0;
 };

@@ -4,9 +4,10 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
-ModelCombinationAsset::ModelCombinationAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt)
+ModelCombinationAsset::ModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt)
 {
 	_childs.Reserve(ReservedChildCnt);
+	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
 }
@@ -30,14 +31,13 @@ void ModelCombinationAsset::AddAssetReference(const AssetInstanceReferencer& Ref
 	int32 PrevReferencerCnt = _AssetInstanceReferencers.GetSize();
 	_AssetInstanceReferencers.PushBack(Referencer);
 
-	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 
 	if (PrevReferencerCnt == 0)
 	{
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
 		for (const AssetPlacementReference& ChildItem: _childs)
 		{
-			IModelAsset* ModelAssetItem = AssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
+			IModelAsset* ModelAssetItem = _BoundAssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
 			ModelAssetItem->AddAssetReference(ThisAssetReferencer);
 		}
 	}
@@ -68,18 +68,34 @@ void ModelCombinationAsset::RemoveAssetReference(const AssetInstanceReferencer& 
 	int32 ReferencerCnt = _AssetInstanceReferencers.GetSize();
 	if (ReferencerCnt == 0)
 	{
-		IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 		AssetInstanceReferencer ThisAssetReferencer = MakeThisAssetReferencer();
 
 		for (const AssetPlacementReference& ChildItem : _childs)
 		{
-			IModelAsset* ModelAssetItem = AssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
+			IModelAsset* ModelAssetItem = _BoundAssetManager->FindAssetByName<IModelAsset>(ChildItem.AssetName);
 			ModelAssetItem->RemoveAssetReference(ThisAssetReferencer);
 		}
 	}
 }
 
+void ModelCombinationAsset::BindAssetManager(IAssetManager* InAssetManager)
+{
+	_BoundAssetManager = InAssetManager;
+}
+
+void ModelCombinationAsset::ReserveChilds(int32 Capacity)
+{
+	_childs.Reserve(Capacity);
+}
+
+void ModelCombinationAsset::ClearChilds()
+{
+	_childs.Clear();
+	time(&_LastUpdateTime);
+}
+
 void ModelCombinationAsset::AddNewChild(const AssetPlacementReference& newReference)
 {
-	_childs.PushBack(SS::move(newReference)); // R-Value 제대로 고치기
+	_childs.PushBack(newReference);
+	time(&_LastUpdateTime);
 }

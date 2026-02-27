@@ -18,9 +18,6 @@
     <ClInclude Include="Resource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SSEngineMain\SSEditor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -33,7 +30,28 @@
     <ClInclude Include="SSEngineMain\SSImGUIInitializer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSEngineMain\ImGUI_GameObjectDetailViewer.h">
+    <ClInclude Include="SSEngineMain\ImGUI_WorldManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineMain\TestCodes\MeshSerializeTest.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineMain\ImGUI_AssetManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineUtils\PWin32\OpenFilePathDialogue.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineMain\SSImGUIUtils\ImGUIAssetManagerUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineMain\ImGUI_Profiler.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SSEngineMain\SSImGUIUtils\ImGUIProfilerUtils.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +68,28 @@
     <ClCompile Include="SSEngineMain\SSImGUIInitializer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSEngineMain\ImGUI_GameObjectDetailViewer.cpp">
+    <ClCompile Include="SSEngineMain\ImGUI_WorldManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineMain\TestCodes\MeshSerializeTest.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineMain\ImGUI_AssetManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineUtils\PWin32\OpenFilePathDialogue.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineMain\SSImGUIUtils\ImGUIAssetManagerUtils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineMain\ImGUI_Profiler.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SSEngineMain\SSImGUIUtils\ImGUIProfilerUtils.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

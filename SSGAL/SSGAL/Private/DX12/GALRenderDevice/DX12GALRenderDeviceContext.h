@@ -1,5 +1,4 @@
 ﻿#pragma once
-// #include <d3d12.h>
 
 #include "Private/PCommon/GALWrapper/PSOWrapper.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
@@ -31,7 +30,10 @@ public:
 	virtual GALRWMetaData* GetCurRenderWorldGALMetaData() const override;
 
 	virtual void BeginRender() override;
+	virtual void WaitForCommandExecuteFinish() override;
 	virtual void EndRender() override;
+	virtual void Present(GALRenderTarget* SwapChainToPresent) override;
+
 
 	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) override;
 	virtual bool GenerateTextureGALAsset(ITextureAssetMutable* InTextureAsset) override;
@@ -90,7 +92,6 @@ public:
 	virtual void EndDrawDebug() override;
 	// ERenderDeviceTaskPhase::~DrawDebug
 
-
 private:
 	void DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 	void DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
@@ -100,12 +101,15 @@ private:
 
 
 public:
+	ID3D12CommandQueue* GetD3DCommandQueue() const { return _D3DCommandQueue; }
 	ID3D12GraphicsCommandList* GetCurrentDrawWorkerCmdList() const { return _DrawWorkerCommandLists[_CurCommandListIdx]; }
 	const SS::PooledList<ID3D12GraphicsCommandList*>& GetDrawWorkerCommandLists() const { return _DrawWorkerCommandLists; }
 
 
 protected:
 	virtual void ResetRenderState() override;
+	virtual void FenceFrame() override;
+	virtual void WaitForFence() override;
 
 protected:
 	const SS::PooledList<GALRenderTarget*>& GetThisFrameBoundRenderTargets() const { return _BoundRenderTargets; }
@@ -117,9 +121,6 @@ private:
 
 private:
 	ERenderDeviceTaskPhase _TaskPhase = ERenderDeviceTaskPhase::TaskDenial;
-
-	SS::PooledList<ID3D12CommandAllocator*> _DrawWorkerCommandAllocators;
-	SS::PooledList <ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
 	// TODO: Shadow용 CommandList 없애기
 
 
@@ -136,7 +137,16 @@ private:
 	GALRIShadowMapMetadata* _DrawingShadowMapMetadata = nullptr;
 	PipelineDesc _LastSetPSO;
 
+
+private:
+
 	SS::PooledList<ID3D12DescriptorHeap*, SS::InlineAllocator<10>> _UniqueDescHeapWorkTable;
 
+	SS::PooledList<ID3D12CommandAllocator*> _DrawWorkerCommandAllocators;
+	SS::PooledList<ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
+	ID3D12CommandQueue* _D3DCommandQueue = nullptr;
+	ID3D12Fence* _Fence = nullptr;
+	HANDLE _FenceEvent = nullptr;
+	uint32 _CurRenderTargetIdx = 0;
 
 };

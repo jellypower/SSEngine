@@ -15,8 +15,7 @@ void SRenderComponentBase::PostConstructHierarchy()
 
 void SRenderComponentBase::OnEnterTheWorld()
 {
-	SGameObject* OwnerGameObject =  GetGameObject();
-	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
+	SWorld* IncludedWorld = GetIncludedWorld();
 	IRenderWorld* RenderWorld = IncludedWorld->GetRenderWorld();
 
 	RenderWorld->AddToWorld(GetRenderInstance());
@@ -24,8 +23,7 @@ void SRenderComponentBase::OnEnterTheWorld()
 
 void SRenderComponentBase::OnExitTheWorld()
 {
-	SGameObject* OwnerGameObject = GetGameObject();
-	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
+	SWorld* IncludedWorld = GetIncludedWorld();
 	IRenderWorld* RenderWorld = IncludedWorld->GetRenderWorld();
 
 	IRenderInstance* RenderInstance = GetRenderInstance();

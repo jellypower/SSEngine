@@ -2,11 +2,12 @@
 
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 #include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
-#include "DX12GALRenderDevice.h"
 #include "DX12GALRenderDeviceContext.h"
+#include "DX12GALRenderDevice.h"
 
-#include <SSRenderer/Public/RenderInstance/IRICubeMap.h>
+#include "SSRenderer/Public/RenderInstance/IRICubeMap.h"
 
 
 #include "Private/DX12/DX12CommonUtils/DX12ConstantBufferResourcePage.h"
@@ -16,43 +17,41 @@
 #include "Private/DX12/GALRenderInstance/DX12GALRICubeMap.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIDirectionalLightShadowMapMetadata.h"
 #include "Private/DX12/GALRenderInstance/DX12GALRIMetadata_SKM.h"
-#include "Private/DX12/GALRenderTarget/DX12GALUAVRenderTarget.h"
+#include "Private/DX12/GALRenderTarget/DX12GALSwapChainRenderTarget.h"
 #include "Private/PCommon/TestCodes/GALTestCodes.h"
-#include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
-#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
-#include "SSGAL/Private/PCommon/GALPrivateGlobals.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
+#include "SSGAL/Private/DX12/GALRenderAsset/DX12GALMeshAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/GALMaterialAssets/DX12GALDefaultPBRMaterialAsset.h"
-#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
-#include "SSGAL/Private/DX12/GALRenderAsset/DX12GALMeshAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRIMetadata_SM.h"
+#include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRWMetaData.h"
+#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALCPUReadableTexture.h"
+#include "SSGAL/Private/DX12/GALRenderTarget/DX12GALDSVRenderTarget.h"
 #include "SSGAL/Private/DX12/GALRenderTarget/DX12GALRenderTargetBase.h"
+#include "SSGAL/Private/DX12/GALResourceUpdater/DX12GALResourceUpdater.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOWrapper.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12RootSignaturePool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12RootSignatureWrapper.h"
-#include "SSGAL/Private/DX12/GALResourceUpdater/DX12GALResourceUpdater.h"
+#include "SSGAL/Private/PCommon/GALPrivateGlobals.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBAModelBuffer.h"
 #include "SSGAL/Public/GALConstantBufferAccessorTypes/CBARenderEnvParam.h"
 
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
+#include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
-#include "SSRenderer/Public/RenderBase/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
-#include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
-#include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
-#include "SSRenderer/Public/RenderInstance/Descriptors/LightDesc.h"
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
+#include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 #include "SSRenderer/Public/RenderInstance/IRIMesh.h"
 #include "SSRenderer/Public/RenderInstance/IRISkinnedMesh.h"
+#include "SSRenderer/Public/RenderInstance/Descriptors/LightDesc.h"
+#include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
 
 
 
@@ -60,15 +59,45 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 	_BoundRenderTargets(RT_NUM_MAX),
 	_RenderLightsToDraw(32)
 {
-	_OwnerRenderDevice = InRenderDevice;
+	HRESULT hr = S_OK;
 
 	ID3D12Device5* D3DDevice = InRenderDevice->GetD3DDevice();
 
+	_OwnerRenderDevice = InRenderDevice;
 	_DrawWorkerCommandAllocators.Reserve(SwapChainFrameCnt * 2);
 	_DrawWorkerCommandLists.Reserve(SwapChainFrameCnt * 2);
 
 
-	
+
+	// Create Command Queue
+	{
+		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+
+		hr = D3DDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&_D3DCommandQueue));
+		if (FAILED(hr))
+		{
+			DEBUG_BREAK();
+			return;
+		}
+		_D3DCommandQueue->SetName(L"D3DCommandQueue");
+
+
+		hr = D3DDevice->CreateFence(_CurFrameCnt, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_Fence));
+		if (FAILED(hr))
+		{
+			SS_INTERRUPT();
+		}
+		_Fence->SetName(L"RenderDeviceFence");
+
+		_FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (FAILED(_FenceEvent))
+		{
+			SS_INTERRUPT();
+		}
+	}
+
 	
 	for (int32 i = 0; i < SwapChainFrameCnt; i++)
 	{
@@ -76,15 +105,12 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 		ID3D12GraphicsCommandList* NewCommandList = nullptr;
 		if (FAILED(D3DDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&NewCommandAllocator))))
 		{
-			DEBUG_BREAK();
-			goto lb_cleanup;
+			SS_INTERRUPT();
 		}
 
 		if (FAILED(D3DDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, NewCommandAllocator, nullptr, IID_PPV_ARGS(&NewCommandList))))
 		{
-			NewCommandAllocator->Release();
-			DEBUG_BREAK();
-			goto lb_cleanup;
+			SS_INTERRUPT();
 		}
 
 
@@ -93,6 +119,7 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 		_DrawWorkerCommandAllocators.PushBack(NewCommandAllocator);
 		_DrawWorkerCommandLists.PushBack(NewCommandList);
 	}
+
 
 	_TransientCBAllocator = DBG_NEW DX12TransientConstantBufferAllocator(
 		this,
@@ -107,32 +134,15 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 	{
 		TestTransientAllocator(this);
 	}
-
-	return;
-
-lb_cleanup:
-	if (_ResourceUpdater != nullptr)
-	{
-		delete _ResourceUpdater;
-		_ResourceUpdater = nullptr;
-	}
-
-	for (ID3D12GraphicsCommandList* CommandListItem : _DrawWorkerCommandLists)
-	{
-		CommandListItem->Release();
-	}
-
-	for (ID3D12CommandAllocator* CommandAllocator : _DrawWorkerCommandAllocators)
-	{
-		CommandAllocator->Release();
-	}
-
-	_DrawWorkerCommandLists.Resize(0);
-	_DrawWorkerCommandAllocators.Resize(0);
 }
 
 DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 {
+	CloseHandle(_FenceEvent);
+	_Fence->Release();
+	_D3DCommandQueue->Release();
+
+
 	for (ID3D12CommandList* CommandListItem : _DrawWorkerCommandLists)
 	{
 		CommandListItem->Release();
@@ -143,8 +153,9 @@ DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 		AllocatorItem->Release();	
 	}
 
-	_DrawWorkerCommandLists.Resize(0);
-	_DrawWorkerCommandAllocators.Resize(0);
+
+	_DrawWorkerCommandLists.Clear();
+	_DrawWorkerCommandAllocators.Clear();
 
 	delete _ResourceUpdater;
 
@@ -244,6 +255,7 @@ bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAssetMutable*
 
 void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance)
 {
+	SCOPE_PROFILE(GenGALRIMetadata);
 	ERenderInstanceType RIType = InRenderInstance->GetRIType();
 
 	if (RIType == ERenderInstanceType::StaticMesh)
@@ -455,6 +467,7 @@ void DX12GALRenderDeviceContext::ResourceBarrier(GALRenderTarget* InRenderTarget
 
 void DX12GALRenderDeviceContext::SetPSOAndRootSignature(const PipelineDesc& InPSODesc)
 {
+	SCOPE_PROFILE(Set_PSO_RS);
 	if (_LastSetPSO == InPSODesc)
 	{
 		return;
@@ -470,14 +483,19 @@ void DX12GALRenderDeviceContext::SetPSOAndRootSignature(const PipelineDesc& InPS
 	const RootSignatureWrapper* RootSignatureWrapper = lRootSignaturePool->GetRootSignature(InPSODesc.RootSignatureType);
 	const DX12RootSignatureWrapper* lDX12RootSignatureWrapper = (const DX12RootSignatureWrapper*)RootSignatureWrapper;
 
-	CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
-	CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
+	{
+		SCOPE_PROFILE(DX12_SetPSO_RS);
+		CurCommandList->SetGraphicsRootSignature(lDX12RootSignatureWrapper->GetRootSignatureInstantce());
+		CurCommandList->SetPipelineState(lDX12PSOWrapper->GetPipelineState());
+	}
+
 }
 
 
 void DX12GALRenderDeviceContext::SetRenderTarget(int32 NumRenderTargets, GALRenderTarget** InRenderTargets,
                                                  GALRenderTarget* InDepthStencilView)
 {
+	SCOPE_PROFILE(SetRT);
 	if (NumRenderTargets > RT_NUM_MAX)
 	{
 		SS_ASSERT(false);
@@ -712,6 +730,7 @@ void DX12GALRenderDeviceContext::BeginDrawMesh()
 
 void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 {
+	SCOPE_PROFILE_INDEXED(DrawMeshItem, InRenderInstance->GetGameObjectID().GetNativeValue());
 	if (_TaskPhase != ERenderDeviceTaskPhase::DrawMesh)
 	{
 		SS_INTERRUPT();
@@ -952,8 +971,24 @@ void DX12GALRenderDeviceContext::EndDrawDebug()
 	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
 }
 
+void DX12GALRenderDeviceContext::Present(GALRenderTarget* SwapChainToPresent)
+{
+	if (SwapChainToPresent->GetRenderTargetType() != ERenderTargetType::SwapChain)
+	{
+		SS_INTERRUPT();
+	}
+
+	DX12GALSwapChainRenderTarget* DX12SwapChain = static_cast<DX12GALSwapChainRenderTarget*>(SwapChainToPresent);
+	HRESULT hr = DX12SwapChain->Present();
+	if (FAILED(hr))
+	{
+		SS_INTERRUPT();
+	}
+}
+
 void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 {
+	SCOPE_PROFILE_INDEXED(DrawShadowItem, InRenderInstance->GetGameObjectID().GetNativeValue());
 	if (InRenderInstance->GetGALMetadata() == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
@@ -983,14 +1018,14 @@ void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 
 void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat)
 {
+	SCOPE_PROFILE(Draw_SM);
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// Scrap Mesh Asset
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
 	const DX12GALMeshAssetWrapper* GALMeshAsset = (const DX12GALMeshAssetWrapper*)lMeshAsset->GetGALMeshAsset();
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
@@ -1032,7 +1067,7 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
-		IMaterialAsset* MtlAsset = InModelAsset->GetMaterialAsset(i);
+		IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
 		DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
 		if (MtlAsset != nullptr)
 		{
@@ -1079,14 +1114,14 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw, const XMMATRI
 void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {
+	SCOPE_PROFILE(Draw_SKM);
 	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// Scrap Mesh Asset
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
 	if (MeshRawData->GetMeshType() != EMeshType::Skinned)
 	{
@@ -1128,7 +1163,7 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 
 	for (int32 i = 0; i < SubMeshCnt; i++)
 	{
-		IMaterialAsset* MtlAsset = InModelAsset->GetMaterialAsset(i);
+		IMaterialAsset* MtlAsset = RIToDraw->GetMaterialAsset(i);
 		DX12GALDefaultPBRMaterialAsset* GALMaterial = nullptr;
 		if (MtlAsset != nullptr)
 		{
@@ -1181,14 +1216,14 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw, const
 void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat,
                                                       const XMMATRIX& DrawRotMat)
 {
+	SCOPE_PROFILE(DrawShadow_SM);
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SM*>(RIToDraw->GetGALMetadata());
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// Scrap Mesh Asset
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
 	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(lMeshAsset->GetGALMeshAsset());
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
@@ -1242,14 +1277,14 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
 void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat,
 	const XMMATRIX& DrawRotMat)
 {
+	SCOPE_PROFILE(DrawShadow_SKM);
 	DX12GALRIMetadata_SKM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
-	IModelAsset* InModelAsset = RIToDraw->GetModelAsset();
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
 
 	// Scrap Mesh Asset
-	IMeshAsset* lMeshAsset = InModelAsset->GetMeshAsset();
+	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
 	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(lMeshAsset->GetGALMeshAsset());
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataBase* MeshRawData = lMeshAsset->GetMeshRawData();
@@ -1325,6 +1360,24 @@ void DX12GALRenderDeviceContext::ResetRenderState()
 	_LastSetPSO = PipelineDesc(); // 초기화
 }
 
+void DX12GALRenderDeviceContext::FenceFrame()
+{
+	_CurFrameCnt++;
+	_D3DCommandQueue->Signal(_Fence, _CurFrameCnt);
+}
+
+void DX12GALRenderDeviceContext::WaitForFence()
+{
+	SCOPE_PROFILE(WaitForFence);
+
+	uint64 CompletedValue = _Fence->GetCompletedValue();
+	if (CompletedValue < _CurFrameCnt)
+	{
+		_Fence->SetEventOnCompletion(_CurFrameCnt, _FenceEvent);
+		WaitForSingleObject(_FenceEvent, INFINITE);
+	}
+}
+
 void DX12GALRenderDeviceContext::ResetCommandList()
 {
 	HRESULT hr;
@@ -1345,6 +1398,8 @@ void DX12GALRenderDeviceContext::ResetCommandList()
 
 void DX12GALRenderDeviceContext::BeginRender()
 {
+	WaitForFence();
+
 	if (_TaskPhase != ERenderDeviceTaskPhase::TaskDenial)
 	{
 		SS_INTERRUPT();
@@ -1354,7 +1409,7 @@ void DX12GALRenderDeviceContext::BeginRender()
 	ResetRenderState();
 }
 
-void DX12GALRenderDeviceContext::EndRender()
+void DX12GALRenderDeviceContext::WaitForCommandExecuteFinish()
 {
 	if (_TaskPhase != ERenderDeviceTaskPhase::TaskWaiting)
 	{
@@ -1362,8 +1417,20 @@ void DX12GALRenderDeviceContext::EndRender()
 	}
 	_TaskPhase = ERenderDeviceTaskPhase::TaskDenial;
 
-	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
-	HRESULT hr;
-	hr = CurCommandList->Close();
+	ID3D12GraphicsCommandList* CurGraphicsCommandList = GetCurrentDrawWorkerCmdList();
+	HRESULT hr = CurGraphicsCommandList->Close();
 	if (FAILED(hr)) SS_INTERRUPT();
+
+
+	{
+		SCOPE_PROFILE(ExecuteCommandList);
+
+		ID3D12CommandList* CurCommandList = CurGraphicsCommandList;
+		_D3DCommandQueue->ExecuteCommandLists(1, &CurCommandList);
+	}
+}
+
+void DX12GALRenderDeviceContext::EndRender()
+{
+	FenceFrame();
 }

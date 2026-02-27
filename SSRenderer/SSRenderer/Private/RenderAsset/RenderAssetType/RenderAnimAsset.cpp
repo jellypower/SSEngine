@@ -2,8 +2,9 @@
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
 
-RenderAnimAsset::RenderAnimAsset(SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+RenderAnimAsset::RenderAnimAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
 {
+	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
 }
@@ -12,13 +13,6 @@ RenderAnimAsset::~RenderAnimAsset()
 {
 	if (_AnimRawData != nullptr)
 	{
-		for (RKFTrack& TrackItem : _AnimRawData->_Tracks)
-		{
-			if (TrackItem._TrackItems != nullptr)
-			{
-				free(TrackItem._TrackItems);
-			}
-		}
 		delete _AnimRawData;
 		_AnimRawData = nullptr;
 	}
@@ -76,6 +70,11 @@ void RenderAnimAsset::RemoveAssetReference(const AssetInstanceReferencer& Refere
 	}
 
 	// TODO: 나중에 라이프사이클 추가하기
+}
+
+void RenderAnimAsset::BindAssetManager(IAssetManager* InAssetManager)
+{
+	_BoundAssetManager = InAssetManager;
 }
 
 RenderAnimRawData* RenderAnimAsset::GetMutableRawData()

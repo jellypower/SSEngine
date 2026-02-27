@@ -2,7 +2,6 @@
 #include "GALRTCommonEnums.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSEngineDefault/Public/GeometryType.h"
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 
 class GALRenderDeviceContext;
 enum class ERenderTargetType : uint8;

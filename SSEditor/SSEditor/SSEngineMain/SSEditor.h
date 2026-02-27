@@ -1,11 +1,14 @@
 #pragma once
 #include "SObject/Public/SObjHashCode.h"
 
-#include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class ImGUI_Profiler;
+class ImGUI_WorldManager;
+class IAssetDBLoader;
+class ImGUI_AssetManager;
 class SRenderLightDirectionalComponent;
 enum class EAssetType;
 class SSImGUIInitializer;
@@ -32,32 +35,18 @@ public:
 
 	void InjectImportFilePath_TMP(const utf16* inImportFilePath) { _importFileName_TMP = inImportFilePath; }
 
-	void TEMP_CreateAssets();
 
 	void TEMP_ProcessContents();
 
 
 #pragma region IMGUI
 private:
-	EAssetType _ImGUI_SelectedAssetManager_Type;
+	ImGUI_AssetManager* _ImGUI_AssetViewer = nullptr;
+	ImGUI_WorldManager* _ImGUI_WorldManager = nullptr;
+	ImGUI_Profiler* _ImGUI_Profiler = nullptr;
 
-
-private:
 	void ProcessImGUI();
 
-
-	void ImGUI_AssetManagerWindow();
-	void ImGUI_AssetManagerWindow_Texture();
-	void ImGUI_AssetManager_Mesh();
-	void ImGUI_AssetManager_Material();
-	void ImGUI_AssetManager_Model();
-	void ImGUI_AssetManager_RenderAnim();
-
-	void ImGUI_FrameInfo();
-
-
-	void ImGUI_DrawHierarchy();
-	void ImGUI_DrawHierarchy_Recursion(SGameObject* Object);
 
 #pragma endregion
 
@@ -68,10 +57,6 @@ private:
 	IRenderer* _Renderer = nullptr;
 
 
-	SObjHashCode _PickedObject = nullptr;
-
-	int32 _PixelPickingRequestFrameCounter = 0;
-	SObjHashCode _HieararchyPickedObject = nullptr;
 	
 
 	SGameObject* TEMP_MdlcObj = nullptr;
@@ -84,11 +69,10 @@ private:
 	float TEMP_Speed = 10.f;
 
 
-
 private:
 	SS::HashMap<SS::SHasherW, SS::FixedStringW<PATH_LEN_MAX>> _hashMap_TMP;
 	SS::StringW _importFileName_TMP;
 
 	ISSFBXImporter* _FbxImporter = nullptr;
-
+	IAssetDBLoader* _AssetDBLoader = nullptr;
 };

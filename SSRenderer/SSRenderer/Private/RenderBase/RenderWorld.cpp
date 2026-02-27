@@ -28,10 +28,6 @@ RenderWorld::~RenderWorld()
 	_GALMetadata = nullptr;
 }
 
-void RenderWorld::InitializeRenderWorld(IRenderer* OwnerRenderer)
-{
-	_OwnerRenderer = OwnerRenderer;
-}
 
 bool RenderWorld::IsAnyInstanceRemainInWorld() const
 {
@@ -41,11 +37,6 @@ bool RenderWorld::IsAnyInstanceRemainInWorld() const
 SS::SHasherW RenderWorld::GetWorldName() const
 {
 	return _RenderWorldName;
-}
-
-IRenderer* RenderWorld::GetOwnerRenderer() const
-{
-	return _OwnerRenderer;
 }
 
 void RenderWorld::AddToWorld(IRenderInstance* InRenderInstance)
