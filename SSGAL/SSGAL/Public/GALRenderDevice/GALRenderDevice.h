@@ -1,9 +1,6 @@
 ﻿#pragma once
 #include "GALRenderDeviceContext.h"
 #include "SSEngineDefault/Public/INoncopyable.h"
-#include "SSEngineDefault/Public/SSContainer/PooledList.h"
-#include "SSEngineDefault/Public/SSContainer/Allocators/InlineAllocator.h"
-#include "SSGAL/Public/SSGALInlineSettings.h"
 
 class GALPPCDeferredShading;
 enum class ERTColorFormat : int32;
@@ -63,6 +60,4 @@ protected:
 	SSCustomMemChunkAllocator* _DescriptorTableAllocatorForTex = nullptr;
 
 	bool _EnableDebug = false;
-	int32 _NestedFrameCnt = SWAP_CHAIN_FRAME_COUNT;
-
 };

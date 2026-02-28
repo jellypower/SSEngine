@@ -2,7 +2,7 @@
 
 #include "SSImGUIInitializer.h"
 
-#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
 #include "ModuleEntryScriptRunner.h"
 
@@ -22,8 +22,7 @@ void SSImGUIInitializer::StartupImGui(IRenderer* InRenderer)
 	_fpExtractD3DDeviceInfo(
 		_Renderer->GetMainDeviceContext(),
 		&_D3DDeviceCache,
-		&_D3DCommandQueueCache,
-		&_NestedFrameCnt);
+		&_D3DCommandQueueCache);
 
 	_fpQueryCurrentD3DGALDeviceContext = 
 		(FuncPtr_QueryD3DSwapChainInfo)GetProcAddress(g_hInstSSGAL, "QueryD3DSwapChainInfo");
@@ -31,7 +30,7 @@ void SSImGUIInitializer::StartupImGui(IRenderer* InRenderer)
 
 	// Command List
 	{
-		for (int32 i = 0; i < _NestedFrameCnt; i++)
+		for (int32 i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 		{
 			ID3D12CommandAllocator* NewCommandAllocator = nullptr;
 			ID3D12GraphicsCommandList* NewCommandList = nullptr;
@@ -86,7 +85,7 @@ void SSImGUIInitializer::StartupImGui(IRenderer* InRenderer)
 	ImGui_ImplDX12_InitInfo init_info = {};
 	init_info.Device = _D3DDeviceCache;
 	init_info.CommandQueue = _D3DCommandQueueCache;
-	init_info.NumFramesInFlight = SWAP_CHAIN_FRAME_COUNT;
+	init_info.NumFramesInFlight = GAL_NESTED_FRAME_CNT;
 	init_info.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM; // Or your render target format.
 	init_info.DSVFormat = DXGI_FORMAT_UNKNOWN;
 
@@ -109,12 +108,12 @@ void SSImGUIInitializer::CleanUpImGui()
 	_ImGUIDescriptorHeapAllocator.Destroy();
 	_ImguiDescriptorHeap->Release();
 
-	for (int i = 0; i < _NestedFrameCnt; i++)
+	for (int i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 	{
 		_CommandList[i]->Release();
 	}
 
-	for (int i = 0; i < _NestedFrameCnt; i++)
+	for (int i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 	{
 		_CommandAllocator[i]->Release();
 	}
@@ -186,7 +185,7 @@ void SSImGUIInitializer::OnEndFrameImGui()
 	}
 
 	_CurSwapChainIdx++;
-	_CurSwapChainIdx = _CurSwapChainIdx % SWAP_CHAIN_FRAME_COUNT;
+	_CurSwapChainIdx = _CurSwapChainIdx % GAL_NESTED_FRAME_CNT;
 }
 
 void Run_g_ImGuiInitializer__OnBeginFrameImGui()

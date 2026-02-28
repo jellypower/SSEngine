@@ -8,5 +8,5 @@ constexpr int32 GAL_DEFAULT_RESOURCEUUPDATER_PAGESIZE = 1024 * 1024 * 4 * 4; // 
 constexpr int32 GAL_INITIAL_DEFAULT_RESOURCEUPDATER_PAGECNT = 1;
 constexpr int32 GAL_DEFAULT_RESOURCEUPDATE_TARGET_SIZE_MAX = 1024 * 1024 * 2 * 2; // 2 MB -> 큰 사이즈면 개별로 리소스 업데이터 버퍼를 할당해준다.
 
-constexpr uint32 SWAP_CHAIN_FRAME_COUNT = 2;
+constexpr uint32 GAL_NESTED_FRAME_CNT = 2;
 constexpr int32 RT_NUM_MAX = 8;

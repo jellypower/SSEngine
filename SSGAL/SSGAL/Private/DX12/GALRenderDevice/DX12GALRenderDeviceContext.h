@@ -143,7 +143,7 @@ private:
 	SS::PooledList<ID3D12DescriptorHeap*, SS::InlineAllocator<10>> _UniqueDescHeapWorkTable;
 
 	SS::PooledList<ID3D12CommandAllocator*> _DrawWorkerCommandAllocators;
-	SS::PooledList<ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: SWAP_CHAIN_FRAME_COUNT * THREAD_CNT 개수만큼 만들기
+	SS::PooledList<ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: GAL_NESTED_FRAME_CNT * THREAD_CNT 개수만큼 만들기
 	ID3D12CommandQueue* _D3DCommandQueue = nullptr;
 	ID3D12Fence* _Fence = nullptr;
 	HANDLE _FenceEvent = nullptr;

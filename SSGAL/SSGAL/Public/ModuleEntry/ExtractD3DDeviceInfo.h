@@ -10,8 +10,7 @@ class GALRenderDevice;
 SSGAL_MODULE_NATIVE void QueryDX12GALDeviceContextInfo(
 	GALRenderDeviceContext* DeviceToQuery,
 	ID3D12Device** OutDevice,
-	ID3D12CommandQueue** OutCommandQueue,
-	int32* OutNestedFrameCnt);
+	ID3D12CommandQueue** OutCommandQueue);
 typedef decltype(&QueryDX12GALDeviceContextInfo) FuncPtr_QueryDX12GALDeviceContextInfo;
 
 

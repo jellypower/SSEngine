@@ -19,7 +19,7 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDeviceCo
 	// Create Descriptor
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-		rtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT;	// SwapChain Buffer 0	| SwapChain Buffer 1
+		rtvHeapDesc.NumDescriptors = GAL_NESTED_FRAME_CNT;	// SwapChain Buffer 0	| SwapChain Buffer 1
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		if (FAILED(D3DDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&_RTVDescHeap))))
@@ -53,7 +53,7 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDeviceCo
 		swapChainDesc.Height = BackBufferHeight;
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.BufferCount = SWAP_CHAIN_FRAME_COUNT;
+		swapChainDesc.BufferCount = GAL_NESTED_FRAME_CNT;
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 		swapChainDesc.Scaling = DXGI_SCALING_NONE;
@@ -87,7 +87,7 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDeviceCo
 	{
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart());
 
-		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
+		for (uint32 i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 		{
 			ID3D12Resource* Buffer;
 			_swapChain->GetBuffer(i, IID_PPV_ARGS(&Buffer));
@@ -182,7 +182,7 @@ void DX12GALSwapChainRenderTarget::UpdateViewportSize(uint32 BackBufferWidth, ui
 	_DXRenderTargets.Clear();
 
 
-	if (FAILED(_swapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, BackBufferWidth, BackBufferHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _SwapChainFlags)))
+	if (FAILED(_swapChain->ResizeBuffers(GAL_NESTED_FRAME_CNT, BackBufferWidth, BackBufferHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _SwapChainFlags)))
 	{
 		SS_INTERRUPT();
 	}
@@ -190,7 +190,7 @@ void DX12GALSwapChainRenderTarget::UpdateViewportSize(uint32 BackBufferWidth, ui
 	_CurRenderTargetIdx = _swapChain->GetCurrentBackBufferIndex();
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE NewRTVHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart());
-	for (UINT n = 0; n < SWAP_CHAIN_FRAME_COUNT; n++)
+	for (UINT n = 0; n < GAL_NESTED_FRAME_CNT; n++)
 	{
 		ID3D12Resource* Buffer = nullptr;
 		_swapChain->GetBuffer(n, IID_PPV_ARGS(&Buffer));

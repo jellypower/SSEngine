@@ -33,7 +33,7 @@ void ImGUI_WorldManager::PerFrame()
 	{
 		Vector2i32 MousePos = SSInput::GetMousePos();
 		g_Renderer->RequestPixelPicking(MousePos.X, MousePos.Y);
-		_PixelPickingRequestFrameCounter = SWAP_CHAIN_FRAME_COUNT + 1; // PixelPicking용 프레임버퍼가 2프레임 뒤에 그려져서 그걸 생각해야함.
+		_PixelPickingRequestFrameCounter = GAL_NESTED_FRAME_CNT + 1; // PixelPicking용 프레임버퍼가 2프레임 뒤에 그려져서 그걸 생각해야함.
 	}
 
 	if (_PixelPickingRequestFrameCounter >= 0)

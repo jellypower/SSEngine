@@ -1,17 +1,17 @@
 #include "SSRenderer.h"
 
 #include "RenderWorld.h"
-
-#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
-#include "SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
-#include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
-#include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
-#include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
-#include "SSGAL/Public/GALRenderTarget/GALCPUReadableTexture.h"
+#include "SSGAL/Public/SSGALInlineSettings.h"
 #include "SSGAL/Public/GALPostProcessContext/GALPPCDeferredShading.h"
+#include "SSGAL/Public/GALRenderAsset/GALMaterialAssetWrapperBase.h"
+#include "SSGAL/Public/GALRenderDevice/GALRenderDevice.h"
+#include "SSGAL/Public/GALRenderTarget/GALCPUReadableTexture.h"
+#include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
+#include "SSGAL/Public/GALRenderTarget/GALRTCommonEnums.h"
 
 #include "SSRenderer/Private/RenderAsset/AssetManagerBase.h"
 #include "SSRenderer/Private/RenderAsset/CommonRenderAsset/CommonRenderAssetSet.h"
@@ -25,10 +25,7 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
-
-
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
-#include "SSRenderer/Private/RenderInstance/RICubeMap.h"
 
 
 SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice) :

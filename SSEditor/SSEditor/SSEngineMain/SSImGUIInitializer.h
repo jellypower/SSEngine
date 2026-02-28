@@ -61,9 +61,8 @@ private:
 	ID3D12Device* _D3DDeviceCache = nullptr;
 	ID3D12CommandQueue* _D3DCommandQueueCache = nullptr;
 	ID3D12DescriptorHeap* _ImguiDescriptorHeap = nullptr;
-	int32 _NestedFrameCnt = 0;
-	ID3D12CommandAllocator* _CommandAllocator[SWAP_CHAIN_FRAME_COUNT] = { nullptr, };
-	ID3D12GraphicsCommandList* _CommandList[SWAP_CHAIN_FRAME_COUNT] = { nullptr, };
+	ID3D12CommandAllocator* _CommandAllocator[GAL_NESTED_FRAME_CNT] = { nullptr, };
+	ID3D12GraphicsCommandList* _CommandList[GAL_NESTED_FRAME_CNT] = { nullptr, };
 	int32 _CurSwapChainIdx = 0;
 
 
