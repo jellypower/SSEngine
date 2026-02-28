@@ -13,6 +13,8 @@ class FrameInfoProcessorBase : public IFrameInfoProcessor
 {
 private:
 	SS::PooledList<ProfileNameTickCntPair> _ProfilingNameStack;
+	SS::StringW _ProfilingNameStackAsStr;
+
 	SS::PooledList<ProfileResultItem> _ProfileInProgressResult;
 	SS::PooledList<ProfileResultItem> _LastProfileResult;
 

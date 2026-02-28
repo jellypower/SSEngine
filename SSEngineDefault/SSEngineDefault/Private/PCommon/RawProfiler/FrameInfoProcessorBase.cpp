@@ -5,6 +5,7 @@
 
 constexpr double FRAME_LOW_LIMIT = 1 / 1000.0;
 
+const utf16* PER_FRAME = L"PF";
 
 const SS::PooledList<ProfileResultItem> FrameInfoProcessorBase::GetLastProfileResult() const
 {
@@ -22,6 +23,7 @@ void FrameInfoProcessorBase::StartUpXXX()
 	_ProfileInProgressResult.Reserve(128);
 	_LastProfileResult.Reserve(128);
 
+	_ProfilingNameStackAsStr = PER_FRAME;
 
 	_perfFrequency = GetPerformanceFrequency();
 	_FrameStartTick = GetPerofrmanceCounter();
@@ -55,7 +57,7 @@ void FrameInfoProcessorBase::PerFrameXXX()
 		_FPSCheckStopWatch = 0;
 		_frameCntDuringInFPSCheckterval = 0;
 	}
-
+	
 	// Profiling
 	{
 		if (_bIsProfileEnabled)
@@ -101,18 +103,11 @@ void FrameInfoProcessorBase::BeginMainProfile(SS::SHasherW RecordItemName)
 	uint64 TickCnt = GetPerofrmanceCounter();
 
 
-	ProfileNameTickCntPair LastProfile = GetProfStackTop();
-	SS::StringW NameConcat = LastProfile.Name.C_Str();
-
-	NameConcat += L"/";
-	NameConcat += RecordItemName.C_Str();
-
-	SS::SHasherW NewName = NameConcat.C_Str();
-
-
 	// TODO: Lock?
 	{
-		_ProfilingNameStack.PushBack({ NewName, TickCnt });
+		_ProfilingNameStackAsStr += L"/";
+		_ProfilingNameStackAsStr += RecordItemName.C_Str();
+		_ProfilingNameStack.PushBack({ RecordItemName, TickCnt });
 	}
 }
 
@@ -126,22 +121,9 @@ void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 
 	const ProfileNameTickCntPair& ProfStackTop = GetProfStackTop();
 
-	const utf16* ProfStackTopNameRaw = ProfStackTop.Name.C_Str();
-	const int32 ProfStackTopNameStrLen = ProfStackTop.Name.GetStrLen();
-
-	const utf16* RecordItemNameRaw = RecordItemName.C_Str();
-	const int32 RecordItemNameStrLen = RecordItemName.GetStrLen();
-
-	if (ProfStackTopNameStrLen <= RecordItemNameStrLen)
+	if (ProfStackTop.Name != RecordItemName)
 	{
-		SS_ASSERT(false);
-		return;
-	}
-
-	int32 CmpResult = wcscmp(ProfStackTopNameRaw + ProfStackTopNameStrLen - RecordItemNameStrLen, RecordItemNameRaw);
-	if (CmpResult != 0)
-	{
-		SS_ASSERT(false);
+		SS_INTERRUPT();
 		return;
 	}
 
@@ -152,8 +134,12 @@ void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 
 		const uint64 NewTickCnt = GetPerofrmanceCounter();
 		_ProfileInProgressResult.PushBack(
-			{ ProfStackTop.Name, ProfStackTop.TickCnt, NewTickCnt }
+			{_ProfilingNameStackAsStr, ProfStackTop.TickCnt, NewTickCnt }
 		);
+
+		const int32 OriginalStrLen = _ProfilingNameStackAsStr.GetStrLen();
+		_ProfilingNameStackAsStr.CutOut(OriginalStrLen - RecordItemName.GetStrLen() - 1);
+
 	}
 }
 
@@ -168,7 +154,7 @@ ProfileNameTickCntPair FrameInfoProcessorBase::GetProfStackTop() const
 	int64 LastIdx = _ProfilingNameStack.GetSize() - 1;
 	if (LastIdx == -1)
 	{
-		static const SS::SHasherW PerFrame = L"PER_FRAME";
+		static const SS::SHasherW PerFrame = PER_FRAME;
 		return { PerFrame, _FrameStartTick };
 	}
 

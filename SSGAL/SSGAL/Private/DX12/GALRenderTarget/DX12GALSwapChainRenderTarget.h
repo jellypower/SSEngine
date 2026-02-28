@@ -37,8 +37,8 @@ private:
 	uint32 _SwapChainFlags = 0;
 
 
-	SS::PooledList<ID3D12Resource*, SS::InlineAllocator<GAL_NESTED_FRAME_CNT>> _DXRenderTargets;
-	SS::PooledList<CD3DX12_CPU_DESCRIPTOR_HANDLE, SS::InlineAllocator<GAL_NESTED_FRAME_CNT>> _RTDescHandles;
+	ID3D12Resource* _DXRenderTargets[GAL_NESTED_FRAME_CNT];
+	CD3DX12_CPU_DESCRIPTOR_HANDLE _RTDescHandles[GAL_NESTED_FRAME_CNT];
 	ID3D12DescriptorHeap* _RTVDescHeap = nullptr;
 	uint32 _RTVDescriptorSize = 0;
 };

@@ -4,6 +4,8 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
+#include "SSGAL/Public/SSGALInlineSettings.h"
+
 class DX12TransientConstantBufferAllocator;
 class IRICubeMap;
 class IRISkinnedMesh;
@@ -21,7 +23,7 @@ class DX12GALRenderDevice;
 class DX12GALRenderDeviceContext : public GALRenderDeviceContext
 {
 public:
-	DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 SwapChainFrameCnt);
+	DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice);
 	virtual ~DX12GALRenderDeviceContext();
 
 public:
@@ -103,7 +105,6 @@ private:
 public:
 	ID3D12CommandQueue* GetD3DCommandQueue() const { return _D3DCommandQueue; }
 	ID3D12GraphicsCommandList* GetCurrentDrawWorkerCmdList() const { return _DrawWorkerCommandLists[_CurCommandListIdx]; }
-	const SS::PooledList<ID3D12GraphicsCommandList*>& GetDrawWorkerCommandLists() const { return _DrawWorkerCommandLists; }
 
 
 protected:
@@ -142,8 +143,8 @@ private:
 
 	SS::PooledList<ID3D12DescriptorHeap*, SS::InlineAllocator<10>> _UniqueDescHeapWorkTable;
 
-	SS::PooledList<ID3D12CommandAllocator*> _DrawWorkerCommandAllocators;
-	SS::PooledList<ID3D12GraphicsCommandList*> _DrawWorkerCommandLists; // TODO: GAL_NESTED_FRAME_CNT * THREAD_CNT 개수만큼 만들기
+	ID3D12CommandAllocator* _DrawWorkerCommandAllocators[GAL_NESTED_FRAME_CNT];
+	ID3D12GraphicsCommandList* _DrawWorkerCommandLists[GAL_NESTED_FRAME_CNT];
 	ID3D12CommandQueue* _D3DCommandQueue = nullptr;
 	ID3D12Fence* _Fence = nullptr;
 	HANDLE _FenceEvent = nullptr;

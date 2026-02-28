@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "DX12GALTextureAssetWrapper.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
 #include <SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h>
 #include <SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h>
 #include <SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h>
@@ -14,6 +15,7 @@
 
 DX12GALTextureAssetWrapper::DX12GALTextureAssetWrapper(ITextureAssetMutable* OwnerAsset, DX12GALRenderDeviceContext* InExecutor)
 {
+	SCOPE_PROFILE(DX12GALTextureAssetWrapper);
 	_OwnerTexture = OwnerAsset;
 	_OwnerRenderDevice = static_cast<DX12GALRenderDevice*>(InExecutor->GetOwnerRenderDevice());
 
@@ -28,18 +30,20 @@ DX12GALTextureAssetWrapper::DX12GALTextureAssetWrapper(ITextureAssetMutable* Own
 	const utf16* TexturePath = OwnerAsset->GetAssetPath().C_Str();
 	const utf16* TextureName = OwnerAsset->GetAssetName().C_Str();
 
-
 	D3D12_RESOURCE_DESC textureDesc = {};
 	std::unique_ptr<uint8_t[]> ddsData;
 	std::vector<D3D12_SUBRESOURCE_DATA> subresouceData;
 	bool bIsCubeMap = false;
-	if (FAILED(LoadDDSTextureFromFile(D3DDevice, TexturePath, &_TexResource, ddsData, subresouceData, 0, nullptr, &bIsCubeMap)))
 	{
-		DEBUG_BREAK();
-		if (_TexResource != nullptr)
+		SCOPE_PROFILE(LoadDDS);
+		if (FAILED(LoadDDSTextureFromFile(D3DDevice, TexturePath, &_TexResource, ddsData, subresouceData, 0, nullptr, &bIsCubeMap)))
 		{
-			_TexResource->Release();
-			_TexResource = nullptr;
+			DEBUG_BREAK();
+			if (_TexResource != nullptr)
+			{
+				_TexResource->Release();
+				_TexResource = nullptr;
+			}
 		}
 	}
 	textureDesc = _TexResource->GetDesc();

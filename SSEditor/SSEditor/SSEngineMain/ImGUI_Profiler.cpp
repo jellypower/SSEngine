@@ -71,7 +71,7 @@ int ImGUI_Profiler::Show_ProfilerItem_Recursion(int32 ProfileResultIdx, int64 Pa
 {
 	bool bIsTreeNodeOpen = false;
 	const ProfileResultItem& Item = _ProfileResultCapture[ProfileResultIdx];
-	SS::SHasherW ItemProfileName = Item.Name;
+	const SS::StringW& ItemProfStr = Item.ProfStr;
 	int64 ItemConsumedTick = Item.TickEnd - Item.TickStart;
 
 
@@ -97,15 +97,15 @@ int ImGUI_Profiler::Show_ProfilerItem_Recursion(int32 ProfileResultIdx, int64 Pa
 	int NextIdx = ProfileResultIdx - 1;
 	while (NextIdx >= 0)
 	{
-		SS::SHasherW NextProfileName = _ProfileResultCapture[NextIdx].Name;
-		if (NextProfileName == ItemProfileName)
+		const SS::StringW& NextProfileName = _ProfileResultCapture[NextIdx].ProfStr;
+		if (NextProfileName.GetStrLen() == ItemProfStr.GetStrLen())
 		{
 			break; // 같은놈이면 자식이라고 생각 안하고 다음으로 넘어가게 한다.
 		}
 
 		int Result = wcsncmp(
 			NextProfileName.C_Str(),
-			ItemProfileName.C_Str(), ItemProfileName.GetStrLen());
+			ItemProfStr.C_Str(), ItemProfStr.GetStrLen());
 
 		if (Result == 0)
 		{
@@ -146,7 +146,7 @@ void ImGUI_Profiler::CopyProfilerResultToClipboard()
 int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int64 ParentConsumedTick, int32 Depth)
 {
 	ProfileResultItem Item = _ProfileResultCapture[ProfileResultIdx];
-	SS::SHasherW ItemProfileName = Item.Name;
+	const SS::StringW& ItemProfileName = Item.ProfStr;
 	int64 ItemConsumedTick = Item.TickEnd - Item.TickStart;
 
 
@@ -169,8 +169,8 @@ int ImGUI_Profiler::CopyCaptureToClipboard_Recursion(int32 ProfileResultIdx, int
 	int NextIdx = ProfileResultIdx - 1;
 	while (NextIdx >= 0)
 	{
-		SS::SHasherW NextProfileName = _ProfileResultCapture[NextIdx].Name;
-		if (NextProfileName == ItemProfileName)
+		const SS::StringW& NextProfileName = _ProfileResultCapture[NextIdx].ProfStr;
+		if (NextProfileName.GetStrLen() == ItemProfileName.GetStrLen())
 		{
 			break; // 같은놈이면 자식이라고 생각 안하고 다음으로 넘어가게 한다.
 		}

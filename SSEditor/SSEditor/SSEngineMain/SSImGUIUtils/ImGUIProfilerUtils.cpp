@@ -21,11 +21,11 @@ int32 ProfileResultItemToU16(
 	WholeConsumedRatio *= 100;
 	ParentRelativeConsumedRatio *= 100;
 
-	const utf16* NameCStr = Item.Name.C_Str();
+	const utf16* NameCStr = Item.ProfStr.C_Str();
 
 	if (bSimplify)
 	{
-		const int32 StrLen = Item.Name.GetStrLen();
+		const int32 StrLen = Item.ProfStr.GetStrLen();
 		int32 StrOffset = StrLen - 1;
 
 		for (; StrOffset >= 0; StrOffset--)

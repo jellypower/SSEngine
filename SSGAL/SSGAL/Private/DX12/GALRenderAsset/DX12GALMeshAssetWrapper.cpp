@@ -3,6 +3,8 @@
 
 #include "DX12GALMeshAssetWrapper.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
 
@@ -34,9 +36,10 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 	}
 	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(MeshRawData);
 
-
+	
 	// Create Vertex buffer and Update
 	{
+		SCOPE_PROFILE(SM_Vertex);
 		int32 EachVertexSize = EachVertexSizeOfType(DefaultMeshRawData->_VertexHeader.MeshType);
 		int32 VertexCnt = DefaultMeshRawData->_VertexHeader.vertexCnt;
 		uint64 VertexBufferSize = VertexCnt * EachVertexSize;
@@ -80,7 +83,7 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 
 	// Create Index buffer and Update
 	{
-
+		SCOPE_PROFILE(SM_Index);
 		int32 SubMeshCnt = DefaultMeshRawData->_VertexHeader.subMeshCnt;
 		_SubMeshCnt = SubMeshCnt;
 		int32 WholeIdxDataCnt = DefaultMeshRawData->_VertexHeader.wholeIndexDataCnt;

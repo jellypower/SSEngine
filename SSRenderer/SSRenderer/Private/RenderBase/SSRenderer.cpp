@@ -634,43 +634,52 @@ void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 {
 	SCOPE_PROFILE(GPUAssetUpdate);
 
-	for (IMeshAssetMutable* MeshAssetItem : _GALStateChangedMeshAsset)
 	{
-		if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->GetGALMeshAsset() == nullptr)
+		SCOPE_PROFILE(Mesh);
+		for (IMeshAssetMutable* MeshAssetItem : _GALStateChangedMeshAsset)
 		{
-			Executor->GenerateMeshGALAsset(MeshAssetItem);
-		}
-		else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->GetGALMeshAsset() != nullptr)
-		{
-			MeshAssetItem->ReleaseGALData();
+			if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0 && MeshAssetItem->GetGALMeshAsset() == nullptr)
+			{
+				Executor->GenerateMeshGALAsset(MeshAssetItem);
+			}
+			else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->GetGALMeshAsset() != nullptr)
+			{
+				MeshAssetItem->ReleaseGALData();
+			}
 		}
 	}
 
-	for (ITextureAssetMutable* TextureAssetItem : _GALStateChangedTextureAsset)
 	{
-		if (TextureAssetItem->GetAssetInstanceReferenceCnt() > 0 && TextureAssetItem->GetGALTextureAsset() == nullptr)
+		SCOPE_PROFILE(Tex);
+		for (ITextureAssetMutable* TextureAssetItem : _GALStateChangedTextureAsset)
 		{
-			Executor->GenerateTextureGALAsset(TextureAssetItem);
-		}
-		else if (TextureAssetItem->GetAssetInstanceReferenceCnt() <= 0 && TextureAssetItem->GetGALTextureAsset() != nullptr)
-		{
-			TextureAssetItem->ReleaseGALData();
+			if (TextureAssetItem->GetAssetInstanceReferenceCnt() > 0 && TextureAssetItem->GetGALTextureAsset() == nullptr)
+			{
+				Executor->GenerateTextureGALAsset(TextureAssetItem);
+			}
+			else if (TextureAssetItem->GetAssetInstanceReferenceCnt() <= 0 && TextureAssetItem->GetGALTextureAsset() != nullptr)
+			{
+				TextureAssetItem->ReleaseGALData();
+			}
 		}
 	}
 
-	for (IMaterialAssetMutable* MaterialAssetItem : _GALStateChangedMaterialAsset)
 	{
-		if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0 && MaterialAssetItem->GetGALMaterialAsset() == nullptr)
+		SCOPE_PROFILE(Mtl);
+		for (IMaterialAssetMutable* MaterialAssetItem : _GALStateChangedMaterialAsset)
 		{
-			Executor->GenerateMaterialGALAsset(MaterialAssetItem); // 레프 카운트가 0에서 올랐으면 생성
-		}
-		else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
-		{
-			MaterialAssetItem->ReleaseGALData(); // 레프 카운트가 0으로 떨어졌으면 파괴
-		}
-		else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
-		{
-			MaterialAssetItem->GetGALMaterialAsset()->SyncMtlParam(); // 레프 카운트가 그대로면 변경
+			if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0 && MaterialAssetItem->GetGALMaterialAsset() == nullptr)
+			{
+				Executor->GenerateMaterialGALAsset(MaterialAssetItem); // 레프 카운트가 0에서 올랐으면 생성
+			}
+			else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
+			{
+				MaterialAssetItem->ReleaseGALData(); // 레프 카운트가 0으로 떨어졌으면 파괴
+			}
+			else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
+			{
+				MaterialAssetItem->GetGALMaterialAsset()->SyncMtlParam(); // 레프 카운트가 그대로면 변경
+			}
 		}
 	}
 

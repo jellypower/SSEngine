@@ -3,6 +3,8 @@
 
 #include "DX12GALResourceUpdater.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
@@ -120,7 +122,7 @@ HRESULT DX12GALResourceUpdater::UpdateTexture(
 	D3D12_RESOURCE_STATES FromState,
 	D3D12_RESOURCE_STATES ToState)
 {
-
+	SCOPE_PROFILE(UpdateTexture);
 	HRESULT hr = S_OK;
 	byte* pUploadBufferData = nullptr;
 	CD3DX12_RANGE writeRange(0, 0); // We do not intend to read from this resource on the CPU.

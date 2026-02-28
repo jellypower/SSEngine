@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "DX12GALSkinnedMeshAssetWrapper.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
 #include <SSEngineDefault/Public/SSCommonUtil/AllocatedChunkHeader.h>
 #include <SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h>
 
@@ -33,6 +34,7 @@ DX12GALSkinnedMeshAssetWrapper::DX12GALSkinnedMeshAssetWrapper(IMeshAsset* owner
 
 	// Create Resource
 	{
+		SCOPE_PROFILE(SKM_CreateBoneBuffer);
 		CD3DX12_HEAP_PROPERTIES heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(SBASkinningJointMatrix) * BoneCnt);
 		hr = D3DDevice->CreateCommittedResource(
@@ -77,6 +79,8 @@ DX12GALSkinnedMeshAssetWrapper::DX12GALSkinnedMeshAssetWrapper(IMeshAsset* owner
 
 	// WriteData
 	{
+		SCOPE_PROFILE(SKM_Bone);
+
 		CD3DX12_RANGE writeRange(0, 0);
 		void* pData = nullptr;
 		hr = _OriginalJointInverseResource->Map(0, &writeRange, reinterpret_cast<void**>(&pData));

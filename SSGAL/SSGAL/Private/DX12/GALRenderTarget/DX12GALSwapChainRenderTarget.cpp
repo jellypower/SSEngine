@@ -19,7 +19,7 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDeviceCo
 	// Create Descriptor
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-		rtvHeapDesc.NumDescriptors = GAL_NESTED_FRAME_CNT;	// SwapChain Buffer 0	| SwapChain Buffer 1
+		rtvHeapDesc.NumDescriptors = GAL_NESTED_FRAME_CNT;
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		if (FAILED(D3DDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&_RTVDescHeap))))
@@ -95,8 +95,8 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDeviceCo
 
 
 			D3DDevice->CreateRenderTargetView(Buffer, nullptr, rtvHandle);
-			_RTDescHandles.PushBack(rtvHandle);
-			_DXRenderTargets.PushBack(Buffer);
+			_RTDescHandles[i] = rtvHandle;
+			_DXRenderTargets[i] = Buffer;
 			rtvHandle.Offset(1, _RTVDescriptorSize);
 		}
 	}
@@ -107,9 +107,9 @@ DX12GALSwapChainRenderTarget::~DX12GALSwapChainRenderTarget()
 	_swapChain->Release();
 	_RTVDescHeap->Release();
 
-	for (ID3D12Resource* RTItem : _DXRenderTargets)
+	for (int32 i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 	{
-		RTItem->Release();
+		_DXRenderTargets[i]->Release();
 	}
 }
 
@@ -175,11 +175,10 @@ void DX12GALSwapChainRenderTarget::UpdateViewportSize(uint32 BackBufferWidth, ui
 		SS_INTERRUPT();
 	}
 
-	for (ID3D12Resource* RenderTargetItem : _DXRenderTargets)
+	for (int32 i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 	{
-		RenderTargetItem->Release();
+		_DXRenderTargets[i]->Release();
 	}
-	_DXRenderTargets.Clear();
 
 
 	if (FAILED(_swapChain->ResizeBuffers(GAL_NESTED_FRAME_CNT, BackBufferWidth, BackBufferHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _SwapChainFlags)))
@@ -190,14 +189,14 @@ void DX12GALSwapChainRenderTarget::UpdateViewportSize(uint32 BackBufferWidth, ui
 	_CurRenderTargetIdx = _swapChain->GetCurrentBackBufferIndex();
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE NewRTVHandle(_RTVDescHeap->GetCPUDescriptorHandleForHeapStart());
-	for (UINT n = 0; n < GAL_NESTED_FRAME_CNT; n++)
+	for (UINT i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 	{
 		ID3D12Resource* Buffer = nullptr;
-		_swapChain->GetBuffer(n, IID_PPV_ARGS(&Buffer));
+		_swapChain->GetBuffer(i, IID_PPV_ARGS(&Buffer));
 		D3DDevice->CreateRenderTargetView(Buffer, nullptr, NewRTVHandle);
-		_RTDescHandles.PushBack(NewRTVHandle);
+		_RTDescHandles[i] = NewRTVHandle;
 		NewRTVHandle.Offset(1, _RTVDescriptorSize);
-		_DXRenderTargets.PushBack(Buffer);
+		_DXRenderTargets[i] = Buffer;
 	}
 
 

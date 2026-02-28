@@ -55,7 +55,7 @@
 
 
 
-DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice, int32 SwapChainFrameCnt):
+DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice):
 	_BoundRenderTargets(RT_NUM_MAX),
 	_RenderLightsToDraw(32)
 {
@@ -64,9 +64,6 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 	ID3D12Device5* D3DDevice = InRenderDevice->GetD3DDevice();
 
 	_OwnerRenderDevice = InRenderDevice;
-	_DrawWorkerCommandAllocators.Reserve(SwapChainFrameCnt * 2);
-	_DrawWorkerCommandLists.Reserve(SwapChainFrameCnt * 2);
-
 
 
 	// Create Command Queue
@@ -99,7 +96,7 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 	}
 
 	
-	for (int32 i = 0; i < SwapChainFrameCnt; i++)
+	for (int32 i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 	{
 		ID3D12CommandAllocator* NewCommandAllocator = nullptr;
 		ID3D12GraphicsCommandList* NewCommandList = nullptr;
@@ -116,8 +113,8 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 
 		NewCommandList->Close();
 
-		_DrawWorkerCommandAllocators.PushBack(NewCommandAllocator);
-		_DrawWorkerCommandLists.PushBack(NewCommandList);
+		_DrawWorkerCommandAllocators[i] = NewCommandAllocator;
+		_DrawWorkerCommandLists[i] = NewCommandList;
 	}
 
 
@@ -143,19 +140,12 @@ DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 	_D3DCommandQueue->Release();
 
 
-	for (ID3D12CommandList* CommandListItem : _DrawWorkerCommandLists)
+	for (int32 i=0;i<GAL_NESTED_FRAME_CNT;i++)
 	{
-		CommandListItem->Release();
+		_DrawWorkerCommandLists[i]->Release();
+		_DrawWorkerCommandAllocators[i]->Release();
 	}
 
-	for (ID3D12CommandAllocator* AllocatorItem : _DrawWorkerCommandAllocators)
-	{
-		AllocatorItem->Release();	
-	}
-
-
-	_DrawWorkerCommandLists.Clear();
-	_DrawWorkerCommandAllocators.Clear();
 
 	delete _ResourceUpdater;
 
@@ -165,7 +155,7 @@ DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 
 bool DX12GALRenderDeviceContext::IsValid() const
 {
-	return _DrawWorkerCommandLists.GetSize() != 0;
+	return _DrawWorkerCommandLists[0] != nullptr;
 }
 
 ERenderDeviceTaskPhase DX12GALRenderDeviceContext::GetTaskPhase()

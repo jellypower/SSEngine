@@ -226,7 +226,7 @@ ERenderDevicePlatnform DX12GALRenderDevice::GetRenderDevicePlatform() const
 
 GALRenderDeviceContext* DX12GALRenderDevice::CreateRenderDeviceContext()
 {
-	DX12GALRenderDeviceContext* NewDeviceContext = DBG_NEW DX12GALRenderDeviceContext(this, GAL_NESTED_FRAME_CNT);
+	DX12GALRenderDeviceContext* NewDeviceContext = DBG_NEW DX12GALRenderDeviceContext(this);
 
 	if (NewDeviceContext->IsValid())
 	{

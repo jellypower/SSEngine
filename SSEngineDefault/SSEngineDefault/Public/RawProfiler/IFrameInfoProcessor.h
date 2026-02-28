@@ -7,7 +7,7 @@
 
 struct ProfileResultItem
 {
-	SS::SHasherW Name;
+	SS::StringW ProfStr;
 	uint64 TickStart;
 	uint64 TickEnd;
 };
