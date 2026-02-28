@@ -106,7 +106,7 @@ void FrameInfoProcessorBase::BeginMainProfile(SS::SHasherW RecordItemName)
 	// TODO: Lock?
 	{
 		_ProfilingNameStackAsStr += L"/";
-		_ProfilingNameStackAsStr += RecordItemName.C_Str();
+		_ProfilingNameStackAsStr += RecordItemName.C_Str(); // 오버헤드
 		_ProfilingNameStack.PushBack({ RecordItemName, TickCnt });
 	}
 }
@@ -134,7 +134,7 @@ void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 
 		const uint64 NewTickCnt = GetPerofrmanceCounter();
 		_ProfileInProgressResult.PushBack(
-			{_ProfilingNameStackAsStr, ProfStackTop.TickCnt, NewTickCnt }
+			{_ProfilingNameStackAsStr, ProfStackTop.TickCnt, NewTickCnt } // 오버헤드
 		);
 
 		const int32 OriginalStrLen = _ProfilingNameStackAsStr.GetStrLen();
