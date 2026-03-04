@@ -1,4 +1,6 @@
 #pragma once
+#include "SSGAL/Public/SSGALInlineSettings.h"
+
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 
 #include "SObject/Public/SObjHashCode.h"
@@ -39,8 +41,8 @@ public:
 	virtual void SetWorldTransformMatrix(const XMMATRIX& InMatrix) = 0;
 	virtual void SetWorldRotation(const Quaternion& InRotation) = 0;
 
-	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) = 0;
-	virtual GALRIMetadata* GetGALMetadata() const = 0;
+	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover, int32 FrameMod) = 0;
+	virtual GALRIMetadata* GetGALMetadata(int32 FrameMod) const = 0;
 	virtual void ReleaseGALMetaData() = 0;
 
 	virtual void OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld) = 0;

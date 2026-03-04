@@ -57,6 +57,8 @@ public:
 	uint64 GetCurFrameCnt() const { return _CurFrameCnt; }
 
 public:
+	virtual void FinalizeDeviceContext() = 0;
+
 	virtual void BeginRender() = 0;
 	virtual void WaitForCommandExecuteFinish() = 0;
 	virtual void EndRender() = 0;
@@ -124,5 +126,5 @@ public:
 protected:
 	virtual void ResetRenderState() = 0;
 	virtual void FenceFrame() = 0;
-	virtual void WaitForFence() = 0;
+	virtual void WaitForNestedGPUJob() = 0;
 };

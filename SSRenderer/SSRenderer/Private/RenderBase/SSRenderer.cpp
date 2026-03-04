@@ -1,9 +1,14 @@
 #include "SSRenderer.h"
 
+#include <SSGAL/Public/GALRenderInstance/GALRWMetaData.h>
+
+
 #include "RenderWorld.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+#include "SSEngineDefault/Public/SSThread/SSThreadUtil.h"
 
+#include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
 #include "SSGAL/Public/SSGALCommonEnums.h"
 #include "SSGAL/Public/SSGALInlineSettings.h"
 #include "SSGAL/Public/GALPostProcessContext/GALPPCDeferredShading.h"
@@ -25,6 +30,7 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
+#include "SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h"
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 
 
@@ -32,6 +38,12 @@ SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice) :
 	_RenderInstancesToDraw(1000),
 	_RenderLightsToDraw(10)
 {
+	for (int32 i = 0; i < DEFERRED_DESTROY_MOD; i++)
+	{
+		_DeferredDestroyTargets[i].Reserve(100);
+		_DeferredDestoryGALRWs[i].Reserve(10);
+	}
+
 	_GALRenderDevice = InRenderDevice;
 	_MainDeviceContext = _GALRenderDevice->CreateRenderDeviceContext();
 	_AssetManager = DBG_NEW AssetManagerBase(1000, 10);
@@ -124,10 +136,34 @@ void SSRenderer::AddGALStateChangedAsset(IAssetBase* AssetToChange)
 	}
 }
 
+void SSRenderer::ProcessReservedDestroy()
+{
+	SS_ASSERT(SSThreadUtil::IsInMainThread());
+
+	const uint64 CurFrameCnt = SSFrameInfo::GetFrameCnt();
+	const uint64 DestroyTargetMod = CurFrameCnt % DEFERRED_DESTROY_MOD;
+
+	SS::PooledList<GALRIMetadata*>& DestroyTargets = _DeferredDestroyTargets[DestroyTargetMod];
+	for (GALRIMetadata* GALRIItem : DestroyTargets)
+	{
+		delete GALRIItem;
+	}
+	DestroyTargets.Clear();
+
+
+	SS::PooledList<GALRWMetaData*>& DestroyGALRWs = _DeferredDestoryGALRWs[DestroyTargetMod];
+	for (GALRWMetaData* GALRWItem : DestroyGALRWs)
+	{
+		delete GALRWItem;
+	}
+	DestroyGALRWs.Clear();
+
+}
+
 IRenderWorld* SSRenderer::CreateRenderWorld(const utf16* InWorldName)
 {
 	if (InWorldName == nullptr) InWorldName = L"EMPTY_WorldName";
-	
+
 	RenderWorld* NewRenderWorld = DBG_NEW RenderWorld(InWorldName);
 	return NewRenderWorld;
 }
@@ -327,7 +363,7 @@ void SSRenderer::PerFrame()
 	}
 
 
-	
+
 	{
 		// TEMP Read PixelPicker
 		if (_bPixelPickingReserved)
@@ -337,8 +373,8 @@ void SSRenderer::PerFrame()
 			_PixelPickerCPUReadableTex->BeginRead();
 
 			Vector2ui32 WindowSize = SSFrameInfo::GetWindowSize();
-			
-			int64 ObjectNativeID = 0; 
+
+			int64 ObjectNativeID = 0;
 			int64* pObjectNativeID = (int64*)_PixelPickerCPUReadableTex->GetDataAtRatio(
 				(float)_PixelPickingCoord.X / WindowSize.X,
 				(float)_PixelPickingCoord.Y / WindowSize.Y);
@@ -356,9 +392,18 @@ void SSRenderer::PerFrame()
 
 		// BeginRender
 		{
+			// WaitForFence 포함
 			SCOPE_PROFILE(BeginRender);
 			_MainDeviceContext->BeginRender();
 		}
+
+		// ProcessReserveDestroy
+		{
+			// 이전 프레임 작업이 끝나면 새 작업 밀어넣기
+			SCOPE_PROFILE(ProcessReservedDestroy);
+			ProcessReservedDestroy();
+		}
+
 
 		{
 			SCOPE_PROFILE(MainPass);
@@ -593,9 +638,9 @@ void SSRenderer::CleanUp()
 
 
 	{
-		_MainDeviceContext->BeginRender();
-		InstantiatePendingGALAssets(_MainDeviceContext); // 잔여물이 남아있을 수도 있음
-		_MainDeviceContext->EndRender();
+		_MainDeviceContext->FinalizeDeviceContext();
+		FinalizeAllReservedDestroy();
+		ValidateReleaseAllGALAssets();
 	}
 
 
@@ -613,7 +658,43 @@ void SSRenderer::CleanUp()
 	_GALRenderDevice = nullptr;
 }
 
-void SSRenderer::ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* InCallback)())
+void SSRenderer::ReserveDestory(GALRIMetadata* DestroyTaget, int32 TargetDestroyMod)
+{
+	SS_ASSERT(SSThreadUtil::IsInMainThread());
+	if (TargetDestroyMod >= DEFERRED_DESTROY_MOD || TargetDestroyMod < 0)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	if (DestroyTaget == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	_DeferredDestroyTargets[TargetDestroyMod].PushBack(DestroyTaget);
+}
+
+void SSRenderer::ReserveDestroyGALRW(GALRWMetaData* DestroyTarget, int32  TargetDestroyMod)
+{
+	SS_ASSERT(SSThreadUtil::IsInMainThread());
+	if (TargetDestroyMod >= DEFERRED_DESTROY_MOD || TargetDestroyMod < 0)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	if (DestroyTarget == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	_DeferredDestoryGALRWs[TargetDestroyMod].PushBack(DestroyTarget);
+}
+
+void SSRenderer::ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(*InCallback)())
 {
 	_OneTimeCallback_BeforeGALRDCEndRender.PushBack(InCallback);
 }
@@ -688,11 +769,86 @@ void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 	_GALStateChangedMaterialAsset.Clear();
 }
 
+void SSRenderer::ValidateReleaseAllGALAssets()
+{
+	SCOPE_PROFILE(ValidateReleaseAllGALAssets);
+
+	{
+		SCOPE_PROFILE(Mesh);
+		for (IMeshAssetMutable* MeshAssetItem : _GALStateChangedMeshAsset)
+		{
+			if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0)
+			{
+				SS_INTERRUPT(); // 렌더러가 내려가는데 살아있는 에셋이 존재해선 안됩니다.
+			}
+			else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->GetGALMeshAsset() != nullptr)
+			{
+				MeshAssetItem->ReleaseGALData();
+			}
+		}
+	}
+
+	{
+		SCOPE_PROFILE(Tex);
+		for (ITextureAssetMutable* TextureAssetItem : _GALStateChangedTextureAsset)
+		{
+			if (TextureAssetItem->GetAssetInstanceReferenceCnt() > 0)
+			{
+				SS_INTERRUPT();
+			}
+			else if (TextureAssetItem->GetAssetInstanceReferenceCnt() <= 0 && TextureAssetItem->GetGALTextureAsset() != nullptr)
+			{
+				TextureAssetItem->ReleaseGALData();
+			}
+		}
+	}
+
+	{
+		SCOPE_PROFILE(Mtl);
+		for (IMaterialAssetMutable* MaterialAssetItem : _GALStateChangedMaterialAsset)
+		{
+			if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0)
+			{
+				SS_INTERRUPT();
+			}
+			else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
+			{
+				MaterialAssetItem->ReleaseGALData();
+			}
+		}
+	}
+
+	_GALStateChangedMeshAsset.Clear();
+	_GALStateChangedTextureAsset.Clear();
+	_GALStateChangedMaterialAsset.Clear();
+}
+
+void SSRenderer::FinalizeAllReservedDestroy()
+{
+	for (int32 i = 0; i < DEFERRED_DESTROY_MOD; i++)
+	{
+		SS::PooledList<GALRIMetadata*>& DestroyTargets = _DeferredDestroyTargets[i];
+		for (GALRIMetadata* GALRIItem : DestroyTargets)
+		{
+			delete GALRIItem;
+		}
+		DestroyTargets.Clear();
+
+
+		SS::PooledList<GALRWMetaData*>& DestroyGALRWs = _DeferredDestoryGALRWs[i];
+		for (GALRWMetaData* GALRWItem : DestroyGALRWs)
+		{
+			delete GALRWItem;
+		}
+		DestroyGALRWs.Clear();
+	}
+}
+
 
 void SSRenderer::ScrapRenderInstsances(
 	SS::PooledList<IRenderInstance*>& OutRenderInstancesToDraw,
 	SS::PooledList<IRenderLight*>& OutRenderLightsToDraw,
-	IRICubeMap*& OutCubeMapToDraw, 
+	IRICubeMap*& OutCubeMapToDraw,
 	IRenderCamera* InCamera)
 {
 	RenderWorld* WorldToRender = (RenderWorld*)InCamera->GetIcludedRenderWorld();
@@ -712,7 +868,7 @@ void SSRenderer::ScrapRenderInstsances(
 			OutRenderLightsToDraw.PushBack((IRenderLight*)InstanceItem);
 		}
 		else if (RIType == ERenderInstanceType::StaticMesh ||
-				RIType == ERenderInstanceType::SkinnedMesh)
+			RIType == ERenderInstanceType::SkinnedMesh)
 		{
 			OutRenderInstancesToDraw.PushBack(InstanceItem);
 		}

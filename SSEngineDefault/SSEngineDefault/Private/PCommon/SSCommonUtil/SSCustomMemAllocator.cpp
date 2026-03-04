@@ -14,7 +14,11 @@ SSCustomMemChunkAllocator::SSCustomMemChunkAllocator(int32 InEachPageSize, int32
 
 void SSCustomMemChunkAllocator::ReleaseDefaultPages()
 {
-	SS_ASSERT(IsAnyChunkInUse() == false);
+	const bool bInUse = IsAnyChunkInUse();
+	if (bInUse)
+	{
+		SS_INTERRUPT();
+	}
 
 	for (PageSet& PageSetItem : _DefaultPages)
 	{

@@ -16,6 +16,6 @@ public:
 
 	virtual void RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToRemove) = 0;
 
-	virtual GALRWMetaData* GetGALMetadata() const = 0;
-	virtual void InjectGALMetadataXXX(GALRWMetaData* InMetadata) = 0;
+	virtual GALRWMetaData* GetGALMetadata(int32 FrameMod) const = 0;
+	virtual void InjectGALMetadataXXX(GALRWMetaData* InMetadata, int32 FrameMod) = 0;
 };

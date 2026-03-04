@@ -31,6 +31,9 @@ public:
 	virtual ERenderDeviceTaskPhase GetTaskPhase() override;
 	virtual GALRWMetaData* GetCurRenderWorldGALMetaData() const override;
 
+public:
+	virtual void FinalizeDeviceContext() override;
+
 	virtual void BeginRender() override;
 	virtual void WaitForCommandExecuteFinish() override;
 	virtual void EndRender() override;
@@ -104,28 +107,26 @@ private:
 
 public:
 	ID3D12CommandQueue* GetD3DCommandQueue() const { return _D3DCommandQueue; }
-	ID3D12GraphicsCommandList* GetCurrentDrawWorkerCmdList() const { return _DrawWorkerCommandLists[_CurCommandListIdx]; }
+	ID3D12GraphicsCommandList* GetCurrentDrawWorkerCmdList() const;
 
 
 protected:
 	virtual void ResetRenderState() override;
 	virtual void FenceFrame() override;
-	virtual void WaitForFence() override;
+	virtual void WaitForNestedGPUJob() override;
 
 protected:
 	const SS::PooledList<GALRenderTarget*>& GetThisFrameBoundRenderTargets() const { return _BoundRenderTargets; }
 	GALRenderTarget* GetThisFrameBoundDSV() const { return _BoundDSV; }
 
 private:
-	void ResetCommandList();
+	void ResetCurFrameCommandList();
 
 
 private:
 	ERenderDeviceTaskPhase _TaskPhase = ERenderDeviceTaskPhase::TaskDenial;
-	// TODO: Shadow용 CommandList 없애기
+	
 
-
-	int32 _CurCommandListIdx = 0;
 
 	GALRenderTarget* _BoundDSV = nullptr;
 	SS::PooledList<GALRenderTarget*> _BoundRenderTargets;

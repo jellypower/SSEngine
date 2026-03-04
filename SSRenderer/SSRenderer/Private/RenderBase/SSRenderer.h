@@ -1,4 +1,6 @@
 #pragma once
+#include <SSGAL/Public/SSGALInlineSettings.h>
+
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 #include "SSRenderer/Public/DEBUG/DebugDrawDesc.h"
@@ -6,6 +8,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
+class GALRWMetaData;
 class IRICubeMap;
 class GALPPCDeferredShading;
 class CommonRenderAssetSet;
@@ -21,6 +24,8 @@ struct AssetInstanceReferencer;
 class RenderWorld;
 class GALRenderDeviceContext;
 class GALRenderDevice;
+
+static constexpr int32 DEFERRED_DESTROY_MOD = GAL_NESTED_FRAME_CNT + 1;
 
 class SSRenderer : public IRenderer
 {
@@ -40,6 +45,9 @@ private:
 
 	SS::PooledList<DebugDrawMeshDesc> _DebugDrawItemsWithoutDepth;
 	SS::PooledList<DebugDrawMeshDesc> _DebugDrawItemsWithDepth;
+
+	SS::PooledList<GALRIMetadata*> _DeferredDestroyTargets[DEFERRED_DESTROY_MOD];
+	SS::PooledList<GALRWMetaData*> _DeferredDestoryGALRWs[DEFERRED_DESTROY_MOD];
 
 private:
 	IRenderCamera* _MainRenderCamera = nullptr;
@@ -98,7 +106,9 @@ public:
 	virtual void CleanUp() override;
 
 public:
-	void ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* InCallback)()) override;
+	virtual void ReserveDestory(GALRIMetadata* DestroyTaget, int32 TargetDestroyMod) override;
+	virtual void ReserveDestroyGALRW(GALRWMetaData* DestroyTarget, int32 TargetDestroyMod) override;
+	virtual void ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void(* InCallback)()) override;
 
 
 public:
@@ -111,6 +121,7 @@ public:
 
 
 private:
+	void ProcessReservedDestroy();
 	void InstantiatePendingGALAssets(GALRenderDeviceContext* Executor);
 
 	void ScrapRenderInstsances(
@@ -118,9 +129,14 @@ private:
 		SS::PooledList<IRenderLight*>& OutRenderLightsToDraw,
 		IRICubeMap*& OutCubeMapToDraw,
 		IRenderCamera* InCamera);
-
 	
 
 	void Before_EndRender();
+
+
+	// FinalizeFunctions
+private:
+	void ValidateReleaseAllGALAssets();
+	void FinalizeAllReservedDestroy();
 };
 

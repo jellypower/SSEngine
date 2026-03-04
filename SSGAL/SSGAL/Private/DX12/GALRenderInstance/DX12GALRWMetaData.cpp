@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "DX12GALRWMetaData.h"
 
+#include <SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h>
+
 #include "SSRenderer/Public/RenderInstance/Light/IRenderLightDirectional.h"
 
 #include "SSRenderer/Public/RenderInstance/Light/IRenderLight.h"
@@ -84,6 +86,8 @@ void DX12GALRWMetaData::SyncLights(const SS::PooledList<IRenderLight*>& InLights
 {
 	ID3D12Device5* D3DDevice = _OwnerRenderDevice->GetD3DDevice();
 
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
 
 	int32 lShadowMapIdxOnDirectionalLights = 0;
 	int32 lShadowMapCnt = 0;
@@ -116,7 +120,7 @@ void DX12GALRWMetaData::SyncLights(const SS::PooledList<IRenderLight*>& InLights
 			IRenderLightDirectional* DirectionalLight = (IRenderLightDirectional*)LightItem;
 			_RenderLightParamSysMemAddr->ShadowMapVPMat = XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix(MainRenderCamera));
 
-			DX12GALRIDirectionalLightShadowMapMetadata* GALDirectionalLightShadowMapMetaData = static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(DirectionalLight->GetGALMetadata());
+			DX12GALRIDirectionalLightShadowMapMetadata* GALDirectionalLightShadowMapMetaData = static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(DirectionalLight->GetGALMetadata(FrameMod));
 			DX12GALDSVRenderTarget* ShadowMap = (DX12GALDSVRenderTarget*)GALDirectionalLightShadowMapMetaData->GetShadowMap();
 
 			CD3DX12_CPU_DESCRIPTOR_HANDLE Dest = _LightSettingDescTableCPU;

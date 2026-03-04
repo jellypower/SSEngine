@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <SSGAL/Public/SSGALInlineSettings.h>
+
 #include "SObject/Public/SObjHashCode.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
@@ -27,14 +29,14 @@ public:
 	void AddToWorld(IRenderInstance* InRenderInstance) override;
 	virtual void RemoveRenderInstanceFromWorld(SObjHashCode RenderInstanceIDToRemove) override;
 
-	virtual GALRWMetaData* GetGALMetadata() const override;
-	virtual void InjectGALMetadataXXX(GALRWMetaData* InMetadata) override;
+	virtual GALRWMetaData* GetGALMetadata(int32 FrameMod) const override;
+	virtual void InjectGALMetadataXXX(GALRWMetaData* InMetadata, int32 FrameMod) override;
 
 
 private:
 	SS::SHasherW _RenderWorldName;
 
-	GALRWMetaData* _GALMetadata = nullptr;
+	GALRWMetaData* _GALMetadata[GAL_NESTED_FRAME_CNT] = { nullptr, };
 
 	SS::HashMap<SObjHashCode, IRenderInstance*> _RenderInstanceByHashCode;
 };

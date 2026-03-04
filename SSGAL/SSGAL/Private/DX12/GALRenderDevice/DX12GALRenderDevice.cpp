@@ -2,7 +2,9 @@
 
 #include "DX12GALRenderDevice.h"
 
-#include <SSRenderer/Public/RenderInstance/IRenderInstance.h>
+#include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
+#include "SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h"
+
 
 #include "DX12GALRenderDeviceContext.h"
 #include "Private/DX12/DX12CommonUtils/DX12TransientConstantBufferAllocator.h"
@@ -202,7 +204,8 @@ DX12GALRenderDevice::~DX12GALRenderDevice()
 	if (RefCnt > 0)
 	{
 		IDXGIDebug1* pDebug = nullptr;
-		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
+		HRESULT hr = DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug));
+		if (SUCCEEDED(hr))
 		{
 			pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
 			pDebug->Release();
@@ -272,7 +275,11 @@ GALPPCDeferredShading* DX12GALRenderDevice::CreateDeferredShadingPostProcessCont
 
 void DX12GALRenderDevice::SyncGALRIMetadataWithRI(IRenderInstance* RIToSync)
 {
-	if (RIToSync->GetGALMetadata() == nullptr)
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	GALRIMetadata* GALRIMetaData = RIToSync->GetGALMetadata(FrameMod);
+
+	if (GALRIMetaData == nullptr)
 	{
 		return;
 	}
@@ -281,7 +288,7 @@ void DX12GALRenderDevice::SyncGALRIMetadataWithRI(IRenderInstance* RIToSync)
 
 	if (RIType == ERenderInstanceType::SkinnedMesh)
 	{
-		DX12GALRIMetadata_SKM* GALRISkinned = static_cast<DX12GALRIMetadata_SKM*>(RIToSync->GetGALMetadata());
+		DX12GALRIMetadata_SKM* GALRISkinned = static_cast<DX12GALRIMetadata_SKM*>(GALRIMetaData);
 		SS_ASSERT(GALRISkinned->GetMetadataRenderInstanceType() == ERenderInstanceType::SkinnedMesh);
 		GALRISkinned->SyncBonePose();
 	}

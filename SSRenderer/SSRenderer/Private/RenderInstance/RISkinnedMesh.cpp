@@ -1,10 +1,14 @@
 ﻿#include "RISkinnedMesh.h"
 
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
+#include "SSRenderer/Private/RenderBase/SSRenderer.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMaterialAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
+#include "SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h"
 
 RISkinnedMesh::RISkinnedMesh() :
 	_SkeletonPose(200)
@@ -46,9 +50,9 @@ void RISkinnedMesh::SetWorldRotation(const Quaternion& InRotation)
 	_WorldRotationMatrix = InRotation.AsMatrix();
 }
 
-void RISkinnedMesh::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover)
+void RISkinnedMesh::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover, int32 FrameMod)
 {
-	if (_MetaData != nullptr)
+	if (_MetaData[FrameMod] != nullptr)
 	{
 		SS_INTERRUPT();
 		return;
@@ -60,20 +64,36 @@ void RISkinnedMesh::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover)
 		return;
 	}
 
-	_MetaData = MetadataToHandover;
+	_MetaData[FrameMod] = MetadataToHandover;
 }
 
-GALRIMetadata* RISkinnedMesh::GetGALMetadata() const
+GALRIMetadata* RISkinnedMesh::GetGALMetadata(int32 FrameMod) const
 {
-	return _MetaData;
+	return _MetaData[FrameMod];
 }
 
 void RISkinnedMesh::ReleaseGALMetaData()
 {
-	if (_MetaData != nullptr)
+	int32 CurFrameMod = RenderFrameInfo::GetFrameMod();
+
+	for (int32 Offset = 0; Offset < GAL_NESTED_FRAME_CNT; Offset++)
 	{
-		delete _MetaData;
-		_MetaData = nullptr;
+		const int32 ItemIdx =
+			(CurFrameMod - Offset // CurFrameMod가 N이라고 하면 N-1번째 아이템은 CurFrame-1번째에 사용했던 녀석
+				+ GAL_NESTED_FRAME_CNT) // CurFrameMod - Offset 값이 0보다 작을 수 있기 때문에 더해줌
+			% GAL_NESTED_FRAME_CNT; // 그리고 다시 나눠줌
+
+		if (_MetaData[ItemIdx] == nullptr)
+		{
+			continue;
+		}
+
+		const int32 DestroyDelay =
+			(ItemIdx + GAL_NESTED_FRAME_CNT) % // 중첩된 프레임 뒤에 지운다.
+			DEFERRED_DESTROY_MOD; // 위 값도 리밋을 넘을 수 있으니까 모듈러 한 번 더 해줌.
+
+		g_Renderer->ReserveDestory(_MetaData[ItemIdx], DestroyDelay);
+		_MetaData[ItemIdx] = nullptr;
 	}
 }
 

@@ -6,7 +6,7 @@ class RICubeMap : public IRICubeMap
 private:
 	SObjHashCode _OwnerHashCode;
 	ITextureAsset* _TextureAsset = nullptr;
-	GALRIMetadata* _MetaData = nullptr;
+	GALRIMetadata* _MetaData[GAL_NESTED_FRAME_CNT] = { nullptr, };
 	IRenderWorld* _IncludedRenderWorld = nullptr;
 
 public:
@@ -26,8 +26,8 @@ public:
 	virtual void SetWorldTransformMatrix(const XMMATRIX& InMatrix) override;
 	virtual void SetWorldRotation(const Quaternion& InRotation) override;
 
-	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover) override;
-	virtual GALRIMetadata* GetGALMetadata() const override;
+	virtual void InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover, int32 FrameMod) override;
+	virtual GALRIMetadata* GetGALMetadata(int32 FrameMod) const override;
 	virtual void ReleaseGALMetaData() override;
 
 	virtual void OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld) override;

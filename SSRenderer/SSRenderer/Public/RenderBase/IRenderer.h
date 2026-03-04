@@ -5,6 +5,8 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+class GALRWMetaData;
+class GALRIMetadata;
 struct DebugDrawMeshDesc;
 class IRICubeMap;
 class IRISkinnedMesh;
@@ -65,6 +67,8 @@ public:
 	virtual void CleanUp() = 0; // 엔진 제거할 때 1번
 
 public:
+	virtual void ReserveDestory(GALRIMetadata* DestroyTaget, int32 TargetDestroyMod) = 0;
+	virtual void ReserveDestroyGALRW(GALRWMetaData* DestroyTarget, int32 TargetDestroyMod) = 0;
 	virtual void ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(void (*InCallback)()) = 0;
 
 

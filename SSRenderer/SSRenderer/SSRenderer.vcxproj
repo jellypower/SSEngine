@@ -182,6 +182,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\KFRenderAnimUtilFunctions.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetSerializer\RenderAssetSerializeFunctions.cpp" />
     <ClCompile Include="Private\RenderAsset\RenderAssetCreationUtils.cpp" />
+    <ClCompile Include="Private\RenderCommon\SSRenderUtilFuncs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildSettings.h" />
@@ -240,6 +241,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderBase\IRenderer.h" />
     <ClInclude Include="Public\RenderBase\IRenderWorld.h" />
     <ClInclude Include="Public\RenderCommon\SSRendererInlineSettings.h" />
+    <ClInclude Include="Public\RenderCommon\SSRenderUtilFuncs.h" />
     <ClInclude Include="Public\RenderCommon\SSVertexType.h" />
     <ClInclude Include="Public\RenderInstance\Descriptors\LightDesc.h" />
     <ClInclude Include="Public\RenderInstance\IRenderCamera.h" />

@@ -1,11 +1,15 @@
 ﻿#include "RenderLightDirectional.h"
 
+#include <SSEngineDefault/Public/RawProfiler/SSFrameInfo.h>
+
 #include "SSGAL/Public/GALRenderInstance/GALRIMetadata.h"
 
 #include "SSGAL/Public/GALRenderTarget/GALRenderTarget.h"
+#include "SSRenderer/Private/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
+#include "SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h"
 #include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 
 
@@ -50,32 +54,51 @@ void RenderLightDirectional::SetWorldRotation(const Quaternion& InRotation)
 	_WorldRotationMatrix = InRotation.AsMatrix();
 }
 
-void RenderLightDirectional::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover)
+void RenderLightDirectional::InjectGALMetadataXXX(GALRIMetadata* MetadataToHandover, int32 FrameMod)
 {
+	if (_ShadowMapMetaData[FrameMod] != nullptr)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
 	if (MetadataToHandover->GetMetadataRenderInstanceType() != ERenderInstanceType::Light)
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	_ShadowMapMetaData = MetadataToHandover;
+	_ShadowMapMetaData[FrameMod] = MetadataToHandover;
 }
 
-GALRIMetadata* RenderLightDirectional::GetGALMetadata() const
+GALRIMetadata* RenderLightDirectional::GetGALMetadata(int32 FrameMod) const
 {
-	return _ShadowMapMetaData;
+	return _ShadowMapMetaData[FrameMod];
 }
 
 void RenderLightDirectional::ReleaseGALMetaData()
 {
-	if (_ShadowMapMetaData == nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
+	int32 CurFrameMod = RenderFrameInfo::GetFrameMod();
 
-	delete _ShadowMapMetaData;
-	_ShadowMapMetaData = nullptr;
+	for (int32 Offset = 0; Offset < GAL_NESTED_FRAME_CNT; Offset++)
+	{
+		const int32 ItemIdx =
+			(CurFrameMod - Offset // CurFrameMod가 N이라고 하면 N-1번째 아이템은 CurFrame-1번째에 사용했던 녀석
+				+ GAL_NESTED_FRAME_CNT) // CurFrameMod - Offset 값이 0보다 작을 수 있기 때문에 더해줌
+			% GAL_NESTED_FRAME_CNT; // 그리고 다시 나눠줌
+
+		if (_ShadowMapMetaData[ItemIdx] == nullptr)
+		{
+			continue;
+		}
+
+		const int32 DestroyDelay =
+			(ItemIdx + GAL_NESTED_FRAME_CNT) % // 중첩된 프레임 뒤에 지운다.
+			DEFERRED_DESTROY_MOD; // 위 값도 리밋을 넘을 수 있으니까 모듈러 한 번 더 해줌.
+
+		g_Renderer->ReserveDestory(_ShadowMapMetaData[ItemIdx], DestroyDelay);
+		_ShadowMapMetaData[ItemIdx] = nullptr;
+	}
 }
 
 void RenderLightDirectional::OnEnterTheRenderWorldXXX(IRenderWorld* InRenderWorld)

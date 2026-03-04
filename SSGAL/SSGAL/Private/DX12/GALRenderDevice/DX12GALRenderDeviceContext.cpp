@@ -5,6 +5,9 @@
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
 #include "DX12GALRenderDeviceContext.h"
+
+#include <SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h>
+
 #include "DX12GALRenderDevice.h"
 
 #include "SSRenderer/Public/RenderInstance/IRICubeMap.h"
@@ -174,6 +177,17 @@ GALRWMetaData* DX12GALRenderDeviceContext::GetCurRenderWorldGALMetaData() const
 	return _CurRenderWorldGALData;
 }
 
+void DX12GALRenderDeviceContext::FinalizeDeviceContext()
+{
+	uint64 CompletedValue = _Fence->GetCompletedValue();
+	// NestedFrame이 아니라 바로 직전 프레임의 작업이 끝나기를 기다립니다.
+	if (CompletedValue < _CurFrameCnt)
+	{
+		_Fence->SetEventOnCompletion(_CurFrameCnt, _FenceEvent);
+		WaitForSingleObject(_FenceEvent, INFINITE);
+	}
+}
+
 bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset)
 {
 	if (InMeshAsset->GetGALMeshAsset() != nullptr)
@@ -248,18 +262,20 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 //	SCOPE_PROFILE(GenGALRIMetadata);
 	ERenderInstanceType RIType = InRenderInstance->GetRIType();
 
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
 	if (RIType == ERenderInstanceType::StaticMesh)
 	{
 		IRIMesh* InIRIMesh = static_cast<IRIMesh*>(InRenderInstance);
 		DX12GALRIMetadata_SM* NewGALRI = DBG_NEW DX12GALRIMetadata_SM(_OwnerRenderDevice, InIRIMesh);
-		InIRIMesh->InjectGALMetadataXXX(NewGALRI);
+		InIRIMesh->InjectGALMetadataXXX(NewGALRI, FrameMod);
 	}
 	else if (RIType == ERenderInstanceType::SkinnedMesh)
 	{
 		IRISkinnedMesh* InIRIMesh = static_cast<IRISkinnedMesh*>(InRenderInstance);
 		DX12GALRIMetadata_SKM* NewGALRI = DBG_NEW DX12GALRIMetadata_SKM(_OwnerRenderDevice, InIRIMesh);
 		NewGALRI->SyncBonePose();
-		InIRIMesh->InjectGALMetadataXXX(NewGALRI);
+		InIRIMesh->InjectGALMetadataXXX(NewGALRI, FrameMod);
 	}
 	else if (RIType == ERenderInstanceType::Light)
 	{
@@ -276,7 +292,7 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 				DX12GALRIDirectionalLightShadowMapMetadata* NewShadowMapMetadata = 
 					DBG_NEW DX12GALRIDirectionalLightShadowMapMetadata((DX12GALRenderDevice*)_OwnerRenderDevice, DirectionalLight);
 
-				DirectionalLight->InjectGALMetadataXXX(NewShadowMapMetadata);
+				DirectionalLight->InjectGALMetadataXXX(NewShadowMapMetadata, FrameMod);
 			}
 		}
 		else
@@ -290,7 +306,7 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 		DX12GALRICubeMap* NewGALRICubeMap =
 			DBG_NEW DX12GALRICubeMap(static_cast<DX12GALRenderDevice*>(_OwnerRenderDevice), InCubeMap);
 
-		InCubeMap->InjectGALMetadataXXX(NewGALRICubeMap);
+		InCubeMap->InjectGALMetadataXXX(NewGALRICubeMap, FrameMod);
 	}
 	else
 	{
@@ -337,8 +353,10 @@ void DX12GALRenderDeviceContext::BeginDrawShadowMap(IRenderLight* InLightToDrawS
 		IRenderLightDirectional* DirectionalLight = 
 			static_cast<IRenderLightDirectional*>(InLightToDrawShadowMap);
 
+		const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
 		DX12GALRIDirectionalLightShadowMapMetadata* DirectionalLightShadowMapMetadata =
-			static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(DirectionalLight->GetGALMetadata());
+			static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(DirectionalLight->GetGALMetadata(FrameMod));
 
 		_DrawingShadowMapMetadata = DirectionalLightShadowMapMetadata;
 
@@ -384,6 +402,8 @@ void DX12GALRenderDeviceContext::EndDrawShadowMap()
 
 void DX12GALRenderDeviceContext::SetRenderCamera(IRenderCamera* InCamera)
 {
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
 	_CurRenderCamera = InCamera;
 
 	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
@@ -396,11 +416,11 @@ void DX12GALRenderDeviceContext::SetRenderCamera(IRenderCamera* InCamera)
 	}
 
 	_CurRenderWorld = RenderWorldToStartDraw;
-	_CurRenderWorldGALData = (DX12GALRWMetaData*)RenderWorldToStartDraw->GetGALMetadata();
+	_CurRenderWorldGALData = (DX12GALRWMetaData*)RenderWorldToStartDraw->GetGALMetadata(FrameMod);
 	if (_CurRenderWorldGALData == nullptr)
 	{
 		_CurRenderWorldGALData = DBG_NEW DX12GALRWMetaData(OwnerDX12RenderDevice, RenderWorldToStartDraw);
-		RenderWorldToStartDraw->InjectGALMetadataXXX(_CurRenderWorldGALData);
+		RenderWorldToStartDraw->InjectGALMetadataXXX(_CurRenderWorldGALData, FrameMod);
 	}
 
 
@@ -413,6 +433,8 @@ void DX12GALRenderDeviceContext::AddRenderLightToDraw(IRenderLight* InLight)
 	_RenderLightsToDraw.PushBack(InLight);
 	SS_ASSERT(_RenderLightsToDraw.GetSize() == 1);
 
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
 	for (IRenderLight* LightItem : _RenderLightsToDraw)
 	{
 		ELightType LightType = LightItem->GetLightType();
@@ -421,11 +443,11 @@ void DX12GALRenderDeviceContext::AddRenderLightToDraw(IRenderLight* InLight)
 			IRenderLightDirectional* DirectionalLight = (IRenderLightDirectional*)LightItem;
 			const RenderLightDirectionalDesc& Desc = DirectionalLight->GetDirectionalLightDesc();
 
-			if (DirectionalLight->GetGALMetadata() == nullptr && Desc.bEnableShadowMap)
+			if (DirectionalLight->GetGALMetadata(FrameMod) == nullptr && Desc.bEnableShadowMap)
 			{
 				GenerateRenderInstanceMetadata(DirectionalLight);
 			}
-			else if (DirectionalLight->GetGALMetadata() != nullptr && Desc.bEnableShadowMap == false)
+			else if (DirectionalLight->GetGALMetadata(FrameMod) != nullptr && Desc.bEnableShadowMap == false)
 			{
 				DirectionalLight->ReleaseGALMetaData();
 			}
@@ -727,7 +749,9 @@ void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 		return;
 	}
 
-	if (InRenderInstance->GetGALMetadata() == nullptr)
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	if (InRenderInstance->GetGALMetadata(FrameMod) == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
 	}
@@ -763,7 +787,10 @@ void DX12GALRenderDeviceContext::DrawSkyMap(IRICubeMap* CubeMapToDraw)
 		return;
 	}
 
-	if (CubeMapToDraw->GetGALMetadata() == nullptr)
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	
+	if (CubeMapToDraw->GetGALMetadata(FrameMod) == nullptr)
 	{
 		GenerateRenderInstanceMetadata(CubeMapToDraw);
 	}
@@ -781,7 +808,7 @@ void DX12GALRenderDeviceContext::DrawSkyMap(IRICubeMap* CubeMapToDraw)
 	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(CubeMeshAsset->GetMeshRawData());
 	int32 IndexCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[0];
 
-	DX12GALRICubeMap* DX12GALCubeMap = static_cast<DX12GALRICubeMap*>(CubeMapToDraw->GetGALMetadata());
+	DX12GALRICubeMap* DX12GALCubeMap = static_cast<DX12GALRICubeMap*>(CubeMapToDraw->GetGALMetadata(FrameMod));
 	ID3D12DescriptorHeap* CubemapDescHeap = DX12GALCubeMap->GetCubeMapDescHeap();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE CubemapDescTableCPU = DX12GALCubeMap->GetCubemapDescTableCPU();
 	CD3DX12_GPU_DESCRIPTOR_HANDLE CubemapDescTableGPU = DX12GALCubeMap->GetCubemapDescTableGPU();
@@ -972,7 +999,10 @@ void DX12GALRenderDeviceContext::Present(GALRenderTarget* SwapChainToPresent)
 void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 {
 //	SCOPE_PROFILE_INDEXED(DrawShadowItem, InRenderInstance->GetGameObjectID().GetNativeValue());
-	if (InRenderInstance->GetGALMetadata() == nullptr)
+
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	if (InRenderInstance->GetGALMetadata(FrameMod) == nullptr)
 	{
 		GenerateRenderInstanceMetadata(InRenderInstance);
 	}
@@ -1004,9 +1034,10 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 //	SCOPE_PROFILE(Draw_SM);
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
 
 	// GAL Info
-	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata();
+	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata(FrameMod);
 	{
 //		SCOPE_PROFILE(UpdateTransform);
 		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(RIToDraw->GetWorldTransformMatrix());
@@ -1109,8 +1140,10 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 //	SCOPE_PROFILE(Draw_SKM);
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
 	// Mesh Transform Update
-	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
+	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata(FrameMod));
 	{
 //		SCOPE_PROFILE(UpdateTransform);
 		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(RIToDraw->GetWorldTransformMatrix());
@@ -1219,7 +1252,10 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
                                                       const XMMATRIX& DrawRotMat)
 {
 //	SCOPE_PROFILE(DrawShadow_SM);
-	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SM*>(RIToDraw->GetGALMetadata());
+
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SM*>(RIToDraw->GetGALMetadata(FrameMod));
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
@@ -1280,7 +1316,10 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 	const XMMATRIX& DrawRotMat)
 {
 //	SCOPE_PROFILE(DrawShadow_SKM);
-	DX12GALRIMetadata_SKM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata());
+
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	DX12GALRIMetadata_SKM* DX12RenderInstanceMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata(FrameMod));
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 
@@ -1343,12 +1382,18 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 	}
 }
 
+ID3D12GraphicsCommandList* DX12GALRenderDeviceContext::GetCurrentDrawWorkerCmdList() const
+{
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+	return _DrawWorkerCommandLists[FrameMod];
+}
+
 void DX12GALRenderDeviceContext::ResetRenderState()
 {
 	_TransientCBAllocator->ResetAllChunksXXX();
 
 	_ResourceUpdater->ResetUpdateBuffer();
-	ResetCommandList();
+	ResetCurFrameCommandList();
 
 	_RenderLightsToDraw.Clear();
 	_BoundRenderTargets.Clear();
@@ -1366,11 +1411,12 @@ void DX12GALRenderDeviceContext::FenceFrame()
 {
 	_CurFrameCnt++;
 	_D3DCommandQueue->Signal(_Fence, _CurFrameCnt);
+	// 1. 프레임 숫자를 늘리고 늘어난 숫자를 시그널함
 }
 
-void DX12GALRenderDeviceContext::WaitForFence()
+void DX12GALRenderDeviceContext::WaitForNestedGPUJob()
 {
-	SCOPE_PROFILE(WaitForFence);
+	SCOPE_PROFILE(WaitForNestedGPUJob);
 
 	uint64 CompletedValue = _Fence->GetCompletedValue();
 	if (CompletedValue < _CurFrameCnt)
@@ -1380,27 +1426,25 @@ void DX12GALRenderDeviceContext::WaitForFence()
 	}
 }
 
-void DX12GALRenderDeviceContext::ResetCommandList()
+void DX12GALRenderDeviceContext::ResetCurFrameCommandList()
 {
 	HRESULT hr;
 
-	{
-		ID3D12CommandAllocator* CurDrawWorkerCommandAllcator = _DrawWorkerCommandAllocators[_CurCommandListIdx];
-		hr = CurDrawWorkerCommandAllcator->Reset();
-		if (FAILED(hr)) SS_INTERRUPT();
+	int32 FrameMOD = RenderFrameInfo::GetFrameMod();
 
-		ID3D12GraphicsCommandList* CurDrawWorkerCmdList = _DrawWorkerCommandLists[_CurCommandListIdx];
-		hr = CurDrawWorkerCmdList->Reset(CurDrawWorkerCommandAllcator, nullptr);
-		if (FAILED(hr)) SS_INTERRUPT();
-	}
+	ID3D12CommandAllocator* CurDrawWorkerCommandAllcator = _DrawWorkerCommandAllocators[FrameMOD];
+	hr = CurDrawWorkerCommandAllcator->Reset();
+	if (FAILED(hr)) SS_INTERRUPT();
 
+	ID3D12GraphicsCommandList* CurDrawWorkerCmdList = _DrawWorkerCommandLists[FrameMOD];
+	hr = CurDrawWorkerCmdList->Reset(CurDrawWorkerCommandAllcator, nullptr);
+	if (FAILED(hr)) SS_INTERRUPT();
 
-	_CurCommandListIdx = 0;
 }
 
 void DX12GALRenderDeviceContext::BeginRender()
 {
-	WaitForFence();
+	WaitForNestedGPUJob();
 
 	if (_TaskPhase != ERenderDeviceTaskPhase::TaskDenial)
 	{

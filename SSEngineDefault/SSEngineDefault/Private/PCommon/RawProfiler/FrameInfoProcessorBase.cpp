@@ -134,7 +134,7 @@ void FrameInfoProcessorBase::EndMainProfile(SS::SHasherW RecordItemName)
 
 		const uint64 NewTickCnt = GetPerofrmanceCounter();
 		_ProfileInProgressResult.PushBack(
-			{_ProfilingNameStackAsStr, ProfStackTop.TickCnt, NewTickCnt } // 오버헤드
+			{_ProfilingNameStackAsStr, ProfStackTop.TickCnt, NewTickCnt } // 오버헤드(큼)
 		);
 
 		const int32 OriginalStrLen = _ProfilingNameStackAsStr.GetStrLen();

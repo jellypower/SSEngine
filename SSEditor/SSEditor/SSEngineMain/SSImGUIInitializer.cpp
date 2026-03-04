@@ -135,7 +135,7 @@ void SSImGUIInitializer::OnBeginFrameImGui()
 void SSImGUIInitializer::OnEndFrameImGui()
 {
 	// Rendering
-// (Your code clears your framebuffer, renders your other stuff etc.)
+	// (Your code clears your framebuffer, renders your other stuff etc.)
 
 
 	SCOPE_PROFILE(EndImGUI);
