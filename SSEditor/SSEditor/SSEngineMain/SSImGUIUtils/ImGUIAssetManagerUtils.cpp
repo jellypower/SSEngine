@@ -75,6 +75,7 @@ bool ImGUI_Transform_Edit(Transform& InOutTransform)
 	PickedPosition[1] = InOutTransform.Position.Y;
 	PickedPosition[2] = InOutTransform.Position.Z;
 
+	bool bEverEdit = false;
 	
 	if (ImGui::InputFloat3("Scale", PickedScale))
 	{
@@ -85,7 +86,7 @@ bool ImGUI_Transform_Edit(Transform& InOutTransform)
 		NewScale.W = 1;
 
 		InOutTransform.Scale = NewScale;
-		return true;
+		bEverEdit = true;
 	}
 
 
@@ -102,7 +103,7 @@ bool ImGUI_Transform_Edit(Transform& InOutTransform)
 
 		Quaternion NewQuatRot = Quaternion::FromEulerRotation(NewRot);
 		InOutTransform.Rotation = NewQuatRot;
-		return true;
+		bEverEdit = true;
 	}
 
 	if (ImGui::InputFloat3("Position", PickedPosition))
@@ -114,8 +115,8 @@ bool ImGUI_Transform_Edit(Transform& InOutTransform)
 		NewPos.W = 1;
 
 		InOutTransform.Position = NewPos;
-		return true;
+		bEverEdit = true;
 	}
 
-	return false;
+	return bEverEdit;
 }
