@@ -318,6 +318,12 @@ void SSEditor::CleanupEngine()
 
 	_Renderer->GetCommonRenderAssetSet()->ReleaseCachedAssets();
 
+
+	_Renderer->FinalizeRendering();
+
+
+	// _Renderer->CleanUp() 은 GALRenderDeviceContext::FinalizeDeviceContext 를 호출함
+	// GPU작업이 전부 끝난 이후에야 리소스들을 지울 수 있음
 	g_ImGuiInitializer->CleanUpImGui();
 	delete g_ImGuiInitializer;
 	g_ImGuiInitializer = nullptr;

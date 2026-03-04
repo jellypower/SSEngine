@@ -46,10 +46,6 @@ public:
 	virtual GALCPUReadableTexture* CreateCPUReadableTexture(ERTColorFormat InColorFormat, Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName = nullptr) = 0;
 	virtual GALPPCDeferredShading* CreateDeferredShadingPostProcessContext() = 0;
 
-public:
-	virtual void SyncGALRIMetadataWithRI(IRenderInstance* RIToSync) = 0;
-
-
 protected:
 	IRenderer* _OwnerRenderer = nullptr;
 	ICommonRenderAssetSet* _CachedCommonRenderAssetSet = nullptr;

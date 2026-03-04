@@ -40,11 +40,9 @@ enum class ERenderDeviceTaskPhase
 class GALRenderDeviceContext : public INoncopyable
 {
 protected:
-	uint64 _CurFrameCnt = 0;
-
 	GALRenderDevice* _OwnerRenderDevice = nullptr;
-	GALResourceUpdater* _ResourceUpdater = nullptr;
-	SSTransientMemAllocator* _TransientCBAllocator = nullptr;
+	GALResourceUpdater* _ResourceUpdater = nullptr; // TODO: 이거도 GAL_NESTED_FRAME_CNT 만큼 만들고
+	SSTransientMemAllocator* _TransientCBAllocator = nullptr; // TODO: 이거도 GAL_NESTED_FRAME_CNT 만큼 만들어야 함
 
 public:
 	virtual bool IsValid() const = 0;
@@ -54,7 +52,6 @@ public:
 	GALRenderDevice* GetOwnerRenderDevice() const { return _OwnerRenderDevice; }
 	GALResourceUpdater* GetResourceUpdater() const { return _ResourceUpdater; }
 	SSTransientMemAllocator* GetTransientCBAllocator() const { return _TransientCBAllocator; }
-	uint64 GetCurFrameCnt() const { return _CurFrameCnt; }
 
 public:
 	virtual void FinalizeDeviceContext() = 0;
@@ -65,10 +62,14 @@ public:
 	virtual void Present(GALRenderTarget* SwapChainToPresent) = 0;
 
 
+public:
+	virtual void GenerateGALRI(IRenderInstance* InRenderInstance) const = 0;
+	virtual void SyncGALRI(IRenderInstance* RIToSync, const IRenderCamera* CameraToSync) const = 0;
+
+public:
 	virtual bool GenerateMeshGALAsset(IMeshAssetMutable* InMeshAsset) = 0;
 	virtual bool GenerateTextureGALAsset(ITextureAssetMutable* InTextureAsset) = 0;
 	virtual bool GenerateMaterialGALAsset(IMaterialAssetMutable* InMaterialAsset) = 0;
-	virtual void GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance) = 0;
 
 	
 	virtual void AddRenderLightToDraw(IRenderLight* InLight) = 0;

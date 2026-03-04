@@ -25,15 +25,11 @@ public:
 
 
 public:
-
 	virtual GALRenderDeviceContext* CreateRenderDeviceContext() override;
 	virtual GALRenderTarget* CreateRenderTarget(const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr) override;
 	virtual GALRenderTarget* CreateDepthStencilView(const GALRenderTargetDesc& Desc, const utf16* ResourceName) override;
 	virtual GALCPUReadableTexture* CreateCPUReadableTexture(ERTColorFormat InColorFormat, Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName = nullptr) override;
 	virtual GALPPCDeferredShading* CreateDeferredShadingPostProcessContext() override;
-
-public:
-	virtual void SyncGALRIMetadataWithRI(IRenderInstance* RIToSync) override;
 
 
 	ID3D12Device5* GetD3DDevice() const { return _D3DDevice; }

@@ -32,7 +32,6 @@ public:
 	// IRenderLight
 	ELightType GetLightType() const override;
 	virtual bool IsShadowMapEnabled() const override;
-	virtual void SetEnableShadowMap(bool bEnable) override;
 
 	virtual XMVECTOR GetLightColor() const override;
 	virtual void SetLightIntensity(const XMVECTOR& InLightIntensity) override;

@@ -18,7 +18,6 @@ class IRenderLight : public IRenderInstance
 public:
 	virtual ELightType GetLightType() const = 0;
 	virtual bool IsShadowMapEnabled() const = 0;
-	virtual void SetEnableShadowMap(bool bEnable) = 0;
 
 	virtual XMVECTOR GetLightColor() const = 0;
 	virtual void SetLightIntensity(const XMVECTOR& InLightIntensity) = 0;

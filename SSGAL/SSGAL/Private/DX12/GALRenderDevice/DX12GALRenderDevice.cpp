@@ -272,24 +272,3 @@ GALPPCDeferredShading* DX12GALRenderDevice::CreateDeferredShadingPostProcessCont
 	DX12GALPPCDeferredShading* NewPostProcessContext = DBG_NEW DX12GALPPCDeferredShading(this);
 	return NewPostProcessContext;
 }
-
-void DX12GALRenderDevice::SyncGALRIMetadataWithRI(IRenderInstance* RIToSync)
-{
-	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
-
-	GALRIMetadata* GALRIMetaData = RIToSync->GetGALMetadata(FrameMod);
-
-	if (GALRIMetaData == nullptr)
-	{
-		return;
-	}
-
-	ERenderInstanceType RIType = RIToSync->GetRIType();
-
-	if (RIType == ERenderInstanceType::SkinnedMesh)
-	{
-		DX12GALRIMetadata_SKM* GALRISkinned = static_cast<DX12GALRIMetadata_SKM*>(GALRIMetaData);
-		SS_ASSERT(GALRISkinned->GetMetadataRenderInstanceType() == ERenderInstanceType::SkinnedMesh);
-		GALRISkinned->SyncBonePose();
-	}
-}

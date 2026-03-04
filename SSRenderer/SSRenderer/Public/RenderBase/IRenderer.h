@@ -64,6 +64,8 @@ public:
 public:
 	virtual void StartUp() = 0; // 엔진 처음 시작할 때 1번
 	virtual void PerFrame() = 0; // 매 프레임
+
+	virtual void FinalizeRendering() = 0; // 렌더러 없애기 전에 GPU 작업들 끝나기를 기다리기
 	virtual void CleanUp() = 0; // 엔진 제거할 때 1번
 
 public:

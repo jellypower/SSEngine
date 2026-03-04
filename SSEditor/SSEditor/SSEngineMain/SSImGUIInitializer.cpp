@@ -1,14 +1,14 @@
 ﻿#include "pch.h"
-
 #include "SSImGUIInitializer.h"
 
-#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
-
 #include "ModuleEntryScriptRunner.h"
+
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
 #include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
+#include "SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h"
 
 
 SSImGUIInitializer* g_ImGuiInitializer = nullptr;
@@ -140,8 +140,10 @@ void SSImGUIInitializer::OnEndFrameImGui()
 
 	SCOPE_PROFILE(EndImGUI);
 
-	ID3D12CommandAllocator* CurCommandAllocator = _CommandAllocator[_CurSwapChainIdx];
-	ID3D12GraphicsCommandList* CurCommandList = _CommandList[_CurSwapChainIdx];
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	ID3D12CommandAllocator* CurCommandAllocator = _CommandAllocator[FrameMod];
+	ID3D12GraphicsCommandList* CurCommandList = _CommandList[FrameMod];
 	D3D12_RESOURCE_BARRIER barrier = {};
 
 
@@ -172,7 +174,7 @@ void SSImGUIInitializer::OnEndFrameImGui()
 	}
 
 
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _CommandList[_CurSwapChainIdx]);
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _CommandList[FrameMod]);
 	// (Your code calls ExecuteCommandLists, swapchain's Present(), etc.)
 
 	{
@@ -183,9 +185,6 @@ void SSImGUIInitializer::OnEndFrameImGui()
 		CurCommandList->Close();
 		_D3DCommandQueueCache->ExecuteCommandLists(1, (ID3D12CommandList* const*)&CurCommandList);
 	}
-
-	_CurSwapChainIdx++;
-	_CurSwapChainIdx = _CurSwapChainIdx % GAL_NESTED_FRAME_CNT;
 }
 
 void Run_g_ImGuiInitializer__OnBeginFrameImGui()

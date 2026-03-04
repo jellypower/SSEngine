@@ -103,6 +103,7 @@ public:
 public:
 	virtual void StartUp() override;
 	virtual void PerFrame() override;
+	virtual void FinalizeRendering() override;
 	virtual void CleanUp() override;
 
 public:

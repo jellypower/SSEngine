@@ -63,7 +63,6 @@ private:
 	ID3D12DescriptorHeap* _ImguiDescriptorHeap = nullptr;
 	ID3D12CommandAllocator* _CommandAllocator[GAL_NESTED_FRAME_CNT] = { nullptr, };
 	ID3D12GraphicsCommandList* _CommandList[GAL_NESTED_FRAME_CNT] = { nullptr, };
-	int32 _CurSwapChainIdx = 0;
 
 
 	FuncPtr_QueryDX12GALDeviceContextInfo _fpExtractD3DDeviceInfo = nullptr;

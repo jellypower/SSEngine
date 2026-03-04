@@ -84,7 +84,7 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 		_D3DCommandQueue->SetName(L"D3DCommandQueue");
 
 
-		hr = D3DDevice->CreateFence(_CurFrameCnt, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_Fence));
+		hr = D3DDevice->CreateFence(_FenceCnt, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_Fence));
 		if (FAILED(hr))
 		{
 			SS_INTERRUPT();
@@ -181,9 +181,9 @@ void DX12GALRenderDeviceContext::FinalizeDeviceContext()
 {
 	uint64 CompletedValue = _Fence->GetCompletedValue();
 	// NestedFrame이 아니라 바로 직전 프레임의 작업이 끝나기를 기다립니다.
-	if (CompletedValue < _CurFrameCnt)
+	if (CompletedValue < _FenceCnt)
 	{
-		_Fence->SetEventOnCompletion(_CurFrameCnt, _FenceEvent);
+		_Fence->SetEventOnCompletion(_FenceCnt, _FenceEvent);
 		WaitForSingleObject(_FenceEvent, INFINITE);
 	}
 }
@@ -257,12 +257,17 @@ bool DX12GALRenderDeviceContext::GenerateMaterialGALAsset(IMaterialAssetMutable*
 	return false;
 }
 
-void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance* InRenderInstance)
+void DX12GALRenderDeviceContext::GenerateGALRI(IRenderInstance* InRenderInstance) const
 {
-//	SCOPE_PROFILE(GenGALRIMetadata);
-	ERenderInstanceType RIType = InRenderInstance->GetRIType();
-
+	//	SCOPE_PROFILE(GenerateGALRI);
+	const ERenderInstanceType RIType = InRenderInstance->GetRIType();
 	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+
+	if (InRenderInstance->GetGALMetadata(FrameMod) != nullptr)
+	{
+		return;
+	}
 
 	if (RIType == ERenderInstanceType::StaticMesh)
 	{
@@ -285,12 +290,12 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 		if (LightType == ELightType::Directional)
 		{
 			IRenderLightDirectional* DirectionalLight = static_cast<IRenderLightDirectional*>(InRenderLight);
-			const RenderLightDirectionalDesc& Desc = DirectionalLight->GetDirectionalLightDesc();
 
-			if (Desc.bEnableShadowMap)
+			if (DirectionalLight->IsShadowMapEnabled())
 			{
 				DX12GALRIDirectionalLightShadowMapMetadata* NewShadowMapMetadata = 
-					DBG_NEW DX12GALRIDirectionalLightShadowMapMetadata((DX12GALRenderDevice*)_OwnerRenderDevice, DirectionalLight);
+					DBG_NEW DX12GALRIDirectionalLightShadowMapMetadata(
+						static_cast<DX12GALRenderDevice*>(_OwnerRenderDevice), DirectionalLight);
 
 				DirectionalLight->InjectGALMetadataXXX(NewShadowMapMetadata, FrameMod);
 			}
@@ -312,6 +317,130 @@ void DX12GALRenderDeviceContext::GenerateRenderInstanceMetadata(IRenderInstance*
 	{
 		DEBUG_BREAK();
 		return;
+	}
+}
+
+void DX12GALRenderDeviceContext::SyncGALRI(IRenderInstance* RIToSync, const IRenderCamera* CameraToSync) const
+{
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+	GALRIMetadata* GALRIMetaData = RIToSync->GetGALMetadata(FrameMod);
+	if (GALRIMetaData == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	const ERenderInstanceType GALRIType = GALRIMetaData->GetMetadataRenderInstanceType();
+	const ERenderInstanceType RIType = RIToSync->GetRIType();
+	if (RIType != GALRIType)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+
+	if (RIType == ERenderInstanceType::StaticMesh)
+	{
+		const IRIMesh* lRIMesh = static_cast<IRIMesh*>(RIToSync);
+		DX12GALRIMetadata_SM* GALRIStatic = static_cast<DX12GALRIMetadata_SM*>(GALRIMetaData);
+
+		GALRIStatic->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(lRIMesh->GetWorldTransformMatrix());
+		GALRIStatic->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(lRIMesh->GetWorldRotationMatrix());
+		GALRIStatic->_ModelCBSysMemAddr->ObjectID = lRIMesh->GetGameObjectID().GetNativeValue();
+	}
+	else if (RIType == ERenderInstanceType::SkinnedMesh)
+	{
+		const IRISkinnedMesh* lRISkinnedMesh = static_cast<IRISkinnedMesh*>(RIToSync);
+		DX12GALRIMetadata_SKM* GALRISkinned = static_cast<DX12GALRIMetadata_SKM*>(GALRIMetaData);
+
+		GALRISkinned->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(lRISkinnedMesh->GetWorldTransformMatrix());
+		GALRISkinned->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(lRISkinnedMesh->GetWorldRotationMatrix());
+		GALRISkinned->_ModelCBSysMemAddr->ObjectID = lRISkinnedMesh->GetGameObjectID().GetNativeValue();
+		GALRISkinned->SyncBonePose();
+	}
+	else if (RIType == ERenderInstanceType::Light)
+	{
+		const IRenderLight* RILight = static_cast<IRenderLight*>(RIToSync);
+		if (RILight->IsShadowMapEnabled() == false)
+		{
+			return;
+		}
+
+		GALRIShadowMapMetadata* GALRIShadowMap = static_cast<GALRIShadowMapMetadata*>(RILight->GetGALMetadata(FrameMod));
+
+		const ELightType LightType = RILight->GetLightType();
+		const ELightType GALLightType = GALRIShadowMap->GetLightType();
+		if (LightType != GALLightType)
+		{
+			SS_INTERRUPT();
+			return;
+		}
+
+		if (LightType == ELightType::Directional)
+		{
+			const IRenderLightDirectional* DirectionalLight = static_cast<const IRenderLightDirectional*>(RILight);
+			DX12GALRIDirectionalLightShadowMapMetadata* DirectionalLightShadowMapMetadata = static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(GALRIShadowMap);
+
+			DirectionalLightShadowMapMetadata->_ShadowMapCBSysMemAddr->VPMatrix =
+				XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix(CameraToSync));
+
+			// CBARenderEnvParam::ViewrPos는 PS에서 쓰이지 여기 VS에선 쓰이지 않음
+
+		}
+		else
+		{
+			SS_ASSERT(false);
+		}
+	}
+	else if (RIType == ERenderInstanceType::CubeMap)
+	{
+		DX12GALRenderDevice* OwnerDX12RenderDevice = static_cast<DX12GALRenderDevice*>(_OwnerRenderDevice);
+		ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
+
+
+		IRICubeMap* CubeMapToDraw = (IRICubeMap*)RIToSync;
+		DX12GALRICubeMap* DX12GALCubeMap = static_cast<DX12GALRICubeMap*>(CubeMapToDraw->GetGALMetadata(FrameMod));
+
+		Transform CubemapModelTransform;
+		const Transform& CamTransform = CameraToSync->GetCameraTransform();
+
+		const Vector4f& CamPos = CamTransform.Position;
+		const float CubeMapSize = CubeMapToDraw->GetCubeMapSize();
+		CubemapModelTransform.Position = Vector4f(CamPos.X, CamPos.Y - CubeMapSize * 0.5f, CamPos.Z, 1);
+		CubemapModelTransform.Scale = Vector4f(CubeMapSize, CubeMapSize, CubeMapSize, 0);
+
+		DX12GALCubeMap->GetCubemapCBModelSysmem()->ObjectID = 0; // 일단 사용 안함
+		DX12GALCubeMap->GetCubemapCBModelSysmem()->RotMatrix = XMMatrixIdentity();
+		DX12GALCubeMap->GetCubemapCBModelSysmem()->WMatrix = XMMatrixTranspose(CubemapModelTransform.AsMatrix());
+
+
+
+		const float CamAspectRatio = CameraToSync->GetAspectRatio();
+		const float CamFOV = CameraToSync->GetFOVWithRadians();
+		XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(CamFOV, CamAspectRatio, 0.001, CubeMapSize * 2);
+
+
+		Vector4f Direction = CamTransform.GetForward();
+		Vector4f Up = CamTransform.GetUp();
+		XMMATRIX ViewMat = XMMatrixLookToLH(CamPos.SimdVec, Direction.SimdVec, Up.SimdVec);
+
+
+		const XMMATRIX VPMatrix = ViewMat * ProjMat;
+		DX12GALCubeMap->GetCubemapCBRenderEnvParamSysmem()->ViewerPos = CamPos.SimdVec;
+		DX12GALCubeMap->GetCubemapCBRenderEnvParamSysmem()->VPMatrix = XMMatrixTranspose(VPMatrix);
+
+
+		ITextureAsset* TextureAsset = CubeMapToDraw->GetCubemapTexture();
+		const DX12GALTextureAssetWrapper* DX12GALTexAsset = static_cast<const DX12GALTextureAssetWrapper*>(TextureAsset->GetGALTextureAsset());
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE CubemapDescTableCPU = DX12GALCubeMap->GetCubemapDescTableCPU();
+		D3DDevice->CopyDescriptorsSimple(1,
+			CubemapDescTableCPU, DX12GALTexAsset->_SRVHandle,
+			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	}
+	else
+	{
+		SS_ASSERT(false);
 	}
 }
 
@@ -346,35 +475,19 @@ void DX12GALRenderDeviceContext::BeginDrawShadowMap(IRenderLight* InLightToDrawS
 	}
 
 
-	ELightType LightType = InLightToDrawShadowMap->GetLightType();
+	SyncGALRI(InLightToDrawShadowMap, _CurRenderCamera);
 
-	if (LightType == ELightType::Directional)
-	{
-		IRenderLightDirectional* DirectionalLight = 
-			static_cast<IRenderLightDirectional*>(InLightToDrawShadowMap);
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+	GALRIShadowMapMetadata* GALRIShadowMapMetaData = 
+		static_cast<GALRIShadowMapMetadata*>(InLightToDrawShadowMap->GetGALMetadata(FrameMod));
 
-		const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+	_DrawingShadowMapMetadata = GALRIShadowMapMetaData;
 
-		DX12GALRIDirectionalLightShadowMapMetadata* DirectionalLightShadowMapMetadata =
-			static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(DirectionalLight->GetGALMetadata(FrameMod));
+	GALRenderTarget* ShadowMap = GALRIShadowMapMetaData->GetShadowMap();
 
-		_DrawingShadowMapMetadata = DirectionalLightShadowMapMetadata;
-
-		DirectionalLightShadowMapMetadata->_ShadowMapCBSysMemAddr->VPMatrix =
-			XMMatrixTranspose(DirectionalLight->CalcShadowMapVPMatrix(_CurRenderCamera));
-
-		
-
-		GALRenderTarget* ShadowMap = DirectionalLightShadowMapMetadata->GetShadowMap();
-
-		ResourceBarrier(ShadowMap, EResourceStateType::Common, EResourceStateType::DepthWrite);
-		ClearRenderTarget(ShadowMap, Vector4f::Zero);
-		SetRenderTarget(0, nullptr, ShadowMap);
-	}
-	else
-	{
-		SS_ASSERT(false);
-	}
+	ResourceBarrier(ShadowMap, EResourceStateType::Common, EResourceStateType::DepthWrite);
+	ClearRenderTarget(ShadowMap, Vector4f::Zero);
+	SetRenderTarget(0, nullptr, ShadowMap);
 }
 
 void DX12GALRenderDeviceContext::EndDrawShadowMap()
@@ -385,17 +498,9 @@ void DX12GALRenderDeviceContext::EndDrawShadowMap()
 	}
 	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
 
-	ELightType LightType = _DrawingShadowMapMetadata->GetLightType();
 
-	if (LightType == ELightType::Directional)
-	{
-		DX12GALRIDirectionalLightShadowMapMetadata* DirectionalLightShadowMapMetadata =
-			static_cast<DX12GALRIDirectionalLightShadowMapMetadata*>(_DrawingShadowMapMetadata);
-
-		GALRenderTarget* ShadowMap = DirectionalLightShadowMapMetadata->GetShadowMap();
-		ResourceBarrier(ShadowMap, EResourceStateType::DepthWrite, EResourceStateType::Common);
-	}
-
+	GALRenderTarget* ShadowMap = _DrawingShadowMapMetadata->GetShadowMap();
+	ResourceBarrier(ShadowMap, EResourceStateType::DepthWrite, EResourceStateType::Common);
 
 	_DrawingShadowMapMetadata = nullptr;
 }
@@ -432,31 +537,6 @@ void DX12GALRenderDeviceContext::AddRenderLightToDraw(IRenderLight* InLight)
 {
 	_RenderLightsToDraw.PushBack(InLight);
 	SS_ASSERT(_RenderLightsToDraw.GetSize() == 1);
-
-	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
-
-	for (IRenderLight* LightItem : _RenderLightsToDraw)
-	{
-		ELightType LightType = LightItem->GetLightType();
-		if (LightType == ELightType::Directional)
-		{
-			IRenderLightDirectional* DirectionalLight = (IRenderLightDirectional*)LightItem;
-			const RenderLightDirectionalDesc& Desc = DirectionalLight->GetDirectionalLightDesc();
-
-			if (DirectionalLight->GetGALMetadata(FrameMod) == nullptr && Desc.bEnableShadowMap)
-			{
-				GenerateRenderInstanceMetadata(DirectionalLight);
-			}
-			else if (DirectionalLight->GetGALMetadata(FrameMod) != nullptr && Desc.bEnableShadowMap == false)
-			{
-				DirectionalLight->ReleaseGALMetaData();
-			}
-		}
-		else
-		{
-			SS_ASSERT(false);
-		}
-	}
 }
 
 void DX12GALRenderDeviceContext::CommitAddedRenderLights()
@@ -740,6 +820,47 @@ void DX12GALRenderDeviceContext::BeginDrawMesh()
 	_TaskPhase = ERenderDeviceTaskPhase::DrawMesh;
 }
 
+void DX12GALRenderDeviceContext::DrawSkyMap(IRICubeMap* CubeMapToDraw)
+{
+	if (GetTaskPhase() != ERenderDeviceTaskPhase::PostProcess)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	SyncGALRI(CubeMapToDraw, _CurRenderCamera);
+
+
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	IMeshAsset* CubeMeshAsset = g_CommonRenderAssetSet->GetCube1mMesh();
+	const DX12GALMeshAssetWrapper* DX12CubeMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(CubeMeshAsset->GetGALMeshAsset());
+	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(CubeMeshAsset->GetMeshRawData());
+	int32 IndexCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[0];
+
+	DX12GALRICubeMap* DX12GALCubeMap = static_cast<DX12GALRICubeMap*>(CubeMapToDraw->GetGALMetadata(FrameMod));
+	ID3D12DescriptorHeap* CubemapDescHeap = DX12GALCubeMap->GetCubeMapDescHeap();
+	CD3DX12_GPU_DESCRIPTOR_HANDLE CubemapDescTableGPU = DX12GALCubeMap->GetCubemapDescTableGPU();
+
+
+	PipelineDesc SkyMapPSODesc = ConstructPSOToDrawSkyMap();
+	SetPSOAndRootSignature(SkyMapPSODesc);
+
+
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CurCommandList->IASetVertexBuffers(0, 1, &DX12CubeMeshAsset->_VertexBufferView);
+	CurCommandList->IASetIndexBuffer(DX12CubeMeshAsset->_IndexBufferView);
+
+	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12GALCubeMap->GetCubemapCBModelGPUMem());
+	CurCommandList->SetGraphicsRootConstantBufferView(1, DX12GALCubeMap->GetCubemapCBRenderEnvParamGPUMem());
+
+	CurCommandList->SetDescriptorHeaps(1, &CubemapDescHeap);
+	CurCommandList->SetGraphicsRootDescriptorTable(2, CubemapDescTableGPU);
+
+	CurCommandList->DrawIndexedInstanced(IndexCnt, 1, 0, 0, 0);
+}
+
 void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 {
 //	SCOPE_PROFILE_INDEXED(DrawMeshItem, InRenderInstance->GetGameObjectID().GetNativeValue());
@@ -747,13 +868,6 @@ void DX12GALRenderDeviceContext::DrawMesh(IRenderInstance* InRenderInstance)
 	{
 		SS_INTERRUPT();
 		return;
-	}
-
-	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
-
-	if (InRenderInstance->GetGALMetadata(FrameMod) == nullptr)
-	{
-		GenerateRenderInstanceMetadata(InRenderInstance);
 	}
 
 	if (InRenderInstance->GetRIType() == ERenderInstanceType::StaticMesh)
@@ -779,93 +893,7 @@ void DX12GALRenderDeviceContext::EndDrawMesh()
 	_TaskPhase = ERenderDeviceTaskPhase::TaskWaiting;
 }
 
-void DX12GALRenderDeviceContext::DrawSkyMap(IRICubeMap* CubeMapToDraw)
-{
-	if (GetTaskPhase() != ERenderDeviceTaskPhase::PostProcess)
-	{
-		SS_INTERRUPT();
-		return;
-	}
 
-	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
-
-	
-	if (CubeMapToDraw->GetGALMetadata(FrameMod) == nullptr)
-	{
-		GenerateRenderInstanceMetadata(CubeMapToDraw);
-	}
-
-
-	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
-	DX12GALRenderDevice* OwnerDX12RenderDevice = ((DX12GALRenderDevice*)_OwnerRenderDevice);
-	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();
-
-	ITextureAsset* TextureAsset = CubeMapToDraw->GetCubemapTexture();
-	const DX12GALTextureAssetWrapper* DX12GALTexAsset = static_cast<const DX12GALTextureAssetWrapper*>(TextureAsset->GetGALTextureAsset());
-
-	IMeshAsset* CubeMeshAsset = g_CommonRenderAssetSet->GetCube1mMesh();
-	const DX12GALMeshAssetWrapper* DX12CubeMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(CubeMeshAsset->GetGALMeshAsset());
-	const MeshRawDataDefault* DefaultMeshRawData = static_cast<const MeshRawDataDefault*>(CubeMeshAsset->GetMeshRawData());
-	int32 IndexCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[0];
-
-	DX12GALRICubeMap* DX12GALCubeMap = static_cast<DX12GALRICubeMap*>(CubeMapToDraw->GetGALMetadata(FrameMod));
-	ID3D12DescriptorHeap* CubemapDescHeap = DX12GALCubeMap->GetCubeMapDescHeap();
-	CD3DX12_CPU_DESCRIPTOR_HANDLE CubemapDescTableCPU = DX12GALCubeMap->GetCubemapDescTableCPU();
-	CD3DX12_GPU_DESCRIPTOR_HANDLE CubemapDescTableGPU = DX12GALCubeMap->GetCubemapDescTableGPU();
-
-
-	D3DDevice->CopyDescriptorsSimple(1, 
-		CubemapDescTableCPU, DX12GALTexAsset->_SRVHandle,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-
-
-	PipelineDesc SkyMapPSODesc = ConstructPSOToDrawSkyMap();
-	SetPSOAndRootSignature(SkyMapPSODesc);
-
-
-	{
-		const Transform& CamTransform = _CurRenderCamera->GetCameraTransform();
-		const Vector4f& CamPos = CamTransform.Position;
-		const float CubeMapSize = CubeMapToDraw->GetCubeMapSize();
-
-
-		DX12GALCubeMap->GetCubemapCBModelSysmem()->ObjectID = 0; // 일단 사용 안함
-		DX12GALCubeMap->GetCubemapCBModelSysmem()->RotMatrix = XMMatrixIdentity();
-		Transform CubemapModelTransform;
-		CubemapModelTransform.Position = Vector4f(CamPos.X, CamPos.Y - CubeMapSize * 0.5f, CamPos.Z, 1);
-		CubemapModelTransform.Scale = Vector4f(CubeMapSize, CubeMapSize, CubeMapSize, 0);
-		DX12GALCubeMap->GetCubemapCBModelSysmem()->WMatrix = XMMatrixTranspose(CubemapModelTransform.AsMatrix());
-
-
-		const float CamAspectRatio = _CurRenderCamera->GetAspectRatio();
-		const float CamFOV = _CurRenderCamera->GetFOVWithRadians();
-		XMMATRIX ProjMat = XMMatrixPerspectiveFovLH(CamFOV, CamAspectRatio, 0.001, CubeMapSize * 2);
-
-
-		XMVECTOR EyePos = CamTransform.Position.SimdVec;
-		XMVECTOR Direction = CamTransform.GetForward().SimdVec;
-		XMVECTOR Up = CamTransform.GetUp().SimdVec;
-		XMMATRIX ViewMat = XMMatrixLookToLH(EyePos, Direction, Up);
-
-		DX12GALCubeMap->GetCubemapCBRenderEnvParamSysmem()->ViewerPos = CamTransform.Position.SimdVec;
-		const XMMATRIX VPMatrix = ViewMat * ProjMat;
-		DX12GALCubeMap->GetCubemapCBRenderEnvParamSysmem()->VPMatrix = XMMatrixTranspose(VPMatrix);
-	}
-
-
-	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CurCommandList->IASetVertexBuffers(0, 1, &DX12CubeMeshAsset->_VertexBufferView);
-	CurCommandList->IASetIndexBuffer(DX12CubeMeshAsset->_IndexBufferView);
-
-	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12GALCubeMap->GetCubemapCBModelGPUMem());
-	CurCommandList->SetGraphicsRootConstantBufferView(1, DX12GALCubeMap->GetCubemapCBRenderEnvParamGPUMem());
-
-	CurCommandList->SetDescriptorHeaps(1, &CubemapDescHeap);
-	CurCommandList->SetGraphicsRootDescriptorTable(2, CubemapDescTableGPU);
-
-	CurCommandList->DrawIndexedInstanced(IndexCnt, 1, 0, 0, 0);
-}
 
 void DX12GALRenderDeviceContext::BeginPostProcessing()
 {
@@ -1000,13 +1028,6 @@ void DX12GALRenderDeviceContext::DrawShadow(IRenderInstance* InRenderInstance)
 {
 //	SCOPE_PROFILE_INDEXED(DrawShadowItem, InRenderInstance->GetGameObjectID().GetNativeValue());
 
-	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
-
-	if (InRenderInstance->GetGALMetadata(FrameMod) == nullptr)
-	{
-		GenerateRenderInstanceMetadata(InRenderInstance);
-	}
-
 	XMMATRIX ObjTransformMat = InRenderInstance->GetWorldTransformMatrix();
 	XMMATRIX ObjRotMat = InRenderInstance->GetWorldRotationMatrix();
 
@@ -1038,13 +1059,6 @@ void DX12GALRenderDeviceContext::DrawStaticMesh(IRIMesh* RIToDraw)
 
 	// GAL Info
 	DX12GALRIMetadata_SM* DX12RenderInstanceMetaData = (DX12GALRIMetadata_SM*)RIToDraw->GetGALMetadata(FrameMod);
-	{
-//		SCOPE_PROFILE(UpdateTransform);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(RIToDraw->GetWorldTransformMatrix());
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(RIToDraw->GetWorldRotationMatrix());
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
-	}
-
 
 	// Scrap Mesh Asset
 	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
@@ -1144,14 +1158,6 @@ void DX12GALRenderDeviceContext::DrawSkinnedMesh(IRISkinnedMesh* RIToDraw)
 
 	// Mesh Transform Update
 	DX12GALRIMetadata_SKM* DX12SkinnedRIMetaData = static_cast<DX12GALRIMetadata_SKM*>(RIToDraw->GetGALMetadata(FrameMod));
-	{
-//		SCOPE_PROFILE(UpdateTransform);
-		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(RIToDraw->GetWorldTransformMatrix());
-		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(RIToDraw->GetWorldRotationMatrix());
-		DX12SkinnedRIMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
-	}
-
-
 
 	// Scrap Mesh Asset
 	IMeshAsset* lMeshAsset = RIToDraw->GetMeshAsset();
@@ -1285,12 +1291,6 @@ void DX12GALRenderDeviceContext::DrawShadowStaticMesh(IRIMesh* RIToDraw, const X
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 
-	{
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(DrawMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
-	}
-
 	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
 
 	if (_DrawingShadowMapMetadata->GetLightType() == ELightType::Directional)
@@ -1349,12 +1349,6 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 
-	{
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->WMatrix = XMMatrixTranspose(DrawMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->RotMatrix = XMMatrixTranspose(DrawRotMat);
-		DX12RenderInstanceMetaData->_ModelCBSysMemAddr->ObjectID = RIToDraw->GetGameObjectID().GetNativeValue();
-	}
-
 	CurCommandList->SetGraphicsRootConstantBufferView(0, DX12RenderInstanceMetaData->_ModelCBGPUMemAddr);
 
 
@@ -1409,8 +1403,8 @@ void DX12GALRenderDeviceContext::ResetRenderState()
 
 void DX12GALRenderDeviceContext::FenceFrame()
 {
-	_CurFrameCnt++;
-	_D3DCommandQueue->Signal(_Fence, _CurFrameCnt);
+	_FenceCnt++;
+	_D3DCommandQueue->Signal(_Fence, _FenceCnt);
 	// 1. 프레임 숫자를 늘리고 늘어난 숫자를 시그널함
 }
 
@@ -1418,10 +1412,20 @@ void DX12GALRenderDeviceContext::WaitForNestedGPUJob()
 {
 	SCOPE_PROFILE(WaitForNestedGPUJob);
 
-	uint64 CompletedValue = _Fence->GetCompletedValue();
-	if (CompletedValue < _CurFrameCnt)
+	// GAL_NESTED_FRAME_CNT 이전 프레임 기다려야 함
+	int64 AwaitValue = _FenceCnt - GAL_NESTED_FRAME_CNT + 1;
+	if (AwaitValue <= 0)
 	{
-		_Fence->SetEventOnCompletion(_CurFrameCnt, _FenceEvent);
+		return; // _D3DCommandQueue->Signal를 하는 첫 프레임은 1번임
+	}
+
+	
+//	AwaitValue = _FenceCnt; // 테스트용
+
+	const uint64 CompletedValue = _Fence->GetCompletedValue();
+	if (CompletedValue < AwaitValue)
+	{
+		_Fence->SetEventOnCompletion(AwaitValue, _FenceEvent);
 		WaitForSingleObject(_FenceEvent, INFINITE);
 	}
 }

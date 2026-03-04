@@ -128,16 +128,6 @@ bool RenderLightDirectional::IsShadowMapEnabled() const
 	return _Desc.bEnableShadowMap;
 }
 
-void RenderLightDirectional::SetEnableShadowMap(bool bEnable)
-{
-	_Desc.bEnableShadowMap = bEnable;
-
-	if (bEnable == false)
-	{
-		ReleaseGALMetaData();
-	}
-}
-
 XMVECTOR RenderLightDirectional::GetLightColor() const
 {
 	return _LightIntensity;

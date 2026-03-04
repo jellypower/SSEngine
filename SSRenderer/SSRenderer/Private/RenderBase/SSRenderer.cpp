@@ -358,8 +358,17 @@ void SSRenderer::PerFrame()
 		SCOPE_PROFILE(SyncGALRIMetadata);
 		for (IRenderInstance* RIItem : _RenderInstancesToDraw)
 		{
-			_GALRenderDevice->SyncGALRIMetadataWithRI(RIItem);
+			_MainDeviceContext->GenerateGALRI(RIItem);
+			_MainDeviceContext->SyncGALRI(RIItem, nullptr);
+			// Draw용 RenderInstance는 Sync할 땐 카메라가 필요 없음
 		}
+
+		for (IRenderLight* RILightItem : _RenderLightsToDraw)
+		{
+			_MainDeviceContext->GenerateGALRI(RILightItem);
+		}
+
+		_MainDeviceContext->GenerateGALRI(_CubeMapToDraw);
 	}
 
 
@@ -609,6 +618,13 @@ void SSRenderer::PerFrame()
 	}
 }
 
+void SSRenderer::FinalizeRendering()
+{
+	_MainDeviceContext->FinalizeDeviceContext();
+	FinalizeAllReservedDestroy();
+	ValidateReleaseAllGALAssets();
+}
+
 void SSRenderer::CleanUp()
 {
 	delete _DeferredShadingContext;
@@ -635,14 +651,6 @@ void SSRenderer::CleanUp()
 
 	delete _PixelPickerRenderTarget;
 	_PixelPickerRenderTarget = nullptr;
-
-
-	{
-		_MainDeviceContext->FinalizeDeviceContext();
-		FinalizeAllReservedDestroy();
-		ValidateReleaseAllGALAssets();
-	}
-
 
 	_AssetManager->ReleaseAllAssets();
 	delete _AssetManager;

@@ -17,7 +17,7 @@ public:
 	D3D12_GPU_VIRTUAL_ADDRESS _ShadowMapCBGPUMemAddr;
 
 private:
-	GALRenderTarget* _ShadowMap = nullptr;
+	GALRenderTarget* _ShadowMap = nullptr; // 이 놈은 2개 필요 없음 -> DX12GALRIDirectionalLightShadowMapMetadata 자체를 2개 만들면 됨
 	DX12GALRenderDevice* _OwnerRenderDevice = nullptr;
 
 
