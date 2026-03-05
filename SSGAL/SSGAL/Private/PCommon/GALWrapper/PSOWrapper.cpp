@@ -13,6 +13,18 @@
 
 #include "Public/GALRenderTarget/GALRenderTarget.h"
 
+static const SS::SHasherW VS_SMToDefaultPSInput(L"VS_SMToDefaultPSInput");
+static const SS::SHasherW VS_SKMToDefaultPSInput(L"VS_SKMToDefaultPSInput");
+static const SS::SHasherW VS_FullScreenQuad(L"VS_FullScreenQuad");
+
+
+static const SS::SHasherW PS_DeferredShadeGBufferOutput(L"PS_DeferredShadeGBufferOutput");
+static const SS::SHasherW PS_DeferredShading(L"PS_DeferredShading");
+static const SS::SHasherW PS_SkyMap(L"PS_SkyMap");
+static const SS::SHasherW PS_DrawSimpleColor(L"PS_DrawSimpleColor");
+
+
+
 
 PSOWrapper::PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOwnerPSOPool)
 	: _pipelineDesc(InPipelineDesc), _OwnerPSOPool(InOwnerPSOPool)
@@ -29,19 +41,18 @@ PipelineDesc ConstructPSODescToDrawMesh(EMeshType InMeshType, EMaterialType InMt
 //	SCOPE_PROFILE(PSOConstructUtil);
 	PipelineDesc NewPipelineDesc;
 
-//	static const SS::SHasherW VS_SMToDefaultPSInput("VS_SMToDefaultPSInput");
-//	static const SS::SHasherW VS_SKMToDefaultPSInput("VS_SKMToDefaultPSInput");
+
 
 	switch (InMeshType)
 	{
 	case EMeshType::Rigid:
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
-		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
+		NewPipelineDesc.VSName = VS_SMToDefaultPSInput;
 		break;
 
 	case EMeshType::Skinned:
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_SKIN_VERTEX_LAYOUT;
-		NewPipelineDesc.VSName = L"VS_SKMToDefaultPSInput";
+		NewPipelineDesc.VSName = VS_SKMToDefaultPSInput;
 		break;
 
 	default:
@@ -52,7 +63,7 @@ PipelineDesc ConstructPSODescToDrawMesh(EMeshType InMeshType, EMaterialType InMt
 	switch (InMtlType)
 	{
 	case EMaterialType::DefaultPBR:
-		NewPipelineDesc.PSName = L"PS_DeferredShadeGBufferOutput";
+		NewPipelineDesc.PSName = PS_DeferredShadeGBufferOutput;
 		NewPipelineDesc.RootSignatureType = ERootSignatureType::SS_DEFAULT_PBR;
 		break;
 	default:
@@ -78,12 +89,12 @@ PipelineDesc ConstructPSODescToDrawShadow(EMeshType InMeshType)
 	{
 	case EMeshType::Rigid:
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
-		NewPipelineDesc.VSName = L"VS_SMToDefaultPSInput";
+		NewPipelineDesc.VSName = VS_SMToDefaultPSInput;
 		break;
 
 	case EMeshType::Skinned:
 		NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_SKIN_VERTEX_LAYOUT;
-		NewPipelineDesc.VSName = L"VS_SKMToDefaultPSInput";
+		NewPipelineDesc.VSName = VS_SKMToDefaultPSInput;
 		break;
 
 	default:
@@ -100,8 +111,8 @@ PipelineDesc ConstructPSODescToDrawShadow(EMeshType InMeshType)
 PipelineDesc ConstructPSOToDeferredShading()
 {
 	PipelineDesc NewPipelineDesc;
-	NewPipelineDesc.VSName = "VS_FullScreenQuad";
-	NewPipelineDesc.PSName = "PS_DeferredShading";
+	NewPipelineDesc.VSName = VS_FullScreenQuad;
+	NewPipelineDesc.PSName = PS_DeferredShading;
 	NewPipelineDesc.LayoutType = EInputLayoutType::SS_INPUTLAYOUT_NULL;
 	NewPipelineDesc.RootSignatureType = ERootSignatureType::DeferredShading;
 	NewPipelineDesc.NumRenderTarget = 1;
@@ -113,8 +124,8 @@ PipelineDesc ConstructPSOToDeferredShading()
 PipelineDesc ConstructPSOToDrawSkyMap()
 {
 	PipelineDesc NewPipelineDesc;
-	NewPipelineDesc.VSName = "VS_SMToDefaultPSInput";
-	NewPipelineDesc.PSName = "PS_SkyMap";
+	NewPipelineDesc.VSName = VS_SMToDefaultPSInput;
+	NewPipelineDesc.PSName = PS_SkyMap;
 	NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
 	NewPipelineDesc.RootSignatureType = ERootSignatureType::SkyMap;
 	NewPipelineDesc.NumRenderTarget = 1;
@@ -127,8 +138,8 @@ PipelineDesc ConstructPSOToDrawSkyMap()
 PipelineDesc ConstructPSOToDrawDebugWire(GALRenderTarget* InDSV)
 {
 	PipelineDesc NewPipelineDesc;
-	NewPipelineDesc.VSName = "VS_SMToDefaultPSInput";
-	NewPipelineDesc.PSName = "PS_DrawSimpleColor";
+	NewPipelineDesc.VSName = VS_SMToDefaultPSInput;
+	NewPipelineDesc.PSName = PS_DrawSimpleColor;
 	NewPipelineDesc.LayoutType = EInputLayoutType::SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT;
 	NewPipelineDesc.RootSignatureType = ERootSignatureType::DebugWire;
 	NewPipelineDesc.NumRenderTarget = 1;

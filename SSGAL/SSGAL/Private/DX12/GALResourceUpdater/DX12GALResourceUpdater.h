@@ -33,7 +33,7 @@ public:
 		D3D12_RESOURCE_STATES ToState);
 
 private:
-	ID3D12Resource* RentUpdateBuffer(int32& OutBufferStartOffset, int32 BufferSize);
+	ID3D12Resource* RentUpdateBuffer(int32& OutBufferStartOffset, int64 BufferSize);
 
 private:
 	SS::PooledList<ID3D12Resource*> _DefaultUploadBuffers;

@@ -17,9 +17,6 @@ public:
 	virtual ~DX12GALRenderDevice();
 
 public:
-	void BeginRender() override;
-	void EndRender() override;
-
 
 	virtual ERenderDevicePlatnform GetRenderDevicePlatform() const override;
 

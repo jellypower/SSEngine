@@ -354,14 +354,37 @@ void SSRenderer::PerFrame()
 			_MainRenderCamera);
 	}
 
+
+	// BeginRender
 	{
-		SCOPE_PROFILE(SyncGALRIMetadata);
-		for (IRenderInstance* RIItem : _RenderInstancesToDraw)
+		// WaitForFence 포함
+		SCOPE_PROFILE(BeginRender);
+		_MainDeviceContext->BeginRender();
+	}
+
+	// ProcessReserveDestroy
+	{
+		// 이전 프레임 작업이 끝나면 새 작업 밀어넣기
+		SCOPE_PROFILE(ProcessReservedDestroy);
+		ProcessReservedDestroy();
+	}
+
+
+	{
+		SCOPE_PROFILE(GPUUpdate);
+
+		InstantiatePendingGALAssets(_MainDeviceContext);
+
 		{
-			_MainDeviceContext->GenerateGALRI(RIItem);
-			_MainDeviceContext->SyncGALRI(RIItem, nullptr);
-			// Draw용 RenderInstance는 Sync할 땐 카메라가 필요 없음
+			SCOPE_PROFILE(MeshRI);
+			for (IRenderInstance* RIItem : _RenderInstancesToDraw)
+			{
+				_MainDeviceContext->GenerateGALRI(RIItem);
+				_MainDeviceContext->SyncGALRI(RIItem, nullptr);
+				// Draw용 RenderInstance는 Sync할 땐 카메라가 필요 없음
+			}
 		}
+
 
 		for (IRenderLight* RILightItem : _RenderLightsToDraw)
 		{
@@ -399,25 +422,10 @@ void SSRenderer::PerFrame()
 			_bPixelPickingReserved = false;
 		}
 
-		// BeginRender
-		{
-			// WaitForFence 포함
-			SCOPE_PROFILE(BeginRender);
-			_MainDeviceContext->BeginRender();
-		}
-
-		// ProcessReserveDestroy
-		{
-			// 이전 프레임 작업이 끝나면 새 작업 밀어넣기
-			SCOPE_PROFILE(ProcessReservedDestroy);
-			ProcessReservedDestroy();
-		}
-
 
 		{
 			SCOPE_PROFILE(MainPass);
 
-			InstantiatePendingGALAssets(_MainDeviceContext);
 
 			// Set Camera Setting
 			{

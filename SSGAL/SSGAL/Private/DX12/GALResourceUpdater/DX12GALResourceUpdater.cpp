@@ -134,7 +134,11 @@ HRESULT DX12GALResourceUpdater::UpdateTexture(
 	CD3DX12_RESOURCE_BARRIER ResourceBarrierCopyDestToVertexBuffer = CD3DX12_RESOURCE_BARRIER::Transition(Dest, D3D12_RESOURCE_STATE_COPY_DEST, ToState);
 
 	CommandList->ResourceBarrier(1, &ResourceBarrierCommonToCopyDest);
-	uint64 UpdateSize = UpdateSubresources(CommandList, Dest, UpdateResourceBuffer, RentBufferStartOffset, 0, NumSubResource, pSrcData);
+	uint64 UpdateSize;
+	{
+		SCOPE_PROFILE(UpdateSubresource);
+		UpdateSize = UpdateSubresources(CommandList, Dest, UpdateResourceBuffer, RentBufferStartOffset, 0, NumSubResource, pSrcData);
+	}
 	CommandList->ResourceBarrier(1, &ResourceBarrierCopyDestToVertexBuffer);
 
 
@@ -147,24 +151,25 @@ HRESULT DX12GALResourceUpdater::UpdateTexture(
 	return hr;
 }
 
-ID3D12Resource* DX12GALResourceUpdater::RentUpdateBuffer(int32& OutBufferStartOffset, int32 BufferSize)
+ID3D12Resource* DX12GALResourceUpdater::RentUpdateBuffer(int32& OutBufferStartOffset, int64 BufferSize)
 {
+	SCOPE_PROFILE(RentUpdateBuffer);
 	ID3D12Device5* D3DDevice = ((DX12GALRenderDevice*)_AncestorOwnerRenderDevice)->GetD3DDevice();
 	HRESULT hr;
 
-	constexpr int32 BUFFERCOPY_ALIGN_SIZE = 512; // 몇몇 디바이스에선 512바이트 단위로 얼라인 돼있어야 텍스쳐 카피가 가능함
-	int32 Buffer512Unit = BufferSize / BUFFERCOPY_ALIGN_SIZE + (BufferSize % BUFFERCOPY_ALIGN_SIZE == 0 ? 0 : 1);
+	constexpr int64 BUFFERCOPY_ALIGN_SIZE = 512; // 몇몇 디바이스에선 512바이트 단위로 얼라인 돼있어야 텍스쳐 카피가 가능함
+	int64 Buffer512Unit = BufferSize / BUFFERCOPY_ALIGN_SIZE + (BufferSize % BUFFERCOPY_ALIGN_SIZE == 0 ? 0 : 1);
 
 	BufferSize = Buffer512Unit * BUFFERCOPY_ALIGN_SIZE;
 
 	if (BufferSize > GAL_DEFAULT_RESOURCEUPDATE_TARGET_SIZE_MAX) // DefaultUploadPage를 잘라써서 쓰지 못하는 경우
 	{
-		int32 NeededPageCnt = BufferSize / LARGE_UPLOADBUFFER_SIZE_MIN
+		int64 NeededPageCnt = BufferSize / LARGE_UPLOADBUFFER_SIZE_MIN
 			+ (BufferSize % LARGE_UPLOADBUFFER_SIZE_MIN == 0 ? 0 : 1);
 		// 만약 LARGE_UPLOADBUFFER_SIZE_MIN사이즈의 버퍼로만 업로드를 실행한다면
 		// LARGE_UPLOADBUFFER_SIZE_MIN가 몇개가 필요한지 개수를 계산
 
-		int32 PowCnt = 0;
+		int64 PowCnt = 0;
 		while (NeededPageCnt > (1 << PowCnt))
 		{
 			PowCnt++;
@@ -177,10 +182,12 @@ ID3D12Resource* DX12GALResourceUpdater::RentUpdateBuffer(int32& OutBufferStartOf
 		}
 
 		SS::PooledList<ID3D12Resource*>& BufferList = _LargeUploadBuffers[PowCnt];
-		int32 CurBufferIdx = _CurLargeUploadBufferIndices[PowCnt];
+		int64 CurBufferIdx = _CurLargeUploadBufferIndices[PowCnt];
 
 		if (BufferList.GetSize() <= CurBufferIdx)
 		{
+			SCOPE_PROFILE(CreateLargeUpdateBuffer);
+
 			CD3DX12_HEAP_PROPERTIES UploadHeapTypeProp(D3D12_HEAP_TYPE_UPLOAD);
 			CD3DX12_RESOURCE_DESC ResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(GAL_DEFAULT_RESOURCEUPDATE_TARGET_SIZE_MAX * (1 << PowCnt));
 

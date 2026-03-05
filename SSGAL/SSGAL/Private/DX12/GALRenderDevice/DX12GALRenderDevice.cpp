@@ -214,14 +214,6 @@ DX12GALRenderDevice::~DX12GALRenderDevice()
 	}
 }
 
-void DX12GALRenderDevice::BeginRender()
-{
-}
-
-void DX12GALRenderDevice::EndRender()
-{
-}
-
 ERenderDevicePlatnform DX12GALRenderDevice::GetRenderDevicePlatform() const
 {
 	return ERenderDevicePlatnform::DX12Raster;

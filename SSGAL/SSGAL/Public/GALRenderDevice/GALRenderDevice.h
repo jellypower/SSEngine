@@ -35,9 +35,7 @@ public:
 	virtual ERenderDevicePlatnform GetRenderDevicePlatform() const = 0;
 
 public:
-	virtual void BeginRender() = 0;
-	virtual void EndRender() = 0;
-
+	
 	virtual void BindRendererXXX(IRenderer* InOwnerRenderer) = 0;
 
 	virtual GALRenderDeviceContext* CreateRenderDeviceContext() = 0;

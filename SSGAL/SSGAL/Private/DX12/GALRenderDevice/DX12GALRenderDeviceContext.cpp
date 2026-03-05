@@ -1384,6 +1384,7 @@ ID3D12GraphicsCommandList* DX12GALRenderDeviceContext::GetCurrentDrawWorkerCmdLi
 
 void DX12GALRenderDeviceContext::ResetRenderState()
 {
+	SCOPE_PROFILE(ResetRenderState);
 	_TransientCBAllocator->ResetAllChunksXXX();
 
 	_ResourceUpdater->ResetUpdateBuffer();

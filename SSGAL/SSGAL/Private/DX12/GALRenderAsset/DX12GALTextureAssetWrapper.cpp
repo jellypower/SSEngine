@@ -52,9 +52,9 @@ DX12GALTextureAssetWrapper::DX12GALTextureAssetWrapper(ITextureAssetMutable* Own
 	UINT NumSubResources = (UINT)subresouceData.size();
 	UINT64 uploadBufferSize = GetRequiredIntermediateSize(_TexResource, 0, NumSubResources);
 
-	if (bIsCubeMap)
+	if (bIsCubeMap && _OwnerTexture->GetTextureType() != ETextureType::CubeMap)
 	{
-		SS_ASSERT(_OwnerTexture->GetTextureType() == ETextureType::CubeMap);
+		SS_INTERRUPT();
 	}
 
 
@@ -77,16 +77,21 @@ DX12GALTextureAssetWrapper::DX12GALTextureAssetWrapper(ITextureAssetMutable* Own
 	}
 	_TexResource->SetName(TextureName);
 
-	_DescriptorTableChunk = DescriptorTableAllocatorForTex->AllocChunk(1, _OwnerTexture->GetAssetName());
-	ID3D12DescriptorHeap* AllocatedDescHeap = (ID3D12DescriptorHeap*)_DescriptorTableChunk.PageContent;
-	_SRVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
-		AllocatedDescHeap->GetCPUDescriptorHandleForHeapStart(),
-		_DescriptorTableChunk.ChunkOffset,
-		D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	{
+		SCOPE_PROFILE(CreateDescTable);
+		_DescriptorTableChunk = DescriptorTableAllocatorForTex->AllocChunk(1, _OwnerTexture->GetAssetName());
+		ID3D12DescriptorHeap* AllocatedDescHeap = (ID3D12DescriptorHeap*)_DescriptorTableChunk.PageContent;
+		_SRVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+			AllocatedDescHeap->GetCPUDescriptorHandleForHeapStart(),
+			_DescriptorTableChunk.ChunkOffset,
+			D3DDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	}
+
 
 
 	if (bIsCubeMap == false)
 	{
+		SCOPE_PROFILE(CreateSRV);
 		D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
 		SRVDesc.Format = textureDesc.Format;
 		SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -96,6 +101,7 @@ DX12GALTextureAssetWrapper::DX12GALTextureAssetWrapper(ITextureAssetMutable* Own
 	}
 	else
 	{
+		SCOPE_PROFILE(CreateSRV);
 		D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
 		SRVDesc.Format = textureDesc.Format;
 		SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;

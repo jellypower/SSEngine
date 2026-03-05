@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "ImGUI_WorldManager.h"
 
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+
 
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
@@ -29,6 +31,8 @@ ImGUI_WorldManager::ImGUI_WorldManager(SWorld* InWorld)
 
 void ImGUI_WorldManager::PerFrame()
 {
+	SCOPE_PROFILE(ImGUI_WorldManager);
+
 	if (SSInput::GetMouseDown(EMouseCode::MOUSE_LEFT))
 	{
 		Vector2i32 MousePos = SSInput::GetMousePos();
