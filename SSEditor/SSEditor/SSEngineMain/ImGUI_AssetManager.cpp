@@ -2,14 +2,18 @@
 #include "ImGUI_AssetManager.h"
 
 
+
 #include "ModuleEntryScriptRunner.h"
 #include "EngineUtils/PWin32/OpenFilePathDialogue.h"
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 #include "SSEngineDefault/Public/SystemUtilities.h"
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 
+#include "SSFBXImporter/Public/ISSFBXImporter.h"
 #include "SSFBXImporter/Public/FRAN.h"
+
 #include "SSImGUIUtils/ImGUIAssetManagerUtils.h"
 
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
@@ -25,12 +29,21 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
-
 enum class EExportTabbarActionType : int32
 {
 	AssetView,
 	AssetExport
 };
+
+
+static const SS::SHasherW NAME_SPACES[] =
+{
+	CRAN::NS_DEFAULT_ASSET,
+	FRAN::NS_FBX_IMPORT,
+	L"ContentsAssets",
+};
+constexpr int32 NAME_SPACES_CNT = sizeof(NAME_SPACES) / sizeof(NAME_SPACES[0]);
+
 
 
 ImGUI_AssetManager::ImGUI_AssetManager(IRenderer* InRenderer)
@@ -40,13 +53,27 @@ ImGUI_AssetManager::ImGUI_AssetManager(IRenderer* InRenderer)
 	_TabbarActionType = EExportTabbarActionType::AssetView;
 
 	_AssetDBLoaderToExport = g_fpCreateAssetDBLoader();
-	_SelectedAssetDBNameSpace = CRAN::NS_DEFAULT_ASSET;
+	_FbxImporterToImport = g_fpCreateSSFBXImporter();
+	_FbxLoadNSTarget = CRAN::NS_DEFAULT_ASSET;
 
 	_IEDataPool.Reserve(200);
+
+
+	time_t CurTime;
+	time(&CurTime);
+	_LastEditTimes.Reserve(NAME_SPACES_CNT);
+	for (int32 i = 0; i < NAME_SPACES_CNT; i++)
+	{
+		_LastEditTimes.PushBack(
+			{ NAME_SPACES[i], CurTime }
+		);
+	}
 }
 
 ImGUI_AssetManager::~ImGUI_AssetManager()
 {
+	_FbxImporterToImport->ClearFbxSceneFile();
+	delete _FbxImporterToImport;
 	delete _AssetDBLoaderToExport;
 }
 
@@ -385,144 +412,206 @@ void ImGUI_AssetManager::ImGUI_AssetManager_Model()
 
 void ImGUI_AssetManager::ImGUI_AssetManager_FBXExporter()
 {
-	constexpr int32 BUFFER_SIZE = 512;
-	static const SS::SHasherW NameSpaces[] =
+	_FbxLoadNSTarget = ImGUI_NamesCombo(
+		NAME_SPACES,
+		NAME_SPACES_CNT,
+		"Fbx Load Target",
+		_FbxLoadNSTarget,
+		ImGuiComboFlags_WidthFitPreview);
+
+
+	if (ImGui::Button("Load FBX File"))
 	{
-		SS::SHasherW(CRAN::NS_DEFAULT_ASSET),
-		SS::SHasherW(L"ContentsAssets")
-	};
-	
-	uint32 PrevSelectedNSStrLen = _SelectedAssetDBNameSpace.GetStrLen();
-	const utf16* PrevSelectedNSCStr = _SelectedAssetDBNameSpace.C_Str();
-
-	utf8 u8SelectedNS[BUFFER_SIZE] = "EMPTY";
-	UTF16StrToUtf8Str(PrevSelectedNSCStr, PrevSelectedNSStrLen, u8SelectedNS, BUFFER_SIZE);
-
-	if (ImGui::BeginCombo("NameSpaceSelected", u8SelectedNS, ImGuiComboFlags_WidthFitPreview))
-	{
-		for (SS::SHasherW NSItem : NameSpaces)
-		{
-			uint32 NSItemStrLen = NSItem.GetStrLen();
-			const utf16* NSItemCStr = NSItem.C_Str();
-
-			utf8 u8NSItem[BUFFER_SIZE];
-			UTF16StrToUtf8Str(NSItemCStr, NSItemStrLen, u8NSItem, BUFFER_SIZE);
-
-
-			if (ImGui::Selectable(u8NSItem, _SelectedAssetDBNameSpace == NSItem))
-			{
-				_SelectedAssetDBNameSpace = NSItem;
-			}
-
-			if (_SelectedAssetDBNameSpace == NSItem)
-			{
-				ImGui::SetItemDefaultFocus();
-			}
-
-		}
-		ImGui::EndCombo();
+		LoadFbxFile();
 	}
 
-	if (ImGui::Button("Export FBX Asset"))
+	if (ImGui::Button("Import FBX Asset"))
 	{
-		ImGUI_ExportLoadedFBXAssets(_SelectedAssetDBNameSpace);
+		ImportLoadedFbxFile();
+	}
+
+	if (ImGui::Button("Save Modified Asset"))
+	{
+		SaveNameSpaceRecentlyEdited(_FbxLoadNSTarget);
+	}
+
+	if (_FbxImporterToImport->GetBoundFileName().IsEmpty() == false)
+	{
+		ImGUI_PrintFbxImporerInfo(_FbxImporterToImport);
 	}
 }
 
-void ImGUI_AssetManager::ImGUI_ProcessAssetExport()
+void ImGUI_AssetManager::LoadFbxFile()
 {
-	if (SSInput::GetKey(EKeyCode::KEY_Ctrl))
-	{
-		if (SSInput::GetKeyDown(EKeyCode::KEY_S))
-		{
-		}
-
-		if (SSInput::GetKeyDown(EKeyCode::KEY_L))
-		{
-			SS::StringW OutString;
-			HRESULT hr = OpenSystemPathDialogue(OutString);
-			if (FAILED(hr))
-			{
-				SS_ASSERT(false);
-				return;
-			}
-
-//			IApakFileReader* Accessor = CreateApakFileAccessor(OutString.C_Str());
-//			if (Accessor != nullptr)
-//			{
-//				delete Accessor;
-//			}
-		}
-	}
-}
-
-void ImGUI_AssetManager::ImGUI_ExportLoadedFBXAssets(SS::SHasherW AssetNameSpace)
-{
-	static const SS::SHasherW HASHSER_NS_FBX_IMPORT = FRAN::NS_FBX_IMPORT;
-
-	_AssetDBLoaderToExport->StartLoadDB(_SelectedAssetDBNameSpace);
-
-
-	SS::PooledList<IAssetBase*> AssetListToSerialize;
-	IAssetManager* AM = _Renderer->GetAssetManager();
-	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::Mesh);
-	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::ModelCombination);
-	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::RenderAnim);
-
-	if (AssetListToSerialize.GetSize() == 0)
-	{
-		return;
-	}
-
-	_IEDataPool.Clear();
-	AppendApakDataFromAssetList(
-		_IEDataPool,
-		AssetListToSerialize,
-		HASHSER_NS_FBX_IMPORT,
-		_SelectedAssetDBNameSpace);
-
+	SCOPE_PROFILE(LoadFbxFile);
 	SS::StringW OutString;
-	HRESULT hr = OpenSystemPathDialogue(OutString, SPD_CREATEPATH);
+	HRESULT hr = OpenSystemPathDialogue(OutString);
 	if (FAILED(hr))
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	FILE* hFile = nullptr;
+	_FbxImporterToImport->ClearFbxSceneFile();
+	_FbxImporterToImport->BindFbxSceneFile(OutString.C_Str(), _FbxLoadNSTarget);
+	_FbxImporterToImport->GenerateImportedAssets();
+}
+
+void ImGUI_AssetManager::ImportLoadedFbxFile()
+{
+	SCOPE_PROFILE(FbxImport);
+
+	SS::PooledList<IAssetBase*> AssetListToImport(1024);
+	_FbxImporterToImport->RelocateCreatedAssets(AssetListToImport);
+
+	int32 FbxAssetCnt = AssetListToImport.GetSize();
+	if (FbxAssetCnt <= 0)
+	{
+		return;
+	}
+
+	SS::PooledList<IAssetBase*> AssetListToApak(1024);
+	for (IAssetBase* AssetItem : AssetListToImport)
+	{
+		const EAssetType AssetType = AssetItem->GetAssetType();
+		if (
+			AssetType != EAssetType::Mesh &&
+			AssetType != EAssetType::ModelCombination &&
+			AssetType != EAssetType::RenderAnim
+			)
+		{
+			continue;
+		}
+
+		AssetListToApak.PushBack(AssetItem);
+	}
+
+
+	SS::SHasherW ImportedNameSpace = _FbxImporterToImport->GetBoundNameSpace();
+
+	_IEDataPool.Clear();
+	AppendApakDataFromAssetList(
+		_IEDataPool,
+		AssetListToApak,
+		ImportedNameSpace,
+		ImportedNameSpace);
+
+
+
+	SS::StringW OutString;
+	HRESULT hr = OpenSystemPathDialogue(OutString, SPD_CREATEPATH);
+	if (FAILED(hr))
+	{
+		ReleaseAllAssetList(AssetListToImport);
+		SS_ASSERT(false);
+		return;
+	}
+
+
 
 	bool bResult = ConvertToWorkingDirPath(OutString);
 	if (bResult == false)
 	{
+		ReleaseAllAssetList(AssetListToImport);
 		SS_ASSERT(false);
 		return;
 	}
 
 	SS::SHasherW SaveAssetWorkingDirPath = OutString.C_Str();
-	for (IAssetBase* SerializedAssets : AssetListToSerialize)
+	for (IAssetBase* SerializedAssets : AssetListToApak)
 	{
 		SerializedAssets->SetAssetPathXXX(SaveAssetWorkingDirPath);
 	}
 
-
-	errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"wb+");
-	if (no != 0)
 	{
-		SS_ASSERT(false);
-		return;
+		FILE* hFile = nullptr;
+		errno_t no = _wfopen_s(&hFile, OutString.C_Str(), L"wb+");
+		if (no != 0)
+		{
+			SS_ASSERT(false);
+			return;
+		}
+
+		fwrite(_IEDataPool.GetData(), 1, _IEDataPool.GetSize(), hFile);
+		fclose(hFile);
 	}
 
-	fwrite(_IEDataPool.GetData(), 1, _IEDataPool.GetSize(), hFile);
-	fclose(hFile);
 
 
-	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::Material);
-	AM->FindAssetsOfNamespace(AssetListToSerialize, HASHSER_NS_FBX_IMPORT, EAssetType::Model);
+	IAssetManagerMutable* AM = _Renderer->GetMutableAssetManager();
+	for (IAssetBase* AssetItem : AssetListToImport)
+	{
+		AM->AddToAssetPool(AssetItem);
+	}
+
+	SaveNameSpaceRecentlyEdited(_FbxImporterToImport->GetBoundNameSpace());
+	_FbxImporterToImport->ClearFbxSceneFile();
+}
+
+void ImGUI_AssetManager::SaveNameSpaceRecentlyEdited(SS::SHasherW InNameSpace)
+{
+	time_t LastEditTime = 0;
+	for (const NSEditTimePair& Item : _LastEditTimes)
+	{
+		if (Item.NameSpace == InNameSpace)
+		{
+			LastEditTime = Item.EditTime;
+			break;
+		}
+	}
 
 
-	_AssetDBLoaderToExport->PushAssetsToSaveToDB(AssetListToSerialize);
-	_AssetDBLoaderToExport->CreateInterListFromAssetsToSaveToDB(HASHSER_NS_FBX_IMPORT, _SelectedAssetDBNameSpace);
+	SS::PooledList<IAssetBase*> AssetListToSave(256);
+	const IAssetManager* AM = _Renderer->GetAssetManager();
+
+	for (int32 i = 0; i < static_cast<int32>(EAssetType::Count); i++)
+	{
+		const EAssetType Type = static_cast<EAssetType>(i);
+		AM->FindAssetsEditSince(AssetListToSave, InNameSpace, Type, LastEditTime);
+	}
+
+	_AssetDBLoaderToExport->StartLoadDB(InNameSpace);
+	_AssetDBLoaderToExport->PushAssetsToSaveToDB(AssetListToSave);
+	_AssetDBLoaderToExport->CreateInterListFromAssetsToSaveToDB(InNameSpace, InNameSpace);
 	_AssetDBLoaderToExport->ClearAssetsToSaveToDB();
 	_AssetDBLoaderToExport->SaveInterAssetsToDB();
 	_AssetDBLoaderToExport->ClearDB();
+
+
+	time_t CurTime;
+	time(&CurTime);
+
+	if (LastEditTime == 0)
+	{
+		_LastEditTimes.PushBack({ InNameSpace, CurTime });
+	}
+	else
+	{
+		for (NSEditTimePair& Item : _LastEditTimes)
+		{
+			if (Item.NameSpace == InNameSpace)
+			{
+				Item.EditTime = CurTime;
+			}
+		}
+	}
+}
+
+void ImGUI_AssetManager::ReleaseAllAssetList(SS::PooledList<IAssetBase*>& AssetList)
+{
+	for (IAssetBase* ImportAssetItem : AssetList)
+	{
+		const EAssetType AssetType = ImportAssetItem->GetAssetType();
+
+		if (AssetType == EAssetType::Mesh)
+		{
+			IMeshAsset* MeshAssetItem = static_cast<IMeshAsset*>(ImportAssetItem);
+			MeshAssetItem->ReleaseSystemData();
+			MeshAssetItem->ReleaseGALData();
+		}
+
+		delete ImportAssetItem;
+	}
+
+	AssetList.Clear();
 }

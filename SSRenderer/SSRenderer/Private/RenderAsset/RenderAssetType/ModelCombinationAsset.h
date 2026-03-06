@@ -8,7 +8,7 @@
 class ModelCombinationAsset : public IModelCombinationAssetMutable
 {
 public:
-	ModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt);
+	ModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt, time_t LastUpdateTime);
 
 public:
 	virtual EAssetType GetAssetType() const override;

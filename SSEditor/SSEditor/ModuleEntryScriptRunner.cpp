@@ -142,9 +142,11 @@ void RunModuleEntryScriptPostInitWindow(
 
 		SSFBXImporterModuleEntry(
 			g_ThreadManager,
-			g_Renderer);
+			g_FrameInfoProcessor);
 
-		SSAssetDBManagerModuleEntry(g_ThreadManager);
+		SSAssetDBManagerModuleEntry(
+			g_ThreadManager,
+			g_FrameInfoProcessor);
 	}
 
 

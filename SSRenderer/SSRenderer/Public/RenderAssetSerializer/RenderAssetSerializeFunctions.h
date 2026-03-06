@@ -63,6 +63,7 @@ SSRENDERER_MODULE int64 CreateAssetsFromApakData(
 	const SS::PooledList<byte>& Data,
 	SS::SHasherW ApakAssetPath,
 	SS::SHasherW AssetNamespace,
+	time_t LastUpdateTime,
 	int Offset = 0);
 
 SSRENDERER_MODULE int64 CreateMeshAssetFromData(
@@ -70,6 +71,7 @@ SSRENDERER_MODULE int64 CreateMeshAssetFromData(
 	SS::SHasherW AssetName,
 	SS::SHasherW AssetPath,
 	SS::SHasherW AssetNamespace,
+	time_t LastUpdateTime,
 	const SS::PooledList<byte>& Data,
 	int Offset = 0);
 

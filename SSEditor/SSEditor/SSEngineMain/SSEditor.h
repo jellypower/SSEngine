@@ -13,7 +13,6 @@ class SRenderLightDirectionalComponent;
 enum class EAssetType;
 class SSImGUIInitializer;
 class ITextureAssetMutable;
-class ISSFBXImporter;
 class IRenderer;
 class SGameObject;
 class SCameraComponent;
@@ -32,8 +31,6 @@ public:
 	void EnginePerFrame();
 	void CleanupEngine();
 
-
-	void InjectImportFilePath_TMP(const utf16* inImportFilePath) { _importFileName_TMP = inImportFilePath; }
 
 
 	void TEMP_ProcessContents();
@@ -71,8 +68,6 @@ private:
 
 private:
 	SS::HashMap<SS::SHasherW, SS::FixedStringW<PATH_LEN_MAX>> _hashMap_TMP;
-	SS::StringW _importFileName_TMP;
 
-	ISSFBXImporter* _FbxImporter = nullptr;
 	IAssetDBLoader* _AssetDBLoader = nullptr;
 };

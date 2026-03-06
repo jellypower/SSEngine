@@ -10,5 +10,6 @@ typedef decltype(&CreateAssetDBLoader) FuncPtr_CreateAssetDBLoader;
 
 
 SSASSETDBMANAGER_MODULE_NATIVE void SSAssetDBManagerModuleEntry(
-	IThreadManager* InThreadManager);
+	IThreadManager* InThreadManager,
+	IFrameInfoProcessor* InFrameInfoProcessor);
 typedef decltype(&SSAssetDBManagerModuleEntry) FuncPtr_SSAssetDBManagerModuleEntry;

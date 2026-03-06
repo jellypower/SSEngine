@@ -10,11 +10,12 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
-ModelAsset::ModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+ModelAsset::ModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, time_t LastUpdateTime)
 {
 	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
+	_LastUpdateTime = LastUpdateTime;
 }
 
 EAssetType ModelAsset::GetAssetType() const

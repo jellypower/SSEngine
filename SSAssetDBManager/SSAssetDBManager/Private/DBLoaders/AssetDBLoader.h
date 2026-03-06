@@ -24,7 +24,7 @@ public:
 
 public:
 	virtual bool LoadAllAssetDataFromDB() override;
-	virtual void CreateAssetInstancesFromInter() override;
+	virtual void GenerateAssetInstancesFromInter() override;
 	virtual void RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList) override;
 
 public:

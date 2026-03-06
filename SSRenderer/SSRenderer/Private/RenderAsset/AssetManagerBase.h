@@ -16,6 +16,7 @@ public:
 public:
 	virtual const SS::HashMap<SS::SHasherW, IAssetBase*>& GetAssetMap(EAssetType InAssetType) const override;
 	virtual void FindAssetsOfNamespace(SS::PooledList<IAssetBase*>& AssetListToFill, SS::SHasherW Namespace, EAssetType InAssetType) const override;
+	virtual void FindAssetsEditSince(SS::PooledList<IAssetBase*>& OutList, SS::SHasherW Namespace, EAssetType AssetType, time_t Since) const override;
 
 	virtual IAssetBase* FindAssetByName(SS::SHasherW InAssetName, EAssetType InAssetType) const override;
 

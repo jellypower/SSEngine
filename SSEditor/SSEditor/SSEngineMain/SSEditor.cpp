@@ -36,7 +36,7 @@
 
 
 
-#include "SSFBXImporter/Public/ISSFBXImporter.h"
+
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
@@ -84,20 +84,15 @@ void SSEditor::StartupEngine()
 
 		_AssetDBLoader->StartLoadDB(CRAN::NS_DEFAULT_ASSET);
 		_AssetDBLoader->LoadAllAssetDataFromDB();
-		_AssetDBLoader->CreateAssetInstancesFromInter();
+		_AssetDBLoader->GenerateAssetInstancesFromInter();
 		_AssetDBLoader->RelocateCreatedAssets(AssetListToImport);
 		_AssetDBLoader->ClearDB();
 
 		_AssetDBLoader->StartLoadDB(L"ContentsAssets");
 		_AssetDBLoader->LoadAllAssetDataFromDB();
-		_AssetDBLoader->CreateAssetInstancesFromInter();
+		_AssetDBLoader->GenerateAssetInstancesFromInter();
 		_AssetDBLoader->RelocateCreatedAssets(AssetListToImport);
 		_AssetDBLoader->ClearDB();
-
-		_FbxImporter = g_fpCreateSSFBXImporter();
-		_FbxImporter->BindFbxSceneFile(_importFileName_TMP.C_Str());
-		_FbxImporter->GenerateImportedAssets();
-		_FbxImporter->RelocateCreatedAssets(AssetListToImport);
 
 
 		IAssetManagerMutable* AM = _Renderer->GetMutableAssetManager();
@@ -306,11 +301,6 @@ void SSEditor::CleanupEngine()
 
 	DelSObject(_DefaultWorld);
 	_DefaultWorld = nullptr;
-
-
-	_FbxImporter->ClearFbxSceneFile();
-	delete _FbxImporter;
-	_FbxImporter = nullptr;
 
 	_AssetDBLoader->ClearDB();
 	delete _AssetDBLoader;

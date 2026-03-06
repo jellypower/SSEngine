@@ -5,12 +5,13 @@
 #include "SSRenderer/Private/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 
-TextureAsset::TextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType)
+TextureAsset::TextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType, time_t LastUpdateTime)
 {
 	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
 	_Type = InType;
+	_LastUpdateTime = LastUpdateTime;
 }
 
 EAssetType TextureAsset::GetAssetType() const

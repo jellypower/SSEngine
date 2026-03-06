@@ -3,6 +3,11 @@
 
 SS::SHasherW ReplaceAssestNameNameSpace(SS::SHasherW AssetName, SS::SHasherW NSFrom, SS::SHasherW NSTo)
 {
+	if (NSFrom == NSTo)
+	{
+		return AssetName;
+	}
+
 	const utf16* AssetNameRaw = AssetName.C_Str();
 	const int32 AssetNameLen = AssetName.GetStrLen();
 
@@ -34,10 +39,10 @@ SS::SHasherW ReplaceAssestNameNameSpace(SS::SHasherW AssetName, SS::SHasherW NSF
 		SS_ASSERT(false);
 		return SS::SHasherW();
 	}
-	Cursor++;
+	Cursor++; // '/' 도 스킵하기
 
 	const utf16* NSToRaw = NSTo.C_Str();
-	if (NSToRaw == nullptr)
+	if (NSToRaw == nullptr) // 네임스페이스를 아예 없앨때도 쓰임
 	{
 		SS::SHasherW ReplacedAssetName = (AssetNameRaw + Cursor);
 		return ReplacedAssetName;

@@ -47,12 +47,7 @@ void					AnalyzeCommandLineArgs();
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 {
 	SS_LOG("========================== Select file to Open ==========================\n");
-	SS::StringW FilePathToLoad;
-	OpenSystemPathDialogue(FilePathToLoad);
-	if (FilePathToLoad.GetStrLen() == 0)
-	{
-		return 0;
-	}
+
 	
 	AnalyzeCommandLineArgs();
 
@@ -86,8 +81,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 
 	g_Editor = DBG_NEW SSEditor(g_Renderer);
-
-	g_Editor->InjectImportFilePath_TMP(FilePathToLoad.C_Str());
 	
 
 	

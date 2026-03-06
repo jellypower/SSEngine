@@ -31,6 +31,7 @@ private:
 	SS::SHasherW _boundFileName;
 	SS::SHasherW _RepresentingAssetName;
 
+	SS::SHasherW _BoundNameSpace;
 
 private:
 	SS::PooledList<SS::pair<::FbxMesh*, SS::SHasherW>> _importedMeshNames;
@@ -47,10 +48,11 @@ public:
 	virtual SS::SHasherW GetBoundFilePath() const override;
 	virtual SS::SHasherW GetBoundFileName() const override;
 	virtual SS::SHasherW GetRepresentingAssetName() const override;
+	virtual SS::SHasherW GetBoundNameSpace() const override;
 
-	virtual SS::PooledList<IAssetBase*> GetImportedAssets() const override;
+	virtual const SS::PooledList<IAssetBase*>& GetImportedAssets() const override;
 
-	virtual bool BindFbxSceneFile(const utf16* inFilePath) override;
+	virtual bool BindFbxSceneFile(const utf16* inFilePath, SS::SHasherW NameSpace) override;
 	virtual void ClearFbxSceneFile() override;
 
 	virtual void RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList) override;
@@ -68,6 +70,8 @@ private:
 	}
 
 private:
+	void ReleaseAllImportedAssets();
+
 	SS::SHasherW IssueNewAssetName(const SS::StringW& nodeName, EAssetType InAssetType);
 
 	void GenerateImportedMaterialAssets();

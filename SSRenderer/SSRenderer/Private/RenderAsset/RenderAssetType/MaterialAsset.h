@@ -9,7 +9,7 @@ private:
 	SS::PooledList<ITextureAsset*, SS::InlineAllocator<8>> _ReferencingTextureCache;
 
 public:
-	MaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
+	MaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, time_t LastUpdateTime);
 	virtual ~MaterialAsset();
 
 public:

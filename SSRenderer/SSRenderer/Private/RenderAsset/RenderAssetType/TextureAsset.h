@@ -7,7 +7,7 @@ private:
 	ETextureType _Type = ETextureType::None;
 
 public:
-	TextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType);
+	TextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType, time_t LastUpdateTime);
 
 public:
 	EAssetType GetAssetType() const override;

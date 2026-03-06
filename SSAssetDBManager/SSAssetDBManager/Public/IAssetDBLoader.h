@@ -18,7 +18,7 @@ public:
 
 public:
 	virtual bool LoadAllAssetDataFromDB() = 0;
-	virtual void CreateAssetInstancesFromInter() = 0;
+	virtual void GenerateAssetInstancesFromInter() = 0;
 	virtual void RelocateCreatedAssets(SS::PooledList<IAssetBase*>& OutAssetList) = 0;
 
 public:

@@ -7,14 +7,16 @@
 
 
 IThreadManager* g_ThreadManager = nullptr;
-
+IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 IAssetDBLoader* CreateAssetDBLoader()
 {
 	return DBG_NEW AssetDBLoader;
 }
 
 void SSAssetDBManagerModuleEntry(
-	IThreadManager* InThreadManager)
+	IThreadManager* InThreadManager,
+	IFrameInfoProcessor* InFrameInfoProcessor)
 {
 	g_ThreadManager = InThreadManager;
+	g_FrameInfoProcessor = InFrameInfoProcessor;
 }

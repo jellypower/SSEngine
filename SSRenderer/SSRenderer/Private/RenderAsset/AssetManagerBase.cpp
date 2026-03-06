@@ -147,3 +147,25 @@ void AssetManagerBase::FindAssetsOfNamespace(SS::PooledList<IAssetBase*>& AssetL
 		}
 	}
 }
+
+void AssetManagerBase::FindAssetsEditSince(SS::PooledList<IAssetBase*>& OutList, SS::SHasherW Namespace,
+	EAssetType AssetType, time_t Since) const
+{
+	const SS::HashMap<SS::SHasherW, IAssetBase*>& AssetMap = _assetHashMap[(int32)AssetType];
+
+	for (const SS::pair<SS::SHasherW, IAssetBase*>& AssetPairItem : AssetMap)
+	{
+		IAssetBase* AssetItem = AssetPairItem.second;
+		if (AssetItem->GetDBNameSpace() != Namespace)
+		{
+			continue;
+		}
+
+		if (AssetItem->GetLastUpdateTime() <= Since)
+		{
+			continue;
+		}
+
+		OutList.PushBack(AssetItem);
+	}
+}

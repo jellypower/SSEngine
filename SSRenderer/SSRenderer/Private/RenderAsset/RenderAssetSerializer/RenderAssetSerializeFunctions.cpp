@@ -548,6 +548,7 @@ int64 CreateAssetsFromApakData(
 	const SS::PooledList<byte>& Data,
 	SS::SHasherW ApakAssetPath,
 	SS::SHasherW AssetNamespace,
+	time_t LastUpdateTime,
 	int Offset)
 {
 	const int32 OriginalOffset = Offset;
@@ -586,6 +587,7 @@ int64 CreateAssetsFromApakData(
 				AssetNameItem,
 				ApakAssetPath,
 				AssetNamespace,
+				LastUpdateTime,
 				Data,
 				ThisAssetOffset);
 			NewAsset = NewMeshAsset;
@@ -613,11 +615,15 @@ int64 CreateMeshAssetFromData(
 	SS::SHasherW AssetName,
 	SS::SHasherW AssetPath,
 	SS::SHasherW AssetNamespace,
+	time_t LastUpdateTime,
 	const SS::PooledList<byte>& Data,
 	int Offset)
 {
 	// 껍데기만 만들고
-	MeshAsset* NewAsset = DBG_NEW MeshAsset(AssetNamespace, AssetName, AssetPath);
+	time_t CurTime;
+	time(&CurTime);
+
+	MeshAsset* NewAsset = DBG_NEW MeshAsset(AssetNamespace, AssetName, AssetPath, LastUpdateTime);
 
 
 	// 실제 Raw데이터 만들어서 삽입

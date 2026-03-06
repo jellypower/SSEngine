@@ -5,7 +5,7 @@ class RenderAnimAsset : public IRenderAnimAssetMutable
 {
 
 public:
-	RenderAnimAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath);
+	RenderAnimAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, time_t LastUpdateTime);
 	virtual ~RenderAnimAsset();
 
 public:

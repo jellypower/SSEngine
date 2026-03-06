@@ -6,8 +6,7 @@
 
 
 IThreadManager* g_ThreadManager = nullptr;
-
-IRenderer* g_Renderer = nullptr;
+IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 
 ISSFBXImporter* CreateSSFBXImporter()
 {
@@ -16,8 +15,8 @@ ISSFBXImporter* CreateSSFBXImporter()
 
 void SSFBXImporterModuleEntry(
 	IThreadManager* InThreadManager, 
-	IRenderer* InRenderer)
+	IFrameInfoProcessor* InFrameInfoProcessor)
 {
 	g_ThreadManager = InThreadManager;
-	g_Renderer = InRenderer;
+	g_FrameInfoProcessor = InFrameInfoProcessor;
 }

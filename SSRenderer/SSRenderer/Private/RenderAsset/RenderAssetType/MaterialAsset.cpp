@@ -10,11 +10,12 @@
 
 #include "SSEngineDefault/Public/SSContainer/ContainerUtil/ContainerUtil.h"
 
-MaterialAsset::MaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath)
+MaterialAsset::MaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, time_t LastUpdateTime)
 {
 	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
+	_LastUpdateTime = LastUpdateTime;
 }
 
 MaterialAsset::~MaterialAsset()

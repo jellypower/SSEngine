@@ -4,12 +4,13 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
-ModelCombinationAsset::ModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt)
+ModelCombinationAsset::ModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, int32 ReservedChildCnt, time_t LastUpdateTime)
 {
 	_childs.Reserve(ReservedChildCnt);
 	_DBNameSpace = InDBNameSpace;
 	_assetName = InAssetName;
 	_assetPath = InAssetPath;
+	_LastUpdateTime = LastUpdateTime;
 }
 
 EAssetType ModelCombinationAsset::GetAssetType() const

@@ -11,12 +11,13 @@ public:
 	virtual SS::SHasherW GetBoundFilePath() const = 0;
 	virtual SS::SHasherW GetBoundFileName() const = 0;
 	virtual SS::SHasherW GetRepresentingAssetName() const = 0;
+	virtual SS::SHasherW GetBoundNameSpace() const = 0;
 
-	virtual SS::PooledList<IAssetBase*> GetImportedAssets() const = 0;
+	virtual const SS::PooledList<IAssetBase*>& GetImportedAssets() const = 0;
 
 
 public:
-	virtual bool BindFbxSceneFile(const utf16* inFilePath) = 0;
+	virtual bool BindFbxSceneFile(const utf16* inFilePath, SS::SHasherW NameSpace) = 0;
 	virtual void ClearFbxSceneFile() = 0;
 
 
