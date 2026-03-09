@@ -1,5 +1,7 @@
 ﻿#include "AnimWorkeeSimplePlayer.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
@@ -21,40 +23,53 @@ AnimWorkeeSimplePlayer::AnimWorkeeSimplePlayer(const SSimpleAnimatorTestComponen
 
 	const int32 BindingCnt = Bindings.GetSize();
 
-	for (int32 i = 0; i < BindingCnt; i++)
 	{
-		SGameObject* GOItem = Bindings[i].Get();
-		if (GOItem == nullptr)
-		{
-			SS_ASSERT(false);
-			continue;
-		}
+		SCOPE_PROFILE(TEST1);
 
-		SS::SHasherW ObjName = GOItem->GetObjectName();
-		_BindingIdxByName.Add(ObjName, i);
+		for (int32 i = 0; i < BindingCnt; i++)
+		{
+			SGameObject* GOItem = Bindings[i].Get();
+			if (GOItem == nullptr)
+			{
+				SS_ASSERT(false);
+				continue;
+			}
+
+			SS::SHasherW ObjName = GOItem->GetObjectName();
+			_BindingIdxByName.Add(ObjName, i);
+		}
 	}
 
-	for (int32 i = 0; i < BindingCnt; i++)
+	static const SS::SHasherW HasherResult = L"Result";
+	_ResultPose.PoseName = HasherResult;
+	_ResultPose.BoneNames.Reserve(BindingCnt);
+	_ResultPose.ParentBoneIdx.Reserve(BindingCnt);
+	_ResultPose.BoneTransforms.Reserve(BindingCnt);
+
 	{
-		SGameObject* GOItem = Bindings[i].Get();
-		SGameObject* GOParent = GOItem->GetParent();
+		SCOPE_PROFILE(TEST2);
 
-		SS::SHasherW ParentName = GOParent->GetObjectName();
-		SS::SHasherW GOName = GOItem->GetObjectName();
-		const Transform& GOTransform = GOItem->GetTransform();
-
-		int32 ParentIdx = INVALID_IDX;
-
-		int32* FoundIdx = _BindingIdxByName.Find(ParentName);
-		if (FoundIdx != nullptr)
+		for (int32 i = 0; i < BindingCnt; i++)
 		{
-			ParentIdx = *FoundIdx;
-		}
+			SGameObject* GOItem = Bindings[i].Get();
+			SGameObject* GOParent = GOItem->GetParent();
 
-		_ResultPose.PoseName = L"Result";
-		_ResultPose.BoneNames.PushBack(GOName);
-		_ResultPose.ParentBoneIdx.PushBack(ParentIdx);
-		_ResultPose.BoneTransforms.PushBack(GOTransform);
+			SS::SHasherW ParentName = GOParent->GetObjectName();
+			SS::SHasherW GOName = GOItem->GetObjectName();
+			const Transform& GOTransform = GOItem->GetTransform();
+
+			int32 ParentIdx = INVALID_IDX;
+
+			int32* FoundIdx = _BindingIdxByName.Find(ParentName);
+			if (FoundIdx != nullptr)
+			{
+				ParentIdx = *FoundIdx;
+			}
+
+			_ResultPose.BoneNames.PushBack(GOName);
+			_ResultPose.ParentBoneIdx.PushBack(ParentIdx);
+			_ResultPose.BoneTransforms.PushBack(GOTransform);
+		}
 	}
 
 	_RenderAnimAssetName = AnimComp->GetRenderAnimAssetName();
