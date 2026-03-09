@@ -14,27 +14,41 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IRenderAnimAsset.h"
 
 AnimWorkeeSimplePlayer::AnimWorkeeSimplePlayer(const SSimpleAnimatorTestComponent* AnimComp)
+	: _BindingIdxByName(400, 400)
 {
-	const SS::PooledList<SObjHashT<SGameObject>>& Bindings = AnimComp->GetBoneBindings();
-	int BindingCnt = Bindings.GetSize();
+	const SS::PooledList<SObjHashT<SGameObject>>& Bindings = 
+		AnimComp->GetBoneBindings();
+
+	const int32 BindingCnt = Bindings.GetSize();
+
+	for (int32 i = 0; i < BindingCnt; i++)
+	{
+		SGameObject* GOItem = Bindings[i].Get();
+		if (GOItem == nullptr)
+		{
+			SS_ASSERT(false);
+			continue;
+		}
+
+		SS::SHasherW ObjName = GOItem->GetObjectName();
+		_BindingIdxByName.Add(ObjName, i);
+	}
 
 	for (int32 i = 0; i < BindingCnt; i++)
 	{
 		SGameObject* GOItem = Bindings[i].Get();
 		SGameObject* GOParent = GOItem->GetParent();
 
-		SObjHashCode ParentHashCode = GOParent->GetHashCode();
+		SS::SHasherW ParentName = GOParent->GetObjectName();
 		SS::SHasherW GOName = GOItem->GetObjectName();
 		const Transform& GOTransform = GOItem->GetTransform();
 
 		int32 ParentIdx = INVALID_IDX;
-		for (int32 j = 0; j < BindingCnt; j++)
+
+		int32* FoundIdx = _BindingIdxByName.Find(ParentName);
+		if (FoundIdx != nullptr)
 		{
-			if (Bindings[j].GetHashCode() == ParentHashCode)
-			{
-				ParentIdx = j;
-				break;
-			}
+			ParentIdx = *FoundIdx;
 		}
 
 		_ResultPose.PoseName = L"Result";
@@ -102,16 +116,24 @@ void AnimWorkeeSimplePlayer::UpdateAnimation(float DeltaTime)
 	double Time = _WholeFrameTime;
 	Time = fmod(Time, AnimRawData->_Header.KeyFrameDuration);
 
-	int32 BindingCnt = _ResultPose.BoneTransforms.GetSize();
+
+	const int32 TrackCnt = AnimRawData->_Header.TrackCnt;
 
 
 
-	for (int32 i = 0; i < BindingCnt; i++)
+	for (int32 TrackIdx = 0; TrackIdx < TrackCnt; TrackIdx++)
 	{
-		SS_ASSERT(AnimRawData->_Tracks[i]._TrackName == _ResultPose.BoneNames[i]);
-		// TODO: 애니메이션과 BoneBinding의 인덱스가 같지 않아도 제대로 재생되도록 하는 기능이 나중에 필요할 수 있음.
-		Transform Result = EvaluateRenderKFTransform(AnimRawData, i, Time);
-		_ResultPose.BoneTransforms[i] = Result;
+		int32* pBindingIdx = _BindingIdxByName.Find(AnimRawData->_Tracks[TrackIdx]._TrackName);
+		if (pBindingIdx == nullptr)
+		{
+			// 원래는 Assert가 나긴 해야되는데 일단은 패스하자.
+			continue;
+		}
+
+		int32 BindingIdx = *pBindingIdx;
+
+		Transform Result = EvaluateRenderKFTransform(AnimRawData, TrackIdx, Time);
+		_ResultPose.BoneTransforms[BindingIdx] = Result;
 	}
 
 	_LastUpdateFrame = SSFrameInfo::GetFrameCnt();

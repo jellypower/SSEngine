@@ -16,6 +16,8 @@ private:
 
 	PoseSlot _ResultPose;
 
+	SS::HashMap<SS::SHasherW, int32> _BindingIdxByName;
+
 public:
 	AnimWorkeeSimplePlayer(const SSimpleAnimatorTestComponent* AnimComp);
 

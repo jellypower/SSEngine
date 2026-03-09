@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <SSEngineDefault/Public/SSContainer/HashMap.h>
+
 #include "SObject/Public/SObjHashT.h"
 
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
@@ -9,6 +11,15 @@ class SSCONTENTBASE_MODULE SAnimatorBaseComponent : public SComponentBase
 {
 private:
 	SS::PooledList<SObjHashT<SGameObject>> _BoneBindings;
+
+
+public:
+	SAnimatorBaseComponent();
+
+public:
+	virtual void OnEnterTheWorld() override;
+	virtual void PostConstructHierarchy() override;
+	virtual void OnExitTheWorld() override;
 
 
 public:
@@ -23,10 +34,4 @@ public:
 	virtual void ApplyAnimWorkeeTransform();
 
 
-
-
-public:
-	virtual void OnEnterTheWorld() override;
-	virtual void PostConstructHierarchy() override;
-	virtual void OnExitTheWorld() override;
 };

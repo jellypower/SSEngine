@@ -1,6 +1,8 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SSkinnedMeshRenderComponent.h"
 
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 
@@ -15,6 +17,11 @@
 
 
 constexpr int32 TEMP_BONE_BASIC_CAPACITY = 200;
+
+SSkinnedMeshRenderComponent::SSkinnedMeshRenderComponent():
+	_ChildsByName(400, 400)
+{
+}
 
 bool SSkinnedMeshRenderComponent::ShouldProcessPerFrameInherently() const
 {
@@ -85,6 +92,7 @@ void SSkinnedMeshRenderComponent::DestructRenderInstance()
 
 void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGameObject)
 {
+	SCOPE_PROFILE(ReconstructBoneBinding);
 	if (_CachedMeshAsset == nullptr || _CachedMeshAsset->GetMeshType() != EMeshType::Skinned)
 	{
 		SS_ASSERT(false);
@@ -97,28 +105,31 @@ void SSkinnedMeshRenderComponent::ReconstructBoneBinding(SGameObject* RootBoneGa
 	const MeshRawDataSkinned* SkinnedRawMesh = (MeshRawDataSkinned*)_CachedMeshAsset->GetMeshRawData();
 	int32 NewBoneCnt = SkinnedRawMesh->_BoneHeader._BoneCnt;
 
-	SS::PooledList<SGameObject*> ScrapedDecendants(200);
+	SS::PooledList<SGameObject*> ScrapedDecendants(400);
 	ScrapedDecendants.PushBack(RootBoneGameObject);
 	RootBoneGameObject->ScrapAllDescendants(ScrapedDecendants);
 
+	for (SGameObject* ChildItem : ScrapedDecendants)
+	{
+		_ChildsByName.Add(ChildItem->GetObjectName(), ChildItem);
+	}
+
+
 	_BoneBindings.Clear();
 	_BoneBindings.Reserve(200);
-	const SS::PooledList<Transform>& BoneTransforms = SkinnedRawMesh->_BonePlacements;
+
 	const SS::PooledList<SS::SHasherW>& BoneNames = SkinnedRawMesh->_BoneNames;
 	for (int32 i = 0; i < NewBoneCnt; i++)
 	{
-		SGameObject* MatchingObject = nullptr;
 
-		for (SGameObject* Item : ScrapedDecendants)
+		SObjHashT<SGameObject>* FoundChild = _ChildsByName.Find(BoneNames[i]);
+		if (FoundChild == nullptr)
 		{
-			if (BoneNames[i] == Item->GetObjectName())
-			{
-				MatchingObject = Item;
-				break;
-			}
+			SS_ASSERT(false);
+			continue;
 		}
 
-		_BoneBindings.PushBack(MatchingObject);
+		_BoneBindings.PushBack(*FoundChild);
 	}
 
 	int32 a = 0;

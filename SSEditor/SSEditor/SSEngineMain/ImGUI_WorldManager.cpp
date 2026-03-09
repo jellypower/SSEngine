@@ -456,15 +456,19 @@ void ImGUI_WorldManager::ImGUI_Spawner()
 
 			if (ImGui::Button("Spawn Mdlc"))
 			{
+				SCOPE_PROFILE(SpawnMDLC);
 				if (_SpawnerSelectedMdlc.IsEmpty() == false)
 				{
-					SGameObject* NewMdlc = SRendererUtil::InstantiateModelObjTree(_SpawnerSelectedMdlc);
+					SGameObject* NewMdlc = SRendererUtil::InstantiateMDLC(_SpawnerSelectedMdlc);
 					if (NewMdlc == nullptr)
 					{
 						return;
 					}
 
-					NewMdlc->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
+					{
+						SCOPE_PROFILE(CreateAnimator);
+						NewMdlc->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
+					}
 					NewMdlc->SetTransform(_SpawnerTransform);
 					_BoundWorld->AddToWorld(NewMdlc);
 				}

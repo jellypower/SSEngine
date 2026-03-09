@@ -1,5 +1,7 @@
 ﻿#include "SSContentsBase/Public/AnimComponents/SAnimatorBaseComponent.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+
 
 #include "SSContentsBase/Private/AnimWorker/AnimWorkee/AnimWorkeeSimplePlayer.h"
 #include "SSContentsBase/Public/AnimWorker/IAnimWorker.h"
@@ -12,8 +14,13 @@
 
 
 
+SAnimatorBaseComponent::SAnimatorBaseComponent() 
+{
+}
+
 void SAnimatorBaseComponent::ReconstructBoneBinding()
 {
+	SCOPE_PROFILE(SAnimatorBaseComponent::ReconstructBoneBinding);
 	SGameObject* GO = GetGameObject();
 
 	if (GO == nullptr || GO->GetIsHierarchyInitialized() == false)
@@ -22,16 +29,14 @@ void SAnimatorBaseComponent::ReconstructBoneBinding()
 	}
 
 
-	SS::PooledList<SGameObject*> ScrapedDecendants(200);
+	SS::PooledList<SGameObject*> ScrapedDecendants(400);
 	GO->ScrapAllDescendants(ScrapedDecendants);
-	_BoneBindings.Clear();
-	_BoneBindings.Reserve(200);
 
-	SGameObject* MatchingObject = nullptr;
-
+	_BoneBindings.Reserve(ScrapedDecendants.GetSize());
+	
 	for (SGameObject* Item : ScrapedDecendants)
 	{
-		_BoneBindings.PushBack(Item); // nullptr도 가능
+		_BoneBindings.PushBack(Item);
 	}
 
 

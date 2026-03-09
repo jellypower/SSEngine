@@ -1,5 +1,7 @@
 #include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
 
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+
 #include "SSContentsBase/Private/AnimWorker/AnimWorkee/AnimWorkeeSimplePlayer.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
@@ -70,6 +72,7 @@ void SSimpleAnimatorTestComponent::OnAnimWorkerUpdateAnimationEnded()
 
 void SSimpleAnimatorTestComponent::ReconstructBoneBinding()
 {
+	SCOPE_PROFILE(SSimpleAnimatorTestComponent::ReconstructBoneBinding);
 	SAnimatorBaseComponent::ReconstructBoneBinding();
 
 	if (_AnimWorkee != nullptr)

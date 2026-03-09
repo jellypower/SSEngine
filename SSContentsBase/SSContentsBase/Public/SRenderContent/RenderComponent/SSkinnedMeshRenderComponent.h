@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <SSEngineDefault/Public/SSContainer/HashMap.h>
+
 #include "SObject/Public/SObjHashT.h"
 #include "SMeshRenderComponentBase.h"
 
@@ -6,8 +8,12 @@
 class SSCONTENTBASE_MODULE SSkinnedMeshRenderComponent : public SMeshRenderComponentBase
 {
 private:
+	SS::HashMap<SS::SHasherW, SObjHashT<SGameObject>> _ChildsByName;
 	SS::PooledList<SObjHashT<SGameObject>> _BoneBindings;
 	SObjHashT<SGameObject> _RootBone;
+
+public:
+	SSkinnedMeshRenderComponent();
 
 protected:
 	virtual bool ShouldProcessPerFrameInherently() const override;
