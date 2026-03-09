@@ -18,6 +18,7 @@ int32 ProfileResultItemToU16(
 	double ConsumedMS = (double)ItemConsumedTick / (double)FrameFrequency;
 	double WholeConsumedRatio = (double)ItemConsumedTick / (double)FrameDeltaTick;
 	double ParentRelativeConsumedRatio = (double)ItemConsumedTick / (double)ParentConsumedTick;
+	ConsumedMS *= 1000;
 	WholeConsumedRatio *= 100;
 	ParentRelativeConsumedRatio *= 100;
 
@@ -47,7 +48,7 @@ int32 ProfileResultItemToU16(
 		OutStrLen,
 
 		L"%ls:\t"
-		L"%.3lf ms\t"
+		L"%.1lf ms\t"
 		L"%.2lf(%.2lf) %%",
 
 		NameCStr,

@@ -7,6 +7,8 @@
 
 void ImGUI_Profiler::PerFrame()
 {
+	Calc_AvgDeltaTime();
+
 	ImGui::Begin("Profiler");
 	{
 		Show_FrameOutline();
@@ -15,13 +17,30 @@ void ImGUI_Profiler::PerFrame()
 	ImGui::End();
 }
 
+void ImGUI_Profiler::Calc_AvgDeltaTime()
+{
+	const double DeltaTime = SSFrameInfo::GetDeltaTime();
+
+	_AvgSampleTickCnt++;
+	_AvgDeltaTimeAcc += DeltaTime;
+
+	if (_AvgDeltaTimeAcc >= 1)
+	{
+		_AvgDeltaTime = _AvgDeltaTimeAcc / (double)_AvgSampleTickCnt;
+		_AvgSampleTickCnt = 0;
+		_AvgDeltaTimeAcc = 0;
+	}
+}
+
 void ImGUI_Profiler::Show_FrameOutline()
 {
 	if (ImGui::CollapsingHeader("Frame Outline"))
 	{
+		const int64 FPS = _AvgDeltaTime <= 0.0 ? 0.0 : 1.0 / _AvgDeltaTime;
+
 		ImGui::Text("Elapsed time: %f", SSFrameInfo::GetElapsedTime());
-		ImGui::Text("Delta time: %f", SSFrameInfo::GetDeltaTime());
-		ImGui::Text("FPS: %f", SSFrameInfo::GetFPS());
+		ImGui::Text("Avg Delta time: %f", _AvgDeltaTime);
+		ImGui::Text("Avg FPS: %d", FPS);
 	}
 }
 

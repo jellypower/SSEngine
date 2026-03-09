@@ -24,12 +24,6 @@ protected:
 	uint64 _PrevFrameStartTick = 0;
 	uint64 _FrameStartTick = 0;
 
-	double _FPSCheckStopWatch = 0;
-	uint64 _frameCntDuringInFPSCheckterval = 0;
-	uint64 _FPS = 0;
-
-	uint64 _FPSCheckCnt = 0;
-	uint64 _lastFPSCheckTick = 0;
 
 	Vector2ui32 _screenSize;
 	Vector2ui32 _windowSize;
@@ -41,7 +35,6 @@ public:
 	*/
 	double GetDeltaTime() const { return _deltaTime; }
 	uint64 GetDeltaTick() const { return _deltaTick; }
-	double GetFPS() const { return _FPS; }
 	double GetElapsedTime() const { return _elapsedTime; }
 	Vector2ui32 GetWindowSize() const { return _windowSize; }
 	uint64 GetFrameCnt() const { return _frameCount; }

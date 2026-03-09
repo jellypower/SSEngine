@@ -4,6 +4,11 @@
 class ImGUI_Profiler : INoncopyable
 {
 private:
+	double _AvgDeltaTimeAcc = 0;
+	uint64 _AvgSampleTickCnt = 0;
+	double _AvgDeltaTime = 0;
+
+private:
 	uint64 _FrequencyCapture = 0;
 	uint64 _ConsumedTickCapture = 0;
 	SS::PooledList<ProfileResultItem> _ProfileResultCapture;
@@ -19,6 +24,8 @@ public:
 	void PerFrame();
 
 private:
+	void Calc_AvgDeltaTime();
+
 	void Show_FrameOutline();
 
 

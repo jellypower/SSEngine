@@ -27,13 +27,11 @@ void FrameInfoProcessorBase::StartUpXXX()
 
 	_perfFrequency = GetPerformanceFrequency();
 	_FrameStartTick = GetPerofrmanceCounter();
-	_lastFPSCheckTick = _FrameStartTick;
 }
 
 void FrameInfoProcessorBase::PerFrameXXX()
 {
 	_frameCount++;
-	_frameCntDuringInFPSCheckterval++;
 
 	_PrevFrameStartTick = _FrameStartTick;
 	_FrameStartTick = GetPerofrmanceCounter();
@@ -50,13 +48,6 @@ void FrameInfoProcessorBase::PerFrameXXX()
 		_deltaTime = (double)_deltaTick / (double)_perfFrequency;
 	}
 
-	_FPSCheckStopWatch += _deltaTime;
-	if (_FPSCheckStopWatch > 1)
-	{
-		_FPS = _frameCntDuringInFPSCheckterval;
-		_FPSCheckStopWatch = 0;
-		_frameCntDuringInFPSCheckterval = 0;
-	}
 	
 	// Profiling
 	{
