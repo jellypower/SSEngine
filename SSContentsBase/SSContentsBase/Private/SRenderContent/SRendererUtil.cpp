@@ -18,7 +18,7 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IModelCombinationAsset.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
-SGameObject* SRendererUtil::InstantiateMDLC(SS::SHasherW MdlcAssetName)
+SGameObject* SRendererUtil::InstantiateMDLC(SS::SHasherW MdlcAssetName, bool bFinishConstruct)
 {
 	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 	const IModelCombinationAsset* MdlcAsset = AssetManager->FindAssetByName<IModelCombinationAsset>(MdlcAssetName);
@@ -107,7 +107,7 @@ SGameObject* SRendererUtil::InstantiateMDLC(SS::SHasherW MdlcAssetName)
 
 		}
 
-
+		if (bFinishConstruct)
 		{
 			SCOPE_PROFILE(FinishMdlcConstruct);
 			SGameObjectConstructor::FinishConstructHierarchy(NewGameObjRoot);

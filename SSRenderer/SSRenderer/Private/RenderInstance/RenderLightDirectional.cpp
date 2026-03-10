@@ -173,8 +173,9 @@ XMMATRIX RenderLightDirectional::CalcShadowMapVPMatrix(const IRenderCamera* Came
 	float CubiodMaxDist = FarHeight * FarHeight + FarWidth * FarWidth + CamPlaneDepth * CamPlaneDepth;
 	CubiodMaxDist = sqrt(CubiodMaxDist);
 
-	static const XMVECTOR DOWN_VECTOR = { 0, -1, 0 ,0 };
-	static const XMVECTOR FORWARD_VECTOR = { 0, 0, 1, 0 };
+	// Light는 기본적으로 Down을 바라보고 위쪽은 Z+다.
+	static constexpr XMVECTOR DOWN_VECTOR = { 0, -1, 0 ,0 };
+	static constexpr XMVECTOR FORWARD_VECTOR = { 0, 0, 1, 0 };
 	XMVECTOR ShadowMapViewDir = XMVector4Transform(DOWN_VECTOR, _WorldRotationMatrix);
 	XMVECTOR ShadowMapUpDir = XMVector4Transform(FORWARD_VECTOR, _WorldRotationMatrix);
 	XMVECTOR ShadowMapViewPos = CamFrustumCenter - ShadowMapViewDir * CubiodMaxDist / 2;
