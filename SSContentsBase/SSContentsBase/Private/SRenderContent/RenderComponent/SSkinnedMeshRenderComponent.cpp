@@ -28,7 +28,7 @@ bool SSkinnedMeshRenderComponent::ShouldProcessPerFrameInherently() const
 	return true;
 }
 
-void SSkinnedMeshRenderComponent::PerFrame()
+void SSkinnedMeshRenderComponent::PerFrame(float DeltaTime)
 {
 	SGameObject* SkinnedMesh = GetGameObject();
 	if (SkinnedMesh != nullptr)

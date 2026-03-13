@@ -42,7 +42,7 @@
     <ClInclude Include="SSGame\PlayerController\SPlayerController.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGame\Character\CharacterComponent.h">
+    <ClInclude Include="SSGame\Character\SCharacterComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -62,7 +62,7 @@
     <ClCompile Include="SSGame\PlayerController\SPlayerController.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGame\Character\CharacterComponent.cpp">
+    <ClCompile Include="SSGame\Character\SCharacterComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

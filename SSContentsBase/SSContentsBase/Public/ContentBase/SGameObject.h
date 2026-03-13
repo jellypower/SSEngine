@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "SComponentBase.h"
 #include "SObject/Public/SObjectBase.h"
 #include "SObject/Public/SObjHashT.h"
 #include "SObject/Public/ModuleEntry/SObjectFactory.h"
@@ -84,6 +85,9 @@ private:
 
 public:
 	void AddComponent(SComponentBase* InComponent);
+
+
+public:
 	template<typename T>
 	T* CreateComponent(SS::SHasherW ComponentName)
 	{
@@ -91,6 +95,23 @@ public:
 		T* NewComponent = NewSObject<T>(ComponentName);
 		AddComponent(NewComponent);
 		return NewComponent;
+	}
+
+	template<typename T>
+	T* FindComponent() const
+	{
+		static_assert(std::derived_from<T, SComponentBase>);
+		for (SComponentBase* CompItem : _Components)
+		{
+			T* CastedComp = dynamic_cast<T*>(CompItem);
+
+			if (CastedComp != nullptr)
+			{
+				return CastedComp;
+			}
+		}
+
+		return nullptr;
 	}
 
 };

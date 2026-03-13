@@ -167,6 +167,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
+    <ClInclude Include="Public\CommonTypes\DirEnums.h" />
     <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h" />
     <ClInclude Include="Public\SHasher\Internal\HasherPoolAccesFunc.h" />
     <ClInclude Include="Public\SHasher\SHaserUtils.h" />

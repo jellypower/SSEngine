@@ -159,6 +159,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Private\AnimWorker\AnimBase\AnimateUtilFunctions.cpp" />
+    <ClCompile Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.cpp" />
     <ClCompile Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.cpp" />
     <ClCompile Include="Private\AnimWorker\AnimWorkerBase.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -179,8 +181,13 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\AnimComponents\SSimpleAnimatorTestComponent.cpp" />
     <ClCompile Include="Private\SRenderContent\RenderComponent\SMeshRenderComponentBase.cpp" />
     <ClCompile Include="Private\SRenderContent\_DEBUG\SRenderDebugUtil.cpp" />
+    <ClCompile Include="Private\AnimComponents\SBlendSpaceAnimTestComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h" />
+    <ClInclude Include="Public\AnimWorker\AnimBase\AnimPoseTypes.h" />
+    <ClInclude Include="Public\AnimWorker\AnimBase\AnimateUtilFunctions.h" />
+    <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.h" />
     <ClInclude Include="Public\SRenderContent\_DEBUG\TimedDebugDrawDesc.h" />
     <ClInclude Include="Public\AnimWorker\AnimWorkee\IAnimWorkee.h" />
     <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.h" />

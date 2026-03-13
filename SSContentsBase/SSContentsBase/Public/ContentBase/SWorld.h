@@ -30,6 +30,8 @@ private:
 	IRenderWorld* _RenderWorld = nullptr;
 	IAnimWorker* _AnimWorker = nullptr;
 
+	float _TimeScale = 1;
+
 public:
 	SWorld();
 	virtual ~SWorld();

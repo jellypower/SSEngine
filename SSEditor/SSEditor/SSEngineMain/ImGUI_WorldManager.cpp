@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "ImGUI_WorldManager.h"
 
+#include "SSEngineDefault/Public/CommonTypes/DirEnums.h"
+
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
 
@@ -20,8 +22,10 @@
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SSkinnedMeshRenderComponent.h"
 #include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
+#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSImGUIUtils/ImGUIAssetManagerUtils.h"
+#include "SSImGUIUtils/ExternExample/ImGUI_SliderScalar2D.h"
 
 
 ImGUI_WorldManager::ImGUI_WorldManager(SWorld* InWorld)
@@ -218,6 +222,10 @@ void ImGUI_WorldManager::ImGUI_GODetail_CompItem(SComponentBase* ComponentToShow
 		ImGUI_GODetail_CompItem_SkinnedMeshComp(SkinnedMeshComp);
 	}
 	else if (SSimpleAnimatorTestComponent* AnimatorComp = dynamic_cast<SSimpleAnimatorTestComponent*>(ComponentToShow))
+	{
+		ImGUI_GODetail_CompItem_SimpleAnimTestComp(AnimatorComp);
+	}
+	else if (SBlendSpaceAnimTestComponent* AnimatorComp = dynamic_cast<SBlendSpaceAnimTestComponent*>(ComponentToShow))
 	{
 		ImGUI_GODetail_CompItem_SimpleAnimTestComp(AnimatorComp);
 	}
@@ -425,6 +433,81 @@ void ImGUI_WorldManager::ImGUI_GODetail_CompItem_SimpleAnimTestComp(SSimpleAnima
 					AnimComp->SetWholeFrameTime(FrameTime);
 				}
 			}
+
+			{
+				bool bDrawDebug = AnimComp->GetDrawDebugResultPose();
+				ImGui::Checkbox("Draw Debug Pose", &bDrawDebug);
+				AnimComp->SetDrawDebugResultPose(bDrawDebug);
+			}
+
+		}
+		ImGui::PopID();
+	}
+}
+
+void ImGUI_WorldManager::ImGUI_GODetail_CompItem_SimpleAnimTestComp(SBlendSpaceAnimTestComponent* AnimComp)
+{
+	const utf8* u8CompName = (utf8*)u8"SBlendSpaceAnimTestComponent";
+	if (ImGui::CollapsingHeader(u8CompName))
+	{
+		ImGui::PushID(u8CompName);
+		{
+			for (int32 iDir = int32(E8Dir::None); iDir < int32(E8Dir::Count); iDir++)
+			{
+				E8Dir Dir = E8Dir(iDir);
+
+				SS::SHasherW EquippedAnimAssetName = 
+					AnimComp->GetRenderAnimAssetName(Dir);
+
+				SS::SHasherW NewlySelected = 
+				ImGUI_ShowAssetListCombo(EAssetType::RenderAnim, to_string(Dir), EquippedAnimAssetName);
+
+				if (NewlySelected.IsEmpty() == false)
+				{
+					AnimComp->SetRenderAnimAsset(NewlySelected, Dir);
+				}
+			}
+
+
+			bool bIsPlaying = AnimComp->IsOnPause() == false;
+			const char* BtnLabel = bIsPlaying ? "Playing" : "Play";
+			if (ImGui::Button(BtnLabel))
+			{
+				bool bPause = bIsPlaying;
+				AnimComp->SetPauseAnim(bPause);
+			}
+
+			float Duration = AnimComp->GetAnimDuration();
+			float FrameTime = AnimComp->GetWholeFrameTime();
+			FrameTime = fmodf(FrameTime, Duration);
+			if (ImGui::SliderFloat("float", &FrameTime, 0.0f, Duration))
+			{
+				AnimComp->SetPauseAnim(true);
+				AnimComp->SetWholeFrameTime(FrameTime);
+			}
+
+			Vector2f BlendPoint = AnimComp->GetBlendPoint();
+			float f2BlendPoint[2] = {BlendPoint.X, BlendPoint.Y};
+
+//			bool bCommit = ImGui::SliderFloat2("Blend Point", f2BlendPoint, -1, 1);
+
+			bool bCommit = SSImGUI::SliderScalar2D(
+				"Blend Point", &f2BlendPoint[0], &f2BlendPoint[1],
+				-1, 1, -1, 1, 0.5f);
+			if (bCommit)
+			{
+				BlendPoint.X = f2BlendPoint[0];
+				BlendPoint.Y = f2BlendPoint[1];
+				AnimComp->SetBlendPoint(BlendPoint);
+			}
+
+
+			if (ImGui::Button("Reset"))
+			{
+				BlendPoint = Vector2f::Zero;
+				AnimComp->SetBlendPoint(BlendPoint);
+			}
+
 
 			{
 				bool bDrawDebug = AnimComp->GetDrawDebugResultPose();

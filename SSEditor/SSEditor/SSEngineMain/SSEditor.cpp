@@ -2,15 +2,16 @@
 
 #include "SSEditor.h"
 
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
+#include <SSEngineDefault/Public/CommonTypes/DirEnums.h>
 
+
+#include "TestCodes/MeshSerializeTest.h"
 #include "ImGUI_AssetManager.h"
 #include "ImGUI_Profiler.h"
 #include "ImGUI_WorldManager.h"
 #include "ModuleEntryScriptRunner.h"
 #include "SSImGUIInitializer.h"
 
-#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
@@ -20,35 +21,33 @@
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
+#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
 
 
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
 
 
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopedProfile.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
-#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
-#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
-#include "SSEngineDefault/Public/RawProfiler/ScopedProfile.h"
-#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
-
-
-
-
-
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
+
+#include "SSGAL/Public/ModuleEntry/GALInstanceFactory.h"
 
 
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMaterialAssetMutable.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
-#include "TestCodes/MeshSerializeTest.h"
 
 
 SSEditor* g_Editor = nullptr;
@@ -156,41 +155,23 @@ void SSEditor::StartupEngine()
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
 
 
-		/*
+		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
+//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
+		SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
 
-		static const SS::SHasherW ArrowMeshName = _Renderer->GetCommonRenderAssetSet()->GetArrowMesh()->GetAssetName();
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.004|Unreal Take|Base Layer.ranim", E8Dir::None);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.004|Unreal Take|Base Layer.ranim", E8Dir::U);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.003|Unreal Take|Base Layer.ranim", E8Dir::UR);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root|Unreal Take|Base Layer.ranim", E8Dir::R);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.005|Unreal Take|Base Layer.ranim", E8Dir::DR);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.007|Unreal Take|Base Layer.ranim", E8Dir::D);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.006|Unreal Take|Base Layer.ranim", E8Dir::DL);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.001|Unreal Take|Base Layer.ranim", E8Dir::L);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.002|Unreal Take|Base Layer.ranim", E8Dir::UL);
 
-		// X
-		SGameObject* DirectionObject = SRendererUtil::InstantiateMesh(ArrowMeshName, L"Arrow-X");
-		_DefaultWorld->AddToWorld(DirectionObject);
-		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(1, 0, 0, 0)));
-		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
 
-		// Y
-		DirectionObject = SRendererUtil::InstantiateMesh(ArrowMeshName, L"Arrow-Y");
-		_DefaultWorld->AddToWorld(DirectionObject);
-		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(0, 1, 0, 0)));
-		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
-
-		// Z
-		DirectionObject = SRendererUtil::InstantiateMesh(ArrowMeshName, L"Arrow-Z");
-		_DefaultWorld->AddToWorld(DirectionObject);
-		DirectionObject->SetRotation(Quaternion::CalcPitchYawRotationFromDir(Vector4f(0, 0, 1, 0)));
-		DirectionObject->SetPosition(Vector4f(0, 0.2f, 0, 1));
-
-		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(L"ContentsAssets/SKM_Vivian.mdlc");
-		SSimpleAnimatorTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
 
-
-
-		SS::SHasherW BoundAsset = _FbxImporter->GetRepresentingAssetName();
-
-		TEMP_MdlcObj = SRendererUtil::InstantiateModelObjTree(BoundAsset.C_Str());
-		AnimComp = TEMP_MdlcObj->CreateComponent<SSimpleAnimatorTestComponent>(L"AnimatorComp");
-		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
-
-		*/
 	}
 
 

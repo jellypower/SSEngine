@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "SSContentsBase/Public/AnimWorker/AnimBase/AnimPoseTypes.h"
 #include "SSContentsBase/Public/AnimWorker/AnimWorkee/IAnimWorkee.h"
 
 

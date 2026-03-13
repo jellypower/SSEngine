@@ -1,16 +1,13 @@
 ﻿#include "AnimWorkeeSimplePlayer.h"
 
-#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
-
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/AnimComponents/SSimpleAnimatorTestComponent.h"
-#include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/KFRenderAnimUtilFunctions.h"
+#include "SSContentsBase/Public/AnimWorker/AnimBase/AnimateUtilFunctions.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderKeyFrameAnimData/RenderAnimData.h"
-
-
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IRenderAnimAsset.h"
@@ -24,7 +21,7 @@ AnimWorkeeSimplePlayer::AnimWorkeeSimplePlayer(const SSimpleAnimatorTestComponen
 	const int32 BindingCnt = Bindings.GetSize();
 
 	{
-		SCOPE_PROFILE(TEST1);
+//		SCOPE_PROFILE(AnimWorkeeSimplePlayer::BindName);
 
 		for (int32 i = 0; i < BindingCnt; i++)
 		{
@@ -47,7 +44,7 @@ AnimWorkeeSimplePlayer::AnimWorkeeSimplePlayer(const SSimpleAnimatorTestComponen
 	_ResultPose.BoneTransforms.Reserve(BindingCnt);
 
 	{
-		SCOPE_PROFILE(TEST2);
+//		SCOPE_PROFILE(AnimWorkeeSimplePlayer::InitPose);
 
 		for (int32 i = 0; i < BindingCnt; i++)
 		{
@@ -128,28 +125,13 @@ void AnimWorkeeSimplePlayer::UpdateAnimation(float DeltaTime)
 	}
 
 
-	double Time = _WholeFrameTime;
-	Time = fmod(Time, AnimRawData->_Header.KeyFrameDuration);
+	const float AnimDuration = AnimRawData->_Header.KeyFrameDuration;
 
+	double TimeRatio = _WholeFrameTime;
+	TimeRatio = fmod(TimeRatio, AnimDuration);
+	TimeRatio = TimeRatio / AnimDuration;
 
-	const int32 TrackCnt = AnimRawData->_Header.TrackCnt;
-
-
-
-	for (int32 TrackIdx = 0; TrackIdx < TrackCnt; TrackIdx++)
-	{
-		int32* pBindingIdx = _BindingIdxByName.Find(AnimRawData->_Tracks[TrackIdx]._TrackName);
-		if (pBindingIdx == nullptr)
-		{
-			// 원래는 Assert가 나긴 해야되는데 일단은 패스하자.
-			continue;
-		}
-
-		int32 BindingIdx = *pBindingIdx;
-
-		Transform Result = EvaluateRenderKFTransform(AnimRawData, TrackIdx, Time);
-		_ResultPose.BoneTransforms[BindingIdx] = Result;
-	}
+	EvaluatePose(_ResultPose, _BindingIdxByName, AnimRawData, TimeRatio);
 
 	_LastUpdateFrame = SSFrameInfo::GetFrameCnt();
 }

@@ -69,14 +69,36 @@ struct SSENGINEDEFAULT_MODULE Vector2f
 	Vector2f(float InX, float InY) : X(InX), Y(InY) { }
 
 	inline float GetSqrLength() const;
+	inline Vector2f GetNormalized(float Epsilon = 0.0001f) const;
 
 	static const Vector2f Zero;
 	static const Vector2f One;
 };
 
-FORCEINLINE Vector2f operator-(const Vector2f& lhs, const Vector2f& rhs) { return Vector2f(lhs.X - rhs.X, lhs.Y - rhs.Y); }
+
+FORCEINLINE Vector2f operator+(Vector2f lhs, Vector2f rhs) { return { lhs.X + rhs.X, lhs.Y + rhs.Y }; }
+FORCEINLINE Vector2f operator-(Vector2f lhs, Vector2f rhs) { return { lhs.X - rhs.X, lhs.Y - rhs.Y }; }
+FORCEINLINE Vector2f operator*(Vector2f lhs, Vector2f rhs) { return { lhs.X * rhs.X, lhs.Y * rhs.Y }; }
+FORCEINLINE Vector2f operator/(Vector2f lhs, Vector2f rhs) { return { lhs.X / rhs.X, lhs.Y / rhs.Y }; }
+
+FORCEINLINE Vector2f operator*(Vector2f lhs, float rhs) { return { lhs.X * rhs, lhs.Y * rhs }; }
+FORCEINLINE Vector2f operator*(float lhs, Vector2f rhs) { return { lhs * rhs.X, lhs * rhs.Y }; }
+
+FORCEINLINE Vector2f operator-(Vector2f val) { return { -val.X, -val.Y }; }
 
 float Vector2f::GetSqrLength() const { return (X * X) + (Y * Y); }
+Vector2f Vector2f::GetNormalized(float Epsilon) const
+{
+	float SqrLen = (X * X) + (Y * Y);
+	if (SqrLen < Epsilon)
+	{
+		return Vector2f::Zero;
+	}
+
+	float Len = sqrt(SqrLen);
+
+	return { X / Len, Y / Len };
+}
 
 
 

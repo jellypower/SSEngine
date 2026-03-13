@@ -24,7 +24,7 @@ public:
 	virtual void PostConstructHierarchy() { }
 	virtual void OnEnterTheWorld() { }
 
-	virtual void PerFrame() { }
+	virtual void PerFrame(float DeltaTime) { }
 
 	virtual void OnExitTheWorld() { }
 	virtual void PreDestructHierarchy() { }

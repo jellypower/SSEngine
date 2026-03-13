@@ -42,6 +42,7 @@ void ImGUI_Profiler::Show_FrameOutline()
 		ImGui::Text("Avg Delta time: %f", _AvgDeltaTime);
 		ImGui::Text("Avg FPS: %d", FPS);
 	}
+
 }
 
 void ImGUI_Profiler::Show_ProfileDetail()

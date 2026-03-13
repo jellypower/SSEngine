@@ -8,7 +8,7 @@
 
 
 #include "ModuleEntryScriptRunner.h"
-#include "Character/CharacterComponent.h"
+#include "Character/SCharacterComponent.h"
 #include "PlayerController/SPlayerController.h"
 
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
@@ -195,7 +195,7 @@ void SSGame::StartUpContents()
 	{
 		// Character
 		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc", false);
-		Charcater->CreateComponent<CharacterComponent>(L"CharacterComponent");
+		Charcater->CreateComponent<SCharacterComponent>(L"SCharacterComponent");
 		SGameObject* RootObj = Charcater->FindChildOfName(L"root", true);
 		RootObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(-XM_PIDIV4, 0, 0, 0)));
 

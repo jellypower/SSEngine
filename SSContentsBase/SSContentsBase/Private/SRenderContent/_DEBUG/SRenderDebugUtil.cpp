@@ -1,13 +1,15 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
-#include "SSContentsBase/Public/AnimWorker/AnimWorkee/IAnimWorkee.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
+#include "SSContentsBase/Public/AnimWorker/AnimWorkee/IAnimWorkee.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
-#include "SSContentsBase/Public/SRenderContent/_DEBUG/TimedDebugDrawDesc.h"
+#include "SSContentsBase/Public/AnimWorker/AnimBase/AnimPoseTypes.h"
+
+
 
 
 void SRenderDebugUtil::DrawDebugMesh(

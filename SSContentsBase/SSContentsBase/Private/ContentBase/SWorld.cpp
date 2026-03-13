@@ -61,10 +61,12 @@ void SWorld::InitializeWorld(IRenderWorld* InRenderWorld)
 
 void SWorld::PerFrameContents()
 {
+	const float DeltaTime = SSFrameInfo::GetDeltaTime();
+
 	for (SS::pair<SObjHashCode, SComponentBase*>& ComponentPairItem : _FrameProcessComponents)
 	{
 		SComponentBase* ComponentItem = ComponentPairItem.second;
-		ComponentItem->PerFrame();
+		ComponentItem->PerFrame(_TimeScale * DeltaTime);
 	}
 }
 

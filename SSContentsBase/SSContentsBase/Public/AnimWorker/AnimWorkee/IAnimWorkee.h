@@ -4,16 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
-
-struct PoseSlot
-{
-	static constexpr int POSE_INLINE_CAPACITY = 200;
-
-	SS::SHasherW PoseName;
-	SS::PooledList<SS::SHasherW> BoneNames;
-	SS::PooledList<int32> ParentBoneIdx;
-	SS::PooledList<Transform> BoneTransforms;
-};
+struct PoseSlot;
 
 class IAnimWorkee : INoncopyable
 {

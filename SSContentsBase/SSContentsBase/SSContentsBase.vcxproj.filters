@@ -75,6 +75,15 @@
     <ClCompile Include="Private\SRenderContent\_DEBUG\SRenderDebugUtil.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\AnimWorker\AnimBase\AnimateUtilFunctions.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\AnimComponents\SBlendSpaceAnimTestComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ContentBase\SComponentBase.h">
@@ -147,6 +156,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\SRenderContent\_DEBUG\TimedDebugDrawDesc.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\AnimWorker\AnimBase\AnimateUtilFunctions.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\AnimWorker\AnimBase\AnimPoseTypes.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

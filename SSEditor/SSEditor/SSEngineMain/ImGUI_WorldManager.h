@@ -4,6 +4,7 @@
 
 class SAnimatorBaseComponent;
 class SSimpleAnimatorTestComponent;
+class SBlendSpaceAnimTestComponent;
 class SSkinnedMeshRenderComponent;
 class SCubeMapRenderComponent;
 class SRenderLightComponent;
@@ -35,6 +36,7 @@ private:
 	void ImGUI_GODetail_CompItem_CubemapComp(SCubeMapRenderComponent* CubemapToShow);
 	void ImGUI_GODetail_CompItem_SkinnedMeshComp(SSkinnedMeshRenderComponent* SkinnedMeshToShow);
 	void ImGUI_GODetail_CompItem_SimpleAnimTestComp(SSimpleAnimatorTestComponent* AnimComp);
+	void ImGUI_GODetail_CompItem_SimpleAnimTestComp(SBlendSpaceAnimTestComponent* AnimComp);
 
 private:
 	void ImGUI_Spawner();

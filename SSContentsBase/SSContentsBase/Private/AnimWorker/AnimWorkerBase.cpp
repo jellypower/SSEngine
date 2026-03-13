@@ -69,9 +69,9 @@ void AnimWorkerBase::EndUpdateAnimation()
 		}
 
 
-		if (AnimWorkee->GetLastUpdateFrame() != ThisFrameCnt)
+		if (AnimWorkee->GetLastUpdateFrame() != ThisFrameCnt) 
 		{
-			continue;
+			continue; // 애니메이션이 업데이트 된 적이 없으면 트랜스폼을 적용하지 않습니다.
 		}
 
 		AnimatorItem->ApplyAnimWorkeeTransform();

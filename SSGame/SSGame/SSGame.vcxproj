@@ -147,7 +147,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="SSBuildSettings.h" />
-    <ClInclude Include="SSGame\Character\CharacterComponent.h" />
+    <ClInclude Include="SSGame\Character\SCharacterComponent.h" />
     <ClInclude Include="SSGame\PlayerController\SPlayerController.h" />
     <ClInclude Include="SSGame\SSGame.h" />
     <ClInclude Include="targetver.h" />
@@ -159,7 +159,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="SSGame\Character\CharacterComponent.cpp" />
+    <ClCompile Include="SSGame\Character\SCharacterComponent.cpp" />
     <ClCompile Include="SSGame\PlayerController\SPlayerController.cpp" />
     <ClCompile Include="SSGame\SSGame.cpp" />
   </ItemGroup>

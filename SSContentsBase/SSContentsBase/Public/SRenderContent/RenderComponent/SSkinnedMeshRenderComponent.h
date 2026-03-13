@@ -17,7 +17,7 @@ public:
 
 protected:
 	virtual bool ShouldProcessPerFrameInherently() const override;
-	virtual void PerFrame() override;
+	virtual void PerFrame(float DeltaTime) override;
 
 	virtual void OnGameObjectTransformCommited() override;
 	virtual void OnChildrenGameObjectTransformCommitted() override;
