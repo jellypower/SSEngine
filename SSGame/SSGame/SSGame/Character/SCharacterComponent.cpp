@@ -21,13 +21,29 @@ bool SCharacterComponent::ShouldProcessPerFrameInherently() const
 
 void SCharacterComponent::PerFrame(float DeltaTime)
 {
+	PerFrameMovement(DeltaTime);
+	Animate(DeltaTime);
+}
+
+void SCharacterComponent::OnEnterTheWorld()
+{
+
+}
+
+void SCharacterComponent::AddAccel(Vector2f InAccel)
+{
+	_MoveInput = _MoveInput + InAccel;
+}
+
+void SCharacterComponent::PerFrameMovement(float DeltaTime)
+{
 	if (DeltaTime > 0.1f)
 	{
 		DeltaTime = 0.1f; // 너무 큰 델타타임은 금지
 	}
 
 	SGameObject* GO = GetGameObject();
-	
+
 	Vector4f CurPos = GO->GetTransform().Position;
 
 	const float MoveInputSqrLen = _MoveInput.GetSqrLength();
@@ -104,7 +120,6 @@ void SCharacterComponent::PerFrame(float DeltaTime)
 			}
 		}
 	}
-	
 
 
 
@@ -128,10 +143,9 @@ void SCharacterComponent::PerFrame(float DeltaTime)
 
 		GO->SetPosition(CurPos);
 	}
-
 }
 
-void SCharacterComponent::AddAccel(Vector2f InAccel)
+void SCharacterComponent::Animate(float DeltaTime)
 {
-	_MoveInput = _MoveInput + InAccel;
+
 }

@@ -159,15 +159,15 @@ void SSEditor::StartupEngine()
 //		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
 		SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
 
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.004|Unreal Take|Base Layer.ranim", E8Dir::None);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.004|Unreal Take|Base Layer.ranim", E8Dir::U);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.003|Unreal Take|Base Layer.ranim", E8Dir::UR);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root|Unreal Take|Base Layer.ranim", E8Dir::R);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.005|Unreal Take|Base Layer.ranim", E8Dir::DR);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.007|Unreal Take|Base Layer.ranim", E8Dir::D);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.006|Unreal Take|Base Layer.ranim", E8Dir::DL);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.001|Unreal Take|Base Layer.ranim", E8Dir::L);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_1/root|root.002|Unreal Take|Base Layer.ranim", E8Dir::UL);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FR.ranim", E8Dir::UR);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_R.ranim", E8Dir::R);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BR.ranim", E8Dir::DR);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_B.ranim", E8Dir::D);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BL.ranim", E8Dir::DL);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_L.ranim", E8Dir::L);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
 
 
 		_DefaultWorld->AddToWorld(TEMP_MdlcObj);

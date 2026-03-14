@@ -20,7 +20,12 @@ public:
 	bool ShouldProcessPerFrameInherently() const override;
 	void PerFrame(float DeltaTime) override;
 
+	virtual void OnEnterTheWorld() override;
 
 public:
 	void AddAccel(Vector2f InAccel);
+
+private:
+	void PerFrameMovement(float DeltaTime);
+	void Animate(float DeltaTime);
 };

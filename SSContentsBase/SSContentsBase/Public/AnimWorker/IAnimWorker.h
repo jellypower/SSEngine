@@ -12,6 +12,6 @@ public:
 	virtual void AddToWorker(SAnimatorBaseComponent* InAnimator) = 0;
 	virtual void RemoveFromWorker(SAnimatorBaseComponent* InAnimator) = 0;
 
-	virtual void BeginUpdateAnimation() = 0;
+	virtual void BeginUpdateAnimation(float DeltaTime) = 0;
 	virtual void EndUpdateAnimation() = 0;
 };

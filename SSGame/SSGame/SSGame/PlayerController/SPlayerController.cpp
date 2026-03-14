@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "SPlayerController.h"
 
+#include <SSContentsBase/Public/ContentBase/SWorld.h>
+#include <SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h>
+
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
@@ -13,7 +16,24 @@ bool SPlayerController::ShouldProcessPerFrameInherently() const
 
 void SPlayerController::PostConstructHierarchy()
 {
-	
+	_PlayerCameraGO = NewSObject<SGameObject>(L"PlayerCamera");
+//	_PlayerCameraComp = _PlayerCameraGO->CreateComponent<SCameraComponent>("PlayerCamera");
+}
+
+void SPlayerController::OnEnterTheWorld()
+{
+	SWorld* World = GetIncludedWorld();
+	World->AddToWorld(_PlayerCameraGO);
+}
+
+void SPlayerController::OnExitTheWorld()
+{
+
+}
+
+void SPlayerController::PreDestructHierarchy()
+{
+
 }
 
 void SPlayerController::PerFrame(float DeltaTime)

@@ -72,7 +72,8 @@ void SWorld::PerFrameContents()
 
 void SWorld::PerFrameAnim()
 {
-	_AnimWorker->BeginUpdateAnimation();
+	const float DeltaTime = SSFrameInfo::GetDeltaTime();
+	_AnimWorker->BeginUpdateAnimation(DeltaTime * _TimeScale);
 	_AnimWorker->EndUpdateAnimation();
 }
 

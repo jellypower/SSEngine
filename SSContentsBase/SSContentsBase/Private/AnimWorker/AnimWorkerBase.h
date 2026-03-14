@@ -22,7 +22,7 @@ public:
 	virtual void AddToWorker(SAnimatorBaseComponent* InAnimator) override;
 	virtual void RemoveFromWorker(SAnimatorBaseComponent* InAnimator) override;
 
-	virtual void BeginUpdateAnimation() override;
+	virtual void BeginUpdateAnimation(float DeltaTime) override;
 	virtual void EndUpdateAnimation() override;
 
 };

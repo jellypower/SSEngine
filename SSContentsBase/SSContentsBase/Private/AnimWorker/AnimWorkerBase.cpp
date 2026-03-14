@@ -30,7 +30,7 @@ void AnimWorkerBase::RemoveFromWorker(SAnimatorBaseComponent* InAnimator)
 	SS_ASSERT(bResult);
 }
 
-void AnimWorkerBase::BeginUpdateAnimation()
+void AnimWorkerBase::BeginUpdateAnimation(float DeltaTime)
 {
 	for (SS::pair<SObjHashCode, SAnimatorBaseComponent*> AnimatorItemPair : _AnimComponents)
 	{
@@ -46,8 +46,6 @@ void AnimWorkerBase::BeginUpdateAnimation()
 			continue;
 		}
 
-		// TODO: 나중에 DeltaTime에 TimeScale 적용하기
-		float DeltaTime = SSFrameInfo::GetDeltaTime();
 		AnimWorkee->UpdateAnimation(DeltaTime);
 	}
 }

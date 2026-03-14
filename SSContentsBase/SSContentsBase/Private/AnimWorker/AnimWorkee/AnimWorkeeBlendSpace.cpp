@@ -172,14 +172,6 @@ void AnimWorkeeBlendSpace::UpdateAnimation(float DeltaTime)
 {
 	IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 
-	if (_bIsOneTimeUpdateRequested == false)
-	{
-		_WholeFrameTime += DeltaTime;
-	}
-	_bIsOneTimeUpdateRequested = false;
-	_LastUpdateFrame = SSFrameInfo::GetFrameCnt();
-
-
 
 	float BPSqrLen = _BlendPoint.GetSqrLength();
 	if (BPSqrLen < 0.0001f)
@@ -189,10 +181,14 @@ void AnimWorkeeBlendSpace::UpdateAnimation(float DeltaTime)
 
 		const float MainAnimDuration = AnimRawData->_Header.KeyFrameDuration;
 
+		if (_bIsOneTimeUpdateRequested == false)
+		{
+			_WholeFrameTime += DeltaTime;
+		}
 		double TimeRatio = fmod(_WholeFrameTime, MainAnimDuration);
 		TimeRatio = TimeRatio / MainAnimDuration;
 
-		EvaluatePose(_ResultPose, _BindingIdxByName, AnimRawData, TimeRatio);
+		EvaluatePose(_ResultPose, _BindingIdxByName, AnimRawData, TimeRatio, _RootToIgnore);
 	}
 	else
 	{
@@ -290,6 +286,20 @@ void AnimWorkeeBlendSpace::UpdateAnimation(float DeltaTime)
 
 
 		const float MainAnimDuration = AnimRawData0->_Header.KeyFrameDuration;
+		const float Duration1 = AnimRawData1->_Header.KeyFrameDuration;
+		const float Duration2 = AnimRawData2->_Header.KeyFrameDuration;
+		const float BlendedAnimDuration = 
+			w0 * MainAnimDuration +
+			w1 * Duration1 + 
+			w2 * Duration2;
+
+		// 메인 애님 듀레이션 기준으로 배속해준다.
+		const float BlendedPlayRate = MainAnimDuration / BlendedAnimDuration;
+
+		if (_bIsOneTimeUpdateRequested == false)
+		{
+			_WholeFrameTime += (DeltaTime * BlendedPlayRate);
+		}
 
 
 		double TimeRatio = fmod(_WholeFrameTime, MainAnimDuration);
@@ -306,6 +316,9 @@ void AnimWorkeeBlendSpace::UpdateAnimation(float DeltaTime)
 			_BlendPose2, w2
 		);
 	}
+
+	_bIsOneTimeUpdateRequested = false;
+	_LastUpdateFrame = SSFrameInfo::GetFrameCnt();
 }
 
 SS::SHasherW AnimWorkeeBlendSpace::GetRenderAnimAssetName(E8Dir Dir)

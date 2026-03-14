@@ -1,24 +1,20 @@
 ﻿#include "pch.h"
 #include "SSGame.h"
 
-#include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
-#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
-#include "SSEngineDefault/Public/RawInput/SSInput.h"
-
-
-
 #include "ModuleEntryScriptRunner.h"
 #include "Character/SCharacterComponent.h"
 #include "PlayerController/SPlayerController.h"
 
+#include "SSEngineDefault/Public/CommonTypes/DirEnums.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
-#include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
 
-
+#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
@@ -174,6 +170,7 @@ void SSGame::StartUpContents()
 	}
 
 
+
 	{
 		SGameObject* LightObject = NewSObject<SGameObject>(L"GlobalLight");
 
@@ -193,13 +190,26 @@ void SSGame::StartUpContents()
 	}
 
 	{
-		// Character
-		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc", false);
-		Charcater->CreateComponent<SCharacterComponent>(L"SCharacterComponent");
-		SGameObject* RootObj = Charcater->FindChildOfName(L"root", true);
-		RootObj->SetRotation(Quaternion::FromEulerRotation(Vector4f(-XM_PIDIV4, 0, 0, 0)));
 
-		SGameObjectConstructor::FinishConstructHierarchy(Charcater);
+//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_02.mdlc");
+		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
+		SBlendSpaceAnimTestComponent* AnimComp = Charcater->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
+		Charcater->CreateComponent<SCharacterComponent>(L"SCharacterComponent");
+
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FR.ranim", E8Dir::UR);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_R.ranim", E8Dir::R);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BR.ranim", E8Dir::DR);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_B.ranim", E8Dir::D);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BL.ranim", E8Dir::DL);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_L.ranim", E8Dir::L);
+		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
+		AnimComp->SetPauseAnim(false);
+
+		Quaternion Rot = Quaternion::FromEulerRotation({ -90, 0, 0, 0 });
+		Charcater->SetRotation(Rot);
+
 		_DefaultWorld->AddToWorld(Charcater);
 
 
