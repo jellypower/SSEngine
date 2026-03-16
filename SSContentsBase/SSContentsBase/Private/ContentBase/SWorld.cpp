@@ -256,6 +256,12 @@ void SWorld::RemoveFromWorld_Recursion(SGameObject* InObjectToRemove)
 
 void SWorld::AddGameObjectItem(SGameObject* InNewObject)
 {
+	if (InNewObject->GetIsHierarchyInitialized() == false)
+	{
+		SS_ASSERT_MSG(false, L"To add to world, Hierarchy must be initialied."); 
+		return;
+	}
+
 	InNewObject->OnEnterTheWorld(GetHashCode());
 
 	_ObjectsByHashCode.Add(InNewObject->GetHashCode(), InNewObject);

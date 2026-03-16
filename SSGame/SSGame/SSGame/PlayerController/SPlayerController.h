@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
 
+class SCameraController;
 class SCameraComponent;
 class SCharacterComponent;
 
@@ -9,9 +10,18 @@ class SPlayerController : public SComponentBase
 private:
 	SGameObject* _PlayerCameraGO = nullptr;
 	SCameraComponent* _PlayerCameraComp = nullptr;
+	SCameraController* _PlayerCameraController = nullptr;
 
 	SGameObject* _CharacterGO = nullptr;
 	SCharacterComponent* _CharacterComp = nullptr;
+
+	float _ControlRotSensitivity = 10.f;
+
+	float _ControlYaw = 0;
+	float _ControlPitch = 0;
+
+public:
+	SPlayerController();
 
 public:
 	bool ShouldProcessPerFrameInherently() const override;
@@ -24,5 +34,12 @@ public:
 	void PreDestructHierarchy() override;
 
 public:
+	const SCameraComponent* GetCameraComp() const;
+
+public:
 	void BindCharacter(SGameObject* InCharacterGO);
+
+private:
+	void ProcessInput(float DeltaTime);
 };
+

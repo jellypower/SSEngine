@@ -1,13 +1,23 @@
 ﻿#include "pch.h"
 #include "SPlayerController.h"
 
-#include <SSContentsBase/Public/ContentBase/SWorld.h>
-#include <SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h>
+#include "SCameraController.h"
+#include "SSContentsBase/Public/ContentBase/SGameObject.h"
+#include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
+#include "SSContentsBase/Public/ContentBase/SWorld.h"
+#include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
+#include "SSEngineDefault/Public/SSAlgorithm.h"
 
-#include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSGame/Character/SCharacterComponent.h"
+
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
+
+SPlayerController::SPlayerController()
+{
+}
 
 bool SPlayerController::ShouldProcessPerFrameInherently() const
 {
@@ -17,7 +27,14 @@ bool SPlayerController::ShouldProcessPerFrameInherently() const
 void SPlayerController::PostConstructHierarchy()
 {
 	_PlayerCameraGO = NewSObject<SGameObject>(L"PlayerCamera");
-//	_PlayerCameraComp = _PlayerCameraGO->CreateComponent<SCameraComponent>("PlayerCamera");
+	_PlayerCameraComp = _PlayerCameraGO->CreateComponent<SCameraComponent>("PlayerCamera");
+	_PlayerCameraController = _PlayerCameraGO->CreateComponent<SCameraController>("CameraController");
+	SGameObjectConstructor::FinishConstructHierarchy(_PlayerCameraGO);
+
+	if (_CharacterGO != nullptr)
+	{
+		_PlayerCameraController->BindFollowTarget(_CharacterGO);
+	}
 }
 
 void SPlayerController::OnEnterTheWorld()
@@ -36,11 +53,38 @@ void SPlayerController::PreDestructHierarchy()
 
 }
 
+const SCameraComponent* SPlayerController::GetCameraComp() const
+{
+	return _PlayerCameraComp;
+}
+
 void SPlayerController::PerFrame(float DeltaTime)
+{
+	// TODO: Hack임 나중에 변경하기
+	const IRenderCamera* RenderCam = g_Renderer->GetMainRenderCamera();
+	if (RenderCam != nullptr && RenderCam == _PlayerCameraComp->GetRenderCamera())
+	{
+		ProcessInput(DeltaTime);
+	}
+}
+
+void SPlayerController::BindCharacter(SGameObject* InCharacterGO)
+{
+	_CharacterGO = InCharacterGO;
+	_CharacterComp = _CharacterGO->FindComponent<SCharacterComponent>();
+
+	if (_PlayerCameraController != nullptr)
+	{
+		_PlayerCameraController->BindFollowTarget(_CharacterGO);
+	}
+}
+
+
+void SPlayerController::ProcessInput(float DeltaTime)
 {
 	if (SSInput::GetKey(EKeyCode::KEY_A))
 	{
-		_CharacterComp->AddAccel({-1, 0});
+		_CharacterComp->AddAccel({ -1, 0 });
 	}
 	else if (SSInput::GetKey(EKeyCode::KEY_D))
 	{
@@ -55,10 +99,16 @@ void SPlayerController::PerFrame(float DeltaTime)
 	{
 		_CharacterComp->AddAccel({ 0, -1 });
 	}
-}
 
-void SPlayerController::BindCharacter(SGameObject* InCharacterGO)
-{
-	_CharacterGO = InCharacterGO;
-	_CharacterComp = _CharacterGO->FindComponent<SCharacterComponent>();
+	{
+		const Vector2f MouseDelta = SSInput::GetMouseDelta();
+
+		_ControlYaw += MouseDelta.X * _ControlRotSensitivity;
+		_ControlYaw = fmodf(_ControlYaw + XM_2PI, XM_2PI);
+
+		_ControlPitch += (-MouseDelta.Y) * _ControlRotSensitivity;
+		_ControlPitch = SS::Clamp(_ControlPitch, -XM_PIDIV4, XM_PIDIV4);
+
+		_PlayerCameraController->SetCamTargetPitchYaw(_ControlPitch, _ControlYaw);
+	}
 }

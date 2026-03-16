@@ -10,6 +10,12 @@
 
 void SGameObjectConstructor::FinishConstructHierarchy_Recursion(SGameObject* CurGameObject)
 {
+	if (CurGameObject->GetIsHierarchyInitialized())
+	{
+		SS_ASSERT_MSG(false, L"Object is Already Initialized.");
+		return;
+	}
+
 	CurGameObject->MarkHierarchyInitialized();
 
 	int32 CompCnt = CurGameObject->GetComponentCnt();

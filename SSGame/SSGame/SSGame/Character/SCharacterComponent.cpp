@@ -3,15 +3,15 @@
 
 #include <cmath>
 
-
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
+#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
 
 SCharacterComponent::SCharacterComponent()
 {
 	_AccelMultiplier = 20;
-	_GroundFriction = 2;
+	_GroundFriction = 3;
 	_MaxSpeed = 5.f;
-	_MaxTurnSpeed = 10;
+	_MaxTurnSpeed = 5;
 }
 
 bool SCharacterComponent::ShouldProcessPerFrameInherently() const
@@ -25,10 +25,35 @@ void SCharacterComponent::PerFrame(float DeltaTime)
 	Animate(DeltaTime);
 }
 
-void SCharacterComponent::OnEnterTheWorld()
+void SCharacterComponent::PostConstructHierarchy()
 {
+	SGameObject* GO = GetGameObject();
+	_AnimComp = GO->FindComponent<SBlendSpaceAnimTestComponent>();
 
+	_CameraBoom = NewSObject<SGameObject>(L"PlayerCameraBoom");
+	_CameraBoom->SetPosition({ 0, 1, -5, 0 });
+	_CameraBoom->SetParent(GO);
 }
+
+const Transform& SCharacterComponent::CalcCameraTransform() const
+{
+	return _CameraBoom->CalcWorldTransform();
+}
+
+void SCharacterComponent::SetFaceDir(Vector2f InDir)
+{
+	float SqrLen = InDir.GetSqrLength();
+	if (SqrLen > 0.0001)
+	{
+		_FaceDir = { 1, 0 };
+	}
+	else
+	{
+		float Len = sqrt(SqrLen);
+		_FaceDir = InDir * (1 / Len);
+	}
+}
+
 
 void SCharacterComponent::AddAccel(Vector2f InAccel)
 {
@@ -147,5 +172,20 @@ void SCharacterComponent::PerFrameMovement(float DeltaTime)
 
 void SCharacterComponent::Animate(float DeltaTime)
 {
+	const float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
+	const float LateralSpeed = sqrt(VeloSqrLen);
+	const float MaxSpeedSqr = _MaxSpeed * _MaxSpeed;
 
+	Vector2f BlendPoint;
+
+	if (LateralSpeed > 0.01f)
+	{
+		Vector2f LaterlVeloNormalized = _MoveLateralVelocity;
+
+		float SpeedRatio = LateralSpeed / MaxSpeedSqr;
+
+		BlendPoint = LaterlVeloNormalized * SpeedRatio;
+	}
+
+	_AnimComp->SetBlendPoint(BlendPoint);
 }

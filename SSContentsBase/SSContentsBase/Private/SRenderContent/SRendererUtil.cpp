@@ -116,7 +116,7 @@ SGameObject* SRendererUtil::InstantiateMDLC(SS::SHasherW MdlcAssetName, bool bFi
 	}
 }
 
-SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName, SS::SHasherW ObjectNameOverride)
+SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName, SS::SHasherW ObjectNameOverride, bool bFinishConstruct)
 {
 	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 	const IModelAsset* lModelAsset = AssetManager->FindAssetByName<IModelAsset>(ModelAssetName);
@@ -138,12 +138,17 @@ SGameObject* SRendererUtil::InstantiateModel(SS::SHasherW ModelAssetName, SS::SH
 
 	SStaticMeshRenderComponent* NewStaticMeshComp = NewGameObj->CreateComponent<SStaticMeshRenderComponent>(lModelAsset->GetAssetName());
 	NewStaticMeshComp->SetModelAsset(lModelAsset->GetAssetName());
-	NewStaticMeshComp->PostConstructHierarchy();
+	// NewStaticMeshComp->PostConstructHierarchy();
+
+	if (bFinishConstruct)
+	{
+		SGameObjectConstructor::FinishConstructHierarchy(NewGameObj);
+	}
 
 	return NewGameObj;
 }
 
-SGameObject* SRendererUtil::InstantiateMesh(SS::SHasherW MeshAssetName, SS::SHasherW ObjectNameOverride)
+SGameObject* SRendererUtil::InstantiateMesh(SS::SHasherW MeshAssetName, SS::SHasherW ObjectNameOverride, bool bFinishConstruct)
 {
 	const IAssetManager* AssetManager = g_Renderer->GetAssetManager();
 	const ICommonRenderAssetSet* CommRenderAssets = g_Renderer->GetCommonRenderAssetSet();
@@ -173,7 +178,11 @@ SGameObject* SRendererUtil::InstantiateMesh(SS::SHasherW MeshAssetName, SS::SHas
 	{
 		NewStaticMeshComp->SetMaterialAsset(EmptyMtlAssetName, i);
 	}
-	NewStaticMeshComp->PostConstructHierarchy();
+	// NewStaticMeshComp->PostConstructHierarchy();
 
+	if (bFinishConstruct)
+	{
+		SGameObjectConstructor::FinishConstructHierarchy(NewGameObj);
+	}
 	return NewGameObj;
 }

@@ -171,6 +171,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h" />
     <ClInclude Include="Public\SHasher\Internal\HasherPoolAccesFunc.h" />
     <ClInclude Include="Public\SHasher\SHaserUtils.h" />
+    <ClInclude Include="Public\SSAlgorithm.h" />
     <ClInclude Include="Public\SSThread\PWin32\SSThreadUtil_Win32.h" />
     <ClInclude Include="Public\SSThread\IThreadManager.h" />
     <ClInclude Include="Public\RawInput\IRawInputProcessor.h" />

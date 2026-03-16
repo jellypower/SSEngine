@@ -43,6 +43,11 @@ namespace SS {
 		return Quaternion(XMQuaternionSlerp(lhs.SimdVec, rhs.SimdVec, alpha));
 	}
 
+	FORCEINLINE float Lerp(float lhs, float rhs, float alpha)
+	{
+		return (rhs - lhs) * alpha + lhs;
+	}
+
 	FORCEINLINE Vector4f Lerp(const Vector4f& lhs, const Vector4f& rhs, float alpha)
 	{
 		return (rhs.SimdVec - lhs.SimdVec) * alpha + lhs.SimdVec;

@@ -32,6 +32,17 @@ EKeyCode WindowsVKCodeToSSKeyCode(WPARAM wParam)
 	case 'Y': return EKeyCode::KEY_Y;
 	case 'Z': return EKeyCode::KEY_Z;
 
+	case '0': return EKeyCode::KEY_0;
+	case '1': return EKeyCode::KEY_1;
+	case '2': return EKeyCode::KEY_2;
+	case '3': return EKeyCode::KEY_3;
+	case '4': return EKeyCode::KEY_4;
+	case '5': return EKeyCode::KEY_5;
+	case '6': return EKeyCode::KEY_6;
+	case '7': return EKeyCode::KEY_7;
+	case '8': return EKeyCode::KEY_8;
+	case '9': return EKeyCode::KEY_9;
+
 	case VK_UP: return EKeyCode::KEY_UP;
 	case VK_DOWN: return EKeyCode::KEY_DOWN;
 	case VK_LEFT: return EKeyCode::KEY_LEFT;

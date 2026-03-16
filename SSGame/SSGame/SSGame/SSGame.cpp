@@ -5,6 +5,7 @@
 #include "Character/SCharacterComponent.h"
 #include "PlayerController/SPlayerController.h"
 
+#include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/CommonTypes/DirEnums.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
@@ -155,18 +156,17 @@ void SSGame::StartUpContents()
 
 		// Camera
 		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
-		SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
+		_FreeCam = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
 		SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
 		_DefaultWorld->AddToWorld(CameraObject);
 
-		CameraComp->SetFOVWithDegrees(60);
-		CameraComp->SetNearZ(0.01f);
-		CameraComp->SetFarZ(20.f);
+		_FreeCam->SetFOVWithDegrees(60);
+		_FreeCam->SetNearZ(0.01f);
+		_FreeCam->SetFarZ(20.f);
 		CameraObject->SetPosition(Vector4f(0, 5, -5.f, 0));
 
 		Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, -1, 1, 0));
 		CameraObject->SetRotation(StartRot);
-		_Renderer->SetMainRenderCamera(CameraComp->GetRenderCamera());
 	}
 
 
@@ -191,10 +191,12 @@ void SSGame::StartUpContents()
 
 	{
 
-//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_02.mdlc");
-		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
+		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc", false);
+//		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_02.mdlc", false);
+//		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc", false);
 		SBlendSpaceAnimTestComponent* AnimComp = Charcater->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
 		Charcater->CreateComponent<SCharacterComponent>(L"SCharacterComponent");
+		SGameObjectConstructor::FinishConstructHierarchy(Charcater);
 
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
@@ -207,8 +209,8 @@ void SSGame::StartUpContents()
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
 		AnimComp->SetPauseAnim(false);
 
-		Quaternion Rot = Quaternion::FromEulerRotation({ -90, 0, 0, 0 });
-		Charcater->SetRotation(Rot);
+//		Quaternion Rot = Quaternion::FromEulerRotation({ -90, 0, 0, 0 });
+//		Charcater->SetRotation(Rot);
 
 		_DefaultWorld->AddToWorld(Charcater);
 
@@ -218,17 +220,129 @@ void SSGame::StartUpContents()
 
 		// GameManager
 		SGameObject* GameManager = NewSObject<SGameObject>(L"GameManager");
-		SPlayerController* PlayerController = GameManager->CreateComponent<SPlayerController>(L"PlayerController");
-
-		PlayerController->BindCharacter(Charcater);
+		_MainPalyerController = GameManager->CreateComponent<SPlayerController>(L"PlayerController");
+		_MainPalyerController->BindCharacter(Charcater);
 
 
 		SGameObjectConstructor::FinishConstructHierarchy(GameManager);
 		_DefaultWorld->AddToWorld(GameManager);
+
+		_Renderer->SetMainRenderCamera(_MainPalyerController->GetCameraComp()->GetRenderCamera());
+	}
+
+
+	{
+		SGameObject* Character = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc", true);
+		Character->SetPosition({ 2, 0, 0, 0 });
+		_DefaultWorld->AddToWorld(Character);
+
+		Character = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc", true);
+		Quaternion Rot = Quaternion::FromEulerRotation({ -90, 0, 0, 0 });
+		Character->SetRotation(Rot);
+		Character->SetPosition({ -2, 0, 0, 0 });
+		_DefaultWorld->AddToWorld(Character);
 	}
 }
 
 void SSGame::PerFrameContents()
 {
+	if (SSInput::GetKeyDown(EKeyCode::KEY_1))
+	{
+		_bIsFreeCamMode = true;
+		_Renderer->SetMainRenderCamera(_FreeCam->GetRenderCamera());
+	}
+	else if (SSInput::GetKeyDown(EKeyCode::KEY_2))
+	{
+		_bIsFreeCamMode = false;
+		_Renderer->SetMainRenderCamera(_MainPalyerController->GetCameraComp()->GetRenderCamera());
+	}
 
+	if (_bIsFreeCamMode)
+	{
+		MoveFreeCamera();
+	}
+}
+
+void SSGame::MoveFreeCamera()
+{
+	if (SSInput::GetMouse(EMouseCode::MOUSE_RIGHT)) // 카메라 움직이기
+	{
+		constexpr float CAM_ROT_SPEED = 2;
+		constexpr float CAM_XROT_MAX = 0.9;
+
+		// 카메라 돌리기
+		TEMP_CamYRot += SSInput::GetMouseDelta().X * CAM_ROT_SPEED;
+
+		if (TEMP_CamXRot > -XM_PIDIV2 * CAM_XROT_MAX && SSInput::GetMouseDelta().Y > 0)
+		{
+			TEMP_CamXRot -= SSInput::GetMouseDelta().Y * CAM_ROT_SPEED;
+		}
+
+		if (TEMP_CamXRot < XM_PIDIV2 * CAM_XROT_MAX && SSInput::GetMouseDelta().Y < 0)
+		{
+			TEMP_CamXRot -= SSInput::GetMouseDelta().Y * CAM_ROT_SPEED;
+		}
+
+		const float DeltaTime = SSFrameInfo::GetDeltaTime();
+		SGameObject* CamGO = _FreeCam->GetGameObject();
+		Vector4f Forward = CamGO->GetTransform().GetForward();
+		Vector4f Up = CamGO->GetTransform().GetUp();
+
+		CamGO->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_CamXRot, TEMP_CamYRot, 0, 0)));
+
+		// 카메라 속도조절
+		float WheelDelta = SSInput::GetMouseWheelDelta();
+		if (WheelDelta > 0.01 || WheelDelta < -0.01)
+		{
+			TEMP_Speed += (WheelDelta * 0.005);
+
+			if (TEMP_Speed < 0.2)
+			{
+				TEMP_Speed = 0.2;
+			}
+			if (TEMP_Speed > 10.f)
+			{
+				TEMP_Speed = 10.f;
+			}
+		}
+
+
+		// 카메라 무브
+		if (SSInput::GetKey(EKeyCode::KEY_S))
+		{
+			Vector4f Pos = CamGO->GetTransform().Position;
+			Pos = Pos + Forward * -DeltaTime * TEMP_Speed;
+			CamGO->SetPosition(Pos);
+		}
+		if (SSInput::GetKey(EKeyCode::KEY_W))
+		{
+			Vector4f Pos = CamGO->GetTransform().Position;
+			Pos = Pos + Forward * DeltaTime * TEMP_Speed;
+			CamGO->SetPosition(Pos);
+		}
+		if (SSInput::GetKey(EKeyCode::KEY_D))
+		{
+			Vector4f Pos = CamGO->GetTransform().Position;
+			Pos = Pos + Vector4f::Right * DeltaTime * TEMP_Speed;
+			CamGO->SetPosition(Pos);
+		}
+		if (SSInput::GetKey(EKeyCode::KEY_A))
+		{
+			Vector4f Pos = CamGO->GetTransform().Position;
+			Pos = Pos + Vector4f::Right * -DeltaTime * TEMP_Speed;
+			CamGO->SetPosition(Pos);
+		}
+		if (SSInput::GetKey(EKeyCode::KEY_E))
+		{
+			Vector4f Pos = CamGO->GetTransform().Position;
+			Pos = Pos + Up * DeltaTime * TEMP_Speed;
+			CamGO->SetPosition(Pos);
+		}
+		if (SSInput::GetKey(EKeyCode::KEY_Q))
+		{
+			Vector4f Pos = CamGO->GetTransform().Position;
+			Pos = Pos + Up * -DeltaTime * TEMP_Speed;
+			CamGO->SetPosition(Pos);
+		}
+	}
 }

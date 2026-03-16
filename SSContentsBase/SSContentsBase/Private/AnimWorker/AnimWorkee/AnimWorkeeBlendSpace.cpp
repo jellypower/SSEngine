@@ -204,13 +204,13 @@ void AnimWorkeeBlendSpace::UpdateAnimation(float DeltaTime)
 		{
 	{0, 0, 0 ,0},		// None,
 	{0, 1, 0, 0},		// U,
-	{1, 1, 0, 0},		// UR,
+	{0.71, 0.71, 0, 0},		// UR,
 	{1, 0, 0, 0},		// R,
-	{1, -1, 0, 0},		// RD,
+	{0.71, -0.71, 0, 0},		// RD,
 	{0, -1, 0, 0},		// D,
-	{-1, -1, 0, 0},		// DL,
+	{-0.71, -0.71, 0, 0},		// DL,
 	{-1, 0, 0, 0},		// L,
-	{-1, 1, 0, 0}		// LU,
+	{-0.71, 0.71, 0, 0}		// LU,
 		};
 
 
@@ -354,12 +354,18 @@ void AnimWorkeeBlendSpace::SetWholeFrameTime(float Time)
 
 void AnimWorkeeBlendSpace::SetBlendPoint(Vector2f InPoint)
 {
-	InPoint.X = InPoint.X < -1 ? -1 : InPoint.X;
-	InPoint.X = InPoint.X > 1 ? 1 : InPoint.X;
+	float SqrLen = InPoint.GetSqrLength();
 
-	InPoint.Y = InPoint.Y < -1 ? -1 : InPoint.Y;
-	InPoint.Y = InPoint.Y > 1 ? 1 : InPoint.Y;
-
-	_bIsOneTimeUpdateRequested = true;
-	_BlendPoint = InPoint;
+	if (SqrLen < 0.0001)
+	{
+		_BlendPoint = Vector2f::Zero;
+	}
+	if (SqrLen > 1)
+	{
+		_BlendPoint = InPoint.GetNormalized();
+	}
+	else
+	{
+		_BlendPoint = InPoint;
+	}
 }
