@@ -176,17 +176,6 @@ FORCEINLINE Vector2i32 operator-(const Vector2i32 lhs, const Vector2i32 rhs) { r
 
 
 
-struct Vector2ui32 {
-	uint32 X;
-	uint32 Y;
-
-	Vector2ui32() : X(0), Y(0) { }
-	Vector2ui32(uint32 InX, uint32 InY) : X(InX), Y(InY) { }
-};
-
-
-
-
 struct SSENGINEDEFAULT_MODULE Transform {
 	Vector4f Position;
 	Quaternion Rotation;

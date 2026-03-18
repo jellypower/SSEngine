@@ -25,7 +25,6 @@ public:
 public:
 	virtual void StartUpXXX() override;
 	virtual void PerFrameXXX() override;
-	virtual void ProcessWindowResizeXXX(uint32 width, uint32 height) override;
 
 	virtual void BeginMainProfile(SS::SHasherW RecordItemName) override;
 	virtual void EndMainProfile(SS::SHasherW RecordItemName) override;

@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/SSEngineDefault.h"
-#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
 #include "KeyCodeEnums.h"
 
@@ -19,8 +18,14 @@ protected:
 	Vector2i32 _mouseDelta;
 
 public:
+	virtual Vector2f GetMouseDelta() const = 0;
+
+public:
 	virtual void ResetCurInputState() = 0;
+	virtual void ProcessInputStartOfFrame() = 0;
 	virtual void ProcessInputEndOfFrame() = 0;
+
+
 
 
 public:
@@ -33,10 +38,6 @@ public:
 	inline bool GetMouseUp(EMouseCode mouseCode) const { return _prevFrameMouseState[static_cast<int32>(mouseCode)] && _mouseState[static_cast<int32>(mouseCode)] == false; }
 
 	inline float GetMouseWheelDelta() const { return _mouseWheelDelta; }
-	inline Vector2f GetMouseDelta() const {
-		Vector2ui32 winSize = SSFrameInfo::GetWindowSize();
-		return Vector2f((float)_mouseDelta.X / winSize.X, -(float)_mouseDelta.Y / winSize.Y);
-	}
 
 	inline Vector2i32 GetMousePos() const { return _mousePos; }
 };

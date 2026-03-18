@@ -8,6 +8,5 @@ class SSFrameInfo
 public:
 	static double GetDeltaTime() { return g_FrameInfoProcessor->GetDeltaTime(); }
 	static double GetElapsedTime() { return g_FrameInfoProcessor->GetElapsedTime(); }
-	static Vector2ui32 GetWindowSize() { return g_FrameInfoProcessor->GetWindowSize(); }
 	static uint64 GetFrameCnt() { return g_FrameInfoProcessor->GetFrameCnt(); }
 };

@@ -77,11 +77,6 @@ void FrameInfoProcessorBase::PerFrameXXX()
 	_elapsedTime += _deltaTime;
 }
 
-void FrameInfoProcessorBase::ProcessWindowResizeXXX(uint32 width, uint32 height)
-{
-	_windowSize.X = width;
-	_windowSize.Y = height;
-}
 
 void FrameInfoProcessorBase::BeginMainProfile(SS::SHasherW RecordItemName)
 {

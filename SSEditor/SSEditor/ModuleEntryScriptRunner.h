@@ -9,6 +9,8 @@ extern HINSTANCE g_hInstSSFBXImporter;
 extern HINSTANCE g_hInstSSAssetDBManager;
 
 extern HWND g_hWnd;
+extern HINSTANCE g_hInst;
+extern RECT g_WndRect;
 
 
 extern FuncPtr_CreateSSFBXImporter g_fpCreateSSFBXImporter;

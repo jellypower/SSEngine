@@ -166,6 +166,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\PWin32\SSThread\Win32ThreadManager.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
+    <ClInclude Include="Private\PWin32\WindowManager\Win32WindowManager.h" />
+    <ClInclude Include="Private\PWin32\WindowManager\WindowUtil_Internal.h" />
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
     <ClInclude Include="Public\CommonTypes\DirEnums.h" />
     <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h" />
@@ -222,6 +224,11 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\SSThread\SSThreadUtil.h" />
     <ClInclude Include="Public\SSVector.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.h" />
+    <ClInclude Include="Public\WindowManager\IWindow.h" />
+    <ClInclude Include="Public\WindowManager\IWindowManager.h" />
+    <ClInclude Include="Public\WindowManager\SSWindowInfo.h" />
+    <ClInclude Include="Private\PWin32\WindowManager\Win32Window.h" />
+    <ClInclude Include="Public\WindowManager\WindowUtils.h" />
     <ClInclude Include="Public\WInWrapper\WinWrapper.h" />
     <ClInclude Include="Public\SystemUtilities.h" />
     <ClInclude Include="Public\TestCodes\TestFunctions.h" />
@@ -255,6 +262,10 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PWin32\SSThread\SSThreadUtil_Win32.cpp" />
     <ClCompile Include="Private\PCommon\SHasher\SHaserUtils.cpp" />
     <ClCompile Include="Private\PCommon\SHasher\Internal\HasherPoolAccesFunc.cpp" />
+    <ClCompile Include="Private\PWin32\WindowManager\Win32WindowManager.cpp" />
+    <ClCompile Include="Private\PWin32\WindowManager\Win32Window.cpp" />
+    <ClCompile Include="Private\PWin32\WindowManager\WindowUtils.cpp" />
+    <ClCompile Include="Private\PWin32\WindowManager\WindowUtil_Internal.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

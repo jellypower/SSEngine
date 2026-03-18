@@ -25,9 +25,6 @@ protected:
 	uint64 _FrameStartTick = 0;
 
 
-	Vector2ui32 _screenSize;
-	Vector2ui32 _windowSize;
-
 public:
 
 	/**
@@ -36,7 +33,6 @@ public:
 	double GetDeltaTime() const { return _deltaTime; }
 	uint64 GetDeltaTick() const { return _deltaTick; }
 	double GetElapsedTime() const { return _elapsedTime; }
-	Vector2ui32 GetWindowSize() const { return _windowSize; }
 	uint64 GetFrameCnt() const { return _frameCount; }
 
 public:
@@ -46,7 +42,6 @@ public:
 public:
 	virtual void StartUpXXX() = 0;
 	virtual void PerFrameXXX() = 0;
-	virtual void ProcessWindowResizeXXX(uint32 width, uint32 height) = 0;
 
 	virtual void BeginMainProfile(SS::SHasherW RecordName) = 0;
 	virtual void EndMainProfile(SS::SHasherW RecordName) = 0;

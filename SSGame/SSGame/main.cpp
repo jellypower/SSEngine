@@ -1,4 +1,9 @@
 ﻿#include "pch.h"
+
+#include <SSEngineDefault/Public/WindowManager/IWindowManager.h>
+#include <SSEngineDefault/Public/WindowManager/WindowUtils.h>
+
+
 #include "Resource.h"
 
 #include "ModuleEntryScriptRunner.h"
@@ -7,9 +12,9 @@
 
 
 
+#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/RawInput/IRawInputProcessor.h"
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
-#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
 
 #include "SSGame/SSGame.h"
@@ -20,8 +25,6 @@
 #define MAX_LOADSTRING 100
 
 
-HINSTANCE g_hInst;
-RECT g_WndRect{ 0,0,1920,1080 };
 WCHAR szTitle[MAX_LOADSTRING];
 WCHAR szWindowClass[MAX_LOADSTRING];
 
@@ -92,9 +95,11 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		}
 		else
 		{
+			g_RawInputProcessor->ProcessInputStartOfFrame();
 			g_FrameInfoProcessor->PerFrameXXX();
 			g_Game->EnginePerFrame();
 			g_RawInputProcessor->ProcessInputEndOfFrame();
+			g_MainWindowManager->ProcessWindowEndOfFrame();
 		}
 	}
 	g_Game->CleanupEngine();
@@ -209,17 +214,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 	}
 	break;
-	case WM_KILLFOCUS:
-	case WM_MOUSELEAVE:
-	case WM_NCMOUSELEAVE:
-		g_RawInputProcessor->ResetCurInputState();
+	case WM_ACTIVATE:
+		//		g_RawInputProcessor->ResetCurInputState();
+		Win32ProcessInputEvent(g_RawInputProcessor, hWnd, message, wParam, lParam);
+		Win32ProcessWindowEvent(g_MainWindowManager, hWnd, message, wParam, lParam);
 		break;
 
 	case WM_DESTROY:
 		PostQuitMessage(0);
-		break;
-	case WM_SIZE:
-		g_FrameInfoProcessor->ProcessWindowResizeXXX(LOWORD(lParam), HIWORD(lParam));
 		break;
 
 	case WM_KEYDOWN:
@@ -232,8 +234,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONUP:
 	case WM_MOUSEWHEEL:
+	case WM_MOUSELEAVE:
 	{
-
 		Win32ProcessInputEvent(g_RawInputProcessor, hWnd, message, wParam, lParam);
 		break;
 	}

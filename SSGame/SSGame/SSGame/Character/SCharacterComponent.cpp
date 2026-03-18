@@ -2,9 +2,14 @@
 #include "SCharacterComponent.h"
 
 #include <cmath>
+#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
+#include <SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h>
+#include <SSRenderer/Public/RenderBase/IRenderer.h>
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
+
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
 SCharacterComponent::SCharacterComponent()
 {
@@ -29,29 +34,6 @@ void SCharacterComponent::PostConstructHierarchy()
 {
 	SGameObject* GO = GetGameObject();
 	_AnimComp = GO->FindComponent<SBlendSpaceAnimTestComponent>();
-
-	_CameraBoom = NewSObject<SGameObject>(L"PlayerCameraBoom");
-	_CameraBoom->SetPosition({ 0, 1, -5, 0 });
-	_CameraBoom->SetParent(GO);
-}
-
-const Transform& SCharacterComponent::CalcCameraTransform() const
-{
-	return _CameraBoom->CalcWorldTransform();
-}
-
-void SCharacterComponent::SetFaceDir(Vector2f InDir)
-{
-	float SqrLen = InDir.GetSqrLength();
-	if (SqrLen > 0.0001)
-	{
-		_FaceDir = { 1, 0 };
-	}
-	else
-	{
-		float Len = sqrt(SqrLen);
-		_FaceDir = InDir * (1 / Len);
-	}
 }
 
 
@@ -161,12 +143,14 @@ void SCharacterComponent::PerFrameMovement(float DeltaTime)
 	}
 
 
-	{
-		Vector2f PosDelta = _MoveLateralVelocity * DeltaTime;
-		CurPos.X += (_MoveLateralVelocity.X * DeltaTime);
-		CurPos.Z += (_MoveLateralVelocity.Y * DeltaTime);
 
-		GO->SetPosition(CurPos);
+	{
+		Vector4f NewPos;
+
+		NewPos.X = CurPos.X + (_MoveLateralVelocity.X * DeltaTime);
+		NewPos.Z = CurPos.Z + (_MoveLateralVelocity.Y * DeltaTime);
+
+		GO->SetPosition(NewPos);
 	}
 }
 

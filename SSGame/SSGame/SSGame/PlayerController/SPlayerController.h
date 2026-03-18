@@ -7,10 +7,12 @@ class SCharacterComponent;
 
 class SPlayerController : public SComponentBase
 {
+public:
+	SCameraController* _PlayerCameraController = nullptr;
+
 private:
 	SGameObject* _PlayerCameraGO = nullptr;
 	SCameraComponent* _PlayerCameraComp = nullptr;
-	SCameraController* _PlayerCameraController = nullptr;
 
 	SGameObject* _CharacterGO = nullptr;
 	SCharacterComponent* _CharacterComp = nullptr;

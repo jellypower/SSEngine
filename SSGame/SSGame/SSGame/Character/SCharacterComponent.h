@@ -6,7 +6,6 @@ class SBlendSpaceAnimTestComponent;
 class SCharacterComponent : public SComponentBase
 {
 private:
-	Vector2f _FaceDir;
 
 	Vector2f _MoveInput;
 	Vector2f _MoveLateralVelocity;
@@ -19,7 +18,6 @@ private:
 
 	SBlendSpaceAnimTestComponent* _AnimComp = nullptr;
 
-	SGameObject* _CameraBoom = nullptr;
 
 public:
 	SCharacterComponent();
@@ -31,8 +29,6 @@ public:
 	void PostConstructHierarchy() override;
 
 
-public:
-	const Transform& CalcCameraTransform() const;
 
 public:
 	void SetFaceDir(Vector2f InDir);

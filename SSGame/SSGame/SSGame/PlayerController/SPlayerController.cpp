@@ -82,24 +82,6 @@ void SPlayerController::BindCharacter(SGameObject* InCharacterGO)
 
 void SPlayerController::ProcessInput(float DeltaTime)
 {
-	if (SSInput::GetKey(EKeyCode::KEY_A))
-	{
-		_CharacterComp->AddAccel({ -1, 0 });
-	}
-	else if (SSInput::GetKey(EKeyCode::KEY_D))
-	{
-		_CharacterComp->AddAccel({ 1, 0 });
-	}
-
-	if (SSInput::GetKey(EKeyCode::KEY_W))
-	{
-		_CharacterComp->AddAccel({ 0, 1 });
-	}
-	else if (SSInput::GetKey(EKeyCode::KEY_S))
-	{
-		_CharacterComp->AddAccel({ 0, -1 });
-	}
-
 	{
 		const Vector2f MouseDelta = SSInput::GetMouseDelta();
 
@@ -110,5 +92,35 @@ void SPlayerController::ProcessInput(float DeltaTime)
 		_ControlPitch = SS::Clamp(_ControlPitch, -XM_PIDIV4, XM_PIDIV4);
 
 		_PlayerCameraController->SetCamTargetPitchYaw(_ControlPitch, _ControlYaw);
+	}
+
+
+	Quaternion Rotation = Quaternion::FromEulerRotation({ 0, _ControlYaw, 0, 0 });
+
+	XMVECTOR LateralForward = { 0, 0,1, 0 };
+	LateralForward = XMVector3Rotate(LateralForward, Rotation.SimdVec);
+
+	XMVECTOR LateralRight = { 1, 0, 0, 0 };
+	LateralRight = XMVector3Rotate(LateralRight, Rotation.SimdVec);
+
+	Vector2f Forward = {LateralForward.m128_f32[0], LateralForward.m128_f32[2]};
+	Vector2f Right = {LateralRight.m128_f32[0], LateralRight.m128_f32[2]};
+
+	if (SSInput::GetKey(EKeyCode::KEY_A))
+	{
+		_CharacterComp->AddAccel(-Right);
+	}
+	else if (SSInput::GetKey(EKeyCode::KEY_D))
+	{
+		_CharacterComp->AddAccel(Right);
+	}
+
+	if (SSInput::GetKey(EKeyCode::KEY_W))
+	{
+		_CharacterComp->AddAccel(Forward);
+	}
+	else if (SSInput::GetKey(EKeyCode::KEY_S))
+	{
+		_CharacterComp->AddAccel(-Forward);
 	}
 }

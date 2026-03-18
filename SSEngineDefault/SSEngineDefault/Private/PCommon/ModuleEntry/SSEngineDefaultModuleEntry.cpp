@@ -5,21 +5,29 @@
 #include "SSEngineDefault/Private/PCommon/SHasher/HasherPoolBase.h"
 #include "SSEngineDefault/Private/PWin32/RawInput/Win32SSRawInputProcessor.h"
 #include "SSEngineDefault/Private/PWin32/SSThread/Win32ThreadManager.h"
+#include "SSEngineDefault/Private/PWin32/WindowManager/Win32WindowManager.h"
 #include "SSEngineDefault/Public/SSDebugLogger.h"
 
-
+IWindowManager* g_MainWindowManager = nullptr;
 IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 IRawInputProcessor* g_RawInputProcessor = nullptr;
 IThreadManager* g_ThreadManager = nullptr;
 
 void SSEngineDefaultModuleEntry(
+	IWindowManager* InWindowManager,
 	IFrameInfoProcessor* InFrameInfo,
 	IRawInputProcessor* InRawInputProcessor,
 	IThreadManager* InThreadManager)
 {
+	g_MainWindowManager = InWindowManager;
 	g_FrameInfoProcessor = InFrameInfo;
 	g_RawInputProcessor = InRawInputProcessor;
 	g_ThreadManager = InThreadManager;
+}
+
+IWindowManager* CreateWindowManager()
+{
+	return DBG_NEW Win32WindowManager();
 }
 
 IRawInputProcessor* CreateInputProcessor()

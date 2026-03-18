@@ -219,6 +219,27 @@
     <ClInclude Include="Public\SSAlgorithm.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Public\WindowManager\IWindowManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PWin32\WindowManager\Win32WindowManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\WindowManager\SSWindowInfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\WindowManager\IWindow.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PWin32\WindowManager\Win32Window.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\WindowManager\WindowUtils.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\PWin32\WindowManager\WindowUtil_Internal.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -303,6 +324,18 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\PCommon\SHasher\Internal\HasherPoolCreationFunction.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\WindowManager\Win32WindowManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\WindowManager\Win32Window.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\WindowManager\WindowUtils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\PWin32\WindowManager\WindowUtil_Internal.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

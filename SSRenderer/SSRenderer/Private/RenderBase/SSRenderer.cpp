@@ -404,12 +404,12 @@ void SSRenderer::PerFrame()
 
 			_PixelPickerCPUReadableTex->BeginRead();
 
-			Vector2ui32 WindowSize = SSFrameInfo::GetWindowSize();
+			
 
 			int64 ObjectNativeID = 0;
-			int64* pObjectNativeID = (int64*)_PixelPickerCPUReadableTex->GetDataAtRatio(
-				(float)_PixelPickingCoord.X / WindowSize.X,
-				(float)_PixelPickingCoord.Y / WindowSize.Y);
+			int64* pObjectNativeID = (int64*)_PixelPickerCPUReadableTex->GetDataAt(
+				_PixelPickingCoord.X,
+				_PixelPickingCoord.Y);
 			if (pObjectNativeID != nullptr)
 			{
 				ObjectNativeID = *pObjectNativeID;

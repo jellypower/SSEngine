@@ -3,12 +3,15 @@
 
 #include "ModuleEntryScriptRunner.h"
 #include "Character/SCharacterComponent.h"
+#include "PlayerController/SCameraController.h"
 #include "PlayerController/SPlayerController.h"
 
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/CommonTypes/DirEnums.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+#include "SSEngineDefault/Public/WindowManager/IWindowManager.h"
+#include "SSEngineDefault/Public/WindowManager/IWindow.h"
 
 #include "SSRenderer/Public/RenderAsset/IAssetManager.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
@@ -227,7 +230,6 @@ void SSGame::StartUpContents()
 		SGameObjectConstructor::FinishConstructHierarchy(GameManager);
 		_DefaultWorld->AddToWorld(GameManager);
 
-		_Renderer->SetMainRenderCamera(_MainPalyerController->GetCameraComp()->GetRenderCamera());
 	}
 
 
@@ -242,6 +244,16 @@ void SSGame::StartUpContents()
 		Character->SetPosition({ -2, 0, 0, 0 });
 		_DefaultWorld->AddToWorld(Character);
 	}
+
+
+	{
+		_bIsFreeCamMode = false;
+		_Renderer->SetMainRenderCamera(_MainPalyerController->GetCameraComp()->GetRenderCamera());
+
+		IWindow* MainWindow = g_MainWindowManager->GetMainWindow();
+		MainWindow->SetForceMouseCenter(true);
+		MainWindow->SetVisibleMouse(false);
+	}
 }
 
 void SSGame::PerFrameContents()
@@ -250,11 +262,19 @@ void SSGame::PerFrameContents()
 	{
 		_bIsFreeCamMode = true;
 		_Renderer->SetMainRenderCamera(_FreeCam->GetRenderCamera());
+
+		IWindow* MainWindow = g_MainWindowManager->GetMainWindow();
+		MainWindow->SetForceMouseCenter(false);
+		MainWindow->SetVisibleMouse(true);
 	}
 	else if (SSInput::GetKeyDown(EKeyCode::KEY_2))
 	{
 		_bIsFreeCamMode = false;
 		_Renderer->SetMainRenderCamera(_MainPalyerController->GetCameraComp()->GetRenderCamera());
+
+		IWindow* MainWindow = g_MainWindowManager->GetMainWindow();
+		MainWindow->SetForceMouseCenter(true);
+		MainWindow->SetVisibleMouse(false);
 	}
 
 	if (_bIsFreeCamMode)
@@ -286,6 +306,7 @@ void SSGame::MoveFreeCamera()
 		const float DeltaTime = SSFrameInfo::GetDeltaTime();
 		SGameObject* CamGO = _FreeCam->GetGameObject();
 		Vector4f Forward = CamGO->GetTransform().GetForward();
+		Vector4f Right = CamGO->GetTransform().GetRight();
 		Vector4f Up = CamGO->GetTransform().GetUp();
 
 		CamGO->SetRotation(Quaternion::FromEulerRotation(Vector4f(TEMP_CamXRot, TEMP_CamYRot, 0, 0)));
@@ -323,13 +344,13 @@ void SSGame::MoveFreeCamera()
 		if (SSInput::GetKey(EKeyCode::KEY_D))
 		{
 			Vector4f Pos = CamGO->GetTransform().Position;
-			Pos = Pos + Vector4f::Right * DeltaTime * TEMP_Speed;
+			Pos = Pos + Right * DeltaTime * TEMP_Speed;
 			CamGO->SetPosition(Pos);
 		}
 		if (SSInput::GetKey(EKeyCode::KEY_A))
 		{
 			Vector4f Pos = CamGO->GetTransform().Position;
-			Pos = Pos + Vector4f::Right * -DeltaTime * TEMP_Speed;
+			Pos = Pos + Right * -DeltaTime * TEMP_Speed;
 			CamGO->SetPosition(Pos);
 		}
 		if (SSInput::GetKey(EKeyCode::KEY_E))

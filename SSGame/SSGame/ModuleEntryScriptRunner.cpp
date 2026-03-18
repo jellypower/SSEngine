@@ -2,6 +2,8 @@
 
 #include "ModuleEntryScriptRunner.h"
 
+#include <SSEngineDefault/Public/WindowManager/WindowUtils.h>
+
 #include "SSBuildSettings.h"
 
 #include "SSEngineDefault/Public/SSEngineInlineSettings.h"
@@ -11,6 +13,7 @@
 #include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/SHasher/IHasherPool.h"
 #include "SSEngineDefault/Public/SSThread/IThreadManager.h"
+#include "SSEngineDefault/Public/WindowManager/IWindowManager.h"
 #include "SSEngineDefault/Public/SSThread/PWin32/SSThreadUtil_Win32.h"
 
 #include "SObject/Public/SObjectGlobalHashMap.h"
@@ -31,6 +34,7 @@ SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 
 
 // GlobalVariableSet
+IWindowManager* g_MainWindowManager = nullptr;
 IFrameInfoProcessor* g_FrameInfoProcessor = nullptr;
 IRawInputProcessor* g_RawInputProcessor = nullptr;
 IThreadManager* g_ThreadManager = nullptr;
@@ -41,9 +45,12 @@ IRenderer* g_Renderer = nullptr;
 // ~SSRendererGlobalVariableSet
 
 HWND g_hWnd = NULL;
+HINSTANCE g_hInst = NULL;
+RECT g_WndRect = { 0,0,1920,1080 };
 
 HINSTANCE g_hInstSSGAL = nullptr;
 HINSTANCE g_hInstSSRenderer = nullptr;
+HINSTANCE g_hInstSSFBXImporter = nullptr;
 HINSTANCE g_hInstSSAssetDBManager = nullptr;
 
 FuncPtr_CreateAssetDBLoader g_fpCreateAssetDBLoader = nullptr;
@@ -64,6 +71,11 @@ void RunLoadLibraries()
 		g_hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
 	}
 
+	g_hInstSSFBXImporter = LoadLibrary(L"SSFBXImporter.dll");
+	if (g_hInstSSFBXImporter == nullptr)
+	{
+		g_hInstSSFBXImporter = LoadLibrary(SSFBXIMPORTER_MODULEPATH);
+	}
 
 	g_hInstSSAssetDBManager = LoadLibrary(L"SSAssetDBManager.dll");
 	if (g_hInstSSAssetDBManager == nullptr)
@@ -74,6 +86,7 @@ void RunLoadLibraries()
 
 void RunModuleEntryScript()
 {
+	g_MainWindowManager = CreateWindowManager();
 	g_FrameInfoProcessor = CreateFrameInfo();
 	g_RawInputProcessor = CreateInputProcessor();
 	g_ObjectHashMap = CreateSObjectGlobalHashMap();
@@ -84,6 +97,7 @@ void RunModuleEntryScript()
 	SS_ASSERT(g_ThreadManager->IsInMainThread());
 
 	SSEngineDefaultModuleEntry(
+		g_MainWindowManager,
 		g_FrameInfoProcessor,
 		g_RawInputProcessor,
 		g_ThreadManager);
@@ -100,6 +114,8 @@ void RunModuleEntryScriptPostInitWindow(
 	bool bEnableDebugLayer,
 	bool bEnableGPUBaseValidation)
 {
+	InitWindowManagerWinHandle(g_MainWindowManager, g_hWnd, g_WndRect, g_hInst);
+
 	// Create Renderer
 	{
 		FuncPtr_SSGALModuleEntry SSGALModuleEntry = (FuncPtr_SSGALModuleEntry)GetProcAddress(g_hInstSSGAL, "SSGALModuleEntry");
@@ -131,6 +147,7 @@ void RunModuleEntryScriptPostInitWindow(
 		GALRenderTarget* SwapChainRenderTarget = CreateGALSwapChain(g_Renderer->GetMainDeviceContext(), hWnd);
 		g_Renderer->HandoverMainViewportSwapChain(SwapChainRenderTarget);
 
+
 		SSAssetDBManagerModuleEntry(
 			g_ThreadManager,
 			g_FrameInfoProcessor);
@@ -156,21 +173,24 @@ void RunModuleExitScript()
 	g_RawInputProcessor = nullptr;
 	delete g_FrameInfoProcessor;
 	g_FrameInfoProcessor = nullptr;
+	delete g_MainWindowManager;
+	g_MainWindowManager = nullptr;
 
 	DestroyGlobalHasherPool();
 }
 
 void RunUnloadLibraries()
 {
-	// "g_Renderer" will be released by "SSEngine"
-
-	BOOL bSuccess = FreeLibrary(g_hInstSSRenderer);
+	BOOL bSuccess = FreeLibrary(g_hInstSSFBXImporter);
+	if (bSuccess == false) SS_INTERRUPT();
+	bSuccess = FreeLibrary(g_hInstSSRenderer);
 	if (bSuccess == false) SS_INTERRUPT();
 	bSuccess = FreeLibrary(g_hInstSSGAL);
 	if (bSuccess == false) SS_INTERRUPT();
 	bSuccess = FreeLibrary(g_hInstSSAssetDBManager);
 	if (bSuccess == false) SS_INTERRUPT();
 
+	g_hInstSSFBXImporter = nullptr;
 	g_hInstSSRenderer = nullptr;
 	g_hInstSSGAL = nullptr;
 }
