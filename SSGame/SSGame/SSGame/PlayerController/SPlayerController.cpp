@@ -110,10 +110,12 @@ void SPlayerController::ProcessInput(float DeltaTime)
 	if (SSInput::GetMouseDown(EMouseCode::MOUSE_RIGHT))
 	{
 		_CharacterComp->SetFaceMode(ECharacterFaceMode::LerpToEnteredFace);
+		_PlayerCameraController->SetCamTargetFOV(45);
 	}
 	else if (SSInput::GetMouseUp(EMouseCode::MOUSE_RIGHT))
 	{
 		_CharacterComp->SetFaceMode(ECharacterFaceMode::LerpToVelocity);
+		_PlayerCameraController->SetCamTargetFOV(60);
 	}
 
 	if (SSInput::GetMouse(EMouseCode::MOUSE_RIGHT))

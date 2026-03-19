@@ -19,6 +19,7 @@ public:
 	void BindFollowTarget(SGameObject* Target);
 
 	void SetCamTargetPitchYaw(float Pitch, float Yaw);
+	void SetCamTargetFOV(float NewFOVInDeg);
 
 
 private:
@@ -33,9 +34,11 @@ private:
 	float _ArmHeight = 1.5f;
 
 
+	float _CamCurFovInDeg = 0;
 	float _CamCurYaw = 0;
 	float _CamCurPitch = 0;
 
+	float _CamTargetFOVInDeg = 60;
 	float _CamYawTarget = 0;
 	float _CamPitchTarget = 0;
 };

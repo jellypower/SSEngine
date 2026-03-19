@@ -38,6 +38,11 @@ void SCameraController::SetCamTargetPitchYaw(float Pitch, float Yaw)
 	_CamYawTarget = Yaw;
 }
 
+void SCameraController::SetCamTargetFOV(float NewFOVInDeg)
+{
+	_CamTargetFOVInDeg = NewFOVInDeg;
+}
+
 void SCameraController::BlendCamera(float DeltaTime)
 {
 	SGameObject* Target = _FollowTarget.Get();
@@ -65,7 +70,7 @@ void SCameraController::BlendCamera(float DeltaTime)
 	_CamYawTarget = fmodf(_CamYawTarget, XM_2PI);
 
 	_CamCurPitch = SS::Lerp(_CamCurPitch, _CamPitchTarget, Alpha);
-
+	_CamCurFovInDeg = SS::Lerp(_CamCurFovInDeg, _CamTargetFOVInDeg, Alpha);
 
 
 	XMMATRIX TargetTransformMatrix = Target->CalcWorldTransformMatrix();
@@ -84,4 +89,6 @@ void SCameraController::BlendCamera(float DeltaTime)
 
 	SGameObject* GO = GetGameObject();
 	GO->SetTransform(NewTransform);
+
+	_PlayerCameraComp->SetFOVWithDegrees(_CamCurFovInDeg);
 }

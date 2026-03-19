@@ -136,14 +136,15 @@ void SCharacterComponent::MovementRotate(float DeltaTime)
 	while (false); // goto-target
 
 
-//	{
-//		Vector4f Start = GO->GetTransform().Position;
-//		Vector4f End = Start;
-//		End.X += _CurFace.X;
-//		End.Z += _CurFace.Y;
-//		IMeshAsset* Arrow = g_Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
-//		SRenderDebugUtil::DrawDirectionalMesh(GetIncludedWorld(), Start, End, Arrow, false);
-//	}
+	{
+		Vector4f Start = GO->GetTransform().Position;
+		Vector4f End = Start;
+		End.X += _CurFace.X;
+		End.Z += _CurFace.Y;
+		IMeshAsset* Arrow = g_Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
+		SRenderDebugUtil::DrawDirectionalMesh(GetIncludedWorld(), Start, End, Arrow, false, 0.5f, 
+			{ 0,0,1,1 });
+	}
 	
 	if (bCurFaceEdited)
 	{
