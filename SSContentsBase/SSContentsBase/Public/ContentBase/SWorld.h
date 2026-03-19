@@ -30,7 +30,7 @@ private:
 	IRenderWorld* _RenderWorld = nullptr;
 	IAnimWorker* _AnimWorker = nullptr;
 
-	float _TimeScale = 1;
+	double _TimeScale = 1;
 
 public:
 	SWorld();
@@ -43,6 +43,7 @@ public:
 	void PerFrameContents();
 	void PerFrameAnim();
 
+	double GetTimeScale() const { return _TimeScale; }
 	IAnimWorker* GetAnimWorker() const { return _AnimWorker; }
 	IRenderWorld* GetRenderWorld() const { return _RenderWorld; }
 	SGameObject* GetWorldRootObject() const { return _WorldRootObject; }

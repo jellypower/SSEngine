@@ -73,6 +73,18 @@ void FrameInfoProcessorBase::PerFrameXXX()
 		}
 	}
 
+	// Sample
+	{
+		uint64 FrameCntMOD = _frameCount % DURATION_SAMPLE_MAGIC_CNT;
+
+		_DeltaTimeSampleSum -= _DeltaTimeSample[FrameCntMOD];
+		_DeltaTimeSampleSum += _deltaTime;
+
+		_SmoothDeltaTime = _DeltaTimeSampleSum / DURATION_SAMPLE_MAGIC_CNT;
+
+		_DeltaTimeSample[FrameCntMOD] = _deltaTime;
+	}
+
 
 	_elapsedTime += _deltaTime;
 }

@@ -95,6 +95,7 @@ void SPlayerController::ProcessInput(float DeltaTime)
 	}
 
 
+
 	Quaternion Rotation = Quaternion::FromEulerRotation({ 0, _ControlYaw, 0, 0 });
 
 	XMVECTOR LateralForward = { 0, 0,1, 0 };
@@ -105,6 +106,21 @@ void SPlayerController::ProcessInput(float DeltaTime)
 
 	Vector2f Forward = {LateralForward.m128_f32[0], LateralForward.m128_f32[2]};
 	Vector2f Right = {LateralRight.m128_f32[0], LateralRight.m128_f32[2]};
+
+	if (SSInput::GetMouseDown(EMouseCode::MOUSE_RIGHT))
+	{
+		_CharacterComp->SetFaceMode(ECharacterFaceMode::LerpToEnteredFace);
+	}
+	else if (SSInput::GetMouseUp(EMouseCode::MOUSE_RIGHT))
+	{
+		_CharacterComp->SetFaceMode(ECharacterFaceMode::LerpToVelocity);
+	}
+
+	if (SSInput::GetMouse(EMouseCode::MOUSE_RIGHT))
+	{
+		_CharacterComp->SetEnteredFace(Forward);
+	}
+
 
 	if (SSInput::GetKey(EKeyCode::KEY_A))
 	{
@@ -123,4 +139,7 @@ void SPlayerController::ProcessInput(float DeltaTime)
 	{
 		_CharacterComp->AddAccel(-Forward);
 	}
+
+
+
 }

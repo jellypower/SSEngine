@@ -1,15 +1,17 @@
 ﻿#include "pch.h"
 #include "SCharacterComponent.h"
-
 #include <cmath>
-#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
-#include <SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h>
-#include <SSRenderer/Public/RenderBase/IRenderer.h>
 
-#include "SSContentsBase/Public/ContentBase/SGameObject.h"
-#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
+
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
 #include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
+#include "SSContentsBase/Public/ContentBase/SGameObject.h"
+#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
+#include "SSContentsBase/Public/ContentBase/SWorld.h"
 
 SCharacterComponent::SCharacterComponent()
 {
@@ -17,6 +19,11 @@ SCharacterComponent::SCharacterComponent()
 	_GroundFriction = 3;
 	_MaxSpeed = 5.f;
 	_MaxTurnSpeed = 5;
+	_FaceTurnSpeed = 5;
+	_FaceMode = ECharacterFaceMode::LerpToVelocity;
+
+	_EnteredFace = { 0, 1 };
+	_CurFace = { 0, 1 };
 }
 
 bool SCharacterComponent::ShouldProcessPerFrameInherently() const
@@ -26,20 +33,123 @@ bool SCharacterComponent::ShouldProcessPerFrameInherently() const
 
 void SCharacterComponent::PerFrame(float DeltaTime)
 {
-	PerFrameMovement(DeltaTime);
+	double SmoothDeltaTime = SSFrameInfo::GetSmoothDeltaTime();
+	double TimeScale = GetIncludedWorld()->GetTimeScale();
+
+	PerFrameMovement(SmoothDeltaTime * TimeScale);
 	Animate(DeltaTime);
 }
 
-void SCharacterComponent::PostConstructHierarchy()
+void SCharacterComponent::BindAnimComp(SBlendSpaceAnimTestComponent* Comp)
 {
-	SGameObject* GO = GetGameObject();
-	_AnimComp = GO->FindComponent<SBlendSpaceAnimTestComponent>();
+	_AnimComp = Comp;
 }
 
+
+void SCharacterComponent::SetFaceMode(ECharacterFaceMode Mode)
+{
+	_FaceMode = Mode;
+}
+
+
+void SCharacterComponent::SetEnteredFace(Vector2f InDir)
+{
+	_EnteredFace = InDir;
+}
 
 void SCharacterComponent::AddAccel(Vector2f InAccel)
 {
 	_MoveInput = _MoveInput + InAccel;
+}
+
+
+void SCharacterComponent::MovementRotate(float DeltaTime)
+{
+	SGameObject* GO = GetGameObject();
+	bool bCurFaceEdited = false;
+
+	do
+	{
+		if (_FaceMode == ECharacterFaceMode::LerpToVelocity)
+		{
+			float VelLenSqr = _MoveLateralVelocity.GetSqrLength();
+			if (VelLenSqr < 0.0001f)
+			{
+				break;
+			}
+
+			float VelLen = sqrt(VelLenSqr);
+			Vector2f VelocityNormalized = _MoveLateralVelocity / VelLen;
+			float FaceCosSim = SS::Dot(_CurFace, VelocityNormalized);
+			if (FaceCosSim > 0.9999f)
+			{
+				break;
+			}
+
+			float TurnAmount = _FaceTurnSpeed * DeltaTime;
+			if (TurnAmount > 0.5)
+			{
+				SS_ASSERT(false);
+			}
+
+			TurnAmount = TurnAmount > 1 ? 1 : TurnAmount;
+
+			
+
+			_CurFace = SS::Slerp2D(_CurFace, VelocityNormalized, TurnAmount);
+			bCurFaceEdited = true;
+		}
+		else if (_FaceMode == ECharacterFaceMode::LerpToEnteredFace)
+		{
+			float VelLenSqr = _MoveLateralVelocity.GetSqrLength();
+			if (VelLenSqr < 0.0001f)
+			{
+				break;
+			}
+
+			float EnteredFaceSqrLen = _EnteredFace.GetSqrLength();
+			if (EnteredFaceSqrLen < 0.0001)
+			{
+				_EnteredFace = _CurFace;
+				break; // goto
+			}
+			if (EnteredFaceSqrLen < 0.9999)
+			{
+				_EnteredFace = _EnteredFace.GetNormalized();
+			}
+
+			float FaceCosSim = SS::Dot(_CurFace, _EnteredFace);
+			if (FaceCosSim < 0.99f)
+			{
+				float TurnAmount = _FaceTurnSpeed * DeltaTime;
+				TurnAmount = TurnAmount > 1 ? 1 : TurnAmount;
+
+				_CurFace = SS::Slerp2D(_CurFace, _EnteredFace, TurnAmount);
+				bCurFaceEdited = true;
+			}
+		}
+		else
+		{
+			SS_ASSERT(false);
+		}
+	}
+	while (false); // goto-target
+
+
+//	{
+//		Vector4f Start = GO->GetTransform().Position;
+//		Vector4f End = Start;
+//		End.X += _CurFace.X;
+//		End.Z += _CurFace.Y;
+//		IMeshAsset* Arrow = g_Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
+//		SRenderDebugUtil::DrawDirectionalMesh(GetIncludedWorld(), Start, End, Arrow, false);
+//	}
+	
+	if (bCurFaceEdited)
+	{
+		float Yaw = atan2(_CurFace.X, _CurFace.Y); // 모델 방향이 Z+ 를 바라보는것이 전제라서 y랑 x방향 바꿔줌
+		GO->SetRotation(Quaternion::FromEulerRotation({ 0, Yaw, 0, 0 }));
+	}
 }
 
 void SCharacterComponent::PerFrameMovement(float DeltaTime)
@@ -142,8 +252,6 @@ void SCharacterComponent::PerFrameMovement(float DeltaTime)
 		}
 	}
 
-
-
 	{
 		Vector4f NewPos;
 
@@ -152,24 +260,54 @@ void SCharacterComponent::PerFrameMovement(float DeltaTime)
 
 		GO->SetPosition(NewPos);
 	}
+
+	MovementRotate(DeltaTime);
 }
 
 void SCharacterComponent::Animate(float DeltaTime)
 {
 	const float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
-	const float LateralSpeed = sqrt(VeloSqrLen);
-	const float MaxSpeedSqr = _MaxSpeed * _MaxSpeed;
 
-	Vector2f BlendPoint;
+	Vector2f NewBlendPoint;
 
-	if (LateralSpeed > 0.01f)
+	if (VeloSqrLen > 0.0001f)
 	{
-		Vector2f LaterlVeloNormalized = _MoveLateralVelocity;
+		const float VeloLen = sqrt(VeloSqrLen);
+		const float MaxSpeedSqr = _MaxSpeed * _MaxSpeed;
+		Vector2f LaterlVeloNormalized = _MoveLateralVelocity / VeloLen;
 
-		float SpeedRatio = LateralSpeed / MaxSpeedSqr;
+		float LateralVeloYaw = atan2(LaterlVeloNormalized.X, LaterlVeloNormalized.Y);
+		float FaceYaw = atan2(_CurFace.X, _CurFace.Y);
 
-		BlendPoint = LaterlVeloNormalized * SpeedRatio;
+		float AnimateYaw = LateralVeloYaw - FaceYaw;
+		NewBlendPoint.Y = cos(AnimateYaw);
+		NewBlendPoint.X = sin(AnimateYaw);
+
+		float SpeedRatio = VeloLen / _MaxSpeed;
+
+		NewBlendPoint = NewBlendPoint * SpeedRatio;
+
+
+		SS_ASSERT(isnan(NewBlendPoint.X) == false);
+		SS_ASSERT(isnan(NewBlendPoint.Y) == false);
 	}
 
-	_AnimComp->SetBlendPoint(BlendPoint);
+
+	NewBlendPoint = SS::Lerp(_PrevBlendPoint, NewBlendPoint, DeltaTime * 20);
+
+
+	// DEBUG
+	{
+		SGameObject* GO = GetGameObject();
+		Vector4f Start = GO->GetTransform().Position;
+		Vector4f End = Start;
+		End.X += NewBlendPoint.X;
+		End.Z += NewBlendPoint.Y;
+		IMeshAsset* Arrow = g_Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
+
+		SRenderDebugUtil::DrawDirectionalMesh(GetIncludedWorld(), Start, End, Arrow, false);
+	}
+
+	_PrevBlendPoint = NewBlendPoint;
+	_AnimComp->SetBlendPoint(NewBlendPoint);
 }

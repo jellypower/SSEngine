@@ -21,8 +21,7 @@ protected:
 	uint64 _deltaTick = 0;
 	double _deltaTime = 0;
 	double _elapsedTime = 0;
-	uint64 _PrevFrameStartTick = 0;
-	uint64 _FrameStartTick = 0;
+	double _SmoothDeltaTime = 0;
 
 
 public:
@@ -31,6 +30,7 @@ public:
 	* return DeltaTime in ms
 	*/
 	double GetDeltaTime() const { return _deltaTime; }
+	double GetSmoothDeltaTime() const { return _SmoothDeltaTime; }
 	uint64 GetDeltaTick() const { return _deltaTick; }
 	double GetElapsedTime() const { return _elapsedTime; }
 	uint64 GetFrameCnt() const { return _frameCount; }

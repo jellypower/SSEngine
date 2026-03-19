@@ -47,6 +47,10 @@ namespace SS {
 	{
 		return (rhs - lhs) * alpha + lhs;
 	}
+	FORCEINLINE Vector2f Lerp(Vector2f lhs, Vector2f rhs, float alpha)
+	{
+		return (rhs - lhs) * alpha + lhs;
+	}
 
 	FORCEINLINE Vector4f Lerp(const Vector4f& lhs, const Vector4f& rhs, float alpha)
 	{
@@ -77,9 +81,13 @@ namespace SS {
 			return n1;
 		}
 
+		if (dot < -0.999f) // 방향이 거의 반대면
+		{
+			dot = -0.9;
+		}
+
 		float theta = acos(dot);
 		float sinTheta = sin(theta);
-
 
 		return (sin((1.0f - t) * theta) / sinTheta) * n1 + (sin(t * theta) / sinTheta) * n2;
 	}

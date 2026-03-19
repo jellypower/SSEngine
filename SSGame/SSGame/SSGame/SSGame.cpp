@@ -193,13 +193,21 @@ void SSGame::StartUpContents()
 	}
 
 	{
+		SGameObject* CharacterModel = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc", false);
+		Quaternion Rot = Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 });
+		CharacterModel->SetRotation(Rot);
 
-		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc", false);
 //		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_02.mdlc", false);
-//		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc", false);
-		SBlendSpaceAnimTestComponent* AnimComp = Charcater->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
-		Charcater->CreateComponent<SCharacterComponent>(L"SCharacterComponent");
-		SGameObjectConstructor::FinishConstructHierarchy(Charcater);
+
+		SBlendSpaceAnimTestComponent* AnimComp = CharacterModel->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
+
+		SGameObject* Character = NewSObject<SGameObject>("Character");
+		CharacterModel->SetParent(Character);
+
+		SCharacterComponent* CharacterComp = Character->CreateComponent<SCharacterComponent>(L"SCharacterComponent");
+		CharacterComp->BindAnimComp(AnimComp);
+		SGameObjectConstructor::FinishConstructHierarchy(Character);
+
 
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
@@ -212,10 +220,9 @@ void SSGame::StartUpContents()
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
 		AnimComp->SetPauseAnim(false);
 
-//		Quaternion Rot = Quaternion::FromEulerRotation({ -90, 0, 0, 0 });
-//		Charcater->SetRotation(Rot);
 
-		_DefaultWorld->AddToWorld(Charcater);
+
+		_DefaultWorld->AddToWorld(Character);
 
 
 		// =====================================================================
@@ -224,7 +231,7 @@ void SSGame::StartUpContents()
 		// GameManager
 		SGameObject* GameManager = NewSObject<SGameObject>(L"GameManager");
 		_MainPalyerController = GameManager->CreateComponent<SPlayerController>(L"PlayerController");
-		_MainPalyerController->BindCharacter(Charcater);
+		_MainPalyerController->BindCharacter(Character);
 
 
 		SGameObjectConstructor::FinishConstructHierarchy(GameManager);
@@ -234,15 +241,15 @@ void SSGame::StartUpContents()
 
 
 	{
-		SGameObject* Character = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc", true);
-		Character->SetPosition({ 2, 0, 0, 0 });
-		_DefaultWorld->AddToWorld(Character);
+		SGameObject* CharacterModel = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc", true);
+		CharacterModel->SetPosition({ 2, 0, 0, 0 });
+		_DefaultWorld->AddToWorld(CharacterModel);
 
-		Character = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc", true);
-		Quaternion Rot = Quaternion::FromEulerRotation({ -90, 0, 0, 0 });
-		Character->SetRotation(Rot);
-		Character->SetPosition({ -2, 0, 0, 0 });
-		_DefaultWorld->AddToWorld(Character);
+		CharacterModel = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc", true);
+		Quaternion Rot = Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 });
+		CharacterModel->SetRotation(Rot);
+		CharacterModel->SetPosition({ -2, 0, 0, 0 });
+		_DefaultWorld->AddToWorld(CharacterModel);
 	}
 
 

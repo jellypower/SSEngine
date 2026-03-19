@@ -82,6 +82,7 @@ FORCEINLINE Vector2f operator*(Vector2f lhs, Vector2f rhs) { return { lhs.X * rh
 FORCEINLINE Vector2f operator/(Vector2f lhs, Vector2f rhs) { return { lhs.X / rhs.X, lhs.Y / rhs.Y }; }
 
 FORCEINLINE Vector2f operator*(Vector2f lhs, float rhs) { return { lhs.X * rhs, lhs.Y * rhs }; }
+FORCEINLINE Vector2f operator/(Vector2f lhs, float rhs) { return { lhs.X / rhs, lhs.Y / rhs }; }
 FORCEINLINE Vector2f operator*(float lhs, Vector2f rhs) { return { lhs * rhs.X, lhs * rhs.Y }; }
 
 FORCEINLINE Vector2f operator-(Vector2f val) { return { -val.X, -val.Y }; }
