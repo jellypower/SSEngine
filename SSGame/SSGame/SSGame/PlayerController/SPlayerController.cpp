@@ -61,6 +61,14 @@ const SCameraComponent* SPlayerController::GetCameraComp() const
 void SPlayerController::PerFrame(float DeltaTime)
 {
 	// TODO: Hack임 나중에 변경하기
+	static int32 InitialInputDelay = 10;
+	
+	if (InitialInputDelay > 0)
+	{
+		InitialInputDelay--;
+		return;
+	}
+
 	const IRenderCamera* RenderCam = g_Renderer->GetMainRenderCamera();
 	if (RenderCam != nullptr && RenderCam == _PlayerCameraComp->GetRenderCamera())
 	{

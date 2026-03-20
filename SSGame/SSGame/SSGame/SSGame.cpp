@@ -147,7 +147,7 @@ void SSGame::StartUpContents()
 		SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor");
 		_DefaultWorld->AddToWorld(Floor);
 		Floor->SetPosition(Vector4f(0, -0.1, 0, 1));
-		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
+		Floor->SetScale(Vector4f(30, 0.1, 30, 0));
 
 		// CubeMap
 		SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");
