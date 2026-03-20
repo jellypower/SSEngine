@@ -72,24 +72,26 @@ namespace SS {
 
 	FORCEINLINE Vector2f Slerp2D(Vector2f n1, Vector2f n2, float t) // 두 벡터 모두 노말라이즈 돼있어야 함
 	{
-		float dot = Dot(n1, n2);
-		dot = dot < -1 ? -1 : dot;
-		dot = dot > 1 ? 1 : dot;
+		float Yaw1 = atan2(n1.Y, n1.X);
+		float Yaw2 = atan2(n2.Y, n2.X);
+		Yaw1 += XM_2PI;
+		Yaw2 += XM_2PI;
+		Yaw1 = fmod(Yaw1, XM_2PI);
+		Yaw2 = fmod(Yaw2, XM_2PI);
+		float Diff = Yaw2 - Yaw1;
 
-		if (dot > 0.999) // 방향이 거의 같으면
+		if (Diff > XM_PI) // ex) Yaw1=0 to Yaw2=270
 		{
-			return n1;
+			Yaw1 += XM_2PI;
+		}
+		else if (Diff < -XM_PI) // ex) Yaw1=270 to Yaw2=0
+		{
+			Yaw2 += XM_2PI;
 		}
 
-		if (dot < -0.999f) // 방향이 거의 반대면
-		{
-			dot = -0.9;
-		}
+		float NewYaw = SS::Lerp(Yaw1, Yaw2, t);
 
-		float theta = acos(dot);
-		float sinTheta = sin(theta);
-
-		return (sin((1.0f - t) * theta) / sinTheta) * n1 + (sin(t * theta) / sinTheta) * n2;
+		return { cosf(NewYaw), sinf(NewYaw) };
 	}
 
 	FORCEINLINE float CrossMagnitute3D(const Vector4f& lhs, const Vector4f& rhs)

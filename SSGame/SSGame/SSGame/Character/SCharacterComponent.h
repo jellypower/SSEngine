@@ -29,6 +29,7 @@ private:
 private:
 	Vector2f _EnteredFace;
 	float _FaceTurnSpeed;
+	float _AnimLerpSpeed;
 
 	ECharacterFaceMode _FaceMode;
 

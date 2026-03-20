@@ -19,7 +19,8 @@ SCharacterComponent::SCharacterComponent()
 	_GroundFriction = 3;
 	_MaxSpeed = 5.f;
 	_MaxTurnSpeed = 5;
-	_FaceTurnSpeed = 5;
+	_FaceTurnSpeed = 10;
+	_AnimLerpSpeed = 5;
 	_FaceMode = ECharacterFaceMode::LerpToVelocity;
 
 	_EnteredFace = { 0, 1 };
@@ -87,11 +88,6 @@ void SCharacterComponent::MovementRotate(float DeltaTime)
 			}
 
 			float TurnAmount = _FaceTurnSpeed * DeltaTime;
-			if (TurnAmount > 0.5)
-			{
-				SS_ASSERT(false);
-			}
-
 			TurnAmount = TurnAmount > 1 ? 1 : TurnAmount;
 
 			
@@ -262,6 +258,23 @@ void SCharacterComponent::PerFrameMovement(float DeltaTime)
 		GO->SetPosition(NewPos);
 	}
 
+	// DEBUG
+	{
+		SGameObject* GO = GetGameObject();
+		float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
+		float VelLen = sqrt(VeloSqrLen);
+		Vector2f Velo =_MoveLateralVelocity.GetNormalized();
+		Velo = Velo * (VelLen / _MaxSpeed);
+		Vector4f Start = GO->GetTransform().Position;
+		Vector4f End = Start;
+		End.X += Velo.X;
+		End.Z += Velo.Y;
+		IMeshAsset* Arrow = g_Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
+
+		SRenderDebugUtil::DrawDirectionalMesh(GetIncludedWorld(), Start, End, Arrow, false, 0.5f,
+				{1, 0, 0, 1});
+	}
+
 	MovementRotate(DeltaTime);
 }
 
@@ -280,6 +293,8 @@ void SCharacterComponent::Animate(float DeltaTime)
 		float LateralVeloYaw = atan2(LaterlVeloNormalized.X, LaterlVeloNormalized.Y);
 		float FaceYaw = atan2(_CurFace.X, _CurFace.Y);
 
+		float TEMP = atan2(0, 0);
+
 		float AnimateYaw = LateralVeloYaw - FaceYaw;
 		NewBlendPoint.Y = cos(AnimateYaw);
 		NewBlendPoint.X = sin(AnimateYaw);
@@ -287,14 +302,11 @@ void SCharacterComponent::Animate(float DeltaTime)
 		float SpeedRatio = VeloLen / _MaxSpeed;
 
 		NewBlendPoint = NewBlendPoint * SpeedRatio;
-
-
-		SS_ASSERT(isnan(NewBlendPoint.X) == false);
-		SS_ASSERT(isnan(NewBlendPoint.Y) == false);
 	}
 
 
-	NewBlendPoint = SS::Lerp(_PrevBlendPoint, NewBlendPoint, DeltaTime * 20);
+	// 애니메이션이 급격히 바뀌면 몸이 떨린다
+	NewBlendPoint = SS::Lerp(_PrevBlendPoint, NewBlendPoint, DeltaTime * _AnimLerpSpeed);
 
 
 	// DEBUG
@@ -310,5 +322,10 @@ void SCharacterComponent::Animate(float DeltaTime)
 	}
 
 	_PrevBlendPoint = NewBlendPoint;
+	SS_ASSERT(isnan(NewBlendPoint.X) == false);
+	SS_ASSERT(isnan(NewBlendPoint.Y) == false);
+	SS_ASSERT(isinf(NewBlendPoint.X) == false);
+	SS_ASSERT(isinf(NewBlendPoint.Y) == false);
+
 	_AnimComp->SetBlendPoint(NewBlendPoint);
 }
