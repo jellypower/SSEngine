@@ -306,7 +306,9 @@ void SCharacterComponent::Animate(float DeltaTime)
 
 
 	// 애니메이션이 급격히 바뀌면 몸이 떨린다
-	NewBlendPoint = SS::Lerp(_PrevBlendPoint, NewBlendPoint, DeltaTime * _AnimLerpSpeed);
+	float tLerp = DeltaTime * _AnimLerpSpeed;
+	tLerp = tLerp > 1 ? 1 : tLerp;
+	NewBlendPoint = SS::Lerp(_PrevBlendPoint, NewBlendPoint, tLerp);
 
 
 	// DEBUG
