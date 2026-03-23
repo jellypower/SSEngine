@@ -9,3 +9,4 @@
 #include <d3dcompiler.h>
 
 #include "SSEngineDefault/Public/SSEngineDefault.h"
+#include "SSGAL/Public/SSGALInlineSettings.h"

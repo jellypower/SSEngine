@@ -4,8 +4,6 @@
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSGAL/Public/GALRenderDevice/GALRenderDeviceContext.h"
 
-#include "SSGAL/Public/SSGALInlineSettings.h"
-
 class DX12TransientConstantBufferAllocator;
 class IRICubeMap;
 class IRISkinnedMesh;

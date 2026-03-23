@@ -615,14 +615,15 @@ void SSRenderer::PerFrame()
 		}
 
 		{
-			SCOPE_PROFILE(GALRDC_EndRender);
-			_MainDeviceContext->EndRender();
+			SCOPE_PROFILE(Present);
+			_MainDeviceContext->Present(_MainViewportSwapChain);
 		}
 	}
 
+
 	{
-		SCOPE_PROFILE(Present);
-		_MainDeviceContext->Present(_MainViewportSwapChain); // 보통 예제에서 present는 fence를 치고 그 다음에 한다.
+		SCOPE_PROFILE(GALRDC_EndRender); // Present 하고 EndRender해야 안걸린다.
+		_MainDeviceContext->EndRender();
 	}
 }
 

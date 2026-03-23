@@ -71,7 +71,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	g_hInst = hInstance;
 
 	// 2. ======================================================================
-	RunModuleEntryScriptPostInitWindow(g_hInst, g_hWnd, false, false);
+	RunModuleEntryScriptPostInitWindow(g_hInst, g_hWnd, false , false);
 	// ======================================================================
 
 

@@ -5,6 +5,7 @@
 #include <SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h>
 #include <SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h>
 #include <SSRenderer/Public/RenderAsset/RenderAssetType/ITextureAsset.h>
+#include <SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h>
 
 #include "Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
@@ -21,7 +22,10 @@ DX12GALTextureAssetWrapper::DX12GALTextureAssetWrapper(ITextureAssetMutable* Own
 
 	HRESULT hr = S_OK;
 
-	DX12GALResourceUpdater* DX12ResourceUpdater = static_cast<DX12GALResourceUpdater*>(InExecutor->GetResourceUpdater());
+
+	int32 CurFrameMod = RenderFrameInfo::GetFrameMod();
+
+	DX12GALResourceUpdater* DX12ResourceUpdater = static_cast<DX12GALResourceUpdater*>(InExecutor->GetResourceUpdater(CurFrameMod));
 	DX12GALRenderDevice* OwnerDX12RenderDevice = static_cast<DX12GALRenderDevice*>(_OwnerRenderDevice);
 	SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = OwnerDX12RenderDevice->GetDescriptorTableAllocatorForTex();
 	ID3D12Device5* D3DDevice = OwnerDX12RenderDevice->GetD3DDevice();

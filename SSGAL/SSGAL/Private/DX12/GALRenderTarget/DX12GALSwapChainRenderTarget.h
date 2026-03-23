@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include "DX12GALRenderTargetBase.h"
 
-#include "SSGAL/Public/SSGALInlineSettings.h"
-
 class DX12GALRenderDeviceContext;
 class GALRenderDeviceContext;
 

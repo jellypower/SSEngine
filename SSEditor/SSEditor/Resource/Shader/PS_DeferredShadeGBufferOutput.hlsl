@@ -11,11 +11,14 @@ MRT_Deferred Main(PS_INPUT_DEFAULT input)
     float occlusion = txOcclusion.Sample(samLinear, input.UV0);
 
     float4 emissiveSample = txEmissive.Sample(samLinear, input.UV0);
-    float3 emissive = emissiveFactor * emissiveSample.rgb * emissiveSample.a;
+    float4 emissive = emissiveFactor * emissiveSample;
     
 
     MRT_Deferred Output;
-    Output.Normal = ComputeNormal(input, txNormal, samLinear, normalTextureScale);
+    
+    float3 f3Normal = ComputeNormal(input, txNormal, samLinear, normalTextureScale);
+    float4 f4Normal = float4(f3Normal, 1);
+    Output.Normal = f4Normal;
     Output.Albedo = baseColor;
     Output.WorldPos = input.WorldPos;
     Output.MetallicRoughness = float2(metallic, roughness);

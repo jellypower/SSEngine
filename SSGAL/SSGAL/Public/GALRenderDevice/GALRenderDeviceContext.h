@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "SSGAL/Public/SSGALInlineSettings.h" // TODO: 나중에 pch로 다 빼버릴 수도 있음
+
 class IMeshAsset;
 class IRICubeMap;
 class GALRWMetaData;
@@ -41,8 +43,8 @@ class GALRenderDeviceContext : public INoncopyable
 {
 protected:
 	GALRenderDevice* _OwnerRenderDevice = nullptr;
-	GALResourceUpdater* _ResourceUpdater = nullptr; // TODO: 이거도 GAL_NESTED_FRAME_CNT 만큼 만들고
-	SSTransientMemAllocator* _TransientCBAllocator = nullptr; // TODO: 이거도 GAL_NESTED_FRAME_CNT 만큼 만들어야 함
+	GALResourceUpdater* _ResourceUpdater[GAL_NESTED_FRAME_CNT] = { nullptr, }; // TODO: 이거도 GAL_NESTED_FRAME_CNT 만큼 만들고
+	SSTransientMemAllocator* _TransientCBAllocator[GAL_NESTED_FRAME_CNT] = { nullptr, }; // TODO: 이거도 GAL_NESTED_FRAME_CNT 만큼 만들어야 함
 
 public:
 	virtual bool IsValid() const = 0;
@@ -50,8 +52,8 @@ public:
 	virtual GALRWMetaData* GetCurRenderWorldGALMetaData() const = 0;
 
 	GALRenderDevice* GetOwnerRenderDevice() const { return _OwnerRenderDevice; }
-	GALResourceUpdater* GetResourceUpdater() const { return _ResourceUpdater; }
-	SSTransientMemAllocator* GetTransientCBAllocator() const { return _TransientCBAllocator; }
+	GALResourceUpdater* GetResourceUpdater(int FrameMod) const { return _ResourceUpdater[FrameMod]; }
+	SSTransientMemAllocator* GetTransientCBAllocator(int FrameMod) const { return _TransientCBAllocator[FrameMod]; }
 
 public:
 	virtual void FinalizeDeviceContext() = 0;

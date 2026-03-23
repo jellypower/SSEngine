@@ -4,6 +4,7 @@
 #include "DX12GALMeshAssetWrapper.h"
 
 #include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+#include <SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h>
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/IMeshAsset.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
@@ -20,7 +21,10 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 
 	HRESULT hr = S_OK;
 
-	DX12GALResourceUpdater* DX12ResourceUpdater = static_cast<DX12GALResourceUpdater*>(ResourceUpdateExecutor->GetResourceUpdater());
+
+	int32 CurFrameMod = RenderFrameInfo::GetFrameMod();
+
+	DX12GALResourceUpdater* DX12ResourceUpdater = static_cast<DX12GALResourceUpdater*>(ResourceUpdateExecutor->GetResourceUpdater(CurFrameMod));
 	ID3D12Device5* D3DDevice = _OwnerRenderDevice->GetD3DDevice();
 	ID3D12GraphicsCommandList* CurCommandList = ResourceUpdateExecutor->GetCurrentDrawWorkerCmdList();
 

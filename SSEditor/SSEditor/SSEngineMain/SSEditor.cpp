@@ -155,8 +155,9 @@ void SSEditor::StartupEngine()
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
 
 
-//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
-		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
+		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
+		TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 }));
+//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
 		SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
 
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);

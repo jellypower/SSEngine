@@ -3,11 +3,10 @@
 
 #include "DX12GALResourceUpdater.h"
 
-#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
 
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "SSGAL/Private/DX12/GALRenderDevice/DX12GALRenderDeviceContext.h"
-#include "SSGAL/Public/SSGALInlineSettings.h"
 
 DX12GALResourceUpdater::DX12GALResourceUpdater(DX12GALRenderDevice* InRenderDevice, DX12GALRenderDeviceContext* InRenderDeviceContext)
 	: GALResourceUpdater(InRenderDevice, InRenderDeviceContext)

@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 
 #include <SSEngineDefault/Public/SSCommonUtil/SSTransientMemAllocator.h>
+#include <SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h>
 
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "Private/PCommon/GALRenderDevice/PCommonGALRenderDevice.h"
@@ -114,8 +115,10 @@ void TestTransientAllocator(GALRenderDeviceContext* GALDeviceContext)
 	constexpr int32 EACH_CHUNK_SIZE = 1024;
 	constexpr int32 TEST_CHUNK_CNT = 2048;
 
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
 	{
-		SSTransientMemAllocator* TransientCBAllocator = GALDeviceContext->GetTransientCBAllocator();
+		SSTransientMemAllocator* TransientCBAllocator = GALDeviceContext->GetTransientCBAllocator(FrameMod);
 		TransientChunkHeader* DescSets = (TransientChunkHeader*)DBG_MALLOC(sizeof(TransientChunkHeader) * TEST_CHUNK_CNT);
 
 		for (int32 i = 0; i < TEST_CHUNK_CNT; i++)

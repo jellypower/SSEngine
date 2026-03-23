@@ -120,15 +120,18 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 		_DrawWorkerCommandLists[i] = NewCommandList;
 	}
 
+	for (int32 i=0;i<GAL_NESTED_FRAME_CNT;i++)
+	{
+		_TransientCBAllocator[i] = DBG_NEW DX12TransientConstantBufferAllocator(
+			this,
+			GAL_RESOURCE_DEFAULT_ALIGNMENT_SIZE,
+			GAL_CONSTANTBUFFER_MIN_SIZE,
+			256,
+			L"DX12GALRenderDevice::_TransientConstantBufferAllocator");
 
-	_TransientCBAllocator = DBG_NEW DX12TransientConstantBufferAllocator(
-		this,
-		GAL_RESOURCE_DEFAULT_ALIGNMENT_SIZE,
-		GAL_CONSTANTBUFFER_MIN_SIZE,
-		256,
-		L"DX12GALRenderDevice::_TransientConstantBufferAllocator");
+		_ResourceUpdater[i] = DBG_NEW DX12GALResourceUpdater(InRenderDevice, this);
+	}
 
-	_ResourceUpdater = DBG_NEW DX12GALResourceUpdater(InRenderDevice, this);
 
 	if (_OwnerRenderDevice->IsDebugEnabled())
 	{
@@ -147,13 +150,14 @@ DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
 	{
 		_DrawWorkerCommandLists[i]->Release();
 		_DrawWorkerCommandAllocators[i]->Release();
+
+		delete _ResourceUpdater[i];
+
+		_TransientCBAllocator[i]->ReleaseDefaultPages();
+		delete _TransientCBAllocator[i];
 	}
 
 
-	delete _ResourceUpdater;
-
-	_TransientCBAllocator->ReleaseDefaultPages();
-	delete _TransientCBAllocator;
 }
 
 bool DX12GALRenderDeviceContext::IsValid() const
@@ -945,13 +949,16 @@ void DX12GALRenderDeviceContext::DrawDebugWire(
 	const Vector4f& InColor,
 	bool bUseDepth)
 {
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+
 	if (_TaskPhase != ERenderDeviceTaskPhase::DrawDebug)
 	{
 		SS_INTERRUPT();
 	}
 
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
-	SSTransientMemAllocator* TransientMemAllocator = GetTransientCBAllocator();
+	SSTransientMemAllocator* TransientMemAllocator = GetTransientCBAllocator(FrameMod);
 
 
 	GALRenderTarget* RTDepth = nullptr;
@@ -1385,9 +1392,12 @@ ID3D12GraphicsCommandList* DX12GALRenderDeviceContext::GetCurrentDrawWorkerCmdLi
 void DX12GALRenderDeviceContext::ResetRenderState()
 {
 	SCOPE_PROFILE(ResetRenderState);
-	_TransientCBAllocator->ResetAllChunksXXX();
 
-	_ResourceUpdater->ResetUpdateBuffer();
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+	_TransientCBAllocator[FrameMod]->ResetAllChunksXXX();
+
+	_ResourceUpdater[FrameMod]->ResetUpdateBuffer();
 	ResetCurFrameCommandList();
 
 	_RenderLightsToDraw.Clear();

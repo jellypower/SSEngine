@@ -21,7 +21,6 @@
 #include "SSGAL/Private/DX12/GALWrapper/DX12GALShaderPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12PSOPool.h"
 #include "SSGAL/Private/DX12/GALWrapper/DX12RootSignaturePool.h"
-#include "SSGAL/Public/SSGALInlineSettings.h"
 
 
 

@@ -59,29 +59,15 @@ FuncPtr_CreateAssetDBLoader g_fpCreateAssetDBLoader = nullptr;
 
 void RunLoadLibraries()
 {
-	g_hInstSSGAL = LoadLibrary(L"SSGAL.dll");
-	if (g_hInstSSGAL == nullptr)
-	{
-		g_hInstSSGAL = LoadLibrary(SSGAL_MODULEPATH);
-	}
+	g_hInstSSGAL = LoadLibrary(SSGAL_MODULE_NAME);
+	g_hInstSSRenderer = LoadLibrary(SSRENDERER_MODULE_NAME);
+	g_hInstSSFBXImporter = LoadLibrary(SSFBXIMPORTER_MODULE_NAME);
+	g_hInstSSAssetDBManager = LoadLibrary(SSASSETDBMANAGER_MODULE_NAME);
 
-	g_hInstSSRenderer = LoadLibrary(L"SSRenderer.dll");
-	if (g_hInstSSRenderer == nullptr)
-	{
-		g_hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
-	}
-
-	g_hInstSSFBXImporter = LoadLibrary(L"SSFBXImporter.dll");
-	if (g_hInstSSFBXImporter == nullptr)
-	{
-		g_hInstSSFBXImporter = LoadLibrary(SSFBXIMPORTER_MODULEPATH);
-	}
-
-	g_hInstSSAssetDBManager = LoadLibrary(L"SSAssetDBManager.dll");
-	if (g_hInstSSAssetDBManager == nullptr)
-	{
-		g_hInstSSAssetDBManager = LoadLibrary(SSASSETDBMANAGER_MODULEPATH);
-	}
+	if (g_hInstSSGAL == nullptr) g_hInstSSGAL = LoadLibrary(SSGAL_MODULEPATH);
+	if (g_hInstSSRenderer == nullptr) g_hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
+	if (g_hInstSSFBXImporter == nullptr) g_hInstSSFBXImporter = LoadLibrary(SSFBXIMPORTER_MODULEPATH);
+	if (g_hInstSSAssetDBManager == nullptr) g_hInstSSAssetDBManager = LoadLibrary(SSASSETDBMANAGER_MODULEPATH);
 }
 
 void RunModuleEntryScript()
