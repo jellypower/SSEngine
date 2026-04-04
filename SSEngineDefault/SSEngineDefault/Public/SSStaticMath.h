@@ -31,6 +31,11 @@ namespace SS {
 		return mul.m128_f32[0] + mul.m128_f32[1] + mul.m128_f32[2];
 	}
 
+	FORCEINLINE Vector4f Cross(const Vector4f& lhs, const Vector4f& rhs)
+	{
+		return XMVector3Cross(lhs.SimdVec, rhs.SimdVec);
+	}
+
 
 	FORCEINLINE float abs(float InValue)
 	{

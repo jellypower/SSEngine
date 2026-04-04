@@ -13,7 +13,8 @@
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
-#include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderComponentBase.h"
+#include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 
 
@@ -28,6 +29,9 @@ SWorld::~SWorld()
 {
 	bool Remain = _RenderWorld->IsAnyInstanceRemainInWorld();
 	SS_ASSERT(Remain == false);
+
+	delete _CollWorld;
+	_CollWorld = nullptr;
 
 	delete _RenderWorld;
 	_RenderWorld = nullptr;
@@ -52,9 +56,10 @@ void SWorld::PreDestruct()
 	_WorldRootObject = nullptr;
 }
 
-void SWorld::InitializeWorld(IRenderWorld* InRenderWorld)
+void SWorld::InitializeWorld(IRenderWorld* InRenderWorld, ICollisionWorld* InCollWorld)
 {
 	_RenderWorld = InRenderWorld;
+	_CollWorld = InCollWorld;
 
 	_AnimWorker = DBG_NEW AnimWorkerBase(this);
 }

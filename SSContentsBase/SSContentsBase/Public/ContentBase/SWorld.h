@@ -10,6 +10,7 @@ class IAnimWorker;
 class SAnimatorBaseComponent;
 class SComponentBase;
 class IRenderWorld;
+class ICollisionWorld;
 class RenderWorld;
 constexpr int32 WORLD_OBJECTMAP_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 WORLD_OBJECTMAP_HASHBUCKET_SIZE = 512;
@@ -28,6 +29,7 @@ private:
 	SS::HashMap<SObjHashCode, SGameObject*> _TransformCommitNeededObjs;
 
 	IRenderWorld* _RenderWorld = nullptr;
+	ICollisionWorld* _CollWorld = nullptr;
 	IAnimWorker* _AnimWorker = nullptr;
 
 	double _TimeScale = 1;
@@ -37,7 +39,7 @@ public:
 	virtual ~SWorld();
 	void PostConstruct() override;
 	void PreDestruct() override;
-	virtual void InitializeWorld(IRenderWorld* InRenderWorld);
+	virtual void InitializeWorld(IRenderWorld* InRenderWorld, ICollisionWorld* InCollWorld);
 
 public:
 	void PerFrameContents();
@@ -46,6 +48,7 @@ public:
 	double GetTimeScale() const { return _TimeScale; }
 	IAnimWorker* GetAnimWorker() const { return _AnimWorker; }
 	IRenderWorld* GetRenderWorld() const { return _RenderWorld; }
+	ICollisionWorld* GetCollWorld() const { return _CollWorld; }
 	SGameObject* GetWorldRootObject() const { return _WorldRootObject; }
 	bool IsAnyObjectRemainInWorld() const;
 

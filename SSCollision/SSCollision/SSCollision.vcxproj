@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5b181764-4038-4384-9a0c-6b163711d655}</ProjectGuid>
-    <RootNamespace>SSContentsBase</RootNamespace>
+    <ProjectGuid>{bf524ce1-b255-4374-9931-376f8b282541}</ProjectGuid>
+    <RootNamespace>SSCollision</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -74,7 +74,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;SSCOLLISION_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -91,7 +91,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;SSCOLLISION_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -108,19 +108,18 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;SSCOLLISION_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSCollision;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
@@ -135,12 +134,11 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;SSCOLLISION_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSCollision;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,8 +146,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
@@ -159,63 +157,36 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Private\AnimWorker\AnimBase\AnimateUtilFunctions.cpp" />
-    <ClCompile Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.cpp" />
-    <ClCompile Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.cpp" />
-    <ClCompile Include="Private\AnimWorker\AnimWorkerBase.cpp" />
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Private\AnimComponents\SAnimatorBaseComponent.cpp" />
-    <ClCompile Include="Private\ContentBase\SComponentBase.cpp" />
-    <ClCompile Include="Private\ContentBase\SGameObject.cpp" />
-    <ClCompile Include="Private\ContentBase\SGameObjectConstructor.cpp" />
-    <ClCompile Include="Private\ContentBase\SWorld.cpp" />
-    <ClCompile Include="Private\ModuleEntry\SSContentsBaseModuleEntry.cpp" />
-    <ClCompile Include="Private\SRenderContent\Camera\SCameraComponent.cpp" />
-    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderComponentBase.cpp" />
-    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.cpp" />
-    <ClCompile Include="Private\SRenderContent\RenderComponent\SStaticMeshRenderComponent.cpp" />
-    <ClCompile Include="Private\SRenderContent\SRendererUtil.cpp" />
-    <ClCompile Include="Private\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.cpp" />
-    <ClCompile Include="Private\SRenderContent\RenderComponent\SCubeMapRenderComponent.cpp" />
-    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightComponent.cpp" />
-    <ClCompile Include="Private\AnimComponents\SSimpleAnimatorTestComponent.cpp" />
-    <ClCompile Include="Private\SRenderContent\RenderComponent\SMeshRenderComponentBase.cpp" />
-    <ClCompile Include="Private\SRenderContent\_DEBUG\SRenderDebugUtil.cpp" />
-    <ClCompile Include="Private\AnimComponents\SBlendSpaceAnimTestComponent.cpp" />
-    <ClCompile Include="Private\CollisionComp\SColliderBaseComponent.cpp" />
-    <ClCompile Include="Private\CollisionComp\SBoxColliderComponent.cpp" />
+    <ClInclude Include="BuildSettings.h" />
+    <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Private\CollInstance\CIBox.h" />
+    <ClInclude Include="Private\CollDetect\CollUtils_Private.h" />
+    <ClInclude Include="Private\CollisionBase\CollDevice.h" />
+    <ClInclude Include="Private\CollisionBase\CollisionWorld.h" />
+    <ClInclude Include="Public\CollInstance\ICIBox.h" />
+    <ClInclude Include="Public\CollisionBase\ICollDevice.h" />
+    <ClInclude Include="Public\CollisionBase\ICollisionWorld.h" />
+    <ClInclude Include="Public\CollInstance\ICollInstanceBase.h" />
+    <ClInclude Include="Public\CollisionBase\SimplexV4.h" />
+    <ClInclude Include="Public\ModuleEntry\CollisionWorldFactory.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Public\ModuleEntry\SSCollisionGlobalVariableSet.h" />
+    <ClInclude Include="Public\ModuleEntry\SSCollisionModuleEntry.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h" />
-    <ClInclude Include="Public\CollisionComp\SBoxColliderComponent.h" />
-    <ClInclude Include="Public\CollisionComp\SColliderBaseComponent.h" />
-    <ClInclude Include="Public\AnimWorker\AnimBase\AnimPoseTypes.h" />
-    <ClInclude Include="Public\AnimWorker\AnimBase\AnimateUtilFunctions.h" />
-    <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.h" />
-    <ClInclude Include="Public\SRenderContent\_DEBUG\TimedDebugDrawDesc.h" />
-    <ClInclude Include="Public\AnimWorker\AnimWorkee\IAnimWorkee.h" />
-    <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.h" />
-    <ClInclude Include="Private\AnimWorker\AnimWorkerBase.h" />
-    <ClInclude Include="BuildSettings.h" />
-    <ClInclude Include="Public\AnimComponents\SAnimatorBaseComponent.h" />
-    <ClInclude Include="Public\AnimWorker\IAnimWorker.h" />
-    <ClInclude Include="Public\SRenderContent\RenderComponent\SCubeMapRenderComponent.h" />
-    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightComponent.h" />
-    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.h" />
-    <ClInclude Include="Public\ContentBase\SComponentBase.h" />
-    <ClInclude Include="Public\ContentBase\SGameObject.h" />
-    <ClInclude Include="Public\ContentBase\SGameObjectConstructor.h" />
-    <ClInclude Include="Public\ContentBase\SWorld.h" />
-    <ClInclude Include="Public\ModuleEntry\SSContentsBaseModuleEntry.h" />
-    <ClInclude Include="Public\SRenderContent\Camera\SCameraComponent.h" />
-    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderComponentBase.h" />
-    <ClInclude Include="Public\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.h" />
-    <ClInclude Include="Public\SRenderContent\RenderComponent\SStaticMeshRenderComponent.h" />
-    <ClInclude Include="Public\SRenderContent\_DEBUG\SRenderDebugUtil.h" />
-    <ClInclude Include="Public\SRenderContent\SRendererUtil.h" />
-    <ClInclude Include="ModuleExportKeyword.h" />
-    <ClInclude Include="Public\AnimComponents\SSimpleAnimatorTestComponent.h" />
-    <ClInclude Include="Public\SRenderContent\RenderComponent\SMeshRenderComponentBase.h" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Private\CollInstance\CIBox.cpp" />
+    <ClCompile Include="Private\CollDetect\CollUtils_Private.cpp" />
+    <ClCompile Include="Private\CollisionBase\CollDevice.cpp" />
+    <ClCompile Include="Private\CollisionBase\CollisionWorld.cpp" />
+    <ClCompile Include="Private\ModuleEntry\CollisionWorldFactory.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Private\ModuleEntry\SSCollisionModuleEntry.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,18 +2,19 @@
 
 #include "SSEditor.h"
 
-#include <SSEngineDefault/Public/CommonTypes/DirEnums.h>
 
 
-#include "TestCodes/MeshSerializeTest.h"
 #include "ImGUI_AssetManager.h"
 #include "ImGUI_Profiler.h"
 #include "ImGUI_WorldManager.h"
 #include "ModuleEntryScriptRunner.h"
 #include "SSImGUIInitializer.h"
+#include "TestCodes/MeshSerializeTest.h"
 
 
 
+#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
+#include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
@@ -21,12 +22,11 @@
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
-#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
 
+#include "SSEngineDefault/Public/CommonTypes/DirEnums.h"
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
-
-
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopedProfile.h"
@@ -48,15 +48,18 @@
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
+#include "SSCollision/Public/CollisionBase/ICollDevice.h"
+#include "SSCollision/Public/CollisionBase/SimplexV4.h"
 
 
 SSEditor* g_Editor = nullptr;
 
-SSEditor::SSEditor(IRenderer* EngineRenderer) :
+SSEditor::SSEditor(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice) :
 	_hashMap_TMP(200)
 {
 
 	_Renderer = EngineRenderer;
+	_CollDevice = EngineCollDevice;
 
 	if (g_ImGuiInitializer != nullptr)
 	{
@@ -137,9 +140,10 @@ void SSEditor::StartupEngine()
 	
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
+	ICollisionWorld* NewCollWorld = _CollDevice->CreateCollWorld("EditorCollWorld");
 
 	_DefaultWorld = NewSObject<SWorld>(L"World");
-	_DefaultWorld->InitializeWorld(NewRenderWorld);
+	_DefaultWorld->InitializeWorld(NewRenderWorld, NewCollWorld);
 
 	{
 		_ImGUI_AssetViewer = DBG_NEW ImGUI_AssetManager(_Renderer);
@@ -151,27 +155,35 @@ void SSEditor::StartupEngine()
 		// Floor
 		SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor");
 		_DefaultWorld->AddToWorld(Floor);
-		Floor->SetPosition(Vector4f(0, -0.1, 0, 1));
+		Floor->SetPosition(Vector4f(0, -3, 0, 1));
 		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
 
-
-		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
-		TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 }));
-//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
-		SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
-
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FR.ranim", E8Dir::UR);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_R.ranim", E8Dir::R);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BR.ranim", E8Dir::DR);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_B.ranim", E8Dir::D);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BL.ranim", E8Dir::DL);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_L.ranim", E8Dir::L);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
+		/*
+		for (int32 i = 0; i < 9; i++)
+		{
+			float PosX = -4 + i;
 
 
-		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
+			TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
+			TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 }));
+			TEMP_MdlcObj->SetPosition({PosX, 0, 0, 1});
+			//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
+			SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
+
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FR.ranim", E8Dir::UR);
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_R.ranim", E8Dir::R);
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BR.ranim", E8Dir::DR);
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_B.ranim", E8Dir::D);
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BL.ranim", E8Dir::DL);
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_L.ranim", E8Dir::L);
+			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
+
+
+			_DefaultWorld->AddToWorld(TEMP_MdlcObj);
+		}
+		*/
 
 	}
 
@@ -218,6 +230,23 @@ void SSEditor::StartupEngine()
 		_DefaultWorld->AddToWorld(LightObject);
 
 		TEMP_Light = LightComp;
+	}
+
+
+	{
+		SGameObject* Box01 = NewSObject<SGameObject>(L"BoxColl1");
+		TEMP_Box1 = Box01->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+		Box01->SetPosition({ -2,2,0,1 });
+		SGameObjectConstructor::FinishConstructHierarchy(Box01);
+		TEMP_Box1->SetExtent({ 0.5, 0.5, 0.5,0 });
+		_DefaultWorld->AddToWorld(Box01);
+
+		SGameObject* Box02 = NewSObject<SGameObject>(L"BoxColl2");
+		TEMP_Box2 = Box02->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+		Box02->SetPosition({ 2,2,0,1 });
+		SGameObjectConstructor::FinishConstructHierarchy(Box02);
+		TEMP_Box2->SetExtent({ 0.5, 0.5, 0.5,0 });
+		_DefaultWorld->AddToWorld(Box02);
 	}
 }
 
@@ -303,6 +332,9 @@ void SSEditor::CleanupEngine()
 	_Renderer->CleanUp();
 	delete _Renderer;
 	_Renderer = nullptr;
+
+	delete _CollDevice;
+	_CollDevice = nullptr;
 }
 
 void SSEditor::TEMP_ProcessContents()
@@ -388,8 +420,6 @@ void SSEditor::TEMP_ProcessContents()
 			CamGameObj->SetPosition(Pos);
 		}
 	}
-
-	Quaternion::FromEulerRotation(Vector4f(45, 45, 90, 0));
 
 
 	SGameObject* PickedGameObject = _ImGUI_WorldManager->GetPickedObject();
@@ -484,6 +514,93 @@ void SSEditor::TEMP_ProcessContents()
 			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -10);
 			LightGO->SetRotation(CurRot);
 		}
+	}
+
+
+	// Collision Test
+	{
+
+		Vector4f a = TEMP_Box1->GetGameObject()->GetTransform().Position;
+		Vector4f b = TEMP_Box2->GetGameObject()->GetTransform().Position;
+
+		Vector4f ab = b - a;
+
+		Vector4f FurthestA = TEMP_Box1->CalcFurthest(ab);
+		Vector4f FurthestB = TEMP_Box2->CalcFurthest(-ab);
+		Vector4f Simplex0 = FurthestA - FurthestB;
+		Vector4f FurthestAB = -Simplex0;
+
+		SimplexV4 Simplex(Simplex0);
+
+		Vector4f FurthestA2 = TEMP_Box1->CalcFurthest(FurthestAB);
+		Vector4f FurthestB2 = TEMP_Box2->CalcFurthest(FurthestAB);
+		Vector4f Simplex1 = FurthestA2 - FurthestB2;
+		Simplex.PushBack(Simplex1);
+
+
+		// Simplex0 -> 민코스프키 차를 포함하는 영역의 Simplex 첫 번째 지점
+		// Simplex1 -> Simplex0의 반대로 향하는 지점을 두 번째 Simplex로 찾음
+		float Similiary = SS::Dot3D(FurthestAB, Simplex1);
+
+		// 반대방향으로 Simplex1을 찾았는데 그게 내가 원하는 방향으로 안나있다? 그러면 충돌 안한거임
+		if (Similiary >= 0)
+		{
+			Vector4f ab = Simplex1 - Simplex0;
+			Vector4f ao = -Simplex0;
+
+			Vector4f Perepndicular;
+
+			if (SS::Dot3D(ab, ao) > 0)
+			{
+				Vector4f Normal = SS::Cross(ab, ao);
+			}
+			else
+			{
+				
+			}
+
+		}
+
+
+		// 드로우
+		IMeshAsset* Sphere = _Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
+		IMeshAsset* Arrow = _Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
+
+		Transform temp;
+		temp.Scale = { 0.1, 0.1, 0.1, 0 };
+		temp.Position = FurthestA;
+
+		SRenderDebugUtil::DrawDirectionalMesh(
+			_DefaultWorld,
+			a,
+			b,
+			Arrow,
+			true,
+			0.5,
+			{ 1,0,0,1 });
+
+		SRenderDebugUtil::DrawDebugMesh(
+			_DefaultWorld,
+			temp,
+			Sphere,
+			true,
+			{ 1,0,0,1 });
+
+		temp.Position = FurthestB;
+		SRenderDebugUtil::DrawDebugMesh(
+			_DefaultWorld,
+			temp,
+			Sphere,
+			true,
+			{ 1,0,0,1 });
+
+		temp.Position = {0,0,0,1};
+		SRenderDebugUtil::DrawDebugMesh(
+			_DefaultWorld,
+			temp,
+			Sphere,
+			true,
+			{ 0,1,0,1 });
 	}
 }
 

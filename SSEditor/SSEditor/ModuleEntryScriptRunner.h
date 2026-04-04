@@ -5,6 +5,7 @@
 
 extern HINSTANCE g_hInstSSGAL;
 extern HINSTANCE g_hInstSSRenderer;
+extern HINSTANCE g_hInstSSCollision;
 extern HINSTANCE g_hInstSSFBXImporter;
 extern HINSTANCE g_hInstSSAssetDBManager;
 

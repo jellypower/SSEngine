@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 
+#include <SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h>
 #include <SSEngineDefault/Public/WindowManager/IWindowManager.h>
 
 
@@ -76,7 +77,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 
 
 
-	g_Editor = DBG_NEW SSEditor(g_Renderer);
+	g_Editor = DBG_NEW SSEditor(g_Renderer, g_CollDevice);
 	
 
 	

@@ -2,19 +2,16 @@
 
 #include "ModuleEntryScriptRunner.h"
 
-#include <SSEngineDefault/Public/WindowManager/WindowUtils.h>
-
 #include "SSBuildSettings.h"
 
-#include "SSEngineDefault/Public/SSEngineInlineSettings.h"
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 #include "SSEngineDefault/Public/ModuleEntry/SSEngineDefaultModuleEntry.h"
 #include "SSEngineDefault/Public/RawInput/IRawInputProcessor.h"
 #include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
-#include "SSEngineDefault/Public/SHasher/IHasherPool.h"
 #include "SSEngineDefault/Public/SSThread/IThreadManager.h"
-#include "SSEngineDefault/Public/WindowManager/IWindowManager.h"
 #include "SSEngineDefault/Public/SSThread/PWin32/SSThreadUtil_Win32.h"
+#include "SSEngineDefault/Public/WindowManager/IWindowManager.h"
+#include "SSEngineDefault/Public/WindowManager/WindowUtils.h"
 
 #include "SObject/Public/SObjectGlobalHashMap.h"
 #include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
@@ -24,6 +21,10 @@
 
 #include "SSRenderer/Public/ModuleEntry/SSRendererFactory.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
+
+#include "SSCollision/Public/ModuleEntry/CollisionWorldFactory.h"
+#include "SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h"
+#include "SSCollision/Public/ModuleEntry/SSCollisionModuleEntry.h"
 
 #include "SSContentsBase/Public/ModuleEntry/SSContentsBaseModuleEntry.h"
 
@@ -44,12 +45,17 @@ IThreadManager* g_ThreadManager = nullptr;
 IRenderer* g_Renderer = nullptr;
 // ~SSRendererGlobalVariableSet
 
+// SSCollisionGlobalVariableSet
+ICollDevice* g_CollDevice = nullptr;
+// ~SSCollisionGlobalVariableSet
+
 HWND g_hWnd = NULL;
 HINSTANCE g_hInst = NULL;
 RECT g_WndRect = { 0,0,1920,1080 };
 
 HINSTANCE g_hInstSSGAL = nullptr;
 HINSTANCE g_hInstSSRenderer = nullptr;
+HINSTANCE g_hInstSSCollision = nullptr;
 HINSTANCE g_hInstSSFBXImporter = nullptr;
 HINSTANCE g_hInstSSAssetDBManager = nullptr;
 
@@ -70,6 +76,12 @@ void RunLoadLibraries()
 	if (g_hInstSSRenderer == nullptr)
 	{
 		g_hInstSSRenderer = LoadLibrary(SSRENDERER_MODULEPATH);
+	}
+
+	g_hInstSSCollision = LoadLibrary(L"SSCollision.dll");
+	if (g_hInstSSCollision == nullptr)
+	{
+		g_hInstSSCollision = LoadLibrary(SSCOLLISION_MODULEPATH);
 	}
 
 	g_hInstSSFBXImporter = LoadLibrary(L"SSFBXImporter.dll");
@@ -124,9 +136,11 @@ void RunModuleEntryScriptPostInitWindow(
 		FuncPtr_CreateGALRenderDevice CreateGALRenderDevice = (FuncPtr_CreateGALRenderDevice)GetProcAddress(g_hInstSSGAL, "CreateGALRenderDevice");
 		FuncPtr_CreateGALSwapChain CreateGALSwapChain = (FuncPtr_CreateGALSwapChain)GetProcAddress(g_hInstSSGAL, "CreateGALSwapChain");
 
-
 		FuncPtr_CreateRenderer CreateRenderer = (FuncPtr_CreateRenderer)GetProcAddress(g_hInstSSRenderer, "CreateRenderer");
 		FuncPtr_SSRendererModuleEntry SSRendererModuleEntry = (FuncPtr_SSRendererModuleEntry)GetProcAddress(g_hInstSSRenderer, "SSRendererModuleEntry");
+
+		FuncPtr_CreateCollDevice CreateCollDevice = (FuncPtr_CreateCollDevice)GetProcAddress(g_hInstSSCollision, "CreateCollDevice");
+		FuncPtr_SSCollisionModuleEntry SSCollisionModuleEntry = (FuncPtr_SSCollisionModuleEntry)GetProcAddress(g_hInstSSCollision, "SSCollisionModuleEntry");
 
 		FuncPtr_SSFBXImporterModuleEntry SSFBXImporterModuleEntry = (FuncPtr_SSFBXImporterModuleEntry)GetProcAddress(g_hInstSSFBXImporter, "SSFBXImporterModuleEntry");
 		g_fpCreateSSFBXImporter = (FuncPtr_CreateSSFBXImporter)GetProcAddress(g_hInstSSFBXImporter, "CreateSSFBXImporter");
@@ -148,6 +162,12 @@ void RunModuleEntryScriptPostInitWindow(
 		g_Renderer = CreateRenderer(NewRenderDevice);
 
 
+		g_CollDevice = CreateCollDevice();
+		SSCollisionModuleEntry(
+			g_FrameInfoProcessor,
+			g_ThreadManager);
+
+
 		GALRenderTarget* SwapChainRenderTarget = CreateGALSwapChain(g_Renderer->GetMainDeviceContext(), hWnd);
 		g_Renderer->HandoverMainViewportSwapChain(SwapChainRenderTarget);
 
@@ -163,6 +183,7 @@ void RunModuleEntryScriptPostInitWindow(
 
 	SSContentsBaseModuleEntry(
 		g_Renderer,
+		g_CollDevice,
 		g_FrameInfoProcessor,
 		g_RawInputProcessor,
 		g_ThreadManager);
@@ -192,6 +213,8 @@ void RunUnloadLibraries()
 	g_fpCreateSSFBXImporter = nullptr;
 
 	BOOL bSuccess = FreeLibrary(g_hInstSSFBXImporter);
+	if (bSuccess == false) SS_INTERRUPT();
+	bSuccess = FreeLibrary(g_hInstSSCollision);
 	if (bSuccess == false) SS_INTERRUPT();
 	bSuccess = FreeLibrary(g_hInstSSRenderer);
 	if (bSuccess == false) SS_INTERRUPT();
