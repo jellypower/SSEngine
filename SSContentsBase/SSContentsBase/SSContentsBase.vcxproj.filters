@@ -161,9 +161,6 @@
     <ClInclude Include="Public\SRenderContent\_DEBUG\SRenderDebugUtil.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\SRenderContent\_DEBUG\TimedDebugDrawDesc.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>

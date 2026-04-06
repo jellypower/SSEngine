@@ -3,7 +3,8 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 #include "SSContentsBase/ModuleExportKeyword.h"
-#include "SSContentsBase/Public/SRenderContent/_DEBUG/TimedDebugDrawDesc.h"
+
+#include "SSRenderer/Public/DEBUG/DebugDrawDesc.h"
 
 class IRenderer;
 class IAnimWorker;
@@ -44,6 +45,7 @@ public:
 public:
 	void PerFrameContents();
 	void PerFrameAnim();
+	void PerFrameCollision();
 
 	double GetTimeScale() const { return _TimeScale; }
 	IAnimWorker* GetAnimWorker() const { return _AnimWorker; }

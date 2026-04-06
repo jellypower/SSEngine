@@ -75,6 +75,44 @@ void SRenderDebugUtil::DrawDirectionalMesh(
 	WorldToDraw->DebugDrawMesh(WMatrix, RotMatrix, DirectionableMesh, bUseDepth, Color, Time);
 }
 
+void SRenderDebugUtil::DrawLine(
+	SWorld* WorldToDraw, 
+	const Vector4f& StartPos, 
+	const Vector4f& EndPos, 
+	bool bUseDepth,
+	float Thickness, 
+	const Vector4f& Color, 
+	float Time)
+{
+	Vector4f Dir = EndPos - StartPos;
+	float Dist = Dir.Get3DLength();
+	if (Dist < SS_EPSILON)
+	{
+		return;
+	}
+	Dir = Dir / Dist;
+
+	Quaternion Rot = Quaternion::CalcPitchYawRotationFromDir(Dir);
+
+	Vector4f Scale;
+	Scale.Z = Dist;
+	Scale.X = Dist * Thickness;
+	Scale.Y = Dist * Thickness;
+
+	Transform Transform;
+	Transform.Scale = Scale;
+	Transform.Rotation = Rot;
+	Transform.Position = StartPos;
+
+	XMMATRIX WMatrix = Transform.AsMatrix();
+	XMMATRIX RotMatrix = Rot.AsMatrix();
+
+
+	ICommonRenderAssetSet* CommonAssets = g_Renderer->GetCommonRenderAssetSet();
+	IMeshAsset* ArrowMesh = CommonAssets->GetArrowMesh();
+	WorldToDraw->DebugDrawMesh(WMatrix, RotMatrix, ArrowMesh, bUseDepth, Color, Time);
+}
+
 void SRenderDebugUtil::DrawDebugPose(
 	SWorld* WorldToDraw,
 	const XMMATRIX& PoseOriginMatrix,

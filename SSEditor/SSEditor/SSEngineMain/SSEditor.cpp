@@ -2,6 +2,7 @@
 
 #include "SSEditor.h"
 
+#include <SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h>
 
 
 #include "ImGUI_AssetManager.h"
@@ -49,7 +50,6 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
-#include "SSCollision/Public/CollisionBase/SimplexV4.h"
 
 
 SSEditor* g_Editor = nullptr;
@@ -274,6 +274,11 @@ void SSEditor::EnginePerFrame()
 	{
 		SCOPE_PROFILE(Anim);
 		_DefaultWorld->PerFrameAnim();
+	}
+
+	{
+		SCOPE_PROFILE(Anim);
+		_DefaultWorld->PerFrameCollision();
 	}
 
 	{
@@ -527,39 +532,21 @@ void SSEditor::TEMP_ProcessContents()
 
 		Vector4f FurthestA = TEMP_Box1->CalcFurthest(ab);
 		Vector4f FurthestB = TEMP_Box2->CalcFurthest(-ab);
-		Vector4f Simplex0 = FurthestA - FurthestB;
-		Vector4f FurthestAB = -Simplex0;
-
-		SimplexV4 Simplex(Simplex0);
-
-		Vector4f FurthestA2 = TEMP_Box1->CalcFurthest(FurthestAB);
-		Vector4f FurthestB2 = TEMP_Box2->CalcFurthest(FurthestAB);
-		Vector4f Simplex1 = FurthestA2 - FurthestB2;
-		Simplex.PushBack(Simplex1);
 
 
-		// Simplex0 -> 민코스프키 차를 포함하는 영역의 Simplex 첫 번째 지점
-		// Simplex1 -> Simplex0의 반대로 향하는 지점을 두 번째 Simplex로 찾음
-		float Similiary = SS::Dot3D(FurthestAB, Simplex1);
 
-		// 반대방향으로 Simplex1을 찾았는데 그게 내가 원하는 방향으로 안나있다? 그러면 충돌 안한거임
-		if (Similiary >= 0)
+		bool bColl = false;
 		{
-			Vector4f ab = Simplex1 - Simplex0;
-			Vector4f ao = -Simplex0;
+			SCOPE_PROFILE(TEMP_CheckColl);
 
-			Vector4f Perepndicular;
-
-			if (SS::Dot3D(ab, ao) > 0)
+			for (int32 i=0;i<1000;i++)
 			{
-				Vector4f Normal = SS::Cross(ab, ao);
+				bColl = g_CollDevice->AreColliding(
+					TEMP_Box1->GetCollInstance(),
+					TEMP_Box2->GetCollInstance());
 			}
-			else
-			{
-				
-			}
-
 		}
+		
 
 
 		// 드로우
@@ -568,33 +555,28 @@ void SSEditor::TEMP_ProcessContents()
 
 		Transform temp;
 		temp.Scale = { 0.1, 0.1, 0.1, 0 };
-		temp.Position = FurthestA;
 
-		SRenderDebugUtil::DrawDirectionalMesh(
-			_DefaultWorld,
-			a,
-			b,
-			Arrow,
-			true,
-			0.5,
-			{ 1,0,0,1 });
 
-		SRenderDebugUtil::DrawDebugMesh(
-			_DefaultWorld,
-			temp,
-			Sphere,
-			true,
-			{ 1,0,0,1 });
+		if (bColl)
+		{
+			temp.Position = a;
+			SRenderDebugUtil::DrawDebugMesh(
+				_DefaultWorld,
+				temp,
+				Sphere,
+				true,
+				{ 1,0,0,1 });
 
-		temp.Position = FurthestB;
-		SRenderDebugUtil::DrawDebugMesh(
-			_DefaultWorld,
-			temp,
-			Sphere,
-			true,
-			{ 1,0,0,1 });
+			temp.Position = b;
+			SRenderDebugUtil::DrawDebugMesh(
+				_DefaultWorld,
+				temp,
+				Sphere,
+				true,
+				{ 1,0,0,1 });
+		}
 
-		temp.Position = {0,0,0,1};
+		temp.Position = Vector4f::Zero;
 		SRenderDebugUtil::DrawDebugMesh(
 			_DefaultWorld,
 			temp,

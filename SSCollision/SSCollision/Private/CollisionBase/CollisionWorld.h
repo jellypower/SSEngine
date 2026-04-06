@@ -22,4 +22,19 @@ public:
 	void AddToWorld(ICollInstanceBase* InRenderInstance) override;
 	void RemoveFromWorld(SObjHashCode CollInstanceIDToRemove) override;
 
+
+	// DEBUG
+private:
+	SS::PooledList<CDDD_Line> _DDDListLine;
+	SS::PooledList<CDDD_Mesh> _DDDListMesh;
+
+public:
+	virtual const SS::PooledList<CDDD_Line>& GetDDDList_Line() const override;
+	virtual const SS::PooledList<CDDD_Mesh>& GetDDDList_Mesh() const override;
+
+	virtual void FlushDDDList() override;
+
+	virtual void AddDrawDebugLine(const CDDD_Line& Desc) override;
+	virtual void AddDrawDebugMesh(const CDDD_Mesh& Desc) override;
+	// ~DEBUG
 };

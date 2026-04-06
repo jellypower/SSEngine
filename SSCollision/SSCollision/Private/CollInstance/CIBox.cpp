@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
 #include "CIBox.h"
 
-#include "SSCollision/Private/CollDetect/CollUtils_Private.h"
 
 ECollShapeType CIBox::GetCollShapeType() const
 {
@@ -36,7 +35,7 @@ void CIBox::CommitTransform()
 
 Vector4f CIBox::CalcFurthest(const Vector4f& Dir) const
 {
-	return 	CollUtils::CalcFurthest(Dir, _Vertices, 8);
+	return 	CollMath::CalcFurthest(Dir, _Vertices, 8);
 }
 
 void CIBox::OnEnterTheCollWorld(ICollisionWorld* InCollWorld)

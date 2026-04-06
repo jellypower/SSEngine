@@ -51,3 +51,29 @@ void CollisionWorld::RemoveFromWorld(SObjHashCode CollInstanceIDToRemove)
 	_CollInstanceByHashCode.Remove(CollInstanceIDToRemove);
 	CollInstanceToRemove->OnExitFromCollWorld();
 }
+
+const SS::PooledList<CDDD_Line>& CollisionWorld::GetDDDList_Line() const
+{
+	return _DDDListLine;
+}
+
+const SS::PooledList<CDDD_Mesh>& CollisionWorld::GetDDDList_Mesh() const
+{
+	return _DDDListMesh;
+}
+
+void CollisionWorld::FlushDDDList()
+{
+	_DDDListLine.Clear();
+	_DDDListMesh.Clear();
+}
+
+void CollisionWorld::AddDrawDebugLine(const CDDD_Line& Desc)
+{
+	_DDDListLine.PushBack(Desc);
+}
+
+void CollisionWorld::AddDrawDebugMesh(const CDDD_Mesh& Desc)
+{
+	_DDDListMesh.PushBack(Desc);
+}

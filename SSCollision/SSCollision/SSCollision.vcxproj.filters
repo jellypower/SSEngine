@@ -48,7 +48,7 @@
     <ClInclude Include="Private\CollisionBase\CollDevice.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Private\CollDetect\CollUtils_Private.h">
+    <ClInclude Include="Private\CollDetect\CollCalc_Private.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\ModuleEntry\SSCollisionGlobalVariableSet.h">
@@ -57,7 +57,10 @@
     <ClInclude Include="Public\ModuleEntry\SSCollisionModuleEntry.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\CollisionBase\SimplexV4.h">
+    <ClInclude Include="Public\DEBUG\CollDebugDrawDescs.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\CollDetect\CollDebug_Private.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,10 +83,13 @@
     <ClCompile Include="Private\CollisionBase\CollDevice.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\CollDetect\CollUtils_Private.cpp">
+    <ClCompile Include="Private\CollDetect\CollCalc_Private.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\ModuleEntry\SSCollisionModuleEntry.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\CollDetect\CollDebug_Private.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

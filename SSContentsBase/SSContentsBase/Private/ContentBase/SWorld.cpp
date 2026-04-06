@@ -1,6 +1,9 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
+#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
+#include <SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h>
+
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 
@@ -16,6 +19,7 @@
 #include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
 
 SWorld::SWorld() :
@@ -80,6 +84,11 @@ void SWorld::PerFrameAnim()
 	const float DeltaTime = SSFrameInfo::GetDeltaTime();
 	_AnimWorker->BeginUpdateAnimation(DeltaTime * _TimeScale);
 	_AnimWorker->EndUpdateAnimation();
+}
+
+void SWorld::PerFrameCollision()
+{
+
 }
 
 bool SWorld::IsAnyObjectRemainInWorld() const
@@ -318,6 +327,49 @@ void SWorld::AddWorldRootObject(SGameObject* InWorldRootObject)
 
 void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
 {
+	// Process Colision
+	IMeshAsset* Cube = g_Renderer->GetCommonRenderAssetSet()->GetCube1mMesh();
+	IMeshAsset* Sphere = g_Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
+
+	const SS::PooledList<CDDD_Line>& CDDDListLine = _CollWorld->GetDDDList_Line();
+	for (const CDDD_Line& Item : CDDDListLine)
+	{
+		SRenderDebugUtil::DrawLine(
+			this,
+			Item.Start,
+			Item.End,
+			Item.bUseDepth,
+			0.3f,
+			Item.Color,
+			Item.bUseDepth);
+	}
+
+	const SS::PooledList<CDDD_Mesh>& CDDDListMesh = _CollWorld->GetDDDList_Mesh();
+	for (const CDDD_Mesh& Item : CDDDListMesh)
+	{
+		IMeshAsset* MeshAsset = Cube;
+		switch (Item.Type)
+		{
+		case ECollDebugDraw_MeshType::Point: MeshAsset = Sphere; break;
+		case ECollDebugDraw_MeshType::Box: MeshAsset = Cube; break;
+		case ECollDebugDraw_MeshType::Sphere: MeshAsset = Sphere; break;
+		}
+
+		SRenderDebugUtil::DrawDebugMesh(
+			this,
+			Item.WMatrix,
+			Item.RotMatrix,
+			MeshAsset,
+			Item.bUseDepth,
+			Item.Color,
+			Item.Time
+		);
+	}
+	
+	_CollWorld->FlushDDDList();
+
+
+	//
 	for (int i = 0; i < _MeshDebugDrawTasks.GetSize(); i++)
 	{
 		InRenderer->DrawWireFrame(_MeshDebugDrawTasks[i].RenderDesc);

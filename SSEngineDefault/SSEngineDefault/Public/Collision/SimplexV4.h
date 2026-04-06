@@ -47,6 +47,17 @@ public:
 		return _Points[Idx];
 	}
 
+	const Vector4f& operator[](int32 Idx) const
+	{
+		if (Idx < 0 || Idx >= _PointCnt)
+		{
+			SS_INTERRUPT();
+			return _Points[0];
+		}
+
+		return _Points[Idx];
+	}
+
 	void PushBack(const Vector4f& In)
 	{
 		if (_PointCnt >= 4)

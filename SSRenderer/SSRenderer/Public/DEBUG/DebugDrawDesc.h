@@ -11,3 +11,9 @@ struct DebugDrawMeshDesc
 	XMMATRIX RotMatrix;
 	Vector4f DrawColor;
 };
+
+struct TimedDebugDrawMeshDesc
+{
+	DebugDrawMeshDesc RenderDesc;
+	float Time = 0;
+};

@@ -1,10 +1,10 @@
-﻿#include "pch.h"
-#include "CollUtils_Private.h"
+﻿#define SSENGINEDEFAULT_MODULE_EXPORT
+#include "SSEngineDefault/Public/Collision/CollMath.h"
 
-#include "SSCollision/Public/CollisionBase/SimplexV4.h"
+#include "SSEngineDefault/Public/SSStaticMath.h"
+#include "SSEngineDefault/Public/Collision/SimplexV4.h"
 
-
-Vector4f CollUtils::CalcFurthest(const Vector4f& Dir, const Vector4f* Points, int PointCnt)
+Vector4f CollMath::CalcFurthest(const Vector4f& Dir, const Vector4f* Points, int PointCnt)
 {
 	Vector4f MaxVertex;
 	float MaxDist = -FLT_MAX;
@@ -25,7 +25,7 @@ Vector4f CollUtils::CalcFurthest(const Vector4f& Dir, const Vector4f* Points, in
 	return MaxVertex;
 }
 
-bool CollUtils::ContainsOrigin_Reconstruct(SimplexV4& Points, Vector4f& NewDirection)
+bool CollMath::ContainsOrigin_Reconstruct(SimplexV4& Points, Vector4f& NewDirection)
 {
 	const int32 PointCnt = Points.GetCnt();
 
@@ -50,7 +50,7 @@ bool CollUtils::ContainsOrigin_Reconstruct(SimplexV4& Points, Vector4f& NewDirec
 	return false;
 }
 
-void CollUtils::Reconstruct_Line(SimplexV4& Points, Vector4f& NewDirection)
+void CollMath::Reconstruct_Line(SimplexV4& Points, Vector4f& NewDirection)
 {
 	Vector4f ab = Points[0] - Points[1];
 	Vector4f ao = -Points[1];
@@ -64,16 +64,16 @@ void CollUtils::Reconstruct_Line(SimplexV4& Points, Vector4f& NewDirection)
 	}
 	else
 	{
-		SS_ASSERT(false); // 일반적으로 도달할 수 없는 경로로 보임
+		// 일반적으로 도달할 수 없는 경로로 보임
 		Points = SimplexV4(Points[1]);
 		NewDirection = ao;
 	}
 }
 
-void CollUtils::Reconstruct_Triangle(SimplexV4& Points, Vector4f& NewDirection)
+void CollMath::Reconstruct_Triangle(SimplexV4& Points, Vector4f& NewDirection)
 {
 	// a 점은 제일 마지막에 추가한 점이다
-	// 이는 곧, a는 이전에 Line기준으로 원점으로 향하게 둔 Support Point이다.
+// 이는 곧, a는 이전에 Line기준으로 원점으로 향하게 둔 Support Point이다.
 
 	Vector4f ab = Points[1] - Points[2];
 	Vector4f ac = Points[0] - Points[2];
@@ -133,7 +133,7 @@ void CollUtils::Reconstruct_Triangle(SimplexV4& Points, Vector4f& NewDirection)
 			{
 				NewDirection = abc;
 			}
-			else 
+			else
 			{
 				// bc순서로 감싼 방향의 abc가 원점 반대로 향하는 경우
 				// -> 삼각형 실제 도형도 b랑 c 위치를 뒤집어줘서 bc순서로 감쌌을 때 원점을 향하게 구성
@@ -144,7 +144,7 @@ void CollUtils::Reconstruct_Triangle(SimplexV4& Points, Vector4f& NewDirection)
 	}
 }
 
-bool CollUtils::Reconstruct_Tetrahedron(SimplexV4& Points, Vector4f& NewDirection)
+bool CollMath::Reconstruct_Tetrahedron(SimplexV4& Points, Vector4f& NewDirection)
 {
 	const Vector4f& d = Points[0]; // Triangle땐 c
 	const Vector4f& c = Points[1]; // Triangle땐 b
