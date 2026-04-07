@@ -5,6 +5,7 @@
 
 #include "SSCollision/Private/CollInstance/CIBox.h"
 #include "SSCollision/Private/CollDetect/CollCalc_Private.h"
+#include "SSCollision/Private/CollInstance/CISphere.h"
 
 ICollisionWorld* CollDevice::CreateCollWorld(SS::SHasherW InWorldName) const
 {
@@ -14,6 +15,11 @@ ICollisionWorld* CollDevice::CreateCollWorld(SS::SHasherW InWorldName) const
 ICIBox* CollDevice::CreateCollBox()
 {
 	return DBG_NEW CIBox();
+}
+
+ICISphere* CollDevice::CreateCollSphere()
+{
+	return DBG_NEW CISphere();
 }
 
 bool CollDevice::AreColliding(const ICollInstanceBase* c1, const ICollInstanceBase* c2)

@@ -15,7 +15,9 @@
 
 
 #include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SStaticMeshRenderComponent.h"
 #include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
+#include "SSContentsBase/Public/CollisionComp/SSphereColliderComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
@@ -197,6 +199,8 @@ void SSEditor::StartupEngine()
 	}
 
 
+	Vector4f TEMP_Offset = {0, 0, 0 ,1};
+
 	{
 		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
 		SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
@@ -207,7 +211,7 @@ void SSEditor::StartupEngine()
 		CameraComp->SetFOVWithDegrees(60);
 		CameraComp->SetNearZ(0.01f);
 		CameraComp->SetFarZ(20.f);
-		CameraObject->SetPosition(Vector4f(0, 0, -10.f, 0));
+		CameraObject->SetPosition(Vector4f(0, 0, -10.f, 0) + TEMP_Offset);
 
 		Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));
 		CameraObject->SetRotation(StartRot);
@@ -234,18 +238,22 @@ void SSEditor::StartupEngine()
 
 
 	{
-		SGameObject* Box01 = NewSObject<SGameObject>(L"BoxColl1");
-		TEMP_Box1 = Box01->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-		Box01->SetPosition({ -2,2,0,1 });
-		SGameObjectConstructor::FinishConstructHierarchy(Box01);
-		TEMP_Box1->SetExtent({ 0.5, 0.5, 0.5,0 });
-		_DefaultWorld->AddToWorld(Box01);
+		SGameObject* Sphere01 = NewSObject<SGameObject>(L"Coll1");
+		TEMP_Coll1 = Sphere01->CreateComponent<SSphereColliderComponent>(L"SSphereColliderComponent");
+		SStaticMeshRenderComponent* SM1 = Sphere01->CreateComponent<SStaticMeshRenderComponent>("SphereMesh1");
+		SM1->SetMeshAsset(CRAN::SPHERE1M_MESH);
+		Sphere01->SetPosition(Vector4f( - 2, 2, 0, 1 ) + TEMP_Offset);
+		SGameObjectConstructor::FinishConstructHierarchy(Sphere01);
+		static_cast<SSphereColliderComponent*>(TEMP_Coll1)->SetRadius(0.5f);
+		_DefaultWorld->AddToWorld(Sphere01);
 
-		SGameObject* Box02 = NewSObject<SGameObject>(L"BoxColl2");
-		TEMP_Box2 = Box02->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-		Box02->SetPosition({ 2,2,0,1 });
+		SGameObject* Box02 = NewSObject<SGameObject>(L"Coll2");
+		TEMP_Coll2 = Box02->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+		SStaticMeshRenderComponent* SM2 = Box02->CreateComponent<SStaticMeshRenderComponent>("BoxMesh2");
+		SM2->SetMeshAsset(CRAN::CUBE1M_MESH);
+		Box02->SetPosition(Vector4f( 2,2,0,1 ) + TEMP_Offset);
 		SGameObjectConstructor::FinishConstructHierarchy(Box02);
-		TEMP_Box2->SetExtent({ 0.5, 0.5, 0.5,0 });
+		static_cast<SBoxColliderComponent*>(TEMP_Coll2)->SetExtent({ 0.5, 0.5, 0.5,0 });
 		_DefaultWorld->AddToWorld(Box02);
 	}
 }
@@ -525,13 +533,13 @@ void SSEditor::TEMP_ProcessContents()
 	// Collision Test
 	{
 
-		Vector4f a = TEMP_Box1->GetGameObject()->GetTransform().Position;
-		Vector4f b = TEMP_Box2->GetGameObject()->GetTransform().Position;
+		Vector4f a = TEMP_Coll1->GetGameObject()->GetTransform().Position;
+		Vector4f b = TEMP_Coll2->GetGameObject()->GetTransform().Position;
 
 		Vector4f ab = b - a;
 
-		Vector4f FurthestA = TEMP_Box1->CalcFurthest(ab);
-		Vector4f FurthestB = TEMP_Box2->CalcFurthest(-ab);
+		Vector4f FurthestA = TEMP_Coll1->CalcFurthest(ab);
+		Vector4f FurthestB = TEMP_Coll2->CalcFurthest(-ab);
 
 
 
@@ -542,8 +550,8 @@ void SSEditor::TEMP_ProcessContents()
 			for (int32 i=0;i<1000;i++)
 			{
 				bColl = g_CollDevice->AreColliding(
-					TEMP_Box1->GetCollInstance(),
-					TEMP_Box2->GetCollInstance());
+					TEMP_Coll1->GetCollInstance(),
+					TEMP_Coll2->GetCollInstance());
 			}
 		}
 		
@@ -564,7 +572,7 @@ void SSEditor::TEMP_ProcessContents()
 				_DefaultWorld,
 				temp,
 				Sphere,
-				true,
+				false,
 				{ 1,0,0,1 });
 
 			temp.Position = b;
@@ -572,7 +580,7 @@ void SSEditor::TEMP_ProcessContents()
 				_DefaultWorld,
 				temp,
 				Sphere,
-				true,
+				false,
 				{ 1,0,0,1 });
 		}
 

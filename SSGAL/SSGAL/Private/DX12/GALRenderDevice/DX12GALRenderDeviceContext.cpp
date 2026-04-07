@@ -410,7 +410,7 @@ void DX12GALRenderDeviceContext::SyncGALRI(IRenderInstance* RIToSync, const IRen
 
 		const Vector4f& CamPos = CamTransform.Position;
 		const float CubeMapSize = CubeMapToDraw->GetCubeMapSize();
-		CubemapModelTransform.Position = Vector4f(CamPos.X, CamPos.Y - CubeMapSize * 0.5f, CamPos.Z, 1);
+		CubemapModelTransform.Position = Vector4f(CamPos.X, CamPos.Y, CamPos.Z, 1);
 		CubemapModelTransform.Scale = Vector4f(CubeMapSize, CubeMapSize, CubeMapSize, 0);
 
 		DX12GALCubeMap->GetCubemapCBModelSysmem()->ObjectID = 0; // 일단 사용 안함

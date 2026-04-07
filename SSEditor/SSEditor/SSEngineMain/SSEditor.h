@@ -5,7 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
-class SBoxColliderComponent;
+class SColliderBaseComponent;
 class ICollDevice;
 class ImGUI_Profiler;
 class ImGUI_WorldManager;
@@ -68,8 +68,8 @@ private:
 	float TEMP_CamYRot = 0;
 	float TEMP_Speed = 10.f;
 
-	SBoxColliderComponent* TEMP_Box1 = nullptr;
-	SBoxColliderComponent* TEMP_Box2 = nullptr;
+	SColliderBaseComponent* TEMP_Coll1 = nullptr;
+	SColliderBaseComponent* TEMP_Coll2 = nullptr;
 
 
 private:

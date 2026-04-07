@@ -8,6 +8,7 @@ enum class ECollShapeType : int32
 	None,
 
 	Box,
+	Sphere
 };
 
 class ICollInstanceBase : public INoncopyable

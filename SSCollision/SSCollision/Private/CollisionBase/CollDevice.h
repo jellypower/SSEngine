@@ -8,6 +8,7 @@ class CollDevice : public ICollDevice
 public:
 	virtual ICollisionWorld* CreateCollWorld(SS::SHasherW InWorldName) const override;
 	virtual ICIBox* CreateCollBox() override;
+	virtual ICISphere* CreateCollSphere() override;
 
 
 

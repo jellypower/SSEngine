@@ -1,4 +1,5 @@
-﻿#include "SSContentsBase/Public/CollisionComp/SColliderBaseComponent.h"
+﻿#define SSCONTENTBASE_MODULE_EXPORT
+#include "SSContentsBase/Public/CollisionComp/SColliderBaseComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 

@@ -184,6 +184,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\AnimComponents\SBlendSpaceAnimTestComponent.cpp" />
     <ClCompile Include="Private\CollisionComp\SColliderBaseComponent.cpp" />
     <ClCompile Include="Private\CollisionComp\SBoxColliderComponent.cpp" />
+    <ClCompile Include="Private\CollisionComp\SSphereColliderComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h" />
@@ -198,6 +199,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="Public\AnimComponents\SAnimatorBaseComponent.h" />
     <ClInclude Include="Public\AnimWorker\IAnimWorker.h" />
+    <ClInclude Include="Public\CollisionComp\SSphereColliderComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SCubeMapRenderComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.h" />

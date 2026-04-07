@@ -160,6 +160,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Private\CollDetect\CollDebug_Private.h" />
+    <ClInclude Include="Private\CollInstance\CISphere.h" />
+    <ClInclude Include="Public\CollInstance\ICISphere.h" />
     <ClInclude Include="Public\DEBUG\CollDebugDrawDescs.h" />
     <ClInclude Include="Private\CollInstance\CIBox.h" />
     <ClInclude Include="Private\CollDetect\CollCalc_Private.h" />
@@ -179,6 +181,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\CollDetect\CollDebug_Private.cpp" />
     <ClCompile Include="Private\CollInstance\CIBox.cpp" />
     <ClCompile Include="Private\CollDetect\CollCalc_Private.cpp" />
+    <ClCompile Include="Private\CollInstance\CISphere.cpp" />
     <ClCompile Include="Private\CollisionBase\CollDevice.cpp" />
     <ClCompile Include="Private\CollisionBase\CollisionWorld.cpp" />
     <ClCompile Include="Private\ModuleEntry\CollisionWorldFactory.cpp" />

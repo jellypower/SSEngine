@@ -1,4 +1,5 @@
-﻿#include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
+﻿#define SSCONTENTBASE_MODULE_EXPORT
+#include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
 
 #include "SSCollision/Public/CollInstance/ICIBox.h"
 #include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
@@ -20,7 +21,7 @@ void SBoxColliderComponent::SetExtent(const Vector4f& Extent)
 
 bool SBoxColliderComponent::ShouldProcessPerFrameInherently() const
 {
-	return true;
+	return false;
 }
 
 void SBoxColliderComponent::PerFrame(float DeltaTime)
@@ -34,15 +35,6 @@ void SBoxColliderComponent::PerFrame(float DeltaTime)
 	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
 
 
-	constexpr XMMATRIX Pivot =
-	{
-		{1, 0,0,0},
-		{0,1,0,0},
-		{0,0,1,0},
-		{0,-0.5,0,1},
-	};
-
-	WorldTransformMat = Pivot * WorldTransformMat;
 
 	SRenderDebugUtil::DrawDebugMesh(
 		IncludedWorld,
@@ -50,23 +42,6 @@ void SBoxColliderComponent::PerFrame(float DeltaTime)
 		WorldRot.AsMatrix(),
 		Cube,
 		true);
-
-	/*
-	for (int32 i = 0; i < 8; i++)
-	{
-		Transform t;
-		t.Position = _CollInstance->GetVertexPos(i);
-		t.Scale = { 0.1, 0.1, 0.1, 0 };
-
-		SRenderDebugUtil::DrawDebugMesh(
-			IncludedWorld,
-			t,
-			Sphere,
-			true,
-			{ 0, 1,0,1 });
-	}
-	*/
-
 }
 
 Vector4f SBoxColliderComponent::CalcFurthest(const Vector4f& Dir) const

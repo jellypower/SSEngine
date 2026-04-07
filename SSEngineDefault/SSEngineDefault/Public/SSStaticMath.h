@@ -120,4 +120,39 @@ namespace SS {
 
 		return Result / WholeWidth;
 	}
+
+
+	FORCEINLINE float CalcBiggestScaleAxis(const XMMATRIX& InMat)
+	{
+		XMVECTOR Axis = {
+			InMat.r[0].m128_f32[0],
+			InMat.r[1].m128_f32[0],
+			InMat.r[2].m128_f32[0],
+			InMat.r[3].m128_f32[0]
+		};
+		float xAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+
+
+		Axis = {
+			InMat.r[0].m128_f32[1],
+			InMat.r[1].m128_f32[1],
+			InMat.r[2].m128_f32[1],
+			InMat.r[3].m128_f32[1]
+		};
+		float yAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+
+
+		Axis = {
+	InMat.r[0].m128_f32[2],
+	InMat.r[1].m128_f32[2],
+	InMat.r[2].m128_f32[2],
+	InMat.r[3].m128_f32[2]
+		};
+		float zAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+
+
+		float GreatesAxisSqr = xAxisSqr > yAxisSqr ? xAxisSqr : yAxisSqr;
+		GreatesAxisSqr = GreatesAxisSqr > zAxisSqr ? GreatesAxisSqr : zAxisSqr;
+		return sqrt(GreatesAxisSqr);
+	}
 };
