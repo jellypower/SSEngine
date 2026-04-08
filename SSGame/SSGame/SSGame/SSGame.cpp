@@ -29,14 +29,18 @@
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
+#include "SSCollision/Public/CollisionBase/ICollDevice.h"
+
 
 
 
 SSGame* g_Game;
 
-SSGame::SSGame(IRenderer* EngineRenderer)
+
+SSGame::SSGame(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice)
 {
 	_Renderer = EngineRenderer;
+	_CollDevice = EngineCollDevice;
 }
 
 SSGame::~SSGame()
@@ -78,9 +82,10 @@ void SSGame::StartupEngine()
 	}
 
 	{
+		ICollisionWorld* NewCollWorld = _CollDevice->CreateCollWorld("EditorCollWorld");
 		IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
 		_DefaultWorld = NewSObject<SWorld>(L"World");
-		_DefaultWorld->InitializeWorld(NewRenderWorld);
+		_DefaultWorld->InitializeWorld(NewRenderWorld, NewCollWorld);
 	}
 
 	StartUpContents();
@@ -138,6 +143,9 @@ void SSGame::CleanupEngine()
 	_Renderer->CleanUp();
 	delete _Renderer;
 	_Renderer = nullptr;
+
+	delete _CollDevice;
+	_CollDevice = nullptr;
 }
 
 void SSGame::StartUpContents()

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 
+class ICollDevice;
 class SPlayerController;
 class SCameraComponent;
 class IAssetDBLoader;
@@ -13,7 +14,7 @@ extern SSGame* g_Game;
 class SSGame : INoncopyable
 {
 public:
-	SSGame(IRenderer* EngineRenderer);
+	SSGame(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice);
 	virtual ~SSGame();
 
 	void StartupEngine();
@@ -38,6 +39,7 @@ private:
 
 private:
 	IRenderer* _Renderer = nullptr;
+	ICollDevice* _CollDevice = nullptr;
 	IAssetDBLoader* _AssetDBLoader = nullptr;
 
 

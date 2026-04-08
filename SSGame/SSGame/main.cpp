@@ -1,21 +1,24 @@
 ﻿#include "pch.h"
 
+#include <SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h>
 #include <SSEngineDefault/Public/WindowManager/IWindowManager.h>
-#include <SSEngineDefault/Public/WindowManager/WindowUtils.h>
 
 
 #include "Resource.h"
 
-#include "ModuleEntryScriptRunner.h"
+
+
 #include "SSBuildSettings.h"
 
+#include "ModuleEntryScriptRunner.h"
 
 
-
-#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/RawInput/IRawInputProcessor.h"
+#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
+#include "SSEngineDefault/Public/WindowManager/WindowUtils.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
+#include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
 
 #include "SSGame/SSGame.h"
 
@@ -83,7 +86,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	g_FrameInfoProcessor->StartUpXXX();
 
 
-	g_Game = DBG_NEW SSGame(g_Renderer);
+	g_Game = DBG_NEW SSGame(g_Renderer, g_CollDevice);
 
 	g_Game->StartupEngine();
 	while (WM_QUIT != msg.message)
