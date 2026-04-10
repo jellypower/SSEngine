@@ -404,8 +404,9 @@ FodyWeavers.xsd
 *.dds
 *.fbx
 
-# Extern Libs
+# SSEngine Folders
 ExternLibs
+_BuildResults
 
 # SSEngine Resources
 *.apak
