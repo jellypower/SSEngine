@@ -24,7 +24,7 @@ bool CollCalc_Private::GJK(const ICollInstanceBase* c1, const ICollInstanceBase*
 
 		Support = GJK_Support(c1, c2, Dir);
 
-		constexpr float TEMP_GJK_EPSILON = 0.1f;
+		constexpr float TEMP_GJK_EPSILON = 0.01f;
 		if (SS::Dot3D(Support, Dir) <= TEMP_GJK_EPSILON)
 		{
 			// DEBUG

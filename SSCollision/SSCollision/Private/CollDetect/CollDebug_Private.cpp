@@ -1,10 +1,15 @@
 ﻿#include "pch.h"
 #include "CollDebug_Private.h"
 
+#include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 #include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
 #include "SSCollision/Public/DEBUG/CollDebugDrawDescs.h"
 
 
+void CollDebug_Private::DrawLine(ICollisionWorld* InWorldToDraw, const CDDD_Line& Desc)
+{
+	InWorldToDraw->AddDrawDebugLine(Desc);
+}
 
 void CollDebug_Private::DrawSimplex(
 	ICollisionWorld* InWorldToDraw,
@@ -31,4 +36,47 @@ void CollDebug_Private::DrawSimplex(
 			InWorldToDraw->AddDrawDebugLine(LineDrawDesc);
 		}
 	}
+}
+
+void CollDebug_Private::DrawBoundBox(
+	ICollisionWorld* InWorldToDraw, 
+	const ICollInstanceBase* CollInstance,
+	const Vector4f& Color, 
+	bool bUseDepth, 
+	float Time)
+{
+	Vector4f Min = CollInstance->GetBBMin();
+	Vector4f Max = CollInstance->GetBBMax();
+
+
+	Transform DrawTransform;
+	DrawTransform.Position = CollInstance->GetWorldPos();
+	DrawTransform.Scale = Max - Min;
+
+	
+	CDDD_Mesh Desc;
+	Desc.WMatrix = DrawTransform.AsMatrix();
+	Desc.RotMatrix = XMMatrixIdentity();
+	Desc.Color = Color;
+	Desc.bUseDepth = bUseDepth;
+	Desc.Time = Time;
+	InWorldToDraw->AddDrawDebugMesh(Desc);
+}
+
+void CollDebug_Private::DrawPoint(ICollisionWorld* InWorldToDraw, const Vector4f& Pos, const Vector4f& Color,
+	bool bUseDepth, float Scale, float Time)
+{
+	Transform DrawTransform;
+	DrawTransform.Position = Pos;
+	DrawTransform.Scale = { Scale, Scale,Scale ,0 };
+
+
+
+	CDDD_Mesh Desc;
+	Desc.WMatrix = DrawTransform.AsMatrix();
+	Desc.RotMatrix = XMMatrixIdentity();
+	Desc.Color = Color;
+	Desc.bUseDepth = bUseDepth;
+	Desc.Time = Time;
+	InWorldToDraw->AddDrawDebugMesh(Desc);
 }

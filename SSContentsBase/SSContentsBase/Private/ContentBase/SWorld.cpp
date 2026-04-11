@@ -88,7 +88,7 @@ void SWorld::PerFrameAnim()
 
 void SWorld::PerFrameCollision()
 {
-
+	_CollWorld->ProcessTransformCommit();
 }
 
 bool SWorld::IsAnyObjectRemainInWorld() const

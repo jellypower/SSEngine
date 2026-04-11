@@ -2,6 +2,7 @@
 #include "SSCollision/Public/DEBUG/CollDebugDrawDescs.h"
 
 
+class IRigidBodyBase;
 class ICollInstanceBase;
 
 class ICollisionWorld : public INoncopyable
@@ -10,10 +11,17 @@ public:
 	virtual bool IsAnyInstanceRemainInWorld() const = 0;
 	virtual SS::SHasherW GetWorldName() const = 0;
 
+	// CollisionInstance Add Remove
 	virtual void AddToWorld(ICollInstanceBase* InRenderInstance) = 0;
 	virtual void RemoveFromWorld(SObjHashCode CollInstanceIDToRemove) = 0;
 
+	// RigidBody Add Remove
+	virtual void AddToWorld(IRigidBodyBase* InRenderInstance) = 0;
 
+
+	// Transform Commit
+	virtual void ProcessTransformCommit() = 0;
+	virtual void AddTransformCommitNeededObj(ICollInstanceBase* InCollInstance) = 0;
 
 
 	// DEBUG

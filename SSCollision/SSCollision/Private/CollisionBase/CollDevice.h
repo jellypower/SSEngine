@@ -9,7 +9,8 @@ public:
 	virtual ICollisionWorld* CreateCollWorld(SS::SHasherW InWorldName) const override;
 	virtual ICIBox* CreateCollBox() override;
 	virtual ICISphere* CreateCollSphere() override;
-
+	virtual IRigidCahracterMovement* CreateCharacterMovement() override;
+	
 
 
 	// Static Functions

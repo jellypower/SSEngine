@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+class IRigidCahracterMovement;
 class ICISphere;
 class ICollInstanceBase;
 class ICIBox;
@@ -11,6 +12,7 @@ public:
 	virtual ICollisionWorld* CreateCollWorld(SS::SHasherW InWorldName) const = 0;
 	virtual ICIBox* CreateCollBox() = 0;
 	virtual ICISphere* CreateCollSphere() = 0;
+	virtual IRigidCahracterMovement* CreateCharacterMovement() = 0;
 
 
 	// Static Functions

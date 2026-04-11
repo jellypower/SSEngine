@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "CISphere.h"
 
+#include "SSCollision/Private/CollDetect/CollDebug_Private.h"
+#include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+
 float CISphere::GetRadius() const
 {
 	return _Radius;
@@ -20,12 +23,30 @@ void CISphere::SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& Wor
 {
 	_WorldMat = WorldMat;
 	_WorldRot = WorldRot;
+	_IncludedCollWorld->AddTransformCommitNeededObj(this);
 }
 
 void CISphere::CommitTransform()
 {
+	CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
 	// noop
 }
+
+Vector4f CISphere::GetWorldPos() const
+{
+	return _WorldMat.r[3];
+}
+
+const XMMATRIX& CISphere::GetWorldTransformMat() const
+{
+	return _WorldMat;
+}
+
+const Quaternion& CISphere::GetWorldRotTransformMat() const
+{
+	return _WorldRot;
+}
+
 
 Vector4f CISphere::CalcFurthest(const Vector4f& Dir) const
 {
@@ -41,6 +62,20 @@ Vector4f CISphere::CalcFurthest(const Vector4f& Dir) const
 	Vector4f NewDir = Dir * (BiggestScale * _Radius / Len); // Radius로 벡터 길이 변경
 
 	return NewDir.SimdVec + _WorldMat.r[3];
+}
+
+Vector4f CISphere::GetBBMin() const
+{
+	XMVECTOR c = _WorldMat.r[3];
+	XMVECTOR v = _mm_set1_ps(_Radius);
+	return c - v;
+}
+
+Vector4f CISphere::GetBBMax() const
+{
+	XMVECTOR c = _WorldMat.r[3];
+	XMVECTOR v = _mm_set1_ps(_Radius);
+	return c + v;
 }
 
 SObjHashCode CISphere::GetGameObjectID() const

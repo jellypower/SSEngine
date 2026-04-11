@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "CIBox.h"
 
+#include "SSCollision/Private/CollDetect/CollDebug_Private.h"
+#include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+
 
 ECollShapeType CIBox::GetCollShapeType() const
 {
@@ -14,28 +17,74 @@ void CIBox::SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldR
 	_WorldRot = WorldRot;
 
 	CommitTransform();
+	_IncludedCollWorld->AddTransformCommitNeededObj(this);
 }
 
 void CIBox::CommitTransform()
 {
-	_Vertices[0] = { -_Extent.X,-_Extent.Y,-_Extent.Z, 1 };
-	_Vertices[1] = { -_Extent.X,-_Extent.Y,+_Extent.Z, 1 };
-	_Vertices[2] = { +_Extent.X,-_Extent.Y,+_Extent.Z, 1 };
-	_Vertices[3] = { +_Extent.X,-_Extent.Y,-_Extent.Z, 1 };
-	_Vertices[4] = { -_Extent.X,+_Extent.Y,-_Extent.Z, 1 };
-	_Vertices[5] = { -_Extent.X,+_Extent.Y,+_Extent.Z, 1 };
-	_Vertices[6] = { +_Extent.X,+_Extent.Y,+_Extent.Z, 1 };
-	_Vertices[7] = { +_Extent.X,+_Extent.Y,-_Extent.Z, 1 };
+	XMMATRIX WorldMatAbs;
+	WorldMatAbs.r[0] = XMVectorAbs(_WorldMat.r[0]);
+	WorldMatAbs.r[1] = XMVectorAbs(_WorldMat.r[1]);
+	WorldMatAbs.r[2] = XMVectorAbs(_WorldMat.r[2]);
+	WorldMatAbs.r[3] = g_XMZero;
+	XMVECTOR RotatedExtent = XMVector3TransformNormal(_Extent.SimdVec, WorldMatAbs);
+	XMVECTOR WorldPos = _WorldMat.r[3];
 
-	for (int i = 0; i < 8; i++)
+	_BBMin = WorldPos - RotatedExtent;
+	_BBMax = WorldPos + RotatedExtent;
+
+
+	// DEBUG
 	{
-		_Vertices[i] = XMVector4Transform(_Vertices[i].SimdVec, _WorldMat);
+		CDDD_Line Desc;
+		Desc.Start = _WorldMat.r[3];
+		Desc.End = _WorldMat.r[3] + RotatedExtent;
+		CollDebug_Private::DrawLine(_IncludedCollWorld, Desc);
+
+		CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
 	}
+}
+
+Vector4f CIBox::GetWorldPos() const
+{
+	return _WorldMat.r[3];
+}
+
+const XMMATRIX& CIBox::GetWorldTransformMat() const
+{
+	return _WorldMat;
+}
+
+const Quaternion& CIBox::GetWorldRotTransformMat() const
+{
+	return _WorldRot;
 }
 
 Vector4f CIBox::CalcFurthest(const Vector4f& Dir) const
 {
-	return 	CollMath::CalcFurthest(Dir, _Vertices, 8);
+	XMMATRIX WorldToLocal = InverseRigid(_WorldMat);
+	Vector4f LocalDir = XMVector3TransformNormal(Dir.SimdVec, WorldToLocal);
+
+	Vector4f FurthestLocal;
+	FurthestLocal.X = LocalDir.X > 0 ? _Extent.X : -_Extent.X;
+	FurthestLocal.Y = LocalDir.Y > 0 ? _Extent.Y : -_Extent.Y;
+	FurthestLocal.Z = LocalDir.Z > 0 ? _Extent.Z : -_Extent.Z;
+	FurthestLocal.W = 1;
+
+	Vector4f Point = XMVector3Transform(FurthestLocal.SimdVec, _WorldMat);
+	CollDebug_Private::DrawPoint(_IncludedCollWorld, Point, Vector4f::Zero, true);
+
+	return Point;
+}
+
+Vector4f CIBox::GetBBMin() const
+{
+	return _BBMin;
+}
+
+Vector4f CIBox::GetBBMax() const
+{
+	return _BBMax;
 }
 
 void CIBox::OnEnterTheCollWorld(ICollisionWorld* InCollWorld)
@@ -56,17 +105,6 @@ ICollisionWorld* CIBox::GetIncludedCollWorld() const
 const Vector4f& CIBox::GetExtent() const
 {
 	return _Extent;
-}
-
-Vector4f CIBox::GetVertexPos(int Idx) const
-{
-	if (Idx < 0 || Idx >= 8)
-	{
-		SS_ASSERT(false);
-		return _WorldMat.r[3];
-	}
-
-	return _Vertices[Idx];
 }
 
 void CIBox::SetExtent(const Vector4f& InExtent)

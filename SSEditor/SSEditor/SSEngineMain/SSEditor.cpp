@@ -244,7 +244,7 @@ void SSEditor::StartupEngine()
 		SM1->SetMeshAsset(CRAN::SPHERE1M_MESH);
 		Sphere01->SetPosition(Vector4f( - 2, 2, 0, 1 ) + TEMP_Offset);
 		SGameObjectConstructor::FinishConstructHierarchy(Sphere01);
-		static_cast<SSphereColliderComponent*>(TEMP_Coll1)->SetRadius(0.5f);
+		dynamic_cast<SSphereColliderComponent*>(TEMP_Coll1)->SetRadius(0.5f);
 		_DefaultWorld->AddToWorld(Sphere01);
 
 		SGameObject* Box02 = NewSObject<SGameObject>(L"Coll2");
@@ -253,7 +253,7 @@ void SSEditor::StartupEngine()
 		SM2->SetMeshAsset(CRAN::CUBE1M_MESH);
 		Box02->SetPosition(Vector4f( 2,2,0,1 ) + TEMP_Offset);
 		SGameObjectConstructor::FinishConstructHierarchy(Box02);
-		static_cast<SBoxColliderComponent*>(TEMP_Coll2)->SetExtent({ 0.5, 0.5, 0.5,0 });
+		dynamic_cast<SBoxColliderComponent*>(TEMP_Coll2)->SetExtent({ 0.5, 0.5, 0.5,0 });
 		_DefaultWorld->AddToWorld(Box02);
 	}
 }
@@ -547,7 +547,7 @@ void SSEditor::TEMP_ProcessContents()
 		{
 			SCOPE_PROFILE(TEMP_CheckColl);
 
-			for (int32 i=0;i<1000;i++)
+			for (int32 i=0;i<1;i++)
 			{
 				bColl = g_CollDevice->AreColliding(
 					TEMP_Coll1->GetCollInstance(),

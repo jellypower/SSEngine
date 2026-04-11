@@ -69,6 +69,15 @@
     <ClInclude Include="Private\CollInstance\CISphere.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Public\RigidBody\IRigidBodyBase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RigidBody\IRigidCahracterMovement.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\RigidBody\RigidCharacterMovement.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -99,6 +108,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\CollInstance\CISphere.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RigidBody\RigidCharacterMovement.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

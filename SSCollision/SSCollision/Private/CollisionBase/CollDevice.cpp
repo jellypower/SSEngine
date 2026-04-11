@@ -6,6 +6,7 @@
 #include "SSCollision/Private/CollInstance/CIBox.h"
 #include "SSCollision/Private/CollDetect/CollCalc_Private.h"
 #include "SSCollision/Private/CollInstance/CISphere.h"
+#include "SSCollision/Private/RigidBody/RigidCharacterMovement.h"
 
 ICollisionWorld* CollDevice::CreateCollWorld(SS::SHasherW InWorldName) const
 {
@@ -20,6 +21,11 @@ ICIBox* CollDevice::CreateCollBox()
 ICISphere* CollDevice::CreateCollSphere()
 {
 	return DBG_NEW CISphere();
+}
+
+IRigidCahracterMovement* CollDevice::CreateCharacterMovement()
+{
+	return DBG_NEW RigidCharacterMovement();
 }
 
 bool CollDevice::AreColliding(const ICollInstanceBase* c1, const ICollInstanceBase* c2)

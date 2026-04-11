@@ -203,10 +203,12 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\CollisionComp\SColliderBaseComponent.cpp" />
     <ClCompile Include="Private\CollisionComp\SBoxColliderComponent.cpp" />
     <ClCompile Include="Private\CollisionComp\SSphereColliderComponent.cpp" />
+    <ClCompile Include="Private\Contents\Character\SCharacterComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h" />
     <ClInclude Include="Public\CollisionComp\SBoxColliderComponent.h" />
+    <ClInclude Include="Public\Contents\Character\SCharacterComponent.h" />
     <ClInclude Include="Public\CollisionComp\SColliderBaseComponent.h" />
     <ClInclude Include="Public\AnimWorker\AnimBase\AnimPoseTypes.h" />
     <ClInclude Include="Public\AnimWorker\AnimBase\AnimateUtilFunctions.h" />
