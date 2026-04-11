@@ -20,16 +20,55 @@ RigidCharacterMovement::RigidCharacterMovement()
 	_CurFace = { 0, 1 };
 }
 
+ERigidBodyType RigidCharacterMovement::GetRigidBodyType() const
+{
+	return ERigidBodyType::CharacterMovement;
+}
+
 void RigidCharacterMovement::SimulateTick(float DeltaTime)
 {
+	_bMovedOnThisTick = false;
 	if (DeltaTime > 0.1f)
 	{
 		DeltaTime = 0.1f; // 너무 큰 델타타임은 금지
 	}
 
+	MovementPos(DeltaTime);
+	MovementRotate(DeltaTime);
+}
 
-	Vector4f CurPos = _CollInstance->GetWorldPos();
+void RigidCharacterMovement::OnEndSimulation()
+{
+	_MoveInput = Vector2f::Zero;
+}
 
+bool RigidCharacterMovement::IsMovedOnThisTick() const
+{
+	return _bMovedOnThisTick;
+}
+
+Vector4f RigidCharacterMovement::GetSimulatedPosDelta() const
+{
+	return _SimulatedPosDelta;
+}
+
+bool RigidCharacterMovement::IsRotatedOnThisTick() const
+{
+	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
+	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
+	return false;
+}
+
+Quaternion RigidCharacterMovement::GetSimulatedRotDelta() const
+{
+	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
+	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
+	return Quaternion();
+}
+
+
+void RigidCharacterMovement::MovementPos(float DeltaTime)
+{
 	const float MoveInputSqrLen = _MoveInput.GetSqrLength();
 	const float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
 
@@ -110,6 +149,7 @@ void RigidCharacterMovement::SimulateTick(float DeltaTime)
 	_MoveInput = Vector2f::Zero;
 
 
+	// ApplyMovement
 	{
 		float PostSqrLen = _MoveLateralVelocity.GetSqrLength();
 
@@ -117,15 +157,21 @@ void RigidCharacterMovement::SimulateTick(float DeltaTime)
 		{
 			_MoveLateralVelocity = Vector2f::Zero;
 		}
+		else
+		{
+			_bMovedOnThisTick = true;
+			_SimulatedPosDelta.X = (_MoveLateralVelocity.X * DeltaTime);
+			_SimulatedPosDelta.Y = (_MoveLateralVelocity.Y * DeltaTime);
+		}
+
 	}
 
-	{
-		_SimulatedPosResult.X += (_MoveLateralVelocity.X * DeltaTime);
-		_SimulatedPosResult.Y += (_MoveLateralVelocity.Y * DeltaTime);
-	}
+
 
 	// DEBUG
 	{
+		Vector4f CurPos = _CollInstance->GetWorldPos();
+
 		float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
 		float VelLen = sqrt(VeloSqrLen);
 		Vector2f Velo = _MoveLateralVelocity.GetNormalized();
@@ -143,23 +189,11 @@ void RigidCharacterMovement::SimulateTick(float DeltaTime)
 		CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
 	}
 
-	MovementRotate(DeltaTime);
 }
-
-Vector4f RigidCharacterMovement::GetSimulatedPos() const
-{
-	return _SimulatedPosResult;
-}
-
-Quaternion RigidCharacterMovement::GetSimulatedRot() const
-{
-	return _SimulatedRotResult;
-}
-
 
 void RigidCharacterMovement::MovementRotate(float DeltaTime)
 {
-	bool bCurFaceEdited = false;
+	_bFaceChangedOnThisTick = false;
 
 	float TurnAmount = _FaceTurnSpeed * DeltaTime;
 	TurnAmount = TurnAmount > 1 ? 1 : TurnAmount;
@@ -192,7 +226,7 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 			TargetYaw = atan2(VelocityNormalized.Y, VelocityNormalized.X);
 			TargetYaw += XM_2PI;
 			TargetYaw = fmod(TargetYaw, XM_2PI);
-			bCurFaceEdited = true;
+			_bFaceChangedOnThisTick = true;
 		}
 		else if (_FaceMode == ECharacterFaceMode::LerpToEnteredFace)
 		{
@@ -223,7 +257,7 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 			TargetYaw = atan2(_EnteredFace.Y, _EnteredFace.X);
 			TargetYaw += XM_2PI;
 			TargetYaw = fmod(TargetYaw, XM_2PI);
-			bCurFaceEdited = true;
+			_bFaceChangedOnThisTick = true;
 		}
 		else
 		{
@@ -247,7 +281,7 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 		CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
 	}
 
-	if (bCurFaceEdited)
+	if (_bFaceChangedOnThisTick)
 	{
 		float Diff = TargetYaw - PrevYaw;
 		if (Diff > XM_PI) // ex) PrevYaw=0 to TargetYaw=270
@@ -263,13 +297,39 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 
 		_CurFace.X = sin(NewYaw);
 		_CurFace.Y = cos(NewYaw);
-		_SimulatedRotResult = Quaternion::FromEulerRotation({ 0, NewYaw, 0, 0 });
 	}
 }
 
 void RigidCharacterMovement::BindCollisionInstance(ICollInstanceBase* BoundCI)
 {
 	_CollInstance = BoundCI;
+}
+
+ICollInstanceBase* RigidCharacterMovement::GetCollInstance() const
+{
+	return _CollInstance;
+}
+
+void RigidCharacterMovement::OnEnterTheCollWorld(ICollisionWorld* InRenderWorld)
+{
+	// noop
+}
+
+void RigidCharacterMovement::OnExitFromCollWorld()
+{
+	_MoveInput = Vector2f();
+	_MoveLateralVelocity = Vector2f();
+	_EnteredFace = Vector2f();
+}
+
+bool RigidCharacterMovement::IsCurFaceEditedOnThisTick() const
+{
+	return _bFaceChangedOnThisTick;
+}
+
+Vector2f RigidCharacterMovement::GetCurFaceDir() const
+{
+	return _CurFace;
 }
 
 void RigidCharacterMovement::SetFaceMode(ECharacterFaceMode Mode)
@@ -282,7 +342,7 @@ void RigidCharacterMovement::SetEnteredFace(Vector2f InDir)
 	_EnteredFace = InDir;
 }
 
-void RigidCharacterMovement::AddAccel(Vector2f InAccel)
+void RigidCharacterMovement::AddMovementAccel(Vector2f InAccel)
 {
 	_MoveInput = _MoveInput + InAccel;
 }

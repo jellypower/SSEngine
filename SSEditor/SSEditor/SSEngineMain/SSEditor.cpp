@@ -239,12 +239,12 @@ void SSEditor::StartupEngine()
 
 	{
 		SGameObject* Sphere01 = NewSObject<SGameObject>(L"Coll1");
-		TEMP_Coll1 = Sphere01->CreateComponent<SSphereColliderComponent>(L"SSphereColliderComponent");
+		TEMP_Coll1 = Sphere01->CreateComponent<SBoxColliderComponent>(L"SSphereColliderComponent");
 		SStaticMeshRenderComponent* SM1 = Sphere01->CreateComponent<SStaticMeshRenderComponent>("SphereMesh1");
-		SM1->SetMeshAsset(CRAN::SPHERE1M_MESH);
+		SM1->SetMeshAsset(CRAN::CUBE1M_MESH);
 		Sphere01->SetPosition(Vector4f( - 2, 2, 0, 1 ) + TEMP_Offset);
 		SGameObjectConstructor::FinishConstructHierarchy(Sphere01);
-		dynamic_cast<SSphereColliderComponent*>(TEMP_Coll1)->SetRadius(0.5f);
+		dynamic_cast<SBoxColliderComponent*>(TEMP_Coll1)->SetExtent({ 0.5, 0.5, 0.5,0 });
 		_DefaultWorld->AddToWorld(Sphere01);
 
 		SGameObject* Box02 = NewSObject<SGameObject>(L"Coll2");
@@ -285,7 +285,7 @@ void SSEditor::EnginePerFrame()
 	}
 
 	{
-		SCOPE_PROFILE(Anim);
+		SCOPE_PROFILE(SimulateCollision);
 		_DefaultWorld->PerFrameCollision();
 	}
 

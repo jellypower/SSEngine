@@ -19,9 +19,26 @@ ECollShapeType CISphere::GetCollShapeType() const
 	return ECollShapeType::Sphere;
 }
 
+Vector4f CISphere::Get_CollProcess_PrevPos() const
+{
+	return _CollProcess_PrevPos;
+}
+
+void CISphere::CollProcess_MoveObjecet(const Vector4f& MoveDelta)
+{
+	_CollProcess_PrevPos = _WorldMat.r[3];
+	_WorldMat.r[3] += MoveDelta.SimdVec;
+}
+
+void CISphere::CollProcess_RotateObjecet(const Quaternion& RotDelta)
+{
+	SS_ASSERT(false); // TODO: Impl
+}
+
 void CISphere::SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
 {
 	_WorldMat = WorldMat;
+	_CollProcess_PrevPos = _WorldMat.r[3];
 	_WorldRot = WorldRot;
 	_IncludedCollWorld->AddTransformCommitNeededObj(this);
 }

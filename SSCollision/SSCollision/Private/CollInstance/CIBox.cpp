@@ -10,13 +10,29 @@ ECollShapeType CIBox::GetCollShapeType() const
 	return ECollShapeType::Box;
 }
 
+Vector4f CIBox::Get_CollProcess_PrevPos() const
+{
+	return _CollProcess_PrevPos;
+}
+
+void CIBox::CollProcess_MoveObjecet(const Vector4f& MoveDelta)
+{
+	_CollProcess_PrevPos = _WorldMat.r[3];
+	_WorldMat.r[3] += MoveDelta.SimdVec;
+}
+
+void CIBox::CollProcess_RotateObjecet(const Quaternion& RotDelta)
+{
+	SS_ASSERT(false); // TODO: Impl
+}
+
 
 void CIBox::SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
 {
 	_WorldMat = WorldMat;
+	_CollProcess_PrevPos = _WorldMat.r[3];
 	_WorldRot = WorldRot;
 
-	CommitTransform();
 	_IncludedCollWorld->AddTransformCommitNeededObj(this);
 }
 

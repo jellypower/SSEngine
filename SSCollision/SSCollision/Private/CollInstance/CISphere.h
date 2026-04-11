@@ -6,6 +6,7 @@ class CISphere : public ICISphere
 private:
 	float _Radius;
 
+	Vector4f _CollProcess_PrevPos;
 	XMMATRIX _WorldMat;
 	Quaternion _WorldRot;
 
@@ -18,6 +19,10 @@ public:
 	void SetRadius(float InRadius) override;
 
 	virtual ECollShapeType GetCollShapeType() const override;
+
+	virtual Vector4f Get_CollProcess_PrevPos() const override;
+	virtual void CollProcess_MoveObjecet(const Vector4f& MoveDelta) override;
+	virtual void CollProcess_RotateObjecet(const Quaternion& RotDelta) override;
 
 	virtual void SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
 	virtual void CommitTransform() override;

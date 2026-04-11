@@ -6,11 +6,11 @@
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
+#include "SSContentsBase/Public/Contents/Character/SCharacterComponent.h"
 
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/SSAlgorithm.h"
 
-#include "SSGame/Character/SCharacterComponent.h"
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"

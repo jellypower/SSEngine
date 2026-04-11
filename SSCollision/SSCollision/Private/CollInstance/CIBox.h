@@ -12,6 +12,7 @@ private:
 	Vector4f _BBMax;
 
 	XMMATRIX _WorldMat;
+	Vector4f _CollProcess_PrevPos;
 	Quaternion _WorldRot;
 
 	SObjHashCode _GameObjectHashCode = nullptr;
@@ -26,6 +27,9 @@ public:
 public:
 	virtual ECollShapeType GetCollShapeType() const override;
 
+	virtual Vector4f Get_CollProcess_PrevPos() const override;
+	virtual void CollProcess_MoveObjecet(const Vector4f& MoveDelta) override;
+	virtual void CollProcess_RotateObjecet(const Quaternion& RotDelta) override;
 
 	virtual void SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
 	virtual void CommitTransform() override;

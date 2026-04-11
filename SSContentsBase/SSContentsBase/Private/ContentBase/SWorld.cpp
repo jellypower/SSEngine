@@ -88,6 +88,8 @@ void SWorld::PerFrameAnim()
 
 void SWorld::PerFrameCollision()
 {
+	const float DeltaTime = SSFrameInfo::GetDeltaTime();
+	_CollWorld->SimulateMovement(DeltaTime * _TimeScale);
 	_CollWorld->ProcessTransformCommit();
 }
 

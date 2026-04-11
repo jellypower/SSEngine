@@ -13,6 +13,7 @@ class CollisionWorld : public ICollisionWorld
 private:
 	SS::SHasherW _WorldName;
 	SS::HashMap<SObjHashCode, ICollInstanceBase*> _CollInstanceByHashCode;
+	SS::HashMap<SObjHashCode, IRigidBodyBase*> _RigidBodyByHashCode;
 	SS::HashMap<SObjHashCode, ICollInstanceBase*> _TransformCommitNeededObjs;
 
 public:
@@ -21,17 +22,20 @@ public:
 	// Add Remove From World
 	bool IsAnyInstanceRemainInWorld() const override;
 	SS::SHasherW GetWorldName() const override;
+
+
 	void AddToWorld(ICollInstanceBase* InRenderInstance) override;
+	void AddToWorld(IRigidBodyBase* InRenderInstance) override;
 	void RemoveFromWorld(SObjHashCode CollInstanceIDToRemove) override;
 
-	// RigidBody Add Remove
-	virtual void AddToWorld(IRigidBodyBase* InRenderInstance) override;
 
 
 	// Transform Commit
 	virtual void ProcessTransformCommit() override;
 	virtual void AddTransformCommitNeededObj(ICollInstanceBase* InCollInstance) override;
 
+	// Simulate
+	void SimulateMovement(float DeltaTime) override;
 
 
 

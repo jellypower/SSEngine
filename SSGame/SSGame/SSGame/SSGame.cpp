@@ -2,7 +2,6 @@
 #include "SSGame.h"
 
 #include "ModuleEntryScriptRunner.h"
-#include "Character/SCharacterComponent.h"
 #include "PlayerController/SCameraController.h"
 #include "PlayerController/SPlayerController.h"
 
@@ -26,6 +25,8 @@
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
+#include "SSContentsBase/Public/Contents/Character/SCharacterComponent.h"
+
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 

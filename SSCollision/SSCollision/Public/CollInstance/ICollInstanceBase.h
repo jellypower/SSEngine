@@ -16,8 +16,12 @@ class ICollInstanceBase : public INoncopyable
 public:
 	virtual ECollShapeType GetCollShapeType() const = 0;
 
+	virtual Vector4f Get_CollProcess_PrevPos() const = 0;
+	virtual void CollProcess_MoveObjecet(const Vector4f& MoveDelta) = 0;
+	virtual void CollProcess_RotateObjecet(const Quaternion& RotDelta) = 0;
+
 	virtual void SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot) = 0;
-	virtual void CommitTransform() = 0;
+	virtual void CommitTransform() = 0; // Update Bound Box
 
 
 	virtual Vector4f GetWorldPos() const = 0;

@@ -14,7 +14,10 @@ enum class ECharacterFaceMode
 class IRigidCahracterMovement : public IRigidBodyBase
 {
 public:
+	virtual bool IsCurFaceEditedOnThisTick() const = 0;
+	virtual Vector2f GetCurFaceDir() const = 0;
+
 	virtual void SetFaceMode(ECharacterFaceMode Mode) = 0;
 	virtual void SetEnteredFace(Vector2f InDir) = 0;
-	virtual void AddAccel(Vector2f InAccel) = 0;
+	virtual void AddMovementAccel(Vector2f InAccel) = 0;
 };
