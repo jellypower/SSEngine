@@ -7,6 +7,9 @@
 class RigidCharacterMovement : public IRigidCahracterMovement
 {
 private:
+	Vector4f _SimulateBeginPos;
+	Quaternion _SimulateBeginRot;
+
 	Vector2f _MoveInput;
 	Vector2f _MoveLateralVelocity;
 	Vector2f _CurFace;
@@ -22,7 +25,7 @@ private:
 	ECharacterFaceMode _FaceMode = ECharacterFaceMode::LerpToVelocity;
 
 private:
-	bool _bMovedOnThisTick = false;
+	bool _bMovedOnThisSimulation = false;
 	Vector4f _SimulatedPosDelta;
 	bool _bFaceChangedOnThisTick = false;
 
@@ -36,12 +39,14 @@ public:
 public:
 	virtual ERigidBodyType GetRigidBodyType() const override;
 
-	virtual bool IsMovedOnThisTick() const override;
-	virtual bool IsRotatedOnThisTick() const override;
+	virtual void UpdateInitialTransform(Vector4f Pos, Quaternion Rot) override;
+
+	virtual bool IsMovedOnThisSimulation() const override;
+	virtual bool IsRotatedOnThisSimulation() const override;
 	virtual Vector4f GetSimulatedPosDelta() const override;
 	virtual Quaternion GetSimulatedRotDelta() const override;
 
-	virtual void SimulateTick(float DeltaTime) override;
+	virtual void SimulateMovement(float DeltaTime) override;
 	virtual void OnEndSimulation() override;
 
 	virtual ICollInstanceBase* GetCollInstance() const override;

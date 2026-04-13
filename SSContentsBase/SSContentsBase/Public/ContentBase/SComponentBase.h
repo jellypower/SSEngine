@@ -3,6 +3,7 @@
 
 #include "SSContentsBase/ModuleExportKeyword.h"
 
+enum class EFramePhase;
 class SWorld;
 class SGameObject;
 
@@ -31,6 +32,6 @@ public:
 	// virtual void PreDestruct() { };
 
 
-	virtual void OnGameObjectTransformCommited() { }
-	virtual void OnChildrenGameObjectTransformCommitted() { }
+	virtual void OnGameObjectTransformCommited(EFramePhase CommitPhase) { }
+	virtual void OnChildrenGameObjectTransformCommitted(EFramePhase CommitPhase) { }
 };

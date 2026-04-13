@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "SSEngineDefault/Public/SSContainer/HashMap.h"
+
 #include "SSCollision/Public/DEBUG/CollDebugDrawDescs.h"
 
 
@@ -17,12 +19,14 @@ public:
 
 
 	// Transform Commit
-	virtual void ProcessTransformCommit() = 0;
-	virtual void AddTransformCommitNeededObj(ICollInstanceBase* InCollInstance) = 0;
+	virtual void UpdateInitialTransforms() = 0;
 
 
 	// Simulate
+	virtual void OnBeginSimulation() = 0;
 	virtual void SimulateMovement(float DeltaTime) = 0;
+	virtual void OnEndSimulation() = 0;
+
 
 
 	// DEBUG

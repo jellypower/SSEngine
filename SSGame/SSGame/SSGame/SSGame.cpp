@@ -94,10 +94,23 @@ void SSGame::StartupEngine()
 
 void SSGame::EnginePerFrame()
 {
+	SCOPE_PROFILE(Engine);
+	g_FrameInfoProcessor->SetFramePhase(EFramePhase::Contents);
+
 	{
 		SCOPE_PROFILE(Contents);
 		PerFrameContents();
 		_DefaultWorld->PerFrameContents();
+	}
+
+	{
+		SCOPE_PROFILE(SimulateCollision);
+		{
+			SCOPE_PROFILE(TransformCommit_Pre_Physics);
+			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Collision);
+			_DefaultWorld->ProcessTransformCommit();
+		}
+		_DefaultWorld->PerFrameCollision();
 	}
 
 	{
@@ -106,13 +119,8 @@ void SSGame::EnginePerFrame()
 	}
 
 	{
-		SCOPE_PROFILE(TransformCommit);
-		_DefaultWorld->ProcessTransformCommit();
-	}
-
-
-	{
 		SCOPE_PROFILE(Render);
+		g_FrameInfoProcessor->SetFramePhase(EFramePhase::Render);
 		_DefaultWorld->ProcessDebugDraw(_Renderer);
 		_Renderer->PerFrame();
 	}

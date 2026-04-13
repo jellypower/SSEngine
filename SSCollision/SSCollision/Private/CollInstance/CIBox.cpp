@@ -10,14 +10,9 @@ ECollShapeType CIBox::GetCollShapeType() const
 	return ECollShapeType::Box;
 }
 
-Vector4f CIBox::Get_CollProcess_PrevPos() const
-{
-	return _CollProcess_PrevPos;
-}
 
 void CIBox::CollProcess_MoveObjecet(const Vector4f& MoveDelta)
 {
-	_CollProcess_PrevPos = _WorldMat.r[3];
 	_WorldMat.r[3] += MoveDelta.SimdVec;
 }
 
@@ -27,17 +22,11 @@ void CIBox::CollProcess_RotateObjecet(const Quaternion& RotDelta)
 }
 
 
-void CIBox::SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
+void CIBox::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
 {
 	_WorldMat = WorldMat;
-	_CollProcess_PrevPos = _WorldMat.r[3];
 	_WorldRot = WorldRot;
 
-	_IncludedCollWorld->AddTransformCommitNeededObj(this);
-}
-
-void CIBox::CommitTransform()
-{
 	XMMATRIX WorldMatAbs;
 	WorldMatAbs.r[0] = XMVectorAbs(_WorldMat.r[0]);
 	WorldMatAbs.r[1] = XMVectorAbs(_WorldMat.r[1]);
@@ -61,6 +50,7 @@ void CIBox::CommitTransform()
 	}
 }
 
+
 Vector4f CIBox::GetWorldPos() const
 {
 	return _WorldMat.r[3];
@@ -71,7 +61,7 @@ const XMMATRIX& CIBox::GetWorldTransformMat() const
 	return _WorldMat;
 }
 
-const Quaternion& CIBox::GetWorldRotTransformMat() const
+const Quaternion& CIBox::GetWorldRot() const
 {
 	return _WorldRot;
 }

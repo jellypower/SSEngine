@@ -7,7 +7,6 @@
 CollisionWorld::CollisionWorld(const SS::SHasherW& worldName) :
 	_WorldName(worldName),
 	_CollInstanceByHashCode(COLLWORLD_HASHMAP_SIZE, COLLWORLD_BUCKET_CAPACITY),
-	_TransformCommitNeededObjs(1024, 256),
 	_RigidBodyByHashCode(1024, 256)
 {
 }
@@ -76,71 +75,52 @@ void CollisionWorld::AddToWorld(IRigidBodyBase* InRenderInstance)
 	InRenderInstance->OnEnterTheCollWorld(this);
 }
 
-void CollisionWorld::ProcessTransformCommit()
+void CollisionWorld::UpdateInitialTransforms()
 {
-	for (SS::pair<SObjHashCode, ICollInstanceBase*>& PairItem : _TransformCommitNeededObjs)
+	for (SS::pair<SObjHashCode, IRigidBodyBase*>& PairItem : _RigidBodyByHashCode)
 	{
-		PairItem.second->CommitTransform();
+		ICollInstanceBase* ICI = PairItem.second->GetCollInstance();
+		PairItem.second->UpdateInitialTransform(ICI->GetWorldPos(), ICI->GetWorldRot());
 	}
-
-	_TransformCommitNeededObjs.Clear();
 }
 
-void CollisionWorld::AddTransformCommitNeededObj(ICollInstanceBase* InCollInstance)
+
+void CollisionWorld::OnBeginSimulation()
 {
-	if (InCollInstance->GetIncludedCollWorld() != this)
-	{
-		SS_INTERRUPT(false);
-		return;
-	}
-
-	SObjHashCode GOID = InCollInstance->GetGameObjectID();
-	ICollInstanceBase** ppFound = _TransformCommitNeededObjs.Find(GOID);
-	if (ppFound != nullptr)
-	{
-		return; // 부모 오브젝트의 위치가 업데이트 되면서 자식 오브젝트를 포함시켰으면 이미 존재할 수도 있음
-	}
-
-	_TransformCommitNeededObjs.Add(GOID, InCollInstance);
+	UpdateInitialTransforms();
 }
 
 void CollisionWorld::SimulateMovement(float DeltaTime)
 {
-	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode) // 일단 움직입니다. -> 병렬화 가능
+	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode) // 일단 움직이고 움직임을 반영합니다.
 	{
 		IRigidBodyBase* RigidBodyItem = Item.second;
-		RigidBodyItem->SimulateTick(DeltaTime);
-	}
-
-	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode) // 움직임을 반영합니다. -> 병렬화 가능
-	{
-		IRigidBodyBase* RigidBodyItem = Item.second;
-		if (RigidBodyItem->IsMovedOnThisTick() == false)
-		{
-			continue;
-		}
+		RigidBodyItem->SimulateMovement(DeltaTime);
 
 		ICollInstanceBase* ColItem = RigidBodyItem->GetCollInstance();
 
-		bool bAnyMove = false;
-		if (RigidBodyItem->IsMovedOnThisTick())
+		if (RigidBodyItem->IsMovedOnThisSimulation())
 		{
-			bAnyMove = true;
 			ColItem->CollProcess_MoveObjecet(RigidBodyItem->GetSimulatedPosDelta());
+			// 일단 움직이고 나서 충돌체크 하는지 검사하려면 실제 Collision을 바꿔줘야 함
 		}
 
-		if (RigidBodyItem->IsRotatedOnThisTick())
+		if (RigidBodyItem->IsRotatedOnThisSimulation())
 		{
-			bAnyMove = true;
 			ColItem->CollProcess_RotateObjecet(RigidBodyItem->GetSimulatedRotDelta());
-		}
-
-		if (bAnyMove)
-		{
-			ColItem->CommitTransform();
+			// 일단 움직이고 나서 충돌체크 하는지 검사하려면 실제 Collision을 바꿔줘야 함
 		}
 	}
 
+	// TODO: 2. 충돌하는 pair들을 찾습니다.
+	// TODO: 3. Solve 합니다.
+
+
+}
+
+void CollisionWorld::OnEndSimulation()
+{
+	// 원본 위치와 다르면 GameObejct가 SetTransform할 수 있도록 유도해줘야 한다.
 	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode)
 	{
 		IRigidBodyBase* RigidBodyItem = Item.second;

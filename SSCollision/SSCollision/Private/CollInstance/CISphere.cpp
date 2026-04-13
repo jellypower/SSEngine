@@ -19,14 +19,9 @@ ECollShapeType CISphere::GetCollShapeType() const
 	return ECollShapeType::Sphere;
 }
 
-Vector4f CISphere::Get_CollProcess_PrevPos() const
-{
-	return _CollProcess_PrevPos;
-}
 
 void CISphere::CollProcess_MoveObjecet(const Vector4f& MoveDelta)
 {
-	_CollProcess_PrevPos = _WorldMat.r[3];
 	_WorldMat.r[3] += MoveDelta.SimdVec;
 }
 
@@ -35,19 +30,16 @@ void CISphere::CollProcess_RotateObjecet(const Quaternion& RotDelta)
 	SS_ASSERT(false); // TODO: Impl
 }
 
-void CISphere::SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
+void CISphere::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
 {
 	_WorldMat = WorldMat;
-	_CollProcess_PrevPos = _WorldMat.r[3];
 	_WorldRot = WorldRot;
-	_IncludedCollWorld->AddTransformCommitNeededObj(this);
+
+
+	CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
+
 }
 
-void CISphere::CommitTransform()
-{
-	CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
-	// noop
-}
 
 Vector4f CISphere::GetWorldPos() const
 {
@@ -59,7 +51,7 @@ const XMMATRIX& CISphere::GetWorldTransformMat() const
 	return _WorldMat;
 }
 
-const Quaternion& CISphere::GetWorldRotTransformMat() const
+const Quaternion& CISphere::GetWorldRot() const
 {
 	return _WorldRot;
 }

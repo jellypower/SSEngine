@@ -1,5 +1,8 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/CollisionComp/SColliderBaseComponent.h"
+
+#include <SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h>
+
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
@@ -35,10 +38,15 @@ void SColliderBaseComponent::PreDestructHierarchy()
 	DestructCollInstance();
 }
 
-void SColliderBaseComponent::OnGameObjectTransformCommited()
+void SColliderBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPhase)
 {
+	if (CommitPhase != EFramePhase::Collision)
+	{
+		return;
+	}
+
 	SGameObject* Owner = GetGameObject();
-	GetCollInstance()->SetWorldTransform(
+	GetCollInstance()->SyncWorldTransform_ByContent(
 		Owner->GetCommittedWorldTransformMat(),
 		Owner->GetCommittedWorldRotation());
 }

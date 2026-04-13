@@ -6,6 +6,11 @@
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 
+SGameObject::SGameObject():
+	_TransformCommitedPhase(EFramePhase::Render)
+{
+}
+
 bool SGameObject::IsRootInWorld() const
 {
 	SGameObject* Parent = GetParent();
@@ -253,11 +258,17 @@ void SGameObject::MarkTransformCommitNeeded()
 void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const Quaternion& ParentRotation)
 {
 	uint64 ThisFrameCnt = SSFrameInfo::GetFrameCnt();
+	EFramePhase CurPhase = SSFrameInfo::GetFramePhase();
 	if (ThisFrameCnt == _TransformCommitedFrameCnt)
 	{
-		// 이미 커밋된 트랜스폼은 패스한다.
-		// 커밋은 모든 움직임이 끝나고 게임오브젝트당 1번 만 하는게 목표.
-		return;
+		if (CurPhase == _TransformCommitedPhase)
+		{
+			// 이미 커밋된 트랜스폼은 패스한다.
+			// 커밋 페이즈는 보통 두 번이다.
+			// 1. 콘텐츠 끝나고 나서 -> 물리작업을 위해
+			// 2. 렌더 직전 -> 물리, 애니메이션이 모두 끝난 이후
+			return;
+		}
 	}
 
 	XMMATRIX ThisTransformMat = _transform.AsMatrix();
@@ -268,7 +279,7 @@ void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const
 
 	for (SComponentBase* ComponentItem : _Components)
 	{
-		ComponentItem->OnGameObjectTransformCommited();
+		ComponentItem->OnGameObjectTransformCommited(CurPhase);
 	}
 
 	for (SGameObject* ChildItem : _Children)
@@ -278,6 +289,6 @@ void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const
 
 	for (SComponentBase* ComponentItem : _Components)
 	{
-		ComponentItem->OnChildrenGameObjectTransformCommitted();
+		ComponentItem->OnChildrenGameObjectTransformCommitted(CurPhase);
 	}
 }

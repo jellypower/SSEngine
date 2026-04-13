@@ -6,14 +6,13 @@ class CIBox : public ICIBox
 private:
 	// 무게중심 기준으로 XYZ좌표의 길이(XYZ = {0.5, 0.5, 0.5} 여야 1*1*1짜리 박스임)
 	Vector4f _Extent;
-	
 
 	Vector4f _BBMin;
 	Vector4f _BBMax;
 
-	XMMATRIX _WorldMat;
-	Vector4f _CollProcess_PrevPos;
 	Quaternion _WorldRot;
+	XMMATRIX _WorldMat;
+
 
 	SObjHashCode _GameObjectHashCode = nullptr;
 
@@ -27,16 +26,14 @@ public:
 public:
 	virtual ECollShapeType GetCollShapeType() const override;
 
-	virtual Vector4f Get_CollProcess_PrevPos() const override;
 	virtual void CollProcess_MoveObjecet(const Vector4f& MoveDelta) override;
 	virtual void CollProcess_RotateObjecet(const Quaternion& RotDelta) override;
 
-	virtual void SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
-	virtual void CommitTransform() override;
+	virtual void SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
 
 	virtual Vector4f GetWorldPos() const override;
 	virtual const XMMATRIX& GetWorldTransformMat() const override;
-	virtual const Quaternion& GetWorldRotTransformMat() const override;
+	virtual const Quaternion& GetWorldRot() const override;
 
 
 	// 오브젝트의 WorldPos를 원점으로 Dir"방향"쪽으로 가장 멀리 나가있는 점 계산

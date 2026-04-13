@@ -27,6 +27,29 @@ void FrameInfoProcessorBase::StartUpXXX()
 
 	_perfFrequency = GetPerformanceFrequency();
 	_FrameStartTick = GetPerofrmanceCounter();
+
+	// 첫 시작이 SetFramePhase(EFramePhase::Contents)일거라 초기값은 Render
+	_FramePhase = EFramePhase::Render;
+}
+
+void FrameInfoProcessorBase::SetFramePhase(EFramePhase InPhase)
+{
+	if (InPhase == EFramePhase::Contents && _FramePhase == EFramePhase::Render)
+	{
+		_FramePhase = InPhase;
+	}
+	else if (InPhase == EFramePhase::Collision && _FramePhase == EFramePhase::Contents)
+	{
+		_FramePhase = InPhase;
+	}
+	else if (InPhase == EFramePhase::Render && _FramePhase == EFramePhase::Collision)
+	{
+		_FramePhase = InPhase;
+	}
+	else
+	{
+		SS_INTERRUPT();
+	}
 }
 
 void FrameInfoProcessorBase::PerFrameXXX()

@@ -14,7 +14,7 @@ public:
 	virtual void PreDestructHierarchy() override;
 	// virtual void PreDestruct() override;
 
-	void OnGameObjectTransformCommited() override;
+	void OnGameObjectTransformCommited(EFramePhase CommitPhase) override;
 
 
 public:

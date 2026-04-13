@@ -10,4 +10,5 @@ public:
 	static double GetSmoothDeltaTime() { return g_FrameInfoProcessor->GetSmoothDeltaTime(); }
 	static double GetElapsedTime() { return g_FrameInfoProcessor->GetElapsedTime(); }
 	static uint64 GetFrameCnt() { return g_FrameInfoProcessor->GetFrameCnt(); }
+	static EFramePhase GetFramePhase() { return g_FrameInfoProcessor->GetFramePhase(); }
 };

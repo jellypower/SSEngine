@@ -261,7 +261,7 @@ void SSEditor::StartupEngine()
 void SSEditor::EnginePerFrame()
 {
 	SCOPE_PROFILE(Engine);
-
+	g_FrameInfoProcessor->SetFramePhase(EFramePhase::Contents);
 	{
 		SCOPE_PROFILE(BeginImGUI);
 		Run_g_ImGuiInitializer__OnBeginFrameImGui();
@@ -280,29 +280,33 @@ void SSEditor::EnginePerFrame()
 	}
 
 	{
-		SCOPE_PROFILE(Anim);
-		_DefaultWorld->PerFrameAnim();
-	}
-
-	{
 		SCOPE_PROFILE(SimulateCollision);
+		{
+			SCOPE_PROFILE(TransformCommit_Pre_Physics);
+			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Collision);
+			_DefaultWorld->ProcessTransformCommit();
+		}
 		_DefaultWorld->PerFrameCollision();
 	}
 
 	{
-		SCOPE_PROFILE(TransformCommit);
-		_DefaultWorld->ProcessTransformCommit();
+		SCOPE_PROFILE(Anim);
+		_DefaultWorld->PerFrameAnim();
 	}
 
 
 	{
 		SCOPE_PROFILE(Render);
+		{
+			SCOPE_PROFILE(TransformCommit_Pre_Render);
+			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Render);
+			_DefaultWorld->ProcessTransformCommit();
+		}
 		_DefaultWorld->ProcessDebugDraw(_Renderer);
 		_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
 		_Renderer->PerFrame();
 	}
 
-	int a = 0;
 }
 
 void SSEditor::CleanupEngine()

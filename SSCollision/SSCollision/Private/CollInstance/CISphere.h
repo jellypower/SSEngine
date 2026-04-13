@@ -6,7 +6,6 @@ class CISphere : public ICISphere
 private:
 	float _Radius;
 
-	Vector4f _CollProcess_PrevPos;
 	XMMATRIX _WorldMat;
 	Quaternion _WorldRot;
 
@@ -20,18 +19,17 @@ public:
 
 	virtual ECollShapeType GetCollShapeType() const override;
 
-	virtual Vector4f Get_CollProcess_PrevPos() const override;
 	virtual void CollProcess_MoveObjecet(const Vector4f& MoveDelta) override;
 	virtual void CollProcess_RotateObjecet(const Quaternion& RotDelta) override;
 
-	virtual void SetWorldTransform(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
-	virtual void CommitTransform() override;
+	virtual void SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
+	
 
 
 
 	virtual Vector4f GetWorldPos() const override;
 	const XMMATRIX& GetWorldTransformMat() const override;
-	const Quaternion& GetWorldRotTransformMat() const override;
+	const Quaternion& GetWorldRot() const override;
 
 	// 오브젝트의 pivot기준으로 Dir방향쪽으로 가장 멀리 나가있는 점 찾아주는 코드
 	virtual Vector4f CalcFurthest(const Vector4f& Dir) const override;

@@ -25,9 +25,15 @@ ERigidBodyType RigidCharacterMovement::GetRigidBodyType() const
 	return ERigidBodyType::CharacterMovement;
 }
 
-void RigidCharacterMovement::SimulateTick(float DeltaTime)
+void RigidCharacterMovement::UpdateInitialTransform(Vector4f Pos, Quaternion Rot)
 {
-	_bMovedOnThisTick = false;
+	_SimulateBeginPos = Pos;
+	_SimulateBeginRot = Rot;
+}
+
+void RigidCharacterMovement::SimulateMovement(float DeltaTime)
+{
+	_bMovedOnThisSimulation = false;
 	if (DeltaTime > 0.1f)
 	{
 		DeltaTime = 0.1f; // 너무 큰 델타타임은 금지
@@ -42,9 +48,9 @@ void RigidCharacterMovement::OnEndSimulation()
 	_MoveInput = Vector2f::Zero;
 }
 
-bool RigidCharacterMovement::IsMovedOnThisTick() const
+bool RigidCharacterMovement::IsMovedOnThisSimulation() const
 {
-	return _bMovedOnThisTick;
+	return _bMovedOnThisSimulation;
 }
 
 Vector4f RigidCharacterMovement::GetSimulatedPosDelta() const
@@ -52,7 +58,7 @@ Vector4f RigidCharacterMovement::GetSimulatedPosDelta() const
 	return _SimulatedPosDelta;
 }
 
-bool RigidCharacterMovement::IsRotatedOnThisTick() const
+bool RigidCharacterMovement::IsRotatedOnThisSimulation() const
 {
 	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
 	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
@@ -159,7 +165,7 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 		}
 		else
 		{
-			_bMovedOnThisTick = true;
+			_bMovedOnThisSimulation = true;
 			_SimulatedPosDelta.X = (_MoveLateralVelocity.X * DeltaTime);
 			_SimulatedPosDelta.Y = (_MoveLateralVelocity.Y * DeltaTime);
 		}

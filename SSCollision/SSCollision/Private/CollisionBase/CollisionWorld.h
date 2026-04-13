@@ -14,7 +14,6 @@ private:
 	SS::SHasherW _WorldName;
 	SS::HashMap<SObjHashCode, ICollInstanceBase*> _CollInstanceByHashCode;
 	SS::HashMap<SObjHashCode, IRigidBodyBase*> _RigidBodyByHashCode;
-	SS::HashMap<SObjHashCode, ICollInstanceBase*> _TransformCommitNeededObjs;
 
 public:
 	CollisionWorld(const SS::SHasherW& worldName);
@@ -31,12 +30,12 @@ public:
 
 
 	// Transform Commit
-	virtual void ProcessTransformCommit() override;
-	virtual void AddTransformCommitNeededObj(ICollInstanceBase* InCollInstance) override;
+	virtual void UpdateInitialTransforms() override;
 
 	// Simulate
+	void OnBeginSimulation() override;
 	void SimulateMovement(float DeltaTime) override;
-
+	void OnEndSimulation() override;
 
 
 

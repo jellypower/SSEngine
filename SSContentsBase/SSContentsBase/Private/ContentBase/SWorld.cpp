@@ -89,8 +89,11 @@ void SWorld::PerFrameAnim()
 void SWorld::PerFrameCollision()
 {
 	const float DeltaTime = SSFrameInfo::GetDeltaTime();
+
+
+	_CollWorld->OnBeginSimulation();
 	_CollWorld->SimulateMovement(DeltaTime * _TimeScale);
-	_CollWorld->ProcessTransformCommit();
+	_CollWorld->OnEndSimulation();
 }
 
 bool SWorld::IsAnyObjectRemainInWorld() const
