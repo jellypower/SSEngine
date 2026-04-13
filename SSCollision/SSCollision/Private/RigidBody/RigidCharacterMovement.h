@@ -7,6 +7,8 @@
 class RigidCharacterMovement : public IRigidCahracterMovement
 {
 private:
+	SObjHashCode _GameObjectHashCode = nullptr;
+
 	Vector4f _SimulateBeginPos;
 	Quaternion _SimulateBeginRot;
 
@@ -25,6 +27,7 @@ private:
 	ECharacterFaceMode _FaceMode = ECharacterFaceMode::LerpToVelocity;
 
 private:
+	bool _bMovedOnThisTick = false;
 	bool _bMovedOnThisSimulation = false;
 	Vector4f _SimulatedPosDelta;
 	bool _bFaceChangedOnThisTick = false;
@@ -41,16 +44,21 @@ public:
 
 	virtual void UpdateInitialTransform(Vector4f Pos, Quaternion Rot) override;
 
+	virtual bool IsMovedOnThisTick() const override;
 	virtual bool IsMovedOnThisSimulation() const override;
 	virtual bool IsRotatedOnThisSimulation() const override;
 	virtual Vector4f GetSimulatedPosDelta() const override;
 	virtual Quaternion GetSimulatedRotDelta() const override;
 
+	virtual void OnBeginSimulation() override;
 	virtual void SimulateMovement(float DeltaTime) override;
 	virtual void OnEndSimulation() override;
 
 	virtual ICollInstanceBase* GetCollInstance() const override;
 	virtual void BindCollisionInstance(ICollInstanceBase* BoundCI) override;
+
+	virtual SObjHashCode GetGameObjectID() const override;
+	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) override;
 
 	virtual void OnEnterTheCollWorld(ICollisionWorld* InRenderWorld) override;
 	virtual void OnExitFromCollWorld() override;
@@ -58,6 +66,8 @@ public:
 public:
 	virtual bool IsCurFaceEditedOnThisTick() const override;
 	virtual Vector2f GetCurFaceDir() const override;
+	virtual Vector2f GetLateralVelocity() const override;
+	virtual float GetMaxSpeed() const override;
 
 	virtual void SetFaceMode(ECharacterFaceMode Mode) override;
 	virtual void SetEnteredFace(Vector2f InDir) override;

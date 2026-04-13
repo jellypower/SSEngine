@@ -29,8 +29,7 @@ void SColliderBaseComponent::OnExitTheWorld()
 	ICollisionWorld* CollWorld = IncludedWorld->GetCollWorld();
 
 	ICollInstanceBase* CollInstance = GetCollInstance();
-	SObjHashCode GOID = CollInstance->GetGameObjectID();
-	CollWorld->RemoveFromWorld(GOID);
+	CollWorld->RemoveCollFromWorld(CollInstance);
 }
 
 void SColliderBaseComponent::PreDestructHierarchy()

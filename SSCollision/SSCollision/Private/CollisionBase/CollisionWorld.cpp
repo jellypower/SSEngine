@@ -23,22 +23,42 @@ SS::SHasherW CollisionWorld::GetWorldName() const
 	return _WorldName;
 }
 
-void CollisionWorld::AddToWorld(ICollInstanceBase* InRenderInstance)
+const SS::HashMap<SObjHashCode, IRigidBodyBase*>& CollisionWorld::GetRigidBodyByHashCode() const
 {
-	SObjHashCode GOID = InRenderInstance->GetGameObjectID();
+	return _RigidBodyByHashCode;
+}
+
+void CollisionWorld::AddToWorld(ICollInstanceBase* InCollInstance)
+{
+	SObjHashCode GOID = InCollInstance->GetGameObjectID();
 	if (_CollInstanceByHashCode.Find(GOID) != nullptr)
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	_CollInstanceByHashCode.Add(GOID, InRenderInstance);
-	InRenderInstance->OnEnterTheCollWorld(this);
+	_CollInstanceByHashCode.Add(GOID, InCollInstance);
+	InCollInstance->OnEnterTheCollWorld(this);
 }
 
-void CollisionWorld::RemoveFromWorld(SObjHashCode CollInstanceIDToRemove)
+void CollisionWorld::AddToWorld(IRigidBodyBase* InRigidBody)
 {
-	ICollInstanceBase** ppCollInstance = _CollInstanceByHashCode.Find(CollInstanceIDToRemove);
+
+	SObjHashCode GOID = InRigidBody->GetGameObjectID();
+	if (_RigidBodyByHashCode.Find(GOID) != nullptr)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	_RigidBodyByHashCode.Add(GOID, InRigidBody);
+	InRigidBody->OnEnterTheCollWorld(this);
+}
+
+void CollisionWorld::RemoveCollFromWorld(ICollInstanceBase* InCollInstance)
+{
+	SObjHashCode InID = InCollInstance->GetGameObjectID();
+	ICollInstanceBase** ppCollInstance = _CollInstanceByHashCode.Find(InID);
 	if (ppCollInstance == nullptr)
 	{
 		SS_ASSERT(false);
@@ -52,27 +72,31 @@ void CollisionWorld::RemoveFromWorld(SObjHashCode CollInstanceIDToRemove)
 		return;
 	}
 
-	_CollInstanceByHashCode.Remove(CollInstanceIDToRemove);
+	SS_ASSERT(CollInstanceToRemove == InCollInstance);
+	_CollInstanceByHashCode.Remove(InID);
 	CollInstanceToRemove->OnExitFromCollWorld();
-
-
-	bool bResult = _RigidBodyByHashCode.Remove(CollInstanceIDToRemove);
-	// 없을 수도 있음. 없으면 bResult는 false
 }
 
-void CollisionWorld::AddToWorld(IRigidBodyBase* InRenderInstance)
+void CollisionWorld::RemoveRigidFromWorld(IRigidBodyBase* InRigidBody)
 {
-	const ICollInstanceBase* CollInstance = InRenderInstance->GetCollInstance();
-
-	SObjHashCode GOID = CollInstance->GetGameObjectID();
-	if (_CollInstanceByHashCode.Find(GOID) != nullptr)
+	SObjHashCode InID = InRigidBody->GetGameObjectID();
+	IRigidBodyBase** ppCollInstance = _RigidBodyByHashCode.Find(InID);
+	if (ppCollInstance == nullptr)
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	_RigidBodyByHashCode.Add(GOID, InRenderInstance);
-	InRenderInstance->OnEnterTheCollWorld(this);
+	IRigidBodyBase* RigidBodyToRemove = *ppCollInstance;
+	if (RigidBodyToRemove == nullptr)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	SS_ASSERT(RigidBodyToRemove == InRigidBody);
+	_RigidBodyByHashCode.Remove(InID);
+	InRigidBody->OnExitFromCollWorld();
 }
 
 void CollisionWorld::UpdateInitialTransforms()
@@ -87,6 +111,12 @@ void CollisionWorld::UpdateInitialTransforms()
 
 void CollisionWorld::OnBeginSimulation()
 {
+	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode)
+	{
+		IRigidBodyBase* RigidBodyItem = Item.second;
+		RigidBodyItem->OnBeginSimulation();
+	}
+
 	UpdateInitialTransforms();
 }
 

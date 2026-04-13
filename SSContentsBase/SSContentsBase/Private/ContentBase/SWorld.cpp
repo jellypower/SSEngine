@@ -1,6 +1,7 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
+#include <SSCollision/Public/RigidBody/IRigidBodyBase.h>
 #include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
 #include <SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h>
 
@@ -17,6 +18,7 @@
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
 #include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SRigidBodyBaseComponent.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
@@ -90,10 +92,21 @@ void SWorld::PerFrameCollision()
 {
 	const float DeltaTime = SSFrameInfo::GetDeltaTime();
 
-
 	_CollWorld->OnBeginSimulation();
 	_CollWorld->SimulateMovement(DeltaTime * _TimeScale);
 	_CollWorld->OnEndSimulation();
+
+	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& RigidBodies = _CollWorld->GetRigidBodyByHashCode();
+	for (const SS::pair<SObjHashCode, IRigidBodyBase*>& RigidBodyItem : RigidBodies)
+	{
+		if (RigidBodyItem.second->IsMovedOnThisTick() == false)
+		{
+			continue;
+		}
+
+		SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
+		RigidBodyIComp->PostCollision_SyncTransform();
+	}
 }
 
 bool SWorld::IsAnyObjectRemainInWorld() const
@@ -346,7 +359,7 @@ void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
 			Item.bUseDepth,
 			0.3f,
 			Item.Color,
-			Item.bUseDepth);
+			Item.Time);
 	}
 
 	const SS::PooledList<CDDD_Mesh>& CDDDListMesh = _CollWorld->GetDDDList_Mesh();

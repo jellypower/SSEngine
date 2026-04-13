@@ -31,6 +31,11 @@ void RigidCharacterMovement::UpdateInitialTransform(Vector4f Pos, Quaternion Rot
 	_SimulateBeginRot = Rot;
 }
 
+bool RigidCharacterMovement::IsMovedOnThisTick() const
+{
+	return _bMovedOnThisTick;
+}
+
 void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 {
 	_bMovedOnThisSimulation = false;
@@ -45,7 +50,6 @@ void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 
 void RigidCharacterMovement::OnEndSimulation()
 {
-	_SimulatedPosDelta = Vector4f::Zero;
 	_MoveInput = Vector2f::Zero;
 }
 
@@ -71,6 +75,12 @@ Quaternion RigidCharacterMovement::GetSimulatedRotDelta() const
 	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
 	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
 	return Quaternion();
+}
+
+void RigidCharacterMovement::OnBeginSimulation()
+{
+	_bMovedOnThisTick = false;
+	_SimulatedPosDelta = Vector4f::Zero;
 }
 
 
@@ -166,9 +176,10 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 		}
 		else
 		{
+			_bMovedOnThisTick = true;
 			_bMovedOnThisSimulation = true;
 			_SimulatedPosDelta.X += (_MoveLateralVelocity.X * DeltaTime);
-			_SimulatedPosDelta.Y += (_MoveLateralVelocity.Y * DeltaTime);
+			_SimulatedPosDelta.Z += (_MoveLateralVelocity.Y * DeltaTime);
 		}
 
 	}
@@ -193,7 +204,7 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 		Desc.Color = { 1, 0, 0, 1 };
 		Desc.bUseDepth = true;
 
-		CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
+		// CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
 	}
 
 }
@@ -281,9 +292,9 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 		End.Z += _CurFace.Y;
 
 		CDDD_Line Desc;
-		Desc.Start = _CollInstance->GetWorldPos();
-		Desc.End = Start;
-		Desc.Color = { 1, 0, 0, 1 };
+		Desc.Start = Start;
+		Desc.End = End;
+		Desc.Color = { 0, 1, 0, 1 };
 		Desc.bUseDepth = true;
 		CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
 	}
@@ -300,6 +311,7 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 			TargetYaw += XM_2PI;
 		}
 
+		// TODO: 여기 문제있는듯. 고치자.
 		float NewYaw = SS::Lerp(PrevYaw, TargetYaw, TurnAmount);
 
 		_CurFace.X = sin(NewYaw);
@@ -310,6 +322,16 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 void RigidCharacterMovement::BindCollisionInstance(ICollInstanceBase* BoundCI)
 {
 	_CollInstance = BoundCI;
+}
+
+SObjHashCode RigidCharacterMovement::GetGameObjectID() const
+{
+	return _GameObjectHashCode;
+}
+
+void RigidCharacterMovement::SetGameObjectIDXXX(SObjHashCode InHashCode)
+{
+	_GameObjectHashCode = InHashCode;
 }
 
 ICollInstanceBase* RigidCharacterMovement::GetCollInstance() const
@@ -337,6 +359,16 @@ bool RigidCharacterMovement::IsCurFaceEditedOnThisTick() const
 Vector2f RigidCharacterMovement::GetCurFaceDir() const
 {
 	return _CurFace;
+}
+
+Vector2f RigidCharacterMovement::GetLateralVelocity() const
+{
+	return _MoveLateralVelocity;
+}
+
+float RigidCharacterMovement::GetMaxSpeed() const
+{
+	return _MaxSpeed;
 }
 
 void RigidCharacterMovement::SetFaceMode(ECharacterFaceMode Mode)

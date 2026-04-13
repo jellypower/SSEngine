@@ -12,10 +12,12 @@ class ICollisionWorld : public INoncopyable
 public:
 	virtual bool IsAnyInstanceRemainInWorld() const = 0;
 	virtual SS::SHasherW GetWorldName() const = 0;
+	virtual const SS::HashMap<SObjHashCode, IRigidBodyBase*>& GetRigidBodyByHashCode() const = 0;
 
-	virtual void AddToWorld(ICollInstanceBase* InRenderInstance) = 0;
-	virtual void AddToWorld(IRigidBodyBase* InRenderInstance) = 0;
-	virtual void RemoveFromWorld(SObjHashCode CollInstanceIDToRemove) = 0;
+	virtual void AddToWorld(ICollInstanceBase* InCollInstance) = 0;
+	virtual void AddToWorld(IRigidBodyBase* InRigidBody) = 0;
+	virtual void RemoveCollFromWorld(ICollInstanceBase* InCollInstance) = 0;
+	virtual void RemoveRigidFromWorld(IRigidBodyBase* InRigidBody) = 0;
 
 
 	// Transform Commit

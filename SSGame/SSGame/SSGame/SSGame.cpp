@@ -26,11 +26,12 @@
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 #include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SCharacterMovementComponent.h"
+#include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
 
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
-#include "SSCollision/Public/CollisionBase/ICollDevice.h"
+#include "SSCollision/Public/CollisionBase/ICollDevice.h""
 
 
 
@@ -221,9 +222,16 @@ void SSGame::StartUpContents()
 		SGameObject* Character = NewSObject<SGameObject>("Character");
 		CharacterModel->SetParent(Character);
 
+		SBoxColliderComponent* BoxComp = Character->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+
+
 		SCharacterMovementComponent* CharacterComp = Character->CreateComponent<SCharacterMovementComponent>(L"SCharacterComponent");
 		CharacterComp->BindAnimComp(AnimComp);
+		CharacterComp->BindColliderComponent(BoxComp);
+
+
 		SGameObjectConstructor::FinishConstructHierarchy(Character);
+		BoxComp->SetExtent(Vector4f(0.5f, 1, 0.5f, 0));
 
 
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);

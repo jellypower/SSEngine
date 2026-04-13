@@ -21,11 +21,14 @@ public:
 	// Add Remove From World
 	bool IsAnyInstanceRemainInWorld() const override;
 	SS::SHasherW GetWorldName() const override;
+	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& GetRigidBodyByHashCode() const override;
 
 
-	void AddToWorld(ICollInstanceBase* InRenderInstance) override;
-	void AddToWorld(IRigidBodyBase* InRenderInstance) override;
-	void RemoveFromWorld(SObjHashCode CollInstanceIDToRemove) override;
+	void AddToWorld(ICollInstanceBase* InCollInstance) override;
+	void AddToWorld(IRigidBodyBase* InRigidBody) override;
+	void RemoveCollFromWorld(ICollInstanceBase* InCollInstance) override;
+	void RemoveRigidFromWorld(IRigidBodyBase* InRigidBody) override;
+	
 
 
 
