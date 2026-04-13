@@ -45,6 +45,7 @@ void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 
 void RigidCharacterMovement::OnEndSimulation()
 {
+	_SimulatedPosDelta = Vector4f::Zero;
 	_MoveInput = Vector2f::Zero;
 }
 
@@ -166,8 +167,8 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 		else
 		{
 			_bMovedOnThisSimulation = true;
-			_SimulatedPosDelta.X = (_MoveLateralVelocity.X * DeltaTime);
-			_SimulatedPosDelta.Y = (_MoveLateralVelocity.Y * DeltaTime);
+			_SimulatedPosDelta.X += (_MoveLateralVelocity.X * DeltaTime);
+			_SimulatedPosDelta.Y += (_MoveLateralVelocity.Y * DeltaTime);
 		}
 
 	}

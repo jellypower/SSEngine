@@ -6,7 +6,7 @@
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
-#include "SSContentsBase/Public/Contents/Character/SCharacterComponent.h"
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SCharacterMovementComponent.h"
 
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/SSAlgorithm.h"
@@ -79,7 +79,7 @@ void SPlayerController::PerFrame(float DeltaTime)
 void SPlayerController::BindCharacter(SGameObject* InCharacterGO)
 {
 	_CharacterGO = InCharacterGO;
-	_CharacterComp = _CharacterGO->FindComponent<SCharacterComponent>();
+	_CharacterComp = _CharacterGO->FindComponent<SCharacterMovementComponent>();
 
 	if (_PlayerCameraController != nullptr)
 	{

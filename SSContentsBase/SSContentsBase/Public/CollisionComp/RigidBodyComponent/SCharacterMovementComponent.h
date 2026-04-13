@@ -13,7 +13,7 @@ enum class ECharacterFaceMode
 };
 
 
-class SSCONTENTBASE_MODULE SCharacterComponent : public SComponentBase
+class SSCONTENTBASE_MODULE SCharacterMovementComponent : public SComponentBase
 {
 private:
 	Vector2f _MoveInput;
@@ -38,7 +38,7 @@ private:
 
 
 public:
-	SCharacterComponent();
+	SCharacterMovementComponent();
 
 public:
 	bool ShouldProcessPerFrameInherently() const override;

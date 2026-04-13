@@ -1,4 +1,5 @@
-﻿#include "SSContentsBase/Public/Contents/Character/SCharacterComponent.h"
+﻿#define SSCONTENTBASE_MODULE_EXPORT
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SCharacterMovementComponent.h"
 #include <cmath>
 
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
@@ -12,7 +13,7 @@
 #include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
-SCharacterComponent::SCharacterComponent()
+SCharacterMovementComponent::SCharacterMovementComponent()
 {
 	_AccelMultiplier = 20;
 	_GroundFriction = 3;
@@ -26,12 +27,12 @@ SCharacterComponent::SCharacterComponent()
 	_CurFace = { 0, 1 };
 }
 
-bool SCharacterComponent::ShouldProcessPerFrameInherently() const
+bool SCharacterMovementComponent::ShouldProcessPerFrameInherently() const
 {
 	return true;
 }
 
-void SCharacterComponent::PerFrame(float DeltaTime)
+void SCharacterMovementComponent::PerFrame(float DeltaTime)
 {
 	double SmoothDeltaTime = SSFrameInfo::GetSmoothDeltaTime();
 	double TimeScale = GetIncludedWorld()->GetTimeScale();
@@ -40,30 +41,30 @@ void SCharacterComponent::PerFrame(float DeltaTime)
 	Animate(DeltaTime);
 }
 
-void SCharacterComponent::BindAnimComp(SBlendSpaceAnimTestComponent* Comp)
+void SCharacterMovementComponent::BindAnimComp(SBlendSpaceAnimTestComponent* Comp)
 {
 	_AnimComp = Comp;
 }
 
 
-void SCharacterComponent::SetFaceMode(ECharacterFaceMode Mode)
+void SCharacterMovementComponent::SetFaceMode(ECharacterFaceMode Mode)
 {
 	_FaceMode = Mode;
 }
 
 
-void SCharacterComponent::SetEnteredFace(Vector2f InDir)
+void SCharacterMovementComponent::SetEnteredFace(Vector2f InDir)
 {
 	_EnteredFace = InDir;
 }
 
-void SCharacterComponent::AddAccel(Vector2f InAccel)
+void SCharacterMovementComponent::AddAccel(Vector2f InAccel)
 {
 	_MoveInput = _MoveInput + InAccel;
 }
 
 
-void SCharacterComponent::MovementRotate(float DeltaTime)
+void SCharacterMovementComponent::MovementRotate(float DeltaTime)
 {
 	SGameObject* GO = GetGameObject();
 	bool bCurFaceEdited = false;
@@ -147,7 +148,7 @@ void SCharacterComponent::MovementRotate(float DeltaTime)
 	}
 }
 
-void SCharacterComponent::PerFrameMovement(float DeltaTime)
+void SCharacterMovementComponent::PerFrameMovement(float DeltaTime)
 {
 	if (DeltaTime > 0.1f)
 	{
@@ -276,7 +277,7 @@ void SCharacterComponent::PerFrameMovement(float DeltaTime)
 	MovementRotate(DeltaTime);
 }
 
-void SCharacterComponent::Animate(float DeltaTime)
+void SCharacterMovementComponent::Animate(float DeltaTime)
 {
 	const float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
 

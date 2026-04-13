@@ -25,7 +25,7 @@
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
-#include "SSContentsBase/Public/Contents/Character/SCharacterComponent.h"
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SCharacterMovementComponent.h"
 
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
@@ -221,7 +221,7 @@ void SSGame::StartUpContents()
 		SGameObject* Character = NewSObject<SGameObject>("Character");
 		CharacterModel->SetParent(Character);
 
-		SCharacterComponent* CharacterComp = Character->CreateComponent<SCharacterComponent>(L"SCharacterComponent");
+		SCharacterMovementComponent* CharacterComp = Character->CreateComponent<SCharacterMovementComponent>(L"SCharacterComponent");
 		CharacterComp->BindAnimComp(AnimComp);
 		SGameObjectConstructor::FinishConstructHierarchy(Character);
 

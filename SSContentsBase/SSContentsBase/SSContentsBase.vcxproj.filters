@@ -93,7 +93,10 @@
     <ClCompile Include="Private\CollisionComp\SSphereColliderComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Contents\Character\SCharacterComponent.cpp">
+    <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SCharacterMovementComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SRigidBodyBaseComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,7 +191,10 @@
     <ClInclude Include="Public\CollisionComp\SSphereColliderComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Contents\Character\SCharacterComponent.h">
+    <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SCharacterMovementComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SRigidBodyBaseComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

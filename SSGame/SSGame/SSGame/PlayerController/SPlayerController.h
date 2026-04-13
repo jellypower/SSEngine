@@ -3,7 +3,7 @@
 
 class SCameraController;
 class SCameraComponent;
-class SCharacterComponent;
+class SCharacterMovementComponent;
 
 class SPlayerController : public SComponentBase
 {
@@ -15,7 +15,7 @@ private:
 	SCameraComponent* _PlayerCameraComp = nullptr;
 
 	SGameObject* _CharacterGO = nullptr;
-	SCharacterComponent* _CharacterComp = nullptr;
+	SCharacterMovementComponent* _CharacterComp = nullptr;
 
 	float _ControlRotSensitivity = 10.f;
 
