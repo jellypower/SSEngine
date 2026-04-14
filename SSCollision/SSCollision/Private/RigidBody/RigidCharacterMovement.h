@@ -33,6 +33,7 @@ private:
 	bool _bFaceChangedOnThisTick = false;
 
 private:
+	ICollisionWorld* _IncludedCollWorld = nullptr;
 	ICollInstanceBase* _CollInstance = nullptr;
 
 

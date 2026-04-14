@@ -341,6 +341,7 @@ ICollInstanceBase* RigidCharacterMovement::GetCollInstance() const
 
 void RigidCharacterMovement::OnEnterTheCollWorld(ICollisionWorld* InRenderWorld)
 {
+	_IncludedCollWorld = InRenderWorld;
 	// noop
 }
 
@@ -349,6 +350,7 @@ void RigidCharacterMovement::OnExitFromCollWorld()
 	_MoveInput = Vector2f();
 	_MoveLateralVelocity = Vector2f();
 	_EnteredFace = Vector2f();
+	_IncludedCollWorld = nullptr;
 }
 
 bool RigidCharacterMovement::IsCurFaceEditedOnThisTick() const
