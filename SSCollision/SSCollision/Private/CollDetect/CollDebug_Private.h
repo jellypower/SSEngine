@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+enum class ECollDebugDraw_MeshType;
 struct CDDD_Line;
 class ICollInstanceBase;
 class ICollisionWorld;
@@ -21,12 +22,22 @@ public:
 		bool bUseDepth = false,
 		float Time = 0);
 
+	static void DrawShape(
+		ICollisionWorld* InWorldToDraw,
+		ECollDebugDraw_MeshType MeshType,
+		const XMMATRIX& TransformMat,
+		const Quaternion& Rot,
+		const Vector4f& Color = Vector4f::Zero,
+		bool bUseDepth = false,
+		float Time = 0);
+
 	static void DrawBoundBox(
 		ICollisionWorld* InWorldToDraw,
 		const ICollInstanceBase* CollInstance,
 		const Vector4f& Color = Vector4f::Zero,
 		bool bUseDepth = false,
 		float Time = 0);
+
 
 	static void DrawPoint(
 		ICollisionWorld* InWorldToDraw,

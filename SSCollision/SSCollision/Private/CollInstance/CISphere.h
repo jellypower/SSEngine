@@ -4,7 +4,8 @@
 class CISphere : public ICISphere
 {
 private:
-	float _Radius;
+	float _Radius = 0.5f;
+	Vector4f _Offset = Vector4f(0, 0, 0 , 1);
 
 	XMMATRIX _WorldMat;
 	Quaternion _WorldRot;
@@ -23,9 +24,8 @@ public:
 	virtual void CollProcess_RotateObjecet(const Quaternion& RotDelta) override;
 
 	virtual void SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
-	
 
-
+	virtual void SetOffset(const Vector4f& InOffset) override;
 
 	virtual Vector4f GetWorldPos() const override;
 	const XMMATRIX& GetWorldTransformMat() const override;

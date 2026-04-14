@@ -24,7 +24,14 @@ void CIBox::CollProcess_RotateObjecet(const Quaternion& RotDelta)
 
 void CIBox::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
 {
-	_WorldMat = WorldMat;
+	_WorldMat =
+	{
+		{1,0,0,0},
+		{0,1,0,0},
+		{0,0,1,0},
+		_Offset.SimdVec
+	};
+	_WorldMat = _WorldMat * WorldMat;
 	_WorldRot = WorldRot;
 
 	XMMATRIX WorldMatAbs;
@@ -39,15 +46,25 @@ void CIBox::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quatern
 	_BBMax = WorldPos + RotatedExtent;
 
 
-	// DEBUG
 	{
-		CDDD_Line Desc;
-		Desc.Start = _WorldMat.r[3];
-		Desc.End = _WorldMat.r[3] + RotatedExtent;
-		CollDebug_Private::DrawLine(_IncludedCollWorld, Desc);
+		CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, {0,0,1,1}, true, 0);
 
-		CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
+
+		Transform DebugTransform;
+		DebugTransform.Scale = _Extent * 2;
+		DebugTransform.Position = _Offset;
+		XMMATRIX DebugDrawExtent = DebugTransform.AsMatrix();
+		DebugDrawExtent = DebugDrawExtent * WorldMat;
+		CollDebug_Private::DrawShape(
+			_IncludedCollWorld, ECollDebugDraw_MeshType::Box, DebugDrawExtent, _WorldRot, 
+			Vector4f::Zero, true);
 	}
+}
+
+void CIBox::SetOffset(const Vector4f& InOffset)
+{
+	_Offset = InOffset;
+	_Offset.SimdVec = XMVectorSetW(_Offset.SimdVec, 1);
 }
 
 

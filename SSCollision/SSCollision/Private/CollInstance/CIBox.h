@@ -5,7 +5,8 @@ class CIBox : public ICIBox
 {
 private:
 	// 무게중심 기준으로 XYZ좌표의 길이(XYZ = {0.5, 0.5, 0.5} 여야 1*1*1짜리 박스임)
-	Vector4f _Extent;
+	Vector4f _Extent = Vector4f(0.5f, 0.5f, 0.5f, 0);
+	Vector4f _Offset = Vector4f(0, 0, 0, 1);;
 
 	Vector4f _BBMin;
 	Vector4f _BBMax;
@@ -30,6 +31,8 @@ public:
 	virtual void CollProcess_RotateObjecet(const Quaternion& RotDelta) override;
 
 	virtual void SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
+
+	virtual void SetOffset(const Vector4f& InOffset) override;
 
 	virtual Vector4f GetWorldPos() const override;
 	virtual const XMMATRIX& GetWorldTransformMat() const override;

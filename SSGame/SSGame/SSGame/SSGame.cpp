@@ -231,7 +231,8 @@ void SSGame::StartUpContents()
 
 
 		SGameObjectConstructor::FinishConstructHierarchy(Character);
-		BoxComp->SetExtent(Vector4f(0.5f, 1, 0.5f, 0));
+		BoxComp->SetExtent(Vector4f(0.5f, 0.9, 0.5f, 0));
+		BoxComp->SetOffset(Vector4f(0, 0.9f, 0, 0));
 
 
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);

@@ -38,6 +38,27 @@ void CollDebug_Private::DrawSimplex(
 	}
 }
 
+void CollDebug_Private::DrawShape(
+	ICollisionWorld* InWorldToDraw, 
+	ECollDebugDraw_MeshType MeshType,
+	const XMMATRIX& TransformMat, 
+	const Quaternion& Rot, 
+	const Vector4f& Color, 
+	bool bUseDepth, 
+	float Time)
+{
+	CDDD_Mesh Desc;
+	Desc.WMatrix = TransformMat;
+	Desc.RotMatrix = Rot.AsMatrix();
+	Desc.Color = Color;
+	Desc.bUseDepth = bUseDepth;
+	Desc.Time = Time;
+	Desc.Type = MeshType;
+	InWorldToDraw->AddDrawDebugMesh(Desc);
+}
+
+
+
 void CollDebug_Private::DrawBoundBox(
 	ICollisionWorld* InWorldToDraw, 
 	const ICollInstanceBase* CollInstance,
@@ -60,6 +81,7 @@ void CollDebug_Private::DrawBoundBox(
 	Desc.Color = Color;
 	Desc.bUseDepth = bUseDepth;
 	Desc.Time = Time;
+	Desc.Type = ECollDebugDraw_MeshType::Box;
 	InWorldToDraw->AddDrawDebugMesh(Desc);
 }
 

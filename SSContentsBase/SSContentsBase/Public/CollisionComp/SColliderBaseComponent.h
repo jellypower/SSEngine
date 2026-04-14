@@ -21,6 +21,8 @@ public:
 	virtual Vector4f CalcFurthest(const Vector4f& Dir) const = 0;
 	virtual ICollInstanceBase* GetCollInstance() const = 0;
 
+	void SetOffset(const Vector4f& InOffset);
+
 protected:
 	virtual void ConstructCollInstance() = 0;
 	virtual void DestructCollInstance() = 0;

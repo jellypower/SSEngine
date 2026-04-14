@@ -49,3 +49,8 @@ void SColliderBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPha
 		Owner->GetCommittedWorldTransformMat(),
 		Owner->GetCommittedWorldRotation());
 }
+
+void SColliderBaseComponent::SetOffset(const Vector4f& InOffset)
+{
+	GetCollInstance()->SetOffset(InOffset);
+}

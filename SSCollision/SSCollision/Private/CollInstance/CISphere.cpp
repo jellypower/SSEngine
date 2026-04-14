@@ -32,12 +32,26 @@ void CISphere::CollProcess_RotateObjecet(const Quaternion& RotDelta)
 
 void CISphere::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
 {
-	_WorldMat = WorldMat;
+	_WorldMat =
+	{
+		{1,0,0,0},
+		{0,1,0,0},
+		{0,0,1,0},
+		_Offset.SimdVec
+	};
+	_WorldMat = _WorldMat * WorldMat;
 	_WorldRot = WorldRot;
 
 
 	CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
+	CollDebug_Private::DrawShape(_IncludedCollWorld, ECollDebugDraw_MeshType::Sphere, _WorldMat, _WorldRot,
+		Vector4f::Zero, true);
+}
 
+void CISphere::SetOffset(const Vector4f& InOffset)
+{
+	_Offset = InOffset;
+	_Offset.SimdVec = XMVectorSetW(_Offset.SimdVec, 1);
 }
 
 
