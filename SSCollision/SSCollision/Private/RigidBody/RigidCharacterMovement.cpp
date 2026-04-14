@@ -284,6 +284,25 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 	} while (false); // goto-target
 
 
+	if (_bFaceChangedOnThisTick)
+	{
+		float Diff = TargetYaw - PrevYaw;
+		if (Diff > XM_PI) // ex) PrevYaw=0 to TargetYaw=270
+		{
+			PrevYaw += XM_2PI;
+		}
+		else if (Diff < -XM_PI) // ex) PrevYaw=270 to TargetYaw=0
+		{
+			TargetYaw += XM_2PI;
+		}
+
+		// TODO: 여기 문제있는듯. 고치자.
+		float NewYaw = SS::Lerp(PrevYaw, TargetYaw, TurnAmount);
+		
+		_CurFace.X = cos(NewYaw);
+		_CurFace.Y = sin(NewYaw);
+	}
+
 	// Debug
 	{
 		Vector4f Start = _CollInstance->GetWorldPos();
@@ -297,25 +316,6 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 		Desc.Color = { 0, 1, 0, 1 };
 		Desc.bUseDepth = true;
 		CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
-	}
-
-	if (_bFaceChangedOnThisTick)
-	{
-		float Diff = TargetYaw - PrevYaw;
-		if (Diff > XM_PI) // ex) PrevYaw=0 to TargetYaw=270
-		{
-			PrevYaw -= XM_2PI;
-		}
-		else if (Diff < -XM_PI) // ex) PrevYaw=270 to TargetYaw=0
-		{
-			TargetYaw += XM_2PI;
-		}
-
-		// TODO: 여기 문제있는듯. 고치자.
-		float NewYaw = SS::Lerp(PrevYaw, TargetYaw, TurnAmount);
-
-		_CurFace.X = sin(NewYaw);
-		_CurFace.Y = cos(NewYaw);
 	}
 }
 

@@ -14,7 +14,6 @@ private:
 	Vector2f _PrevBlendPoint;
 
 private:
-	Vector2f _EnteredFace;
 	float _FaceTurnSpeed;
 	float _AnimLerpSpeed;
 

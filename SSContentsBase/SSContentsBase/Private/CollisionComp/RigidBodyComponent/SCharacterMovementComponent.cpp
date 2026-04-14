@@ -21,8 +21,6 @@ SCharacterMovementComponent::SCharacterMovementComponent()
 {
 	_FaceTurnSpeed = 10;
 	_AnimLerpSpeed = 5;
-
-	_EnteredFace = { 0, 1 };
 }
 
 bool SCharacterMovementComponent::ShouldProcessPerFrameInherently() const
@@ -52,7 +50,7 @@ void SCharacterMovementComponent::SetFaceMode(ECharacterFaceMode Mode)
 
 void SCharacterMovementComponent::SetEnteredFace(Vector2f InDir)
 {
-	_EnteredFace = InDir;
+	_RigidCharacterMovement->SetEnteredFace(InDir);
 }
 
 void SCharacterMovementComponent::AddAccel(Vector2f InAccel)
