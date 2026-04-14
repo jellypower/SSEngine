@@ -113,25 +113,21 @@ void SSEditor::StartupEngine()
 
 	// DEBUG
 	{
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshAssetMap =
-			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::Mesh);
+		IAssetManagerMutable* AM = _Renderer->GetMutableAssetManager();
 
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshAssetMap = AM->GetAssetMap(EAssetType::Mesh);
 		for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshAssetItemPair : MeshAssetMap)
 		{
 			MeshSerializeTest(_Renderer, MeshAssetItemPair.first);
 		}
 
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& MdlcAssetMap =
-			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::ModelCombination);
-
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MdlcAssetMap = AM->GetAssetMap(EAssetType::ModelCombination);
 		for (const SS::pair<SS::SHasherW, IAssetBase*>& MdlcAssetItemPair : MdlcAssetMap)
 		{
 			MdlcSerializeTest(_Renderer, MdlcAssetItemPair.first);
 		}
 
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& RenderAnimMap =
-			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::RenderAnim);
-
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& RenderAnimMap = AM->GetAssetMap(EAssetType::RenderAnim);
 		for (const SS::pair<SS::SHasherW, IAssetBase*>& RenderAnimAssetItemPair : RenderAnimMap)
 		{
 			RenderAnimSerializeTest(_Renderer, RenderAnimAssetItemPair.first);
