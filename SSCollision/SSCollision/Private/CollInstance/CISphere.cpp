@@ -87,14 +87,14 @@ Vector4f CISphere::CalcFurthest(const Vector4f& Dir) const
 	return NewDir.SimdVec + _WorldMat.r[3];
 }
 
-Vector4f CISphere::GetBBMin() const
+const Vector4f& CISphere::GetBBMin() const
 {
 	XMVECTOR c = _WorldMat.r[3];
 	XMVECTOR v = _mm_set1_ps(_Radius);
 	return c - v;
 }
 
-Vector4f CISphere::GetBBMax() const
+const Vector4f& CISphere::GetBBMax() const
 {
 	XMVECTOR c = _WorldMat.r[3];
 	XMVECTOR v = _mm_set1_ps(_Radius);
@@ -124,4 +124,41 @@ void CISphere::OnExitFromCollWorld()
 ICollisionWorld* CISphere::GetIncludedCollWorld() const
 {
 	return _IncludedCollWorld;
+}
+
+void CISphere::OnEnterTheSAS(ISpatialAccelerationStructure* InSAS)
+{
+	if (_IncludedSAS != nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	_IncludedSAS = InSAS;
+}
+
+void CISphere::OnExitTheSAS()
+{
+	if (_IncludedSAS == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	_IncludedSAS = nullptr;
+}
+
+ISpatialAccelerationStructure* CISphere::GetIncludedSAS() const
+{
+	return _IncludedSAS;
+}
+
+void CISphere::SetSASProxyIdx(int64 InSASProxyIdx)
+{
+	_SASProxyIdx = InSASProxyIdx;
+}
+
+int64 CISphere::GetSASProxyIdx() const
+{
+	return _SASProxyIdx;
 }

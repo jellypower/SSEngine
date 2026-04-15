@@ -18,6 +18,9 @@ private:
 	SObjHashCode _GameObjectHashCode = nullptr;
 
 	ICollisionWorld* _IncludedCollWorld = nullptr;
+	ISpatialAccelerationStructure* _IncludedSAS = nullptr;
+
+	int64 _SASProxyIdx = -1;
 
 
 public:
@@ -42,17 +45,20 @@ public:
 	// 오브젝트의 WorldPos를 원점으로 Dir"방향"쪽으로 가장 멀리 나가있는 점 계산
 	// return: WorldPosition
 	virtual Vector4f CalcFurthest(const Vector4f& Dir) const override;
-	virtual Vector4f GetBBMin() const override;
-	virtual Vector4f GetBBMax() const override;
+	virtual const Vector4f& GetBBMin() const override;
+	virtual const Vector4f& GetBBMax() const override;
 
 public:
 	virtual SObjHashCode GetGameObjectID() const override;
 	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) override;
 
-	
-
-
 	virtual void OnEnterTheCollWorld(ICollisionWorld* InCollWorld) override;
 	virtual void OnExitFromCollWorld() override;
 	virtual ICollisionWorld* GetIncludedCollWorld() const override;
+
+	virtual void OnEnterTheSAS(ISpatialAccelerationStructure* InSAS) override;
+	virtual void OnExitTheSAS() override;
+	virtual ISpatialAccelerationStructure* GetIncludedSAS() const override;
+	virtual void SetSASProxyIdx(int64 InSASProxyIdx) override;
+	virtual int64 GetSASProxyIdx() const override;
 };

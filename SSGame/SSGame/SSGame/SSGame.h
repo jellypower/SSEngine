@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 
+class SGameObject;
 class ICollDevice;
 class SPlayerController;
 class SCameraComponent;
@@ -26,6 +27,7 @@ private:
 	void StartUpContents();
 	void PerFrameContents();
 
+	void PerFrame_DEBUGDRAW();
 
 	void MoveFreeCamera();
 
@@ -36,6 +38,7 @@ private:
 	bool _bIsFreeCamMode = false;
 	SCameraComponent* _FreeCam = nullptr;
 	SPlayerController* _MainPalyerController = nullptr;
+	SGameObject* _MainCharacter = nullptr;
 
 private:
 	IRenderer* _Renderer = nullptr;

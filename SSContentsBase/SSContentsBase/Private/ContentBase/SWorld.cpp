@@ -33,14 +33,6 @@ SWorld::SWorld() :
 
 SWorld::~SWorld()
 {
-	bool Remain = _RenderWorld->IsAnyInstanceRemainInWorld();
-	SS_ASSERT(Remain == false);
-
-	delete _CollWorld;
-	_CollWorld = nullptr;
-
-	delete _RenderWorld;
-	_RenderWorld = nullptr;
 }
 
 void SWorld::PostConstruct()
@@ -50,17 +42,6 @@ void SWorld::PostConstruct()
 	AddWorldRootObject(_WorldRootObject);
 }
 
-void SWorld::PreDestruct()
-{
-	if (_AnimWorker != nullptr)
-	{
-		delete _AnimWorker;
-		_AnimWorker = nullptr;
-	}
-
-	DelSObject(_WorldRootObject);
-	_WorldRootObject = nullptr;
-}
 
 void SWorld::InitializeWorld(IRenderWorld* InRenderWorld, ICollisionWorld* InCollWorld)
 {
@@ -121,16 +102,45 @@ bool SWorld::IsAnyObjectRemainInWorld() const
 	return false;
 }
 
-void SWorld::DestroyAllObjectsInWorld()
+void SWorld::CleanupWorld()
 {
 	int32 ChildCnt = _WorldRootObject->GetChildCnt();
+
+	SS::PooledList<SGameObject*> RootedObjs;
+	RootedObjs.Reserve(ChildCnt);
+
 	for (int32 i = 0; i < ChildCnt; i++)
 	{
 		SGameObject* ChildItem = _WorldRootObject->GetChild(i);
-		RemoveFromWorld(ChildItem);
-
-		SGameObjectConstructor::DestroyAll(ChildItem);
+		RemoveFromWorld(ChildItem); // 일단 전부 World로부터 빼내기
+		RootedObjs.PushBack(ChildItem); 
 	}
+
+	if (_AnimWorker != nullptr)
+	{
+		delete _AnimWorker;
+		_AnimWorker = nullptr;
+	}
+
+
+	bool Remain = _RenderWorld->IsAnyInstanceRemainInWorld();
+	SS_ASSERT(Remain == false);
+
+	_CollWorld->FinalizeCollWorld();
+	delete _CollWorld;
+	_CollWorld = nullptr;
+
+	delete _RenderWorld;
+	_RenderWorld = nullptr;
+
+
+	for (int32 i = 0; i < ChildCnt; i++)
+	{
+		SGameObjectConstructor::DestroyAll(RootedObjs[i]); // 처리 완료하고 Destroy
+	}
+
+	DelSObject(_WorldRootObject);
+	_WorldRootObject = nullptr;
 }
 
 void SWorld::ProcessTransformCommit()

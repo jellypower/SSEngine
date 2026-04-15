@@ -10,9 +10,14 @@ class ICollInstanceBase;
 class ICollisionWorld : public INoncopyable
 {
 public:
+	virtual void FinalizeCollWorld() = 0;
+
 	virtual bool IsAnyInstanceRemainInWorld() const = 0;
 	virtual SS::SHasherW GetWorldName() const = 0;
 	virtual const SS::HashMap<SObjHashCode, IRigidBodyBase*>& GetRigidBodyByHashCode() const = 0;
+
+
+	virtual void QueryCollidableWith(SS::PooledList<ICollInstanceBase*>& OutList, ICollInstanceBase* CollTarget) const = 0;
 
 	virtual void AddToWorld(ICollInstanceBase* InCollInstance) = 0;
 	virtual void AddToWorld(IRigidBodyBase* InRigidBody) = 0;

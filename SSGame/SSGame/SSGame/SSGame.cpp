@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "SSGame.h"
 
+#include <SSCollision/Public/CollisionBase/ICollDevice.h>
+
 #include "ModuleEntryScriptRunner.h"
 #include "PlayerController/SCameraController.h"
 #include "PlayerController/SPlayerController.h"
@@ -27,12 +29,13 @@
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 #include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SCharacterMovementComponent.h"
 #include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
-#include "SSCollision/Public/CollisionBase/ICollDevice.h""
-
+#include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+#include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 
 
 
@@ -79,7 +82,7 @@ void SSGame::StartupEngine()
 			AM->AddToAssetPool(AssetItem);
 		}
 
-			
+
 		_Renderer->GetCommonRenderAssetSet()->InitializeCommonAssets();
 	}
 
@@ -130,7 +133,7 @@ void SSGame::EnginePerFrame()
 void SSGame::CleanupEngine()
 {
 
-	_DefaultWorld->DestroyAllObjectsInWorld();
+	_DefaultWorld->CleanupWorld();
 
 	bool IsAnyObjectReminInWorld = _DefaultWorld->IsAnyObjectRemainInWorld();
 	SS_ASSERT(IsAnyObjectReminInWorld == false);
@@ -215,22 +218,22 @@ void SSGame::StartUpContents()
 		Quaternion Rot = Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 });
 		CharacterModel->SetRotation(Rot);
 
-//		SGameObject* Charcater = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_02.mdlc", false);
+		//		SGameObject* CharacterModel = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_02.mdlc", false);
 
 		SBlendSpaceAnimTestComponent* AnimComp = CharacterModel->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
 
-		SGameObject* Character = NewSObject<SGameObject>("Character");
-		CharacterModel->SetParent(Character);
+		_MainCharacter = NewSObject<SGameObject>("Character");
+		CharacterModel->SetParent(_MainCharacter);
 
-		SBoxColliderComponent* BoxComp = Character->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+		SBoxColliderComponent* BoxComp = _MainCharacter->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
 
 
-		SCharacterMovementComponent* CharacterComp = Character->CreateComponent<SCharacterMovementComponent>(L"SCharacterComponent");
+		SCharacterMovementComponent* CharacterComp = _MainCharacter->CreateComponent<SCharacterMovementComponent>(L"SCharacterComponent");
 		CharacterComp->BindAnimComp(AnimComp);
 		CharacterComp->BindColliderComponent(BoxComp);
 
 
-		SGameObjectConstructor::FinishConstructHierarchy(Character);
+		SGameObjectConstructor::FinishConstructHierarchy(_MainCharacter);
 		BoxComp->SetExtent(Vector4f(0.5f, 0.9, 0.5f, 0));
 		BoxComp->SetOffset(Vector4f(0, 0.9f, 0, 0));
 
@@ -248,7 +251,7 @@ void SSGame::StartUpContents()
 
 
 
-		_DefaultWorld->AddToWorld(Character);
+		_DefaultWorld->AddToWorld(_MainCharacter);
 
 
 		// =====================================================================
@@ -257,7 +260,7 @@ void SSGame::StartUpContents()
 		// GameManager
 		SGameObject* GameManager = NewSObject<SGameObject>(L"GameManager");
 		_MainPalyerController = GameManager->CreateComponent<SPlayerController>(L"PlayerController");
-		_MainPalyerController->BindCharacter(Character);
+		_MainPalyerController->BindCharacter(_MainCharacter);
 
 
 		SGameObjectConstructor::FinishConstructHierarchy(GameManager);
@@ -287,6 +290,26 @@ void SSGame::StartUpContents()
 		MainWindow->SetForceMouseCenter(true);
 		MainWindow->SetVisibleMouse(false);
 	}
+
+	{
+
+		for (int32 x = -12; x <= 12; x+=4)
+		{
+			for (int32 z = -12; z <= 12; z+=4)
+			{
+				Vector4f Pos = { (float)x,0.5,(float)z,1 };
+
+				SGameObject* Cube = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Cube", false);
+				Cube->SetPosition(Pos);
+				SBoxColliderComponent* BoxCollider = Cube->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+				SGameObjectConstructor::FinishConstructHierarchy(Cube);
+				BoxCollider->SetExtent({ 0.5f, 0.5f, 0.5f, 0 });
+
+				_DefaultWorld->AddToWorld(Cube);
+			}
+		}
+
+	}
 }
 
 void SSGame::PerFrameContents()
@@ -314,6 +337,37 @@ void SSGame::PerFrameContents()
 	{
 		MoveFreeCamera();
 	}
+
+	PerFrame_DEBUGDRAW();
+}
+
+void SSGame::PerFrame_DEBUGDRAW()
+{
+	IMeshAsset* Sphere = _Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
+	IMeshAsset* Arrow = _Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
+
+	ICollisionWorld* CollWorld = _DefaultWorld->GetCollWorld();
+	SColliderBaseComponent* CharacterCollider = _MainCharacter->FindComponent<SColliderBaseComponent>();
+
+	SS::PooledList<ICollInstanceBase*> _Collidables;
+	CollWorld->QueryCollidableWith(_Collidables, CharacterCollider->GetCollInstance());
+
+	for (ICollInstanceBase* ICI : _Collidables)
+	{
+		Transform DebugDrawTransform;
+
+		DebugDrawTransform.Position = ICI->GetWorldPos();
+		DebugDrawTransform.Scale = { 0.1f, 0.1f, 0.1f, 0 };
+
+		SRenderDebugUtil::DrawDebugMesh(
+			_DefaultWorld,
+			DebugDrawTransform,
+			Sphere,
+			false,
+			{ 1,0,0,1 });
+	}
+
+
 }
 
 void SSGame::MoveFreeCamera()

@@ -113,6 +113,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,6 +149,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -179,6 +181,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="ModuleExportKeyword.h" />
     <ClInclude Include="Private\CollDetect\CollDebug_Private.h" />
     <ClInclude Include="Private\CollInstance\CISphere.h" />
+    <ClInclude Include="Private\SpatialSystem\SASSweepAndPrune.h" />
+    <ClInclude Include="Private\SpatialSystem\ISpatialAccelerationStructure.h" />
     <ClInclude Include="Private\RigidBody\RigidCharacterMovement.h" />
     <ClInclude Include="Public\CollInstance\ICISphere.h" />
     <ClInclude Include="Public\DEBUG\CollDebugDrawDescs.h" />
@@ -214,6 +218,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     </ClCompile>
     <ClCompile Include="Private\RigidBody\RigidCharacterMovement.cpp" />
     <ClCompile Include="Private\ModuleEntry\SSCollisionModuleEntry.cpp" />
+    <ClCompile Include="Private\SpatialSystem\SASSweepAndPrune.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

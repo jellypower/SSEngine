@@ -39,7 +39,6 @@ public:
 	SWorld();
 	virtual ~SWorld();
 	void PostConstruct() override;
-	void PreDestruct() override;
 	virtual void InitializeWorld(IRenderWorld* InRenderWorld, ICollisionWorld* InCollWorld);
 
 public:
@@ -56,7 +55,7 @@ public:
 
 	void AddToWorld(SGameObject* InNewWorldObject, SGameObject* ParentObject = nullptr);
 	void RemoveFromWorld(SGameObject* InObjectToRemove);
-	void DestroyAllObjectsInWorld();
+	void CleanupWorld();
 
 	void ProcessTransformCommit();
 	void AddTransformCommitNeededObj(SGameObject* InObj);

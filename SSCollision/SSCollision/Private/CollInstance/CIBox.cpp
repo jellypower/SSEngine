@@ -100,12 +100,12 @@ Vector4f CIBox::CalcFurthest(const Vector4f& Dir) const
 	return Point;
 }
 
-Vector4f CIBox::GetBBMin() const
+const Vector4f& CIBox::GetBBMin() const
 {
 	return _BBMin;
 }
 
-Vector4f CIBox::GetBBMax() const
+const Vector4f& CIBox::GetBBMax() const
 {
 	return _BBMax;
 }
@@ -123,6 +123,33 @@ void CIBox::OnExitFromCollWorld()
 ICollisionWorld* CIBox::GetIncludedCollWorld() const
 {
 	return _IncludedCollWorld;
+}
+
+void CIBox::OnEnterTheSAS(ISpatialAccelerationStructure* InSAS)
+{
+	if (_IncludedSAS != nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	_IncludedSAS = InSAS;
+}
+
+void CIBox::OnExitTheSAS()
+{
+	if (_IncludedSAS == nullptr)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+
+	_IncludedSAS = nullptr;
+}
+
+ISpatialAccelerationStructure* CIBox::GetIncludedSAS() const
+{
+	return _IncludedSAS;
 }
 
 const Vector4f& CIBox::GetExtent() const
@@ -143,4 +170,15 @@ SObjHashCode CIBox::GetGameObjectID() const
 void CIBox::SetGameObjectIDXXX(SObjHashCode InHashCode)
 {
 	_GameObjectHashCode = InHashCode;
+}
+
+
+void CIBox::SetSASProxyIdx(int64 InSASProxyIdx)
+{
+	_SASProxyIdx = InSASProxyIdx;
+}
+
+int64 CIBox::GetSASProxyIdx() const
+{
+	return _SASProxyIdx;
 }

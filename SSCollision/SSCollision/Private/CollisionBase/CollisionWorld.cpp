@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CollisionWorld.h"
 
+#include "SSCollision/Private/SpatialSystem/SASSweepAndPrune.h"
 #include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 #include "SSCollision/Public/RigidBody/IRigidBodyBase.h"
 
@@ -9,6 +10,22 @@ CollisionWorld::CollisionWorld(const SS::SHasherW& worldName) :
 	_CollInstanceByHashCode(COLLWORLD_HASHMAP_SIZE, COLLWORLD_BUCKET_CAPACITY),
 	_RigidBodyByHashCode(1024, 256)
 {
+	_SASSweepAndPruen = DBG_NEW SASSweepAndPrune();
+}
+
+CollisionWorld::~CollisionWorld()
+{
+	if (_SASSweepAndPruen->IsAnyInstanceExists())
+	{
+		SS_INTERRUPT();
+	}
+
+	delete _SASSweepAndPruen;
+}
+
+void CollisionWorld::FinalizeCollWorld()
+{
+	_SASSweepAndPruen->FlushPendingInstances();
 }
 
 bool CollisionWorld::IsAnyInstanceRemainInWorld() const
@@ -28,6 +45,12 @@ const SS::HashMap<SObjHashCode, IRigidBodyBase*>& CollisionWorld::GetRigidBodyBy
 	return _RigidBodyByHashCode;
 }
 
+void CollisionWorld::QueryCollidableWith(SS::PooledList<ICollInstanceBase*>& OutList,
+	ICollInstanceBase* CollTarget) const
+{
+	_SASSweepAndPruen->QueryCollidableWith(OutList, CollTarget);
+}
+
 void CollisionWorld::AddToWorld(ICollInstanceBase* InCollInstance)
 {
 	SObjHashCode GOID = InCollInstance->GetGameObjectID();
@@ -38,12 +61,12 @@ void CollisionWorld::AddToWorld(ICollInstanceBase* InCollInstance)
 	}
 
 	_CollInstanceByHashCode.Add(GOID, InCollInstance);
+	_SASSweepAndPruen->AddCollInstance(InCollInstance);
 	InCollInstance->OnEnterTheCollWorld(this);
 }
 
 void CollisionWorld::AddToWorld(IRigidBodyBase* InRigidBody)
 {
-
 	SObjHashCode GOID = InRigidBody->GetGameObjectID();
 	if (_RigidBodyByHashCode.Find(GOID) != nullptr)
 	{
@@ -74,6 +97,7 @@ void CollisionWorld::RemoveCollFromWorld(ICollInstanceBase* InCollInstance)
 
 	SS_ASSERT(CollInstanceToRemove == InCollInstance);
 	_CollInstanceByHashCode.Remove(InID);
+	_SASSweepAndPruen->RemoveCollInstance(InCollInstance);
 	CollInstanceToRemove->OnExitFromCollWorld();
 }
 
@@ -118,11 +142,14 @@ void CollisionWorld::OnBeginSimulation()
 	}
 
 	UpdateInitialTransforms();
+
+	_SASSweepAndPruen->UpdateSAPStructure();
 }
 
 void CollisionWorld::SimulateMovement(float DeltaTime)
 {
-	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode) // 일단 움직이고 움직임을 반영합니다.
+	// TODO: 1. 일단 움직이고 움직임을 반영합니다. 멀티스레드 가능
+	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode)
 	{
 		IRigidBodyBase* RigidBodyItem = Item.second;
 		RigidBodyItem->SimulateMovement(DeltaTime);
@@ -142,8 +169,12 @@ void CollisionWorld::SimulateMovement(float DeltaTime)
 		}
 	}
 
-	// TODO: 2. 충돌하는 pair들을 찾습니다.
-	// TODO: 3. Solve 합니다.
+	// TODO: 동기화
+	// TODO: 2. 각 오브젝트 별로 본인과 충돌하는 오브젝트를 찾고 어디로 이동해야 할지 결정합니다. (멀티스레드 가능)
+
+
+	// TODO: 동기화 
+	// TODO: 3. 결정한 대로 오브젝트를 움직입니다. (멀티스레드 불가능)
 
 
 }

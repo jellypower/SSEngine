@@ -318,7 +318,7 @@ void SSEditor::CleanupEngine()
 		_ImGUI_AssetViewer = nullptr;
 	}
 
-	_DefaultWorld->DestroyAllObjectsInWorld();
+	_DefaultWorld->CleanupWorld();
 
 	bool IsAnyObjectReminInWorld = _DefaultWorld->IsAnyObjectRemainInWorld();
 	SS_ASSERT(IsAnyObjectReminInWorld == false);

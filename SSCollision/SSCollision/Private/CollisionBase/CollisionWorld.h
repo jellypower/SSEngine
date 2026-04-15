@@ -4,6 +4,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class SASSweepAndPrune;
 constexpr int32 COLLWORLD_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 COLLWORLD_BUCKET_CAPACITY = 1024;
 
@@ -15,14 +16,22 @@ private:
 	SS::HashMap<SObjHashCode, ICollInstanceBase*> _CollInstanceByHashCode;
 	SS::HashMap<SObjHashCode, IRigidBodyBase*> _RigidBodyByHashCode;
 
+	SASSweepAndPrune* _SASSweepAndPruen = nullptr;
+
+
 public:
 	CollisionWorld(const SS::SHasherW& worldName);
+	virtual ~CollisionWorld();
+
+public:
+	void FinalizeCollWorld() override;
 
 	// Add Remove From World
 	bool IsAnyInstanceRemainInWorld() const override;
 	SS::SHasherW GetWorldName() const override;
 	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& GetRigidBodyByHashCode() const override;
 
+	void QueryCollidableWith(SS::PooledList<ICollInstanceBase*>& OutList, ICollInstanceBase* CollTarget) const override;
 
 	void AddToWorld(ICollInstanceBase* InCollInstance) override;
 	void AddToWorld(IRigidBodyBase* InRigidBody) override;
@@ -42,7 +51,7 @@ public:
 
 
 
-	// DEBUG
+	// =============== DEBUG =============== 
 private:
 	SS::PooledList<CDDD_Line> _DDDListLine;
 	SS::PooledList<CDDD_Mesh> _DDDListMesh;
@@ -55,5 +64,5 @@ public:
 
 	virtual void AddDrawDebugLine(const CDDD_Line& Desc) override;
 	virtual void AddDrawDebugMesh(const CDDD_Mesh& Desc) override;
-	// ~DEBUG
+	// =============== ~DEBUG =============== 
 };
