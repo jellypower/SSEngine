@@ -4,7 +4,7 @@
 class TestCustomHeapAllocator : public SSCustomMemChunkAllocator
 {
 public:
-	explicit TestCustomHeapAllocator(int32 DefaultPageSize, int32 MinAllocSize, const utf16* AllocatorName = nullptr);
+	explicit TestCustomHeapAllocator(int32 DefaultPageSize, int32 MinAllocSize, int32 AlignSize = 1, const utf16* AllocatorName = nullptr);
 
 private:
 	virtual void* AllocPage(int32 PageSize) override;

@@ -2,18 +2,21 @@
 #include "SSEngineDefault/ModuleExportKeyword.h"
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
+class IWindowManager;
+class IThreadManager;
+class IFrameInfoProcessor;
 class IHasherPool;
-class SSRawInputProcessorBase;
-class FrameInfoProcessorBase;
+class IRawInputProcessor;
 
 
 
 SSENGINEDEFAULT_MODULE_NATIVE void SSEngineDefaultModuleEntry(
-	uint32 InHasherPoolCnt,
-	IHasherPool* InHasherPool,
-	FrameInfoProcessorBase* InFrameInfo,
-	SSRawInputProcessorBase* InRawInputProcessor);
+	IWindowManager* InWindowManager,
+	IFrameInfoProcessor* InFrameInfo,
+	IRawInputProcessor* InRawInputProcessor,
+	IThreadManager* InThreadManager);
 
-SSENGINEDEFAULT_MODULE_NATIVE SSRawInputProcessorBase* CreateInputProcessor();
-SSENGINEDEFAULT_MODULE_NATIVE FrameInfoProcessorBase* CreateFrameInfo();
-SSENGINEDEFAULT_MODULE_NATIVE IHasherPool* CreateHasherPool(int32 InBucketCnt);
+SSENGINEDEFAULT_MODULE_NATIVE IWindowManager* CreateWindowManager();
+SSENGINEDEFAULT_MODULE_NATIVE IRawInputProcessor* CreateInputProcessor();
+SSENGINEDEFAULT_MODULE_NATIVE IFrameInfoProcessor* CreateFrameInfo();
+SSENGINEDEFAULT_MODULE_NATIVE IThreadManager* CreateThreadManager();

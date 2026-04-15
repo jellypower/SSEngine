@@ -20,6 +20,8 @@ constexpr uint32 SS_UINT32_MAX = 0xffffffff;
 constexpr int64 SS_INT64_MAX = 0x7FFFFFFFFFFFFFFF;
 constexpr int64 INVALID_IDX = -1;
 
+constexpr float SS_EPSILON = 1.192092896e-07F;
+
 #define FORCEINLINE __forceinline
 #define PATH_LEN_MAX 520
 #define ASSET_NAME_LEN_MAX 128

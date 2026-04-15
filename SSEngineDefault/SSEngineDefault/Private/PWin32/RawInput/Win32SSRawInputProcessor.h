@@ -1,12 +1,15 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/RawInput/SSRawInputProcessorBase.h"
+#include "SSEngineDefault/Private/PCommon/RawInput/SSRawInputProcessorBase.h"
 
 #include <Windows.h>
+
 
 
 class Win32SSRawInputProcessor : public SSRawInputProcessorBase
 {
 public:
 	void ProcessInputEventForWindowsInternal(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+	virtual void ProcessInputStartOfFrame() override;
 
 };

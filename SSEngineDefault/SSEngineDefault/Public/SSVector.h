@@ -69,14 +69,37 @@ struct SSENGINEDEFAULT_MODULE Vector2f
 	Vector2f(float InX, float InY) : X(InX), Y(InY) { }
 
 	inline float GetSqrLength() const;
+	inline Vector2f GetNormalized(float Epsilon = 0.0001f) const;
 
 	static const Vector2f Zero;
 	static const Vector2f One;
 };
 
-FORCEINLINE Vector2f operator-(const Vector2f& lhs, const Vector2f& rhs) { return Vector2f(lhs.X - rhs.X, lhs.Y - rhs.Y); }
+
+FORCEINLINE Vector2f operator+(Vector2f lhs, Vector2f rhs) { return { lhs.X + rhs.X, lhs.Y + rhs.Y }; }
+FORCEINLINE Vector2f operator-(Vector2f lhs, Vector2f rhs) { return { lhs.X - rhs.X, lhs.Y - rhs.Y }; }
+FORCEINLINE Vector2f operator*(Vector2f lhs, Vector2f rhs) { return { lhs.X * rhs.X, lhs.Y * rhs.Y }; }
+FORCEINLINE Vector2f operator/(Vector2f lhs, Vector2f rhs) { return { lhs.X / rhs.X, lhs.Y / rhs.Y }; }
+
+FORCEINLINE Vector2f operator*(Vector2f lhs, float rhs) { return { lhs.X * rhs, lhs.Y * rhs }; }
+FORCEINLINE Vector2f operator/(Vector2f lhs, float rhs) { return { lhs.X / rhs, lhs.Y / rhs }; }
+FORCEINLINE Vector2f operator*(float lhs, Vector2f rhs) { return { lhs * rhs.X, lhs * rhs.Y }; }
+
+FORCEINLINE Vector2f operator-(Vector2f val) { return { -val.X, -val.Y }; }
 
 float Vector2f::GetSqrLength() const { return (X * X) + (Y * Y); }
+Vector2f Vector2f::GetNormalized(float Epsilon) const
+{
+	float SqrLen = (X * X) + (Y * Y);
+	if (SqrLen < Epsilon)
+	{
+		return Vector2f::Zero;
+	}
+
+	float Len = sqrt(SqrLen);
+
+	return { X / Len, Y / Len };
+}
 
 
 
@@ -106,18 +129,26 @@ struct SSENGINEDEFAULT_MODULE Quaternion
 	FORCEINLINE static Quaternion FromEulerRotation(Vector4f eulerRotation);
 	FORCEINLINE static Quaternion FromLookDirect(Vector4f lookDirection, Vector4f upDirection = Vector4f::Up);
 	FORCEINLINE static Quaternion RotateAxisAngle(Quaternion CurRotation, Vector4f Axis, float angle);
+	FORCEINLINE static Quaternion CalcPitchYawRotationFromDir(const Vector4f& InDir);
 };
 
 Quaternion Quaternion::FromEulerRotation(Vector4f eulerRotation)
 {
-	//	<Pitch, Yaw, Roll, 0>
+	//	입력 순서는: <Pitch, Yaw, Roll, 0>
 	return XMQuaternionRotationRollPitchYawFromVector(eulerRotation.SimdVec);
 }
 
 Quaternion Quaternion::FromLookDirect(Vector4f lookDirection, Vector4f upDirection)
 {
+	lookDirection.X = -lookDirection.X;
+	lookDirection.Y = -lookDirection.Y;
+
 	return XMQuaternionRotationMatrix(
-		XMMatrixLookToLH(Vector4f::Zero.SimdVec, lookDirection.SimdVec, upDirection.SimdVec));
+		XMMatrixLookToLH(
+			{ 0.0f, 0.0f, 0.0f, 1.0f },
+			lookDirection.SimdVec,
+			upDirection.SimdVec)
+	);
 }
 
 Quaternion Quaternion::RotateAxisAngle(Quaternion CurRotation, Vector4f Axis, float angle)
@@ -125,6 +156,10 @@ Quaternion Quaternion::RotateAxisAngle(Quaternion CurRotation, Vector4f Axis, fl
 	return XMQuaternionMultiply(CurRotation.SimdVec, XMQuaternionRotationAxis(Axis.SimdVec, angle));
 }
 
+Quaternion Quaternion::CalcPitchYawRotationFromDir(const Vector4f& InDir)
+{
+	return XMPitchYawRotFromDir(InDir.SimdVec);
+}
 
 struct SSENGINEDEFAULT_MODULE Vector2i32 {
 	int32 X;
@@ -139,17 +174,6 @@ struct SSENGINEDEFAULT_MODULE Vector2i32 {
 
 FORCEINLINE Vector2i32 operator+(const Vector2i32 lhs, const Vector2i32 rhs) { return Vector2i32(lhs.X + rhs.X, lhs.Y + rhs.Y); }
 FORCEINLINE Vector2i32 operator-(const Vector2i32 lhs, const Vector2i32 rhs) { return Vector2i32(lhs.X - rhs.X, lhs.Y - rhs.Y); }
-
-
-
-struct Vector2ui32 {
-	uint32 X;
-	uint32 Y;
-
-	Vector2ui32() : X(0), Y(0) { }
-	Vector2ui32(uint32 InX, uint32 InY) : X(InX), Y(InY) { }
-};
-
 
 
 

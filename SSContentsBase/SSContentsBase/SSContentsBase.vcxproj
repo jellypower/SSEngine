@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{5b181764-4038-4384-9a0c-6b163711d655}</ProjectGuid>
+    <RootNamespace>SSContentsBase</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(SolutionDir)..\SSGAL\$(IntDir);$(SolutionDir)..\SSRenderer\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)..\SSEditor\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSEditor\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSEditor\$(IntDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;SSCONTENTSBASE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(SolutionDir)..\SSGAL\$(IntDir);$(SolutionDir)..\SSRenderer\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)..\SSEditor\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSEditor\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSEditor\$(IntDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Private\AnimWorker\AnimBase\AnimateUtilFunctions.cpp" />
+    <ClCompile Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.cpp" />
+    <ClCompile Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.cpp" />
+    <ClCompile Include="Private\AnimWorker\AnimWorkerBase.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Private\AnimComponents\SAnimatorBaseComponent.cpp" />
+    <ClCompile Include="Private\ContentBase\SComponentBase.cpp" />
+    <ClCompile Include="Private\ContentBase\SGameObject.cpp" />
+    <ClCompile Include="Private\ContentBase\SGameObjectConstructor.cpp" />
+    <ClCompile Include="Private\ContentBase\SWorld.cpp" />
+    <ClCompile Include="Private\ModuleEntry\SSContentsBaseModuleEntry.cpp" />
+    <ClCompile Include="Private\SRenderContent\Camera\SCameraComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderComponentBase.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SStaticMeshRenderComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\SRendererUtil.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SCubeMapRenderComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SRenderLightComponent.cpp" />
+    <ClCompile Include="Private\AnimComponents\SSimpleAnimatorTestComponent.cpp" />
+    <ClCompile Include="Private\SRenderContent\RenderComponent\SMeshRenderComponentBase.cpp" />
+    <ClCompile Include="Private\SRenderContent\_DEBUG\SRenderDebugUtil.cpp" />
+    <ClCompile Include="Private\AnimComponents\SBlendSpaceAnimTestComponent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h" />
+    <ClInclude Include="Public\AnimWorker\AnimBase\AnimPoseTypes.h" />
+    <ClInclude Include="Public\AnimWorker\AnimBase\AnimateUtilFunctions.h" />
+    <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.h" />
+    <ClInclude Include="Public\SRenderContent\_DEBUG\TimedDebugDrawDesc.h" />
+    <ClInclude Include="Public\AnimWorker\AnimWorkee\IAnimWorkee.h" />
+    <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.h" />
+    <ClInclude Include="Private\AnimWorker\AnimWorkerBase.h" />
+    <ClInclude Include="BuildSettings.h" />
+    <ClInclude Include="Public\AnimComponents\SAnimatorBaseComponent.h" />
+    <ClInclude Include="Public\AnimWorker\IAnimWorker.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SCubeMapRenderComponent.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightComponent.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.h" />
+    <ClInclude Include="Public\ContentBase\SComponentBase.h" />
+    <ClInclude Include="Public\ContentBase\SGameObject.h" />
+    <ClInclude Include="Public\ContentBase\SGameObjectConstructor.h" />
+    <ClInclude Include="Public\ContentBase\SWorld.h" />
+    <ClInclude Include="Public\ModuleEntry\SSContentsBaseModuleEntry.h" />
+    <ClInclude Include="Public\SRenderContent\Camera\SCameraComponent.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderComponentBase.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SSkinnedMeshRenderComponent.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SStaticMeshRenderComponent.h" />
+    <ClInclude Include="Public\SRenderContent\_DEBUG\SRenderDebugUtil.h" />
+    <ClInclude Include="Public\SRenderContent\SRendererUtil.h" />
+    <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Public\AnimComponents\SSimpleAnimatorTestComponent.h" />
+    <ClInclude Include="Public\SRenderContent\RenderComponent\SMeshRenderComponentBase.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

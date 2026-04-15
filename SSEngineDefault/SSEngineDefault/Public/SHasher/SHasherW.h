@@ -1,7 +1,10 @@
 #pragma once
-#include "SSEngineDefault/ModuleExportKeyword.h"
+#include "IHasherPool.h"
+#include "Internal/HasherPoolAccesFunc.h"
+#include "SSEngineDefault/Public/SSDebugLogger.h"
 
-#include "SSEngineDefault/Public/SSEngineInlineSettings.h"
+#include "SSEngineDefault/Public/SSContainer/CityHash.h"
+#include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
 
 
 namespace SS {
@@ -11,35 +14,82 @@ namespace SS {
 namespace SS {
 
 	// String Hasher -> 미리 해싱된 String값을 비교하여 스트링 비교 효율을 높혀주는 클래스
-	class SSENGINEDEFAULT_MODULE SHasherW
+	class SHasherW
 	{
 	public:
-		static SHasherW Empty;
+		static SHasherW GetEmpty() { return SHasherW(); }
 
 
 	private:
-		union {
-			struct {
-				uint32 _HashedValue; // 해쉬 상위 32비트
-				uint32 _CurNodeCnt; // 해쉬 하위 32비트
-			};
-			uint64 _hashX; // 해쉬 64비트 전체값
-		};
+		const HasherPoolNode* _StoredNode = nullptr;
 
 	public:
-		SHasherW();
-		SHasherW(const utf16* str);
-		SHasherW(const char* inStr);
-		explicit SHasherW(const SS::StringW& inStr);
+		SHasherW()
+		{
+			_StoredNode = nullptr;
+		}
 
-		SHasherW(const SS::SHasherW& rhs);
-		SHasherW& operator=(SHasherW rhs);
+		SHasherW(const utf16* inStr)
+		{
+			if (inStr == nullptr)
+			{
+				SS_INTERRUPT();
+			}
 
-		bool operator==(SHasherW rhs) const;
+			_StoredNode = FindOrAddHasherNode(inStr);
+		}
 
-		bool IsEmpty() const;
-		const utf16* C_Str(uint32* const OutStrLen = nullptr) const;
-		uint64 GetDirectValue() const { return _hashX; }
+		SHasherW(const char* inStr)
+		{
+			SS::StringW InStrW = inStr;
+			new(this) SHasherW(InStrW.C_Str()); // 다른 생성자 호출
+		}
+
+
+		explicit SHasherW(const SS::StringW& inStr)
+		{
+			new(this) SHasherW(inStr.C_Str());
+		}
+
+		SHasherW(const SS::SHasherW& rhs)
+		{
+			_StoredNode = rhs._StoredNode;
+		}
+
+		SHasherW& operator=(SHasherW rhs)
+		{
+			_StoredNode = rhs._StoredNode;
+			return *this;
+		}
+
+
+
+
+
+		bool operator==(SHasherW rhs) const
+		{
+			return this->_StoredNode == rhs._StoredNode;
+		}
+
+		bool IsEmpty() const
+		{
+			return _StoredNode == nullptr;
+		}
+
+		const utf16* C_Str() const
+		{
+			return _StoredNode == nullptr ? nullptr : _StoredNode->_str;
+		}
+
+		int32 GetStrLen() const
+		{
+			return _StoredNode == nullptr ? 0 : _StoredNode->_strLen;
+		}
+
+		uint64 GetDirectValue() const
+		{
+			return _StoredNode == nullptr ? 0 : _StoredNode->_hashX;
+		}
 
 	};
 };

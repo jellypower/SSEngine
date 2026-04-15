@@ -1,9 +1,10 @@
 #define SSENGINEDEFAULT_MODULE_EXPORT
 #include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
 
-SSCustomMemChunkAllocator::SSCustomMemChunkAllocator(int32 InEachPageSize, int32 MinAllocSize, const utf16* AllocatorName) :
+SSCustomMemChunkAllocator::SSCustomMemChunkAllocator(int32 InEachPageSize, int32 MinAllocSize, int32 AlignSize, const utf16* AllocatorName) :
 	_EachPageSize(InEachPageSize),
-	_MinAllocSize(MinAllocSize)
+	_MinAllocSize(MinAllocSize),
+	_AlignSize(AlignSize)
 {
 	if (AllocatorName != nullptr)
 	{
@@ -13,7 +14,11 @@ SSCustomMemChunkAllocator::SSCustomMemChunkAllocator(int32 InEachPageSize, int32
 
 void SSCustomMemChunkAllocator::ReleaseDefaultPages()
 {
-	SS_ASSERT(IsAnyChunkInUse() == false);
+	const bool bInUse = IsAnyChunkInUse();
+	if (bInUse)
+	{
+		SS_INTERRUPT();
+	}
 
 	for (PageSet& PageSetItem : _DefaultPages)
 	{
@@ -26,7 +31,27 @@ void SSCustomMemChunkAllocator::ReleaseDefaultPages()
 
 AllocatedChunkHeader SSCustomMemChunkAllocator::AllocChunk(int32 NeededSize, SS::SHasherW ChunkName)
 {
-	if (NeededSize >= _EachPageSize)
+	if (NeededSize < 0)
+	{
+		SS_INTERRUPT();
+	}
+
+	if (NeededSize < _MinAllocSize)
+	{
+		NeededSize = _MinAllocSize;
+	}
+
+	{
+		int32 Unit = NeededSize / _AlignSize;
+		int32 Mod = NeededSize % _AlignSize;
+
+		int32 NewUnit = Unit +
+			(Mod == 0 ? 0 : 1);
+
+		NeededSize = _AlignSize * NewUnit;
+	}
+
+	if (NeededSize >= _EachPageSize) // 페이지보다 큰 공간을 요청한 경우
 	{
 		AllocatedChunkHeader NewLargePageSet;
 		NewLargePageSet.ChunkName = ChunkName;
@@ -42,15 +67,9 @@ AllocatedChunkHeader SSCustomMemChunkAllocator::AllocChunk(int32 NeededSize, SS:
 		return LastItem;
 	}
 
-	if (NeededSize < 0)
-	{
-		SS_INTERRUPT();
-	}
 
-	if (NeededSize < _MinAllocSize)
-	{
-		NeededSize = _MinAllocSize;
-	}
+
+
 
 
 	int64 DefaultPageCnt = _DefaultPages.GetSize();
@@ -200,7 +219,7 @@ void SSCustomMemChunkAllocator::ReleaseChunk(const AllocatedChunkHeader& ChunkTo
 				AvailableMemspace NewMemspace;
 				NewMemspace.Offset = ChunkToRelease.ChunkOffset;
 				NewMemspace.Size = ChunkToRelease.Size;
-				AvailableChunks.InsertBack(iter, NewMemspace);
+				AvailableChunks.PushBack(NewMemspace);
 			}
 		}
 		// 4. 두 청크 사이에 있는 경우

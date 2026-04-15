@@ -405,4 +405,7 @@ FodyWeavers.xsd
 *.fbx
 
 # Extern Libs
-SSRendererMain/SSRenderer/ExternLibs
+ExternLibs
+
+# SSEngine Resources
+*.apak

@@ -3,9 +3,12 @@
 #include <windowsx.h>
 
 #include "Win32RawInputProcessUtil.h"
+#include "SSEngineDefault/Public/WindowManager/IWindow.h"
+#include "SSEngineDefault/Public/WindowManager/IWindowManager.h"
+#include "SSEngineDefault/Public/WindowManager/SSWindowInfo.h"
 
 void Win32SSRawInputProcessor::ProcessInputEventForWindowsInternal(HWND hWnd, UINT message, WPARAM wParam,
-                                                                       LPARAM lParam)
+                                                                   LPARAM lParam)
 {
 	switch (message)
 	{
@@ -67,14 +70,47 @@ void Win32SSRawInputProcessor::ProcessInputEventForWindowsInternal(HWND hWnd, UI
 
 	case WM_MOUSEMOVE:
 	{
-		Vector2i32 newPos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		_mouseDelta = newPos - _mousePos;
+		if (SSMainWindowInfo::IsFocusingWindowForcingCenter() == false)
+		{
+			Vector2i32 newPos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			_mouseDelta = newPos - _mousePos;
+			_mousePos = newPos;
+		}
+	}
+	break;
 
-		_mousePos = newPos;
+	case WM_ACTIVATE:
+	{
+		if (LOWORD(wParam) == WA_INACTIVE)
+		{
+			ResetCurInputState();
+		}
+	}
+	case WM_MOUSELEAVE:
+	{
+		ResetCurInputState();
 	}
 	break;
 
 	default:
-		assert(false);
+		SS_ASSERT(false);
+	}
+}
+
+void Win32SSRawInputProcessor::ProcessInputStartOfFrame()
+{
+	if (SSMainWindowInfo::IsFocusingWindowForcingCenter())
+	{
+		IWindow* Focusing = g_MainWindowManager->GetFocusingWindow();
+		Vector2i32 Center = Focusing->GetWindowCenter();
+
+		POINT cur;
+		::GetCursorPos(&cur);
+		Vector2i32 newPos(cur.x, cur.y);
+
+		_mouseDelta = newPos - Center;
+		_mousePos = Center;
+
+		::SetCursorPos(Center.X, Center.Y);
 	}
 }

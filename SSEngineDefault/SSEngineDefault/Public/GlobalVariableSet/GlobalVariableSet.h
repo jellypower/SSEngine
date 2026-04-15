@@ -1,11 +1,13 @@
 #pragma once
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
+class IWindowManager;
+class IThreadManager;
 class IHasherPool;
-class SSRawInputProcessorBase;
-class FrameInfoProcessorBase;
+class IRawInputProcessor;
+class IFrameInfoProcessor;
 
-
-extern IHasherPool* g_HasherPool;
-extern FrameInfoProcessorBase* g_FrameInfoProcessor;
-extern SSRawInputProcessorBase* g_RawInputProcessor;
+extern IWindowManager* g_MainWindowManager;
+extern IFrameInfoProcessor* g_FrameInfoProcessor;
+extern IRawInputProcessor* g_RawInputProcessor;
+extern IThreadManager* g_ThreadManager;

@@ -35,11 +35,12 @@ private:
 
 	int32 _EachPageSize = 0;
 	int32 _MinAllocSize = 0;
+	int32 _AlignSize = 0;
 
 	SS::StringW _AllocatorName;
 
 public:
-	explicit SSCustomMemChunkAllocator(int32 InEachPageSize, int32 MinAllocSize, const utf16* AllocatorName);
+	explicit SSCustomMemChunkAllocator(int32 InEachPageSize, int32 MinAllocSize, int32 AlignSize, const utf16* AllocatorName);
 
 public:
 	bool IsAnyChunkInUse() const;
@@ -47,7 +48,7 @@ public:
 	void ReserveDefaultPage(int64 NewDefaultPageCnt);
 	void ReleaseDefaultPages();
 
-	AllocatedChunkHeader AllocChunk(int32 NeededSize, SS::SHasherW ChunkName = SS::SHasherW::Empty);
+	AllocatedChunkHeader AllocChunk(int32 NeededSize, SS::SHasherW ChunkName = SS::SHasherW::GetEmpty());
 	void ReleaseChunk(const AllocatedChunkHeader& ChunkToRelease);
 
 

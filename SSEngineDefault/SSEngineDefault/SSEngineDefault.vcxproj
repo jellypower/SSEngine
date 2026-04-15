@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;SSENGINEDEFAULT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -123,8 +123,9 @@
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
-copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir)..\SSRendererMain\$(IntDir)</Command>
+      <Command>mkdir "$(SolutionDir)..\SSEditor\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSEditor\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSEditor\$(IntDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,7 +134,7 @@ copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir).
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;SSENGINEDEFAULT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -150,15 +151,32 @@ copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir).
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSRendererMain\$(IntDir)"
-copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir)..\SSRendererMain\$(IntDir)</Command>
+      <Command>mkdir "$(SolutionDir)..\SSEditor\$(IntDir)"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSEditor\$(IntDir)"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSEditor\$(IntDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ModuleExportKeyword.h" />
+    <ClInclude Include="Private\PCommon\SHasher\Internal\HasherPoolCreationFunction.h" />
+    <ClInclude Include="Private\PCommon\SSThread\PCommmonThreadManager.h" />
     <ClInclude Include="Private\PCommon\SHasher\HasherPoolBase.h" />
+    <ClInclude Include="Private\PCommon\TestCodes\TestSerialize_Internal.h" />
+    <ClInclude Include="Private\PCommon\TestCodes\TestFunction_Internal.h" />
+    <ClInclude Include="Private\PWin32\SSThread\Win32ThreadManager.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.h" />
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
+    <ClInclude Include="Private\PWin32\WindowManager\Win32WindowManager.h" />
+    <ClInclude Include="Private\PWin32\WindowManager\WindowUtil_Internal.h" />
+    <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
+    <ClInclude Include="Public\CommonTypes\DirEnums.h" />
+    <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h" />
+    <ClInclude Include="Public\SHasher\Internal\HasherPoolAccesFunc.h" />
+    <ClInclude Include="Public\SHasher\SHaserUtils.h" />
+    <ClInclude Include="Public\SSAlgorithm.h" />
+    <ClInclude Include="Public\SSThread\PWin32\SSThreadUtil_Win32.h" />
+    <ClInclude Include="Public\SSThread\IThreadManager.h" />
+    <ClInclude Include="Public\RawInput\IRawInputProcessor.h" />
     <ClInclude Include="Public\RawInput\KeyCodeEnums.h" />
     <ClInclude Include="Public\RawInput\RawInputUtils.h" />
     <ClInclude Include="Public\ModuleEntry\SSEngineDefaultModuleEntry.h" />
@@ -166,16 +184,20 @@ copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir).
     <ClInclude Include="Public\GeometryType.h" />
     <ClInclude Include="Public\GlobalVariableSet\GlobalVariableSet.h" />
     <ClInclude Include="Public\INoncopyable.h" />
+    <ClInclude Include="Public\RawProfiler\IFrameInfoProcessor.h" />
     <ClInclude Include="Public\RawProfiler\ProfilerUtils.h" />
     <ClInclude Include="Public\RawInput\SSInput.h" />
     <ClInclude Include="Public\RawProfiler\SSFrameInfo.h" />
     <ClInclude Include="Public\SHasher\IHasherPool.h" />
     <ClInclude Include="Public\SSCommonUtil\AllocatedChunkHeader.h" />
     <ClInclude Include="Public\SSCommonUtil\SSCustomMemAllocator.h" />
+    <ClInclude Include="Public\SSCommonUtil\SSTransientMemAllocator.h" />
+    <ClInclude Include="Public\SSCommonUtil\TransientChunkHeader.h" />
     <ClInclude Include="Public\SSContainer\Allocators\HeapAllocator.h" />
     <ClInclude Include="Public\SSContainer\Allocators\InlineAllocator.h" />
     <ClInclude Include="Public\SSContainer\BasicHashFunctionCollection.h" />
     <ClInclude Include="Public\SSContainer\CityHash.h" />
+    <ClInclude Include="Public\SSContainer\ContainerUtil\ContainerUtil.h" />
     <ClInclude Include="Public\SSContainer\FixedList.h" />
     <ClInclude Include="Public\SSContainer\HashMap.h" />
     <ClInclude Include="Public\SSContainer\PooledLinkedList.h" />
@@ -193,21 +215,34 @@ copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir).
     <ClInclude Include="Public\SSDirectXMathCustom.h" />
     <ClInclude Include="Public\SSEngineDefault.h" />
     <ClInclude Include="Public\SSEngineInlineSettings.h" />
-    <ClInclude Include="Public\RawProfiler\FrameInfoProcessorBase.h" />
-    <ClInclude Include="Public\RawInput\SSRawInputProcessorBase.h" />
+    <ClInclude Include="Private\PCommon\RawProfiler\FrameInfoProcessorBase.h" />
+    <ClInclude Include="Private\PCommon\RawInput\SSRawInputProcessorBase.h" />
     <ClInclude Include="Public\SSNativeKeywords.h" />
     <ClInclude Include="Public\SSNativeTypes.h" />
     <ClInclude Include="Public\SSStaticMath.h" />
+    <ClInclude Include="Public\RawProfiler\ScopedProfile.h" />
+    <ClInclude Include="Public\SSThread\SSThreadUtil.h" />
     <ClInclude Include="Public\SSVector.h" />
     <ClInclude Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.h" />
+    <ClInclude Include="Public\WindowManager\IWindow.h" />
+    <ClInclude Include="Public\WindowManager\IWindowManager.h" />
+    <ClInclude Include="Public\WindowManager\SSWindowInfo.h" />
+    <ClInclude Include="Private\PWin32\WindowManager\Win32Window.h" />
+    <ClInclude Include="Public\WindowManager\WindowUtils.h" />
+    <ClInclude Include="Public\WInWrapper\WinWrapper.h" />
+    <ClInclude Include="Public\SystemUtilities.h" />
     <ClInclude Include="Public\TestCodes\TestFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\PCommon\ModuleEntry\SSEngineDefaultModuleEntry.cpp" />
+    <ClCompile Include="Private\PCommon\SHasher\Internal\HasherPoolCreationFunction.cpp" />
+    <ClCompile Include="Private\PCommon\SSThread\PCommmonThreadManager.cpp" />
     <ClCompile Include="Private\PCommon\SHasher\HasherPoolBase.cpp" />
-    <ClCompile Include="Private\PCommon\SHasher\SHasherW.cpp" />
     <ClCompile Include="Private\PCommon\SSContainer\BasicHashFunctionCollection.cpp" />
+    <ClCompile Include="Private\PCommon\TestCodes\TestSerialize_Internal.cpp" />
+    <ClCompile Include="Private\PCommon\TestCodes\TestFunction_Internal.cpp" />
+    <ClCompile Include="Private\PWin32\SSThread\Win32ThreadManager.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputProcessUtil.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32RawInputUtils.cpp" />
     <ClCompile Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.cpp" />
@@ -218,9 +253,19 @@ copy $(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb $(SolutionDir).
     <ClCompile Include="Private\PWin32\DeviceQuery.cpp" />
     <ClCompile Include="Private\PWin32\StringUtilityFunctions.cpp" />
     <ClCompile Include="Private\PCommon\SSCommonUtil\SSCustomMemAllocator.cpp" />
-    <ClCompile Include="Private\PCommon\Input\SSRawInputProcessorBase.cpp" />
+    <ClCompile Include="Private\PCommon\RawInput\SSRawInputProcessorBase.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestClasses\TestCustomHeapAllocator.cpp" />
     <ClCompile Include="Private\PCommon\TestCodes\TestFunctions.cpp" />
+    <ClCompile Include="Private\PCommon\SSCommonUtil\SSTransientMemAllocator.cpp" />
+    <ClCompile Include="Private\PCommon\CommonSerializer\DefaultTypeSerializsers.cpp" />
+    <ClCompile Include="Private\PCommon\SystemUtilities.cpp" />
+    <ClCompile Include="Private\PWin32\SSThread\SSThreadUtil_Win32.cpp" />
+    <ClCompile Include="Private\PCommon\SHasher\SHaserUtils.cpp" />
+    <ClCompile Include="Private\PCommon\SHasher\Internal\HasherPoolAccesFunc.cpp" />
+    <ClCompile Include="Private\PWin32\WindowManager\Win32WindowManager.cpp" />
+    <ClCompile Include="Private\PWin32\WindowManager\Win32Window.cpp" />
+    <ClCompile Include="Private\PWin32\WindowManager\WindowUtils.cpp" />
+    <ClCompile Include="Private\PWin32\WindowManager\WindowUtil_Internal.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

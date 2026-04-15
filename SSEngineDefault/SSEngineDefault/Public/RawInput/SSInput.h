@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "KeyCodeEnums.h"
-#include "SSRawInputProcessorBase.h"
+#include "IRawInputProcessor.h"
 #include "SSEngineDefault/Public/SSVector.h"
 #include "SSEngineDefault/Public/GlobalVariableSet/GlobalVariableSet.h"
 
@@ -17,4 +17,5 @@ public:
 
 	static float GetMouseWheelDelta() { return g_RawInputProcessor->GetMouseWheelDelta(); }
 	static Vector2f GetMouseDelta() { return g_RawInputProcessor->GetMouseDelta(); }
+	static Vector2i32 GetMousePos() { return g_RawInputProcessor->GetMousePos(); }
 };
