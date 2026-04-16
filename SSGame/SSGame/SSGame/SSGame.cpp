@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "SSGame.h"
 
+#include <ctime>
+
 #include <SSCollision/Public/CollisionBase/ICollDevice.h>
 
 #include "ModuleEntryScriptRunner.h"
@@ -234,7 +236,7 @@ void SSGame::StartUpContents()
 
 
 		SGameObjectConstructor::FinishConstructHierarchy(_MainCharacter);
-		BoxComp->SetExtent(Vector4f(0.5f, 0.9, 0.5f, 0));
+		BoxComp->SetExtent(Vector4f(0.3f, 0.9, 0.3f, 0));
 		BoxComp->SetOffset(Vector4f(0, 0.9f, 0, 0));
 
 
@@ -293,14 +295,25 @@ void SSGame::StartUpContents()
 
 	{
 
+		srand(time(NULL));
+
 		for (int32 x = -12; x <= 12; x+=4)
 		{
 			for (int32 z = -12; z <= 12; z+=4)
 			{
-				Vector4f Pos = { (float)x,0.5,(float)z,1 };
-
 				SGameObject* Cube = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Cube", false);
-				Cube->SetPosition(Pos);
+
+				// generate random from -PI to PI
+				float r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
+				float PosNoiseX = (float)rand() / ((float)RAND_MAX / (2.0)) - 0.1;
+				float PosNoiseZ = (float)rand() / ((float)RAND_MAX / (2.0)) - 0.1;
+				PosNoiseX += x;
+				PosNoiseZ += z;
+				Transform CubeTransform;
+				CubeTransform.Position = { PosNoiseX,0.5,PosNoiseZ,1 };
+				CubeTransform.Rotation = Quaternion::FromEulerRotation({ 0, r,0,0 });
+				Cube->SetTransform(CubeTransform);
+
 				SBoxColliderComponent* BoxCollider = Cube->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
 				SGameObjectConstructor::FinishConstructHierarchy(Cube);
 				BoxCollider->SetExtent({ 0.5f, 0.5f, 0.5f, 0 });
