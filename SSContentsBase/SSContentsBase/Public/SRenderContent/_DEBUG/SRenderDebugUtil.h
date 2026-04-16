@@ -6,10 +6,18 @@
 struct PoseSlot;
 class IMeshAsset;
 class SWorld;
+struct AABBBox;
 
 class SSCONTENTBASE_MODULE SRenderDebugUtil
 {
 public:
+	static void DrawBoundBox(
+		SWorld* WorldToDraw,
+		const AABBBox& InBB,
+		bool bUseDepth,
+		const Vector4f& Color = Vector4f::Zero,
+		float Time = 0);
+
 	static void DrawDebugMesh(
 		SWorld* WorldToDraw, 
 		const Transform& Transform, 

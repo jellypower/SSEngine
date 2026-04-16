@@ -25,7 +25,7 @@ CollisionWorld::~CollisionWorld()
 
 void CollisionWorld::FinalizeCollWorld()
 {
-	_SASSweepAndPruen->FlushPendingInstances();
+	_SASSweepAndPruen->FinalizePendingInstances();
 }
 
 bool CollisionWorld::IsAnyInstanceRemainInWorld() const

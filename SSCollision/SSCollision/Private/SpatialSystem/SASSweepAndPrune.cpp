@@ -8,7 +8,8 @@
 SASSweepAndPrune::SASSweepAndPrune() :
 	_SAPList(1024),
 	_EnterPendingItems(32),
-	_ExitPendingItems(32)
+	_ExitPendingItems(32),
+	_UpdatePendingItems(32)
 {
 }
 
@@ -38,7 +39,12 @@ void SASSweepAndPrune::RemoveCollInstance(ICollInstanceBase* InCollInstance)
 	_ExitPendingItems.PushBack(InCollInstance);
 }
 
-void SASSweepAndPrune::FlushPendingInstances()
+void SASSweepAndPrune::AddUpdateNeededCollInstance(ICollInstanceBase* InCollInstance)
+{
+	_UpdatePendingItems.PushBack(InCollInstance);
+}
+
+void SASSweepAndPrune::FinalizePendingInstances()
 {
 	UpdateSAPStructure();
 }
@@ -138,6 +144,7 @@ void SASSweepAndPrune::UpdateSAPStructure()
 
 	_ExitPendingItems.Clear();
 	_EnterPendingItems.Clear();
+	_UpdatePendingItems.Clear();
 }
 
 void SASSweepAndPrune::RemoveFromSAPList(ICollInstanceBase* ICIToRemove)

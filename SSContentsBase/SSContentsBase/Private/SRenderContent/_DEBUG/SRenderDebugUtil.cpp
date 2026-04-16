@@ -1,6 +1,8 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
+#include "SSEngineDefault/Public/Collision/AABBBox.h"
+
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
@@ -10,7 +12,18 @@
 #include "SSContentsBase/Public/AnimWorker/AnimBase/AnimPoseTypes.h"
 
 
+void SRenderDebugUtil::DrawBoundBox(SWorld* WorldToDraw, const AABBBox& InBB, bool bUseDepth, const Vector4f& Color,
+	float Time)
+{
+	Transform lTransform;
+	lTransform.Scale = InBB.Max - InBB.Min;
+	lTransform.Position = (InBB.Max + InBB.Min) * 0.5;
 
+	ICommonRenderAssetSet* CommonAssets = g_Renderer->GetCommonRenderAssetSet();
+	IMeshAsset* CubeMesh = CommonAssets->GetCube1mMesh();
+
+	WorldToDraw->DebugDrawMesh(lTransform.AsMatrix(), XMMatrixIdentity(), CubeMesh, bUseDepth, Color, Time);
+}
 
 void SRenderDebugUtil::DrawDebugMesh(
 	SWorld* WorldToDraw,

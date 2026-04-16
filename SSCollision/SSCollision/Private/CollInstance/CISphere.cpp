@@ -2,6 +2,7 @@
 #include "CISphere.h"
 
 #include "SSCollision/Private/CollDetect/CollDebug_Private.h"
+#include "SSCollision/Private/SpatialSystem/ISpatialAccelerationStructure.h"
 #include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
 
 float CISphere::GetRadius() const
@@ -46,6 +47,11 @@ void CISphere::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quat
 	XMVECTOR vRadius = { _Radius, _Radius, _Radius, 0 };
 	_BBox.Min = _WorldMat.r[3] - vRadius;
 	_BBox.Max = _WorldMat.r[3] + vRadius;
+
+	if (_IncludedSAS != nullptr)
+	{
+		_IncludedSAS->AddUpdateNeededCollInstance(this);
+	}
 
 	CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
 	CollDebug_Private::DrawShape(_IncludedCollWorld, ECollDebugDraw_MeshType::Sphere, _WorldMat, _WorldRot,

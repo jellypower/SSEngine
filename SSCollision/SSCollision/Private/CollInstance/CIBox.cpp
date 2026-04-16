@@ -2,6 +2,7 @@
 #include "CIBox.h"
 
 #include "SSCollision/Private/CollDetect/CollDebug_Private.h"
+#include "SSCollision/Private/SpatialSystem/ISpatialAccelerationStructure.h"
 #include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
 
 
@@ -44,6 +45,12 @@ void CIBox::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quatern
 
 	_BBox.Min = WorldPos - RotatedExtent;
 	_BBox.Max = WorldPos + RotatedExtent;
+
+
+	if (_IncludedSAS != nullptr)
+	{
+		_IncludedSAS->AddUpdateNeededCollInstance(this);
+	}
 
 
 	{

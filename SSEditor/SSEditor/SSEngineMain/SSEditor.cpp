@@ -2,7 +2,6 @@
 
 #include "SSEditor.h"
 
-#include <SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h>
 
 
 #include "ImGUI_AssetManager.h"
@@ -37,6 +36,7 @@
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+#include "SSEngineDefault/Public/Collision/CollMathInline.h"
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
@@ -51,7 +51,10 @@
 #include "SSRenderer/Public/RenderAssetSerializer/RenderAssetSerializeFunctions.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
+
+#include "SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h"
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
+#include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 
 
 SSEditor* g_Editor = nullptr;
@@ -564,7 +567,20 @@ void SSEditor::TEMP_ProcessContents()
 					TEMP_Coll2->GetCollInstance());
 			}
 		}
-		
+
+
+//		AABBBox Box = CollMath_Inline::UnionAABB(
+//			TEMP_Coll1->GetCollInstance()->GetBBox(),
+//			TEMP_Coll2->GetCollInstance()->GetBBox());
+//		SRenderDebugUtil::DrawBoundBox(
+//			_DefaultWorld,
+//			Box,
+//			true,
+//			{ 1,0,0,1 });
+
+
+
+
 
 
 		// µå·Î¿ì

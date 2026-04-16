@@ -8,6 +8,8 @@
 #include "SSCollision/Private/CollInstance/CISphere.h"
 #include "SSCollision/Private/RigidBody/RigidCharacterMovement.h"
 
+#include "SSEngineDefault/Public/Collision/CollMathInline.h"
+
 ICollisionWorld* CollDevice::CreateCollWorld(SS::SHasherW InWorldName) const
 {
 	return DBG_NEW CollisionWorld(InWorldName);
@@ -32,13 +34,9 @@ bool CollDevice::AreColliding(const ICollInstanceBase* c1, const ICollInstanceBa
 {
 	const AABBBox& BBoxC1 = c1->GetBBox();
 	const AABBBox& BBoxC2 = c2->GetBBox();
-	
 
-	XMVECTOR Result1 = XMVectorGreaterOrEqual(BBoxC2.Min.SimdVec, BBoxC1.Max.SimdVec);
-	XMVECTOR Result2 = XMVectorGreaterOrEqual(BBoxC1.Min.SimdVec, BBoxC2.Max.SimdVec);
-	XMVECTOR Result = XMVectorSetW(XMVectorOrInt(Result1, Result2), 0);
 
-	if (_mm_movemask_ps(Result) != 0)
+	if (CollMath_Inline::BBIntersect(BBoxC1, BBoxC2) == false)
 	{
 		return false;
 	}
