@@ -1,7 +1,8 @@
 ﻿#include "pch.h"
-#include "SPlayerController.h"
+#include "SSGameModule/Public/PlayerController/SPlayerController.h"
 
-#include "SCameraController.h"
+#include "SSGameModule/Public/PlayerController/SCameraController.h"
+
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
@@ -10,6 +11,7 @@
 
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/SSAlgorithm.h"
+#include "SSGameModule/Public/SSGame.h"
 
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
@@ -69,10 +71,14 @@ void SPlayerController::PerFrame(float DeltaTime)
 		return;
 	}
 
-	const IRenderCamera* RenderCam = g_Renderer->GetMainRenderCamera();
-	if (RenderCam != nullptr && RenderCam == _PlayerCameraComp->GetRenderCamera())
+
+	if (g_Game->IsInGameFocus())
 	{
-		ProcessInput(DeltaTime);
+		const IRenderCamera* RenderCam = g_Renderer->GetMainRenderCamera();
+		if (RenderCam != nullptr && RenderCam == _PlayerCameraComp->GetRenderCamera())
+		{
+			ProcessInput(DeltaTime);
+		}
 	}
 }
 

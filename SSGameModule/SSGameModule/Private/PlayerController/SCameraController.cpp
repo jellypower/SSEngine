@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "SCameraController.h"
+#include "SSGameModule/Public/PlayerController/SCameraController.h"
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"

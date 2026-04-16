@@ -29,6 +29,8 @@
 #include "SSContentsBase/Public/ModuleEntry/SSContentsBaseModuleEntry.h"
 
 
+#include "SSGameModule/Public/ModuleEntry/SSGameModuleEntry.h"
+
 // SObjectGlobalVariableSet
 SObjectGlobalHashMap* g_ObjectHashMap = nullptr;
 // ~SObjectGlobalVariableSet
@@ -188,6 +190,15 @@ void RunModuleEntryScriptPostInitWindow(
 		g_RawInputProcessor,
 		g_ThreadManager);
 
+
+	SSGameModuleEntry(
+		g_Renderer,
+		g_CollDevice,
+		g_FrameInfoProcessor,
+		g_RawInputProcessor,
+		g_ThreadManager,
+		g_MainWindowManager
+	);
 }
 
 void RunModuleExitScript()

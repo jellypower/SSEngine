@@ -57,6 +57,9 @@
 #include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 
 
+#include "SSGameModule/Public/SSGame.h"
+
+
 SSEditor* g_Editor = nullptr;
 
 SSEditor::SSEditor(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice) :
@@ -265,6 +268,14 @@ void SSEditor::StartupEngine()
 		dynamic_cast<SBoxColliderComponent*>(TEMP_Coll2)->SetExtent({ 0.5, 0.5, 0.5,0 });
 		_DefaultWorld->AddToWorld(Box02);
 	}
+
+
+	if (false)
+	{
+		_Game = DBG_NEW SSGame(_DefaultWorld);
+		_Game->SetInGameFocus(true);
+		_Game->StartUpGame();
+	}
 }
 
 void SSEditor::EnginePerFrame()
@@ -285,6 +296,12 @@ void SSEditor::EnginePerFrame()
 	{
 		SCOPE_PROFILE(Contents);
 		TEMP_ProcessContents();
+
+		if (_Game != nullptr)
+		{
+			_Game->PerFrameGame();
+		}
+
 		_DefaultWorld->PerFrameContents();
 	}
 
@@ -320,6 +337,13 @@ void SSEditor::EnginePerFrame()
 
 void SSEditor::CleanupEngine()
 {
+	if (_Game != nullptr)
+	{
+		_Game->CleanupGame();
+		delete _Game;
+	}
+
+
 	{
 		delete _ImGUI_Profiler;
 		_ImGUI_Profiler = nullptr;

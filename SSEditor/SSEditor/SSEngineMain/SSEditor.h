@@ -5,6 +5,7 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class SSGame;
 class SColliderBaseComponent;
 class ICollDevice;
 class ImGUI_Profiler;
@@ -51,6 +52,7 @@ private:
 
 private:
 	SWorld* _DefaultWorld = nullptr;
+	SSGame* _Game = nullptr;
 
 private:
 	IRenderer* _Renderer = nullptr;

@@ -1,22 +1,23 @@
 ﻿#pragma once
 
 
+class SSGame;
 class SGameObject;
 class ICollDevice;
 class SPlayerController;
 class SCameraComponent;
 class IAssetDBLoader;
 class IRenderer;
-class SSGame;
+class SSGameApp;
 class SWorld;
 
-extern SSGame* g_Game;
+extern SSGameApp* g_GameApp;
 
-class SSGame : INoncopyable
+class SSGameApp : INoncopyable
 {
 public:
-	SSGame(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice);
-	virtual ~SSGame();
+	SSGameApp(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice);
+	virtual ~SSGameApp();
 
 	void StartupEngine();
 	void EnginePerFrame();
@@ -24,21 +25,14 @@ public:
 
 
 private:
-	void StartUpContents();
-	void PerFrameContents();
-
-	void PerFrame_DEBUGDRAW();
-
 	void MoveFreeCamera();
 
 private:
 	SWorld* _DefaultWorld = nullptr;
-
+	SSGame* _Game = nullptr;
 
 	bool _bIsFreeCamMode = false;
 	SCameraComponent* _FreeCam = nullptr;
-	SPlayerController* _MainPalyerController = nullptr;
-	SGameObject* _MainCharacter = nullptr;
 
 private:
 	IRenderer* _Renderer = nullptr;

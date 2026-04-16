@@ -15,56 +15,46 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="main.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SSGame.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\PlayerController\SPlayerController.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\PlayerController\SCameraController.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SSBuildSettings.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleEntryScriptRunner.h">
+    <ClInclude Include="Public\ModuleEntry\SSGameModuleEntry.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGame\SSGameApp.h">
+    <ClInclude Include="ModuleExportKeyword.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="dllmain.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleEntryScriptRunner.cpp">
+    <ClCompile Include="Private\SSGame.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGame\SSGameApp.cpp">
+    <ClCompile Include="Private\PlayerController\SCameraController.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="SSGame.rc">
-      <Filter>리소스 파일</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="SSGame.ico">
-      <Filter>리소스 파일</Filter>
-    </Image>
+    <ClCompile Include="Private\PlayerController\SPlayerController.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\ModuleEntry\SSGameModuleEntry.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 // SSEditor
@@ -8,7 +8,6 @@
 #pragma comment(lib, "SObject_Debug_x64.lib")
 #pragma comment(lib, "SSContentsBase_Debug_x64.lib")
 #pragma comment(lib, "SSRenderer_Debug_x64.lib")
-#pragma comment(lib, "SSGameModule_Debug_x64.lib")
 
 #define SSGAL_MODULE_NAME L"SSGAL_Debug_x64.dll"
 #define SSRENDERER_MODULE_NAME L"SSRenderer_Debug_x64.dll"
@@ -28,7 +27,6 @@
 #pragma comment(lib, "SObject_Release_x64.lib")
 #pragma comment(lib, "SSContentsBase_Release_x64.lib")
 #pragma comment(lib, "SSRenderer_Release_x64.lib")
-#pragma comment(lib, "SSGameModule_Release_x64.lib")
 
 #define SSGAL_MODULE_NAME L"SSGAL_Release_x64.dll"
 #define SSRENDERER_MODULE_NAME L"SSRenderer_Release_x64.dll"
