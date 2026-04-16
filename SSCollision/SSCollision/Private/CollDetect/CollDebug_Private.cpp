@@ -66,15 +66,28 @@ void CollDebug_Private::DrawBoundBox(
 	bool bUseDepth, 
 	float Time)
 {
-	Vector4f Min = CollInstance->GetBBMin();
-	Vector4f Max = CollInstance->GetBBMax();
+	DrawBoundBox(
+		InWorldToDraw,
+		CollInstance->GetWorldPos(),
+		CollInstance->GetBBox(),
+		Color,
+		bUseDepth,
+		Time);
+}
 
-
+void CollDebug_Private::DrawBoundBox(
+	ICollisionWorld* InWorldToDraw, 
+	const Vector4f& InPos, 
+	const AABBBox& InBox,
+	const Vector4f& Color, 
+	bool bUseDepth, 
+	float Time)
+{
 	Transform DrawTransform;
-	DrawTransform.Position = CollInstance->GetWorldPos();
-	DrawTransform.Scale = Max - Min;
+	DrawTransform.Position = InPos;
+	DrawTransform.Scale = InBox.Max - InBox.Min;
 
-	
+
 	CDDD_Mesh Desc;
 	Desc.WMatrix = DrawTransform.AsMatrix();
 	Desc.RotMatrix = XMMatrixIdentity();
@@ -85,8 +98,13 @@ void CollDebug_Private::DrawBoundBox(
 	InWorldToDraw->AddDrawDebugMesh(Desc);
 }
 
-void CollDebug_Private::DrawPoint(ICollisionWorld* InWorldToDraw, const Vector4f& Pos, const Vector4f& Color,
-	bool bUseDepth, float Scale, float Time)
+void CollDebug_Private::DrawPoint(
+	ICollisionWorld* InWorldToDraw, 
+	const Vector4f& Pos, 
+	const Vector4f& Color,
+	bool bUseDepth, 
+	float Scale, 
+	float Time)
 {
 	Transform DrawTransform;
 	DrawTransform.Position = Pos;

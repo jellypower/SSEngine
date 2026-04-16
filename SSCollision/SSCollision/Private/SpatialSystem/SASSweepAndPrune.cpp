@@ -194,5 +194,6 @@ float SASSweepAndPrune::ExtractSAPElementAxisValue(SAPElement InElement) const
 	}
 
 	ICollInstanceBase* Coll = _CIProxies[InElement.ProxyIdx].Coll; // 삽입 정렬시에 어레이의 끝쪽에 몰리도록 유도
-	return InElement.bStart ? Coll->GetBBMin().X : Coll->GetBBMax().X;
+	const AABBBox& CollBBox = Coll->GetBBox();
+	return InElement.bStart ? CollBBox.Min.X : CollBBox.Max.X;
 }

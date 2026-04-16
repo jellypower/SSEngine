@@ -42,8 +42,8 @@ void CIBox::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quatern
 	XMVECTOR RotatedExtent = XMVector3TransformNormal(_Extent.SimdVec, WorldMatAbs);
 	XMVECTOR WorldPos = _WorldMat.r[3];
 
-	_BBMin = WorldPos - RotatedExtent;
-	_BBMax = WorldPos + RotatedExtent;
+	_BBox.Min = WorldPos - RotatedExtent;
+	_BBox.Max = WorldPos + RotatedExtent;
 
 
 	{
@@ -100,15 +100,11 @@ Vector4f CIBox::CalcFurthest(const Vector4f& Dir) const
 	return Point;
 }
 
-const Vector4f& CIBox::GetBBMin() const
+const AABBBox& CIBox::GetBBox() const
 {
-	return _BBMin;
+	return _BBox;
 }
 
-const Vector4f& CIBox::GetBBMax() const
-{
-	return _BBMax;
-}
 
 void CIBox::OnEnterTheCollWorld(ICollisionWorld* InCollWorld)
 {

@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include "SSEngineDefault/Public/Collision/AABBBox.h"
 
 class ISpatialAccelerationStructure;
 class ICollisionWorld;
@@ -30,8 +30,7 @@ public:
 
 	// 오브젝트의 pivot기준으로 Dir방향쪽으로 가장 멀리 나가있는 점 찾아주는 코드
 	virtual Vector4f CalcFurthest(const Vector4f& Dir) const = 0;
-	virtual const Vector4f& GetBBMin() const = 0; // Get BoundBox Min
-	virtual const Vector4f& GetBBMax() const = 0;
+	virtual const AABBBox& GetBBox() const = 0;
 
 public:
 	virtual SObjHashCode GetGameObjectID() const = 0;

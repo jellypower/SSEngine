@@ -186,6 +186,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
     <ClInclude Include="Private\PWin32\WindowManager\Win32WindowManager.h" />
     <ClInclude Include="Private\PWin32\WindowManager\WindowUtil_Internal.h" />
+    <ClInclude Include="Public\Collision\AABBBox.h" />
     <ClInclude Include="Public\Collision\CollMath.h" />
     <ClInclude Include="Public\Collision\SimplexV4.h" />
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />

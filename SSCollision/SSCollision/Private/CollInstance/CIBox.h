@@ -8,8 +8,8 @@ private:
 	Vector4f _Extent = Vector4f(0.5f, 0.5f, 0.5f, 0);
 	Vector4f _Offset = Vector4f(0, 0, 0, 1);;
 
-	Vector4f _BBMin;
-	Vector4f _BBMax;
+	AABBBox _BBox;
+
 
 	Quaternion _WorldRot;
 	XMMATRIX _WorldMat;
@@ -45,8 +45,7 @@ public:
 	// 오브젝트의 WorldPos를 원점으로 Dir"방향"쪽으로 가장 멀리 나가있는 점 계산
 	// return: WorldPosition
 	virtual Vector4f CalcFurthest(const Vector4f& Dir) const override;
-	virtual const Vector4f& GetBBMin() const override;
-	virtual const Vector4f& GetBBMax() const override;
+	virtual const AABBBox& GetBBox() const override;
 
 public:
 	virtual SObjHashCode GetGameObjectID() const override;

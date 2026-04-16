@@ -43,6 +43,10 @@ void CISphere::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quat
 	_WorldRot = WorldRot;
 
 
+	XMVECTOR vRadius = { _Radius, _Radius, _Radius, 0 };
+	_BBox.Min = _WorldMat.r[3] - vRadius;
+	_BBox.Max = _WorldMat.r[3] + vRadius;
+
 	CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
 	CollDebug_Private::DrawShape(_IncludedCollWorld, ECollDebugDraw_MeshType::Sphere, _WorldMat, _WorldRot,
 		Vector4f::Zero, true);
@@ -87,19 +91,11 @@ Vector4f CISphere::CalcFurthest(const Vector4f& Dir) const
 	return NewDir.SimdVec + _WorldMat.r[3];
 }
 
-const Vector4f& CISphere::GetBBMin() const
+const AABBBox& CISphere::GetBBox() const
 {
-	XMVECTOR c = _WorldMat.r[3];
-	XMVECTOR v = _mm_set1_ps(_Radius);
-	return c - v;
+	return _BBox;
 }
 
-const Vector4f& CISphere::GetBBMax() const
-{
-	XMVECTOR c = _WorldMat.r[3];
-	XMVECTOR v = _mm_set1_ps(_Radius);
-	return c + v;
-}
 
 SObjHashCode CISphere::GetGameObjectID() const
 {

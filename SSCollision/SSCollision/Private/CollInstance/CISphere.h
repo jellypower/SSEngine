@@ -5,6 +5,7 @@ class CISphere : public ICISphere
 {
 private:
 	float _Radius = 0.5f;
+	AABBBox _BBox;
 	Vector4f _Offset = Vector4f(0, 0, 0 , 1);
 
 	XMMATRIX _WorldMat;
@@ -36,8 +37,7 @@ public:
 
 	// 오브젝트의 pivot기준으로 Dir방향쪽으로 가장 멀리 나가있는 점 찾아주는 코드
 	virtual Vector4f CalcFurthest(const Vector4f& Dir) const override;
-	virtual const Vector4f& GetBBMin() const override;
-	virtual const Vector4f& GetBBMax() const override;
+	virtual const AABBBox& GetBBox() const override;
 
 public:
 	virtual SObjHashCode GetGameObjectID() const override;

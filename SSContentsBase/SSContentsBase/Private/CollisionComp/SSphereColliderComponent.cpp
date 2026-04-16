@@ -20,7 +20,7 @@ void SSphereColliderComponent::SetRadius(float InRadius)
 
 bool SSphereColliderComponent::ShouldProcessPerFrameInherently() const
 {
-	return true;
+	return false;
 }
 
 void SSphereColliderComponent::PerFrame(float DeltaTime)
