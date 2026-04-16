@@ -155,119 +155,7 @@ void SSEditor::StartupEngine()
 		_ImGUI_Profiler = DBG_NEW ImGUI_Profiler();
 	}
 
-	{
-		// Floor
-		SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor");
-		_DefaultWorld->AddToWorld(Floor);
-		Floor->SetPosition(Vector4f(0, -3, 0, 1));
-		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
 
-		/*
-		for (int32 i = 0; i < 9; i++)
-		{
-			float PosX = -4 + i;
-
-
-			TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
-			TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 }));
-			TEMP_MdlcObj->SetPosition({PosX, 0, 0, 1});
-			//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
-			SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
-
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FR.ranim", E8Dir::UR);
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_R.ranim", E8Dir::R);
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BR.ranim", E8Dir::DR);
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_B.ranim", E8Dir::D);
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BL.ranim", E8Dir::DL);
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_L.ranim", E8Dir::L);
-			AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
-
-
-			_DefaultWorld->AddToWorld(TEMP_MdlcObj);
-		}
-		*/
-
-	}
-
-
-	{
-		SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");
-		SCubeMapRenderComponent* CubeMapComp = CubemapObject->CreateComponent<SCubeMapRenderComponent>(L"CubemapComponent");
-		CubeMapComp->SetCubeMapTextureAssetName("ContentsAssets/T_Skybox01.tex");
-		SGameObjectConstructor::FinishConstructHierarchy(CubemapObject);
-		_DefaultWorld->AddToWorld(CubemapObject);
-	}
-
-
-	Vector4f TEMP_Offset = {0, 0, 0 ,1};
-
-	{
-		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
-		SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
-		SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
-		_DefaultWorld->AddToWorld(CameraObject);
-
-
-		CameraComp->SetFOVWithDegrees(60);
-		CameraComp->SetNearZ(0.01f);
-		CameraComp->SetFarZ(20.f);
-		CameraObject->SetPosition(Vector4f(0, 0, -10.f, 0) + TEMP_Offset);
-
-		Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));
-		CameraObject->SetRotation(StartRot);
-		TEMP_Camera = CameraComp;
-
-		Vector4f RotEuler = XMEulerFromQuaternion(StartRot.SimdVec);
-		TEMP_CamXRot = RotEuler.X;
-		TEMP_CamYRot = RotEuler.Y;
-
-		_Renderer->SetMainRenderCamera(CameraComp->GetRenderCamera());
-	}
-
-
-	{
-		SGameObject* LightObject = NewSObject<SGameObject>(L"GlobalLight");
-		SRenderLightDirectionalComponent* LightComp = LightObject->CreateComponent<SRenderLightDirectionalComponent>(L"SRenderLightDirectionalComponent");
-		LightComp->_Desc.ShadowMapSize = Vector2f(4096.f, 4096.f);
-		LightComp->_Desc.bEnableShadowMap = true;
-		SGameObjectConstructor::FinishConstructHierarchy(LightObject);
-		_DefaultWorld->AddToWorld(LightObject);
-
-		TEMP_Light = LightComp;
-	}
-
-
-	{
-		SGameObject* Sphere01 = NewSObject<SGameObject>(L"Coll1");
-		TEMP_Coll1 = Sphere01->CreateComponent<SSphereColliderComponent>(L"SSphereColliderComponent");
-		SStaticMeshRenderComponent* SphereMesh = Sphere01->CreateComponent<SStaticMeshRenderComponent>("BoxMesh1");
-		SphereMesh->SetMeshAsset(CRAN::SPHERE1M_MESH);
-		Sphere01->SetPosition(Vector4f(0, 1, 0, 1) + TEMP_Offset);
-		SGameObjectConstructor::FinishConstructHierarchy(Sphere01);
-		dynamic_cast<SSphereColliderComponent*>(TEMP_Coll1)->SetRadius(0.5);
-		_DefaultWorld->AddToWorld(Sphere01);
-
-
-		SGameObject* Box01 = NewSObject<SGameObject>(L"Coll2");
-		TEMP_Coll1 = Box01->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-		SStaticMeshRenderComponent* SM1 = Box01->CreateComponent<SStaticMeshRenderComponent>("BoxMesh1");
-		SM1->SetMeshAsset(CRAN::CUBE1M_MESH);
-		Box01->SetPosition(Vector4f( - 2, 2, 0, 1 ) + TEMP_Offset);
-		SGameObjectConstructor::FinishConstructHierarchy(Box01);
-		dynamic_cast<SBoxColliderComponent*>(TEMP_Coll1)->SetExtent({ 0.5, 0.5, 0.5,0 });
-		_DefaultWorld->AddToWorld(Box01);
-
-		SGameObject* Box02 = NewSObject<SGameObject>(L"Coll3");
-		TEMP_Coll2 = Box02->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-		SStaticMeshRenderComponent* SM2 = Box02->CreateComponent<SStaticMeshRenderComponent>("BoxMesh2");
-		SM2->SetMeshAsset(CRAN::CUBE1M_MESH);
-		Box02->SetPosition(Vector4f( 2,2,0,1 ) + TEMP_Offset);
-		SGameObjectConstructor::FinishConstructHierarchy(Box02);
-		dynamic_cast<SBoxColliderComponent*>(TEMP_Coll2)->SetExtent({ 0.5, 0.5, 0.5,0 });
-		_DefaultWorld->AddToWorld(Box02);
-	}
 
 
 	if (false)
@@ -275,6 +163,122 @@ void SSEditor::StartupEngine()
 		_Game = DBG_NEW SSGame(_DefaultWorld);
 		_Game->SetInGameFocus(true);
 		_Game->StartUpGame();
+	}
+	else
+	{
+		{
+			// Floor
+			SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor");
+			_DefaultWorld->AddToWorld(Floor);
+			Floor->SetPosition(Vector4f(0, -3, 0, 1));
+			Floor->SetScale(Vector4f(10, 0.1, 10, 0));
+
+			/*
+			for (int32 i = 0; i < 9; i++)
+			{
+				float PosX = -4 + i;
+
+
+				TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
+				TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 }));
+				TEMP_MdlcObj->SetPosition({PosX, 0, 0, 1});
+				//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
+				SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
+
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FR.ranim", E8Dir::UR);
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_R.ranim", E8Dir::R);
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BR.ranim", E8Dir::DR);
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_B.ranim", E8Dir::D);
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BL.ranim", E8Dir::DL);
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_L.ranim", E8Dir::L);
+				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
+
+
+				_DefaultWorld->AddToWorld(TEMP_MdlcObj);
+			}
+			*/
+
+		}
+
+
+		{
+			SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");
+			SCubeMapRenderComponent* CubeMapComp = CubemapObject->CreateComponent<SCubeMapRenderComponent>(L"CubemapComponent");
+			CubeMapComp->SetCubeMapTextureAssetName("ContentsAssets/T_Skybox01.tex");
+			SGameObjectConstructor::FinishConstructHierarchy(CubemapObject);
+			_DefaultWorld->AddToWorld(CubemapObject);
+		}
+
+
+		Vector4f TEMP_Offset = { 0, 0, 0 ,1 };
+
+		{
+			SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
+			SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
+			SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
+			_DefaultWorld->AddToWorld(CameraObject);
+
+
+			CameraComp->SetFOVWithDegrees(60);
+			CameraComp->SetNearZ(0.01f);
+			CameraComp->SetFarZ(20.f);
+			CameraObject->SetPosition(Vector4f(0, 0, -10.f, 0) + TEMP_Offset);
+
+			Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));
+			CameraObject->SetRotation(StartRot);
+			TEMP_Camera = CameraComp;
+
+			Vector4f RotEuler = XMEulerFromQuaternion(StartRot.SimdVec);
+			TEMP_CamXRot = RotEuler.X;
+			TEMP_CamYRot = RotEuler.Y;
+
+			_Renderer->SetMainRenderCamera(CameraComp->GetRenderCamera());
+		}
+
+
+		{
+			SGameObject* LightObject = NewSObject<SGameObject>(L"GlobalLight");
+			SRenderLightDirectionalComponent* LightComp = LightObject->CreateComponent<SRenderLightDirectionalComponent>(L"SRenderLightDirectionalComponent");
+			LightComp->_Desc.ShadowMapSize = Vector2f(4096.f, 4096.f);
+			LightComp->_Desc.bEnableShadowMap = true;
+			SGameObjectConstructor::FinishConstructHierarchy(LightObject);
+			_DefaultWorld->AddToWorld(LightObject);
+
+			TEMP_Light = LightComp;
+		}
+
+
+		{
+			SGameObject* Sphere01 = NewSObject<SGameObject>(L"Coll1");
+			TEMP_Coll1 = Sphere01->CreateComponent<SSphereColliderComponent>(L"SSphereColliderComponent");
+			SStaticMeshRenderComponent* SphereMesh = Sphere01->CreateComponent<SStaticMeshRenderComponent>("BoxMesh1");
+			SphereMesh->SetMeshAsset(CRAN::SPHERE1M_MESH);
+			Sphere01->SetPosition(Vector4f(0, 1, 0, 1) + TEMP_Offset);
+			SGameObjectConstructor::FinishConstructHierarchy(Sphere01);
+			dynamic_cast<SSphereColliderComponent*>(TEMP_Coll1)->SetRadius(0.5);
+			_DefaultWorld->AddToWorld(Sphere01);
+
+
+			SGameObject* Box01 = NewSObject<SGameObject>(L"Coll2");
+			TEMP_Coll1 = Box01->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+			SStaticMeshRenderComponent* SM1 = Box01->CreateComponent<SStaticMeshRenderComponent>("BoxMesh1");
+			SM1->SetMeshAsset(CRAN::CUBE1M_MESH);
+			Box01->SetPosition(Vector4f(-2, 2, 0, 1) + TEMP_Offset);
+			SGameObjectConstructor::FinishConstructHierarchy(Box01);
+			dynamic_cast<SBoxColliderComponent*>(TEMP_Coll1)->SetExtent({ 0.5, 0.5, 0.5,0 });
+			_DefaultWorld->AddToWorld(Box01);
+
+			SGameObject* Box02 = NewSObject<SGameObject>(L"Coll3");
+			TEMP_Coll2 = Box02->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+			SStaticMeshRenderComponent* SM2 = Box02->CreateComponent<SStaticMeshRenderComponent>("BoxMesh2");
+			SM2->SetMeshAsset(CRAN::CUBE1M_MESH);
+			Box02->SetPosition(Vector4f(2, 2, 0, 1) + TEMP_Offset);
+			SGameObjectConstructor::FinishConstructHierarchy(Box02);
+			dynamic_cast<SBoxColliderComponent*>(TEMP_Coll2)->SetExtent({ 0.5, 0.5, 0.5,0 });
+			_DefaultWorld->AddToWorld(Box02);
+		}
 	}
 }
 
@@ -295,11 +299,14 @@ void SSEditor::EnginePerFrame()
 
 	{
 		SCOPE_PROFILE(Contents);
-		TEMP_ProcessContents();
 
 		if (_Game != nullptr)
 		{
 			_Game->PerFrameGame();
+		}
+		else
+		{
+			TEMP_ProcessContents();
 		}
 
 		_DefaultWorld->PerFrameContents();
