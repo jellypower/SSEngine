@@ -38,7 +38,7 @@
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
 
 #include "SSGameModule/Public/SSGame.h"
-
+#include "SSGameModule/Public/PlayerController/SPlayerController.h"
 
 
 SSGameApp* g_GameApp;
@@ -99,6 +99,8 @@ void SSGameApp::StartupEngine()
 	_Game = DBG_NEW SSGame(_DefaultWorld);
 	_Game->SetInGameFocus(true);
 	_Game->StartUpGame();
+	_Renderer->SetMainRenderCamera(
+		_Game->GetMainPlayerController()->GetCameraComp()->GetRenderCamera());
 }
 
 void SSGameApp::EnginePerFrame()

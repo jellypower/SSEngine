@@ -1,11 +1,12 @@
 ﻿#pragma once
-#include <SObject/Public/SObjHashT.h>
+#include "SSGameModule/ModuleExportKeyword.h"
+#include "SObject/Public/SObjHashT.h"
 
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
 
 class SCameraComponent;
 
-class SCameraController : public SComponentBase
+class SSGAME_MODULE SCameraController : public SComponentBase
 {
 public:
 	virtual bool ShouldProcessPerFrameInherently() const override;

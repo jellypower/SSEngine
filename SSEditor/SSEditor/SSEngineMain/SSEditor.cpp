@@ -58,6 +58,7 @@
 
 
 #include "SSGameModule/Public/SSGame.h"
+#include "SSGameModule/Public/PlayerController/SPlayerController.h"
 
 
 SSEditor* g_Editor = nullptr;
@@ -163,6 +164,10 @@ void SSEditor::StartupEngine()
 		_Game = DBG_NEW SSGame(_DefaultWorld);
 		_Game->SetInGameFocus(true);
 		_Game->StartUpGame();
+
+		_Renderer->SetMainRenderCamera(
+			_Game->GetMainPlayerController()->GetCameraComp()->GetRenderCamera());
+		
 	}
 	else
 	{
@@ -172,34 +177,6 @@ void SSEditor::StartupEngine()
 			_DefaultWorld->AddToWorld(Floor);
 			Floor->SetPosition(Vector4f(0, -3, 0, 1));
 			Floor->SetScale(Vector4f(10, 0.1, 10, 0));
-
-			/*
-			for (int32 i = 0; i < 9; i++)
-			{
-				float PosX = -4 + i;
-
-
-				TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
-				TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 }));
-				TEMP_MdlcObj->SetPosition({PosX, 0, 0, 1});
-				//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
-				SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
-
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FR.ranim", E8Dir::UR);
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_R.ranim", E8Dir::R);
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BR.ranim", E8Dir::DR);
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_B.ranim", E8Dir::D);
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BL.ranim", E8Dir::DL);
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_L.ranim", E8Dir::L);
-				AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
-
-
-				_DefaultWorld->AddToWorld(TEMP_MdlcObj);
-			}
-			*/
-
 		}
 
 
@@ -213,29 +190,6 @@ void SSEditor::StartupEngine()
 
 
 		Vector4f TEMP_Offset = { 0, 0, 0 ,1 };
-
-		{
-			SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
-			SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
-			SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
-			_DefaultWorld->AddToWorld(CameraObject);
-
-
-			CameraComp->SetFOVWithDegrees(60);
-			CameraComp->SetNearZ(0.01f);
-			CameraComp->SetFarZ(20.f);
-			CameraObject->SetPosition(Vector4f(0, 0, -10.f, 0) + TEMP_Offset);
-
-			Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));
-			CameraObject->SetRotation(StartRot);
-			TEMP_Camera = CameraComp;
-
-			Vector4f RotEuler = XMEulerFromQuaternion(StartRot.SimdVec);
-			TEMP_CamXRot = RotEuler.X;
-			TEMP_CamYRot = RotEuler.Y;
-
-			_Renderer->SetMainRenderCamera(CameraComp->GetRenderCamera());
-		}
 
 
 		{
@@ -280,6 +234,28 @@ void SSEditor::StartupEngine()
 			_DefaultWorld->AddToWorld(Box02);
 		}
 	}
+
+
+	{
+		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
+		SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
+		SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
+		_DefaultWorld->AddToWorld(CameraObject);
+
+
+		CameraComp->SetFOVWithDegrees(60);
+		CameraComp->SetNearZ(0.01f);
+		CameraComp->SetFarZ(20.f);
+		CameraObject->SetPosition(Vector4f(0, 0, -10.f, 0));
+
+		Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));
+		CameraObject->SetRotation(StartRot);
+		_FreeCam = CameraComp;
+
+		Vector4f RotEuler = XMEulerFromQuaternion(StartRot.SimdVec);
+		TEMP_CamXRot = RotEuler.X;
+		TEMP_CamYRot = RotEuler.Y;
+	}
 }
 
 void SSEditor::EnginePerFrame()
@@ -293,7 +269,11 @@ void SSEditor::EnginePerFrame()
 
 	{
 		SCOPE_PROFILE(Editor);
-		ProcessImGUI();
+
+		if (_Game == nullptr || _Game->IsInGameFocus() == false)
+		{
+			ProcessImGUI();
+		}
 	}
 
 
@@ -302,7 +282,31 @@ void SSEditor::EnginePerFrame()
 
 		if (_Game != nullptr)
 		{
-			_Game->PerFrameGame();
+			if (SSInput::GetKeyDown(EKeyCode::KEY_P))
+			{
+				bool bWasGameFocus = _Game->IsInGameFocus();
+				_Game->SetInGameFocus(!bWasGameFocus);
+
+				if (bWasGameFocus)
+				{
+					_Renderer->SetMainRenderCamera(_FreeCam->GetRenderCamera());
+				}
+				else
+				{
+					_Renderer->SetMainRenderCamera(_Game->GetMainPlayerController()->GetCameraComp()->GetRenderCamera());
+				}
+			}
+
+
+			if (_Game->IsInGameFocus())
+			{
+				_Game->PerFrameGame();
+			}
+			else
+			{
+				EditorControl();
+			}
+
 		}
 		else
 		{
@@ -398,8 +402,87 @@ void SSEditor::CleanupEngine()
 
 void SSEditor::TEMP_ProcessContents()
 {
+	// Collision Test
+	{
+
+		Vector4f a = TEMP_Coll1->GetGameObject()->GetTransform().Position;
+		Vector4f b = TEMP_Coll2->GetGameObject()->GetTransform().Position;
+
+		Vector4f ab = b - a;
+
+		Vector4f FurthestA = TEMP_Coll1->CalcFurthest(ab);
+		Vector4f FurthestB = TEMP_Coll2->CalcFurthest(-ab);
+
+
+
+		bool bColl = false;
+		{
+			SCOPE_PROFILE(TEMP_CheckColl);
+
+			for (int32 i=0;i<1;i++)
+			{
+				bColl = g_CollDevice->AreColliding(
+					TEMP_Coll1->GetCollInstance(),
+					TEMP_Coll2->GetCollInstance());
+			}
+		}
+
+
+//		AABBBox Box = CollMath_Inline::UnionAABB(
+//			TEMP_Coll1->GetCollInstance()->GetBBox(),
+//			TEMP_Coll2->GetCollInstance()->GetBBox());
+//		SRenderDebugUtil::DrawBoundBox(
+//			_DefaultWorld,
+//			Box,
+//			true,
+//			{ 1,0,0,1 });
+
+
+
+
+
+
+		// 드로우
+		IMeshAsset* Sphere = _Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
+		IMeshAsset* Arrow = _Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
+
+		Transform temp;
+		temp.Scale = { 0.1, 0.1, 0.1, 0 };
+
+
+		if (bColl)
+		{
+			temp.Position = a;
+			SRenderDebugUtil::DrawDebugMesh(
+				_DefaultWorld,
+				temp,
+				Sphere,
+				false,
+				{ 1,0,0,1 });
+
+			temp.Position = b;
+			SRenderDebugUtil::DrawDebugMesh(
+				_DefaultWorld,
+				temp,
+				Sphere,
+				false,
+				{ 1,0,0,1 });
+		}
+
+		temp.Position = Vector4f::Zero;
+		SRenderDebugUtil::DrawDebugMesh(
+			_DefaultWorld,
+			temp,
+			Sphere,
+			true,
+			{ 0,1,0,1 });
+	}
+}
+
+void SSEditor::EditorControl()
+{
 	float DeltaTime = SSFrameInfo::GetDeltaTime();
-	SGameObject* CamGameObj = TEMP_Camera->GetGameObject();
+	SGameObject* CamGameObj = _FreeCam->GetGameObject();
 	Vector4f Forward = CamGameObj->GetTransform().GetForward();
 	Vector4f Right = CamGameObj->GetTransform().GetRight();
 	Vector4f Up = CamGameObj->GetTransform().GetUp();
@@ -573,83 +656,6 @@ void SSEditor::TEMP_ProcessContents()
 			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -10);
 			LightGO->SetRotation(CurRot);
 		}
-	}
-
-
-	// Collision Test
-	{
-
-		Vector4f a = TEMP_Coll1->GetGameObject()->GetTransform().Position;
-		Vector4f b = TEMP_Coll2->GetGameObject()->GetTransform().Position;
-
-		Vector4f ab = b - a;
-
-		Vector4f FurthestA = TEMP_Coll1->CalcFurthest(ab);
-		Vector4f FurthestB = TEMP_Coll2->CalcFurthest(-ab);
-
-
-
-		bool bColl = false;
-		{
-			SCOPE_PROFILE(TEMP_CheckColl);
-
-			for (int32 i=0;i<1;i++)
-			{
-				bColl = g_CollDevice->AreColliding(
-					TEMP_Coll1->GetCollInstance(),
-					TEMP_Coll2->GetCollInstance());
-			}
-		}
-
-
-//		AABBBox Box = CollMath_Inline::UnionAABB(
-//			TEMP_Coll1->GetCollInstance()->GetBBox(),
-//			TEMP_Coll2->GetCollInstance()->GetBBox());
-//		SRenderDebugUtil::DrawBoundBox(
-//			_DefaultWorld,
-//			Box,
-//			true,
-//			{ 1,0,0,1 });
-
-
-
-
-
-
-		// 드로우
-		IMeshAsset* Sphere = _Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
-		IMeshAsset* Arrow = _Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
-
-		Transform temp;
-		temp.Scale = { 0.1, 0.1, 0.1, 0 };
-
-
-		if (bColl)
-		{
-			temp.Position = a;
-			SRenderDebugUtil::DrawDebugMesh(
-				_DefaultWorld,
-				temp,
-				Sphere,
-				false,
-				{ 1,0,0,1 });
-
-			temp.Position = b;
-			SRenderDebugUtil::DrawDebugMesh(
-				_DefaultWorld,
-				temp,
-				Sphere,
-				false,
-				{ 1,0,0,1 });
-		}
-
-		temp.Position = Vector4f::Zero;
-		SRenderDebugUtil::DrawDebugMesh(
-			_DefaultWorld,
-			temp,
-			Sphere,
-			true,
-			{ 0,1,0,1 });
 	}
 }
 

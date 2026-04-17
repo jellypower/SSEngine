@@ -1,11 +1,12 @@
 ﻿#pragma once
+#include "SSGameModule/ModuleExportKeyword.h"
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
 
 class SCameraController;
 class SCameraComponent;
 class SCharacterMovementComponent;
 
-class SPlayerController : public SComponentBase
+class SSGAME_MODULE SPlayerController : public SComponentBase
 {
 public:
 	SCameraController* _PlayerCameraController = nullptr;

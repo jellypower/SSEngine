@@ -37,6 +37,7 @@ public:
 
 
 	void TEMP_ProcessContents();
+	void EditorControl();
 
 
 #pragma region IMGUI
@@ -64,7 +65,7 @@ private:
 	SGameObject* TEMP_MdlcObj = nullptr;
 	
 
-	SCameraComponent* TEMP_Camera = nullptr;
+	SCameraComponent* _FreeCam = nullptr;
 	SRenderLightDirectionalComponent* TEMP_Light = nullptr;
 	float TEMP_CamXRot = 0;
 	float TEMP_CamYRot = 0;

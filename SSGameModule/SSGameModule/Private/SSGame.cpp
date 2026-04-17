@@ -162,15 +162,6 @@ void SSGame::StartUpGame()
 		_DefaultWorld->AddToWorld(CharacterModel);
 	}
 
-
-	{
-		g_Renderer->SetMainRenderCamera(_MainPalyerController->GetCameraComp()->GetRenderCamera());
-
-		IWindow* MainWindow = g_MainWindowManager->GetMainWindow();
-		MainWindow->SetForceMouseCenter(true);
-		MainWindow->SetVisibleMouse(false);
-	}
-
 	{
 
 		srand(time(NULL));
@@ -237,6 +228,24 @@ void SSGame::PerFrameGame()
 
 void SSGame::CleanupGame()
 {
+}
+
+void SSGame::SetInGameFocus(bool bFocus)
+{
+	_bInGameFocus = bFocus;
+
+	if (bFocus)
+	{
+		IWindow* MainWindow = g_MainWindowManager->GetMainWindow();
+		MainWindow->SetForceMouseCenter(true);
+		MainWindow->SetVisibleMouse(false);
+	}
+	else
+	{
+		IWindow* MainWindow = g_MainWindowManager->GetMainWindow();
+		MainWindow->SetForceMouseCenter(false);
+		MainWindow->SetVisibleMouse(true);
+	}
 }
 
 

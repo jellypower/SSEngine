@@ -24,8 +24,10 @@ public:
 
 
 public:
-	void SetInGameFocus(bool bFocus) { _bInGameFocus = bFocus; }
 	bool IsInGameFocus() const { return _bInGameFocus; }
+	void SetInGameFocus(bool bFocus);
+
+	SPlayerController* GetMainPlayerController() const { return _MainPalyerController; }
 
 private:
 

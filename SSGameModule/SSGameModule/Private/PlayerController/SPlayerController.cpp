@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#define SSGAME_MODULE_EXPORT
 #include "SSGameModule/Public/PlayerController/SPlayerController.h"
 
 #include "SSGameModule/Public/PlayerController/SCameraController.h"
