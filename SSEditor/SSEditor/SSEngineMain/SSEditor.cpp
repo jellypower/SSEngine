@@ -158,7 +158,6 @@ void SSEditor::StartupEngine()
 
 
 
-
 	if (true)
 	{
 		_Game = DBG_NEW SSGame(_DefaultWorld);
@@ -169,75 +168,11 @@ void SSEditor::StartupEngine()
 			_Game->GetMainPlayerController()->GetCameraComp()->GetRenderCamera());
 		
 	}
-	else
-	{
-		{
-			// Floor
-			SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor");
-			_DefaultWorld->AddToWorld(Floor);
-			Floor->SetPosition(Vector4f(0, -3, 0, 1));
-			Floor->SetScale(Vector4f(10, 0.1, 10, 0));
-		}
-
-
-		{
-			SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");
-			SCubeMapRenderComponent* CubeMapComp = CubemapObject->CreateComponent<SCubeMapRenderComponent>(L"CubemapComponent");
-			CubeMapComp->SetCubeMapTextureAssetName("ContentsAssets/T_Skybox01.tex");
-			SGameObjectConstructor::FinishConstructHierarchy(CubemapObject);
-			_DefaultWorld->AddToWorld(CubemapObject);
-		}
-
-
-		Vector4f TEMP_Offset = { 0, 0, 0 ,1 };
-
-
-		{
-			SGameObject* LightObject = NewSObject<SGameObject>(L"GlobalLight");
-			SRenderLightDirectionalComponent* LightComp = LightObject->CreateComponent<SRenderLightDirectionalComponent>(L"SRenderLightDirectionalComponent");
-			LightComp->_Desc.ShadowMapSize = Vector2f(4096.f, 4096.f);
-			LightComp->_Desc.bEnableShadowMap = true;
-			SGameObjectConstructor::FinishConstructHierarchy(LightObject);
-			_DefaultWorld->AddToWorld(LightObject);
-
-			TEMP_Light = LightComp;
-		}
-
-
-		{
-			SGameObject* Sphere01 = NewSObject<SGameObject>(L"Coll1");
-			TEMP_Coll1 = Sphere01->CreateComponent<SSphereColliderComponent>(L"SSphereColliderComponent");
-			SStaticMeshRenderComponent* SphereMesh = Sphere01->CreateComponent<SStaticMeshRenderComponent>("BoxMesh1");
-			SphereMesh->SetMeshAsset(CRAN::SPHERE1M_MESH);
-			Sphere01->SetPosition(Vector4f(0, 1, 0, 1) + TEMP_Offset);
-			SGameObjectConstructor::FinishConstructHierarchy(Sphere01);
-			dynamic_cast<SSphereColliderComponent*>(TEMP_Coll1)->SetRadius(0.5);
-			_DefaultWorld->AddToWorld(Sphere01);
-
-
-			SGameObject* Box01 = NewSObject<SGameObject>(L"Coll2");
-			TEMP_Coll1 = Box01->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-			SStaticMeshRenderComponent* SM1 = Box01->CreateComponent<SStaticMeshRenderComponent>("BoxMesh1");
-			SM1->SetMeshAsset(CRAN::CUBE1M_MESH);
-			Box01->SetPosition(Vector4f(-2, 2, 0, 1) + TEMP_Offset);
-			SGameObjectConstructor::FinishConstructHierarchy(Box01);
-			dynamic_cast<SBoxColliderComponent*>(TEMP_Coll1)->SetExtent({ 0.5, 0.5, 0.5,0 });
-			_DefaultWorld->AddToWorld(Box01);
-
-			SGameObject* Box02 = NewSObject<SGameObject>(L"Coll3");
-			TEMP_Coll2 = Box02->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-			SStaticMeshRenderComponent* SM2 = Box02->CreateComponent<SStaticMeshRenderComponent>("BoxMesh2");
-			SM2->SetMeshAsset(CRAN::CUBE1M_MESH);
-			Box02->SetPosition(Vector4f(2, 2, 0, 1) + TEMP_Offset);
-			SGameObjectConstructor::FinishConstructHierarchy(Box02);
-			dynamic_cast<SBoxColliderComponent*>(TEMP_Coll2)->SetExtent({ 0.5, 0.5, 0.5,0 });
-			_DefaultWorld->AddToWorld(Box02);
-		}
-	}
+	
 
 
 	{
-		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
+		SGameObject* CameraObject = NewSObject<SGameObject>(L"EditorFreeCam");
 		SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
 		SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
 		_DefaultWorld->AddToWorld(CameraObject);
@@ -280,37 +215,31 @@ void SSEditor::EnginePerFrame()
 	{
 		SCOPE_PROFILE(Contents);
 
-		if (_Game != nullptr)
+		if (SSInput::GetKeyDown(EKeyCode::KEY_P))
 		{
-			if (SSInput::GetKeyDown(EKeyCode::KEY_P))
+			bool bWasGameFocus = _Game->IsInGameFocus();
+			_Game->SetInGameFocus(!bWasGameFocus);
+
+			if (bWasGameFocus)
 			{
-				bool bWasGameFocus = _Game->IsInGameFocus();
-				_Game->SetInGameFocus(!bWasGameFocus);
-
-				if (bWasGameFocus)
-				{
-					_Renderer->SetMainRenderCamera(_FreeCam->GetRenderCamera());
-				}
-				else
-				{
-					_Renderer->SetMainRenderCamera(_Game->GetMainPlayerController()->GetCameraComp()->GetRenderCamera());
-				}
-			}
-
-
-			if (_Game->IsInGameFocus())
-			{
-				_Game->PerFrameGame();
+				Transform CharacterTransform =_Game->GetMainPlayerController()->GetCameraComp()->GetGameObject()->GetTransform();
+				_FreeCam->GetGameObject()->SetTransform(CharacterTransform);
+				_Renderer->SetMainRenderCamera(_FreeCam->GetRenderCamera());
 			}
 			else
 			{
-				EditorControl();
+				_Renderer->SetMainRenderCamera(_Game->GetMainPlayerController()->GetCameraComp()->GetRenderCamera());
 			}
+		}
 
+
+		if (_Game->IsInGameFocus())
+		{
+			_Game->PerFrameGame();
 		}
 		else
 		{
-			TEMP_ProcessContents();
+			EditorControl();
 		}
 
 		_DefaultWorld->PerFrameContents();
@@ -398,85 +327,6 @@ void SSEditor::CleanupEngine()
 
 	delete _CollDevice;
 	_CollDevice = nullptr;
-}
-
-void SSEditor::TEMP_ProcessContents()
-{
-	// Collision Test
-	{
-
-		Vector4f a = TEMP_Coll1->GetGameObject()->GetTransform().Position;
-		Vector4f b = TEMP_Coll2->GetGameObject()->GetTransform().Position;
-
-		Vector4f ab = b - a;
-
-		Vector4f FurthestA = TEMP_Coll1->CalcFurthest(ab);
-		Vector4f FurthestB = TEMP_Coll2->CalcFurthest(-ab);
-
-
-
-		bool bColl = false;
-		{
-			SCOPE_PROFILE(TEMP_CheckColl);
-
-			for (int32 i=0;i<1;i++)
-			{
-				bColl = g_CollDevice->AreColliding(
-					TEMP_Coll1->GetCollInstance(),
-					TEMP_Coll2->GetCollInstance());
-			}
-		}
-
-
-//		AABBBox Box = CollMath_Inline::UnionAABB(
-//			TEMP_Coll1->GetCollInstance()->GetBBox(),
-//			TEMP_Coll2->GetCollInstance()->GetBBox());
-//		SRenderDebugUtil::DrawBoundBox(
-//			_DefaultWorld,
-//			Box,
-//			true,
-//			{ 1,0,0,1 });
-
-
-
-
-
-
-		// µå·Î¿ì
-		IMeshAsset* Sphere = _Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
-		IMeshAsset* Arrow = _Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
-
-		Transform temp;
-		temp.Scale = { 0.1, 0.1, 0.1, 0 };
-
-
-		if (bColl)
-		{
-			temp.Position = a;
-			SRenderDebugUtil::DrawDebugMesh(
-				_DefaultWorld,
-				temp,
-				Sphere,
-				false,
-				{ 1,0,0,1 });
-
-			temp.Position = b;
-			SRenderDebugUtil::DrawDebugMesh(
-				_DefaultWorld,
-				temp,
-				Sphere,
-				false,
-				{ 1,0,0,1 });
-		}
-
-		temp.Position = Vector4f::Zero;
-		SRenderDebugUtil::DrawDebugMesh(
-			_DefaultWorld,
-			temp,
-			Sphere,
-			true,
-			{ 0,1,0,1 });
-	}
 }
 
 void SSEditor::EditorControl()

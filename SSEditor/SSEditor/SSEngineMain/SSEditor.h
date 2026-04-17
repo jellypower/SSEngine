@@ -35,8 +35,6 @@ public:
 	void CleanupEngine();
 
 
-
-	void TEMP_ProcessContents();
 	void EditorControl();
 
 
@@ -71,8 +69,6 @@ private:
 	float TEMP_CamYRot = 0;
 	float TEMP_Speed = 10.f;
 
-	SColliderBaseComponent* TEMP_Coll1 = nullptr;
-	SColliderBaseComponent* TEMP_Coll2 = nullptr;
 
 
 private:
