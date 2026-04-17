@@ -42,6 +42,8 @@ public:
 	virtual void InitializeWorld(IRenderWorld* InRenderWorld, ICollisionWorld* InCollWorld);
 
 public:
+	bool DEBUG_Validate_TransformCommit() const;
+
 	void PerFrameContents();
 	void PerFrameAnim();
 	void PerFrameCollision();

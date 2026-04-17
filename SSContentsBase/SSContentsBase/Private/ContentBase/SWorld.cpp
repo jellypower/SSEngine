@@ -2,6 +2,7 @@
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
 #include <SSCollision/Public/RigidBody/IRigidBodyBase.h>
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
 #include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
 #include <SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h>
 
@@ -51,6 +52,27 @@ void SWorld::InitializeWorld(IRenderWorld* InRenderWorld, ICollisionWorld* InCol
 	_AnimWorker = DBG_NEW AnimWorkerBase(this);
 }
 
+bool SWorld::DEBUG_Validate_TransformCommit() const
+{
+	SCOPE_PROFILE(DEBUG_Validate_TransformCommit);
+	for (SS::pair<SObjHashCode, SGameObject*> Item : _ObjectsByHashCode)
+	{
+		const SGameObject* GO = Item.second;
+		if (GO->IsTransformCommitReserved())
+		{
+			SGameObject* const* Found = _TransformCommitNeededObjs.Find(Item.first);
+
+			if (Found == nullptr)
+			{
+				// 게임오브젝트에는 트랜스폼이 커밋됐다고 나오는데 맵에선 없으면 안됨.
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
 void SWorld::PerFrameContents()
 {
 	const float DeltaTime = SSFrameInfo::GetDeltaTime();
@@ -72,9 +94,10 @@ void SWorld::PerFrameAnim()
 void SWorld::PerFrameCollision()
 {
 	const float DeltaTime = SSFrameInfo::GetDeltaTime();
+	const float SmoothDeltaTime = SSFrameInfo::GetSmoothDeltaTime();
 
 	_CollWorld->OnBeginSimulation();
-	_CollWorld->SimulateMovement(DeltaTime * _TimeScale);
+	_CollWorld->SimulateMovement(SmoothDeltaTime * _TimeScale);
 	_CollWorld->OnEndSimulation();
 
 	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& RigidBodies = _CollWorld->GetRigidBodyByHashCode();
@@ -152,11 +175,14 @@ void SWorld::ProcessTransformCommit()
 	PC1 = GetPerofrmanceCounter();
 
 	uint64 CurFrameCnt = SSFrameInfo::GetFrameCnt();
+	EFramePhase CurFramePhase = SSFrameInfo::GetFramePhase();
+
 
 	for (SS::pair<SObjHashCode, SGameObject*>& PairItem : _TransformCommitNeededObjs)
 	{
 		SGameObject* TransformCommitStartObject = PairItem.second;
-		if (TransformCommitStartObject->GetTransformCommittedFrameCnt() == CurFrameCnt)
+		if (TransformCommitStartObject->GetTransformCommittedFrameCnt() == CurFrameCnt &&
+			TransformCommitStartObject->GetTransformCommitedPhase() == CurFramePhase)
 		{
 			continue;
 		}

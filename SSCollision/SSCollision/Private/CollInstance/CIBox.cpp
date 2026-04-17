@@ -68,6 +68,11 @@ void CIBox::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quatern
 	}
 }
 
+const Vector4f& CIBox::GetOffset() const
+{
+	return _Offset;
+}
+
 void CIBox::SetOffset(const Vector4f& InOffset)
 {
 	_Offset = InOffset;

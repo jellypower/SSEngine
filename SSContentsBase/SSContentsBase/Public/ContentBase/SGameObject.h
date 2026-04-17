@@ -61,6 +61,7 @@ public:
 	XMMATRIX CalcWorldTransformMatrix() const;
 	Quaternion CalcWorldRot() const;
 
+	EFramePhase GetTransformCommitedPhase() const { return _TransformCommitedPhase; }
 	uint64 GetTransformCommittedFrameCnt() const { return _TransformCommitedFrameCnt; }
 	bool IsTransformCommitReserved() const { return _bTransformCommitReserved; }
 	const XMMATRIX& GetCommittedWorldTransformMat() const { return _CommittedWorldTransformMat; }

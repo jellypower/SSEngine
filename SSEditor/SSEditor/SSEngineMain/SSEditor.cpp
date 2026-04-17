@@ -158,7 +158,7 @@ void SSEditor::StartupEngine()
 
 
 
-	if (false)
+	if (true)
 	{
 		_Game = DBG_NEW SSGame(_DefaultWorld);
 		_Game->SetInGameFocus(true);
@@ -318,6 +318,7 @@ void SSEditor::EnginePerFrame()
 			SCOPE_PROFILE(TransformCommit_Pre_Physics);
 			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Collision);
 			_DefaultWorld->ProcessTransformCommit();
+			SS_ASSERT(_DefaultWorld->DEBUG_Validate_TransformCommit());
 		}
 		_DefaultWorld->PerFrameCollision();
 	}
@@ -334,6 +335,7 @@ void SSEditor::EnginePerFrame()
 			SCOPE_PROFILE(TransformCommit_Pre_Render);
 			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Render);
 			_DefaultWorld->ProcessTransformCommit();
+			SS_ASSERT(_DefaultWorld->DEBUG_Validate_TransformCommit());
 		}
 		_DefaultWorld->ProcessDebugDraw(_Renderer);
 		_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);

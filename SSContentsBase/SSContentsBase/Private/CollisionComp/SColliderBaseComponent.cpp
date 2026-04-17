@@ -39,11 +39,6 @@ void SColliderBaseComponent::PreDestructHierarchy()
 
 void SColliderBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPhase)
 {
-	if (CommitPhase != EFramePhase::Collision)
-	{
-		return;
-	}
-
 	SGameObject* Owner = GetGameObject();
 	GetCollInstance()->SyncWorldTransform_ByContent(
 		Owner->GetCommittedWorldTransformMat(),

@@ -276,7 +276,7 @@ void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const
 	_CommittedWorldRotation =  _transform.Rotation * ParentRotation;
 	_bTransformCommitReserved = false;
 	_TransformCommitedFrameCnt = ThisFrameCnt;
-
+	_TransformCommitedPhase = CurPhase;
 	for (SComponentBase* ComponentItem : _Components)
 	{
 		ComponentItem->OnGameObjectTransformCommited(CurPhase);

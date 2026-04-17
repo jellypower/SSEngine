@@ -220,6 +220,17 @@ void SSGame::PerFrameGame()
 		MainWindow->SetVisibleMouse(false);
 	}
 
+	if (SSInput::GetKeyDown(EKeyCode::KEY_3))
+	{
+		Transform CharacterTransform = _MainCharacter->GetTransform();
+		Vector4f Forward = CharacterTransform.GetForward();
+		Vector4f NewPos = CharacterTransform.Position;
+		NewPos = NewPos + Forward;
+
+		_MainCharacter->SetPosition(NewPos);
+
+	}
+
 
 	PerFrame_DEBUGDRAW();
 }

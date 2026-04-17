@@ -1,6 +1,8 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
 
+#include <SSCollision/Public/DEBUG/CollDebugDrawDescs.h>
+
 #include "SSCollision/Public/CollInstance/ICIBox.h"
 #include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
@@ -27,19 +29,22 @@ bool SBoxColliderComponent::ShouldProcessPerFrameInherently() const
 void SBoxColliderComponent::PerFrame(float DeltaTime)
 {
 	IMeshAsset* Cube = g_Renderer->GetCommonRenderAssetSet()->GetCube1mMesh();
-	IMeshAsset* Sphere = g_Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
 
 	SGameObject* OwnerGameObject = GetGameObject();
-	XMMATRIX WorldTransformMat = OwnerGameObject->GetCommittedWorldTransformMat();
-	Quaternion WorldRot = OwnerGameObject->GetCommittedWorldRotation();
 	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
 
+	const ICIBox* BoxCollider = static_cast<ICIBox*>(GetCollInstance());
 
+	
+	Transform DebugTransform;
+	DebugTransform.Scale = BoxCollider->GetExtent() * 2;
+	XMMATRIX DebugDrawExtent = DebugTransform.AsMatrix();
+	DebugDrawExtent = DebugDrawExtent * BoxCollider->GetWorldTransformMat();
 
 	SRenderDebugUtil::DrawDebugMesh(
 		IncludedWorld,
-		WorldTransformMat,
-		WorldRot.AsMatrix(),
+		DebugDrawExtent,
+		BoxCollider->GetWorldRot().AsMatrix(),
 		Cube,
 		true);
 }

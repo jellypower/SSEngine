@@ -119,6 +119,7 @@ void SSGameApp::EnginePerFrame()
 			SCOPE_PROFILE(TransformCommit_Pre_Physics);
 			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Collision);
 			_DefaultWorld->ProcessTransformCommit();
+			SS_ASSERT(_DefaultWorld->DEBUG_Validate_TransformCommit());
 		}
 		_DefaultWorld->PerFrameCollision();
 	}
@@ -130,7 +131,12 @@ void SSGameApp::EnginePerFrame()
 
 	{
 		SCOPE_PROFILE(Render);
-		g_FrameInfoProcessor->SetFramePhase(EFramePhase::Render);
+		{
+			SCOPE_PROFILE(TransformCommit_Pre_Render);
+			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Render);
+			_DefaultWorld->ProcessTransformCommit();
+			SS_ASSERT(_DefaultWorld->DEBUG_Validate_TransformCommit());
+		}
 		_DefaultWorld->ProcessDebugDraw(_Renderer);
 		_Renderer->PerFrame();
 	}

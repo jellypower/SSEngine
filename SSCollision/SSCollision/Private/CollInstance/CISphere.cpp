@@ -58,6 +58,11 @@ void CISphere::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quat
 		Vector4f::Zero, true);
 }
 
+const Vector4f& CISphere::GetOffset() const
+{
+	return _Offset;
+}
+
 void CISphere::SetOffset(const Vector4f& InOffset)
 {
 	_Offset = InOffset;

@@ -22,6 +22,7 @@ public:
 
 	virtual void SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot) = 0;
 
+	virtual const Vector4f& GetOffset() const = 0;
 	virtual void SetOffset(const Vector4f& InOffset) = 0;
 
 	virtual Vector4f GetWorldPos() const = 0;
