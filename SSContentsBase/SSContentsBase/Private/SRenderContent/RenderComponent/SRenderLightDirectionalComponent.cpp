@@ -1,6 +1,8 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 
+#include <SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h>
+
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
@@ -50,7 +52,7 @@ void SRenderLightDirectionalComponent::PreDestructHierarchy()
 	_RenderLight = nullptr;
 }
 
-void SRenderLightDirectionalComponent::OnGameObjectTransformCommited()
+void SRenderLightDirectionalComponent::OnGameObjectTransformCommited(EFramePhase CommitPhase)
 {
 	SGameObject* Owner = GetGameObject();
 	const Transform& WorldTransform = Owner->CalcWorldTransform();

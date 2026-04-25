@@ -11,29 +11,29 @@ using namespace DirectX;
 
 FORCEINLINE XMMATRIX InverseRigid(XMMATRIX InMatrix)
 {
-	// transpose
-	XMMATRIX InverseRigid;
-	InverseRigid.r[0].m128_f32[0] = InMatrix.r[0].m128_f32[0];
-	InverseRigid.r[0].m128_f32[1] = InMatrix.r[1].m128_f32[0];
-	InverseRigid.r[0].m128_f32[2] = InMatrix.r[2].m128_f32[0];
-	InverseRigid.r[0].m128_f32[3] = 0;
-	InverseRigid.r[1].m128_f32[0] = InMatrix.r[0].m128_f32[1];
-	InverseRigid.r[1].m128_f32[1] = InMatrix.r[1].m128_f32[1];
-	InverseRigid.r[1].m128_f32[2] = InMatrix.r[2].m128_f32[1];
-	InverseRigid.r[1].m128_f32[3] = 0;
-	InverseRigid.r[2].m128_f32[0] = InMatrix.r[0].m128_f32[2];
-	InverseRigid.r[2].m128_f32[1] = InMatrix.r[1].m128_f32[2];
-	InverseRigid.r[2].m128_f32[2] = InMatrix.r[2].m128_f32[2];
-	InverseRigid.r[2].m128_f32[3] = 0;
-	InverseRigid.r[3] = { 0,0,0,1 };
+	XMMATRIX InverseRigid = XMMatrixTranspose(InMatrix);
 
-	// move translation backward
-	XMVECTOR translation = InMatrix.r[3];
-	translation = XMVector4Transform(translation, InverseRigid);
-	InverseRigid.r[3].m128_f32[0] = -translation.m128_f32[0];
-	InverseRigid.r[3].m128_f32[1] = -translation.m128_f32[1];
-	InverseRigid.r[3].m128_f32[2] = -translation.m128_f32[2];
-	InverseRigid.r[3].m128_f32[3] = 1;
+
+//	========= XMVectorSetW 에 대한 설명 ========
+//  x랑 w 위치를 바꿉니다
+//	XMVECTOR vResult = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 2, 1, 3));
+//	넣어준 w값으로 벡터를 만듭니다.
+//	XMVECTOR vTemp = _mm_set_ss(w);
+//	함수 _mm_move_ss 는 x위치만 vTemp의 x를 넣어주고 yzw는 vResult를 넣어줍니다.
+//	vResult = _mm_move_ss(vResult, vTemp);
+//	다시 w랑 x위치를 바꿉니다
+//	vResult = XM_PERMUTE_PS(vResult, _MM_SHUFFLE(0, 2, 1, 3));
+//  이렇게 하면 메모리 오퍼레이션 없이 레지스터 안에서만 W값을 지정해줄 수 있습니다.
+//	return vResult;
+	InverseRigid.r[0] = XMVectorSetW(InverseRigid.r[0], 0.0f);
+	InverseRigid.r[1] = XMVectorSetW(InverseRigid.r[1], 0.0f);
+	InverseRigid.r[2] = XMVectorSetW(InverseRigid.r[2], 0.0f);
+	InverseRigid.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+
+	XMVECTOR T = InMatrix.r[3];
+	XMVECTOR invT = XMVector3TransformNormal(T, InverseRigid);
+	InverseRigid.r[3] = XMVectorScale(invT, -1.0f);
+	InverseRigid.r[3] = XMVectorSetW(InverseRigid.r[3], 1.0f);
 
 	return InverseRigid;
 }

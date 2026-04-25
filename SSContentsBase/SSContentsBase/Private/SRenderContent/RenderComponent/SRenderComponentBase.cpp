@@ -1,6 +1,7 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderComponentBase.h"
 
+#include <SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h>
 #include <SSRenderer/Public/RenderBase/IRenderWorld.h>
 
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
@@ -36,7 +37,7 @@ void SRenderComponentBase::PreDestructHierarchy()
 	DestructRenderInstance();
 }
 
-void SRenderComponentBase::OnGameObjectTransformCommited()
+void SRenderComponentBase::OnGameObjectTransformCommited(EFramePhase CommitPhase)
 {
 	SGameObject* Owner = GetGameObject();
 	_RenderInstance->SetWorldTransformMatrix(Owner->GetCommittedWorldTransformMat());

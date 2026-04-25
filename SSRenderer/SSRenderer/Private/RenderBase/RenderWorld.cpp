@@ -52,8 +52,7 @@ RenderWorld::~RenderWorld()
 
 
 bool RenderWorld::IsAnyInstanceRemainInWorld() const
-{
-	return _RenderInstanceByHashCode.GetCnt() != 0;
+{return _RenderInstanceByHashCode.GetCnt() != 0;
 }
 
 SS::SHasherW RenderWorld::GetWorldName() const

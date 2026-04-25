@@ -1,6 +1,8 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
+#include "SSEngineDefault/Public/Collision/AABBBox.h"
+
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
@@ -10,7 +12,18 @@
 #include "SSContentsBase/Public/AnimWorker/AnimBase/AnimPoseTypes.h"
 
 
+void SRenderDebugUtil::DrawBoundBox(SWorld* WorldToDraw, const AABBBox& InBB, bool bUseDepth, const Vector4f& Color,
+	float Time)
+{
+	Transform lTransform;
+	lTransform.Scale = InBB.Max - InBB.Min;
+	lTransform.Position = (InBB.Max + InBB.Min) * 0.5;
 
+	ICommonRenderAssetSet* CommonAssets = g_Renderer->GetCommonRenderAssetSet();
+	IMeshAsset* CubeMesh = CommonAssets->GetCube1mMesh();
+
+	WorldToDraw->DebugDrawMesh(lTransform.AsMatrix(), XMMatrixIdentity(), CubeMesh, bUseDepth, Color, Time);
+}
 
 void SRenderDebugUtil::DrawDebugMesh(
 	SWorld* WorldToDraw,
@@ -73,6 +86,44 @@ void SRenderDebugUtil::DrawDirectionalMesh(
 	XMMATRIX RotMatrix = Rot.AsMatrix();
 
 	WorldToDraw->DebugDrawMesh(WMatrix, RotMatrix, DirectionableMesh, bUseDepth, Color, Time);
+}
+
+void SRenderDebugUtil::DrawLine(
+	SWorld* WorldToDraw, 
+	const Vector4f& StartPos, 
+	const Vector4f& EndPos, 
+	bool bUseDepth,
+	float Thickness, 
+	const Vector4f& Color, 
+	float Time)
+{
+	Vector4f Dir = EndPos - StartPos;
+	float Dist = Dir.Get3DLength();
+	if (Dist < SS_EPSILON)
+	{
+		return;
+	}
+	Dir = Dir / Dist;
+
+	Quaternion Rot = Quaternion::CalcPitchYawRotationFromDir(Dir);
+
+	Vector4f Scale;
+	Scale.Z = Dist;
+	Scale.X = Dist * Thickness;
+	Scale.Y = Dist * Thickness;
+
+	Transform Transform;
+	Transform.Scale = Scale;
+	Transform.Rotation = Rot;
+	Transform.Position = StartPos;
+
+	XMMATRIX WMatrix = Transform.AsMatrix();
+	XMMATRIX RotMatrix = Rot.AsMatrix();
+
+
+	ICommonRenderAssetSet* CommonAssets = g_Renderer->GetCommonRenderAssetSet();
+	IMeshAsset* ArrowMesh = CommonAssets->GetArrowMesh();
+	WorldToDraw->DebugDrawMesh(WMatrix, RotMatrix, ArrowMesh, bUseDepth, Color, Time);
 }
 
 void SRenderDebugUtil::DrawDebugPose(

@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSCollision;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -120,13 +120,22 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(SolutionDir)..\SSGAL\$(IntDir);$(SolutionDir)..\SSRenderer\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\_BuildResults\$(Configuration)\LIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(OutDir)LIB\$(TargetName)_$(Configuration)_$(Platform).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)..\SSEditor\$(IntDir)"
 copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSEditor\$(IntDir)"
-copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSEditor\$(IntDir)"</Command>
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\DLL\"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\_BuildResults\$(Configuration)\DLL\"
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\LIB\"
+copy "$(OutDir)LIB\$(TargetName)_$(Configuration)_$(Platform).lib" "$(SolutionDir)..\_BuildResults\$(Configuration)\LIB\"
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\SYMBOLS\"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\_BuildResults\$(Configuration)\SYMBOLS\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,7 +148,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSCollision;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,13 +158,22 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\SObject\$(IntDir);$(SolutionDir)..\SSEngineDefault\$(IntDir);$(SolutionDir)..\SSGAL\$(IntDir);$(SolutionDir)..\SSRenderer\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\_BuildResults\$(Configuration)\LIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(OutDir)LIB\$(TargetName)_$(Configuration)_$(Platform).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)..\SSEditor\$(IntDir)"
 copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSEditor\$(IntDir)"
-copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSEditor\$(IntDir)"</Command>
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\DLL\"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\_BuildResults\$(Configuration)\DLL\"
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\LIB\"
+copy "$(OutDir)LIB\$(TargetName)_$(Configuration)_$(Platform).lib" "$(SolutionDir)..\_BuildResults\$(Configuration)\LIB\"
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\SYMBOLS\"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\_BuildResults\$(Configuration)\SYMBOLS\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -165,6 +183,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\AnimWorker\AnimWorkerBase.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\AnimComponents\SAnimatorBaseComponent.cpp" />
+    <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SRigidBodyBaseComponent.cpp" />
     <ClCompile Include="Private\ContentBase\SComponentBase.cpp" />
     <ClCompile Include="Private\ContentBase\SGameObject.cpp" />
     <ClCompile Include="Private\ContentBase\SGameObjectConstructor.cpp" />
@@ -182,19 +201,27 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\SRenderContent\RenderComponent\SMeshRenderComponentBase.cpp" />
     <ClCompile Include="Private\SRenderContent\_DEBUG\SRenderDebugUtil.cpp" />
     <ClCompile Include="Private\AnimComponents\SBlendSpaceAnimTestComponent.cpp" />
+    <ClCompile Include="Private\CollisionComp\SColliderBaseComponent.cpp" />
+    <ClCompile Include="Private\CollisionComp\SBoxColliderComponent.cpp" />
+    <ClCompile Include="Private\CollisionComp\SSphereColliderComponent.cpp" />
+    <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SCharacterMovementComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h" />
+    <ClInclude Include="Public\CollisionComp\SBoxColliderComponent.h" />
+    <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SRigidBodyBaseComponent.h" />
+    <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SCharacterMovementComponent.h" />
+    <ClInclude Include="Public\CollisionComp\SColliderBaseComponent.h" />
     <ClInclude Include="Public\AnimWorker\AnimBase\AnimPoseTypes.h" />
     <ClInclude Include="Public\AnimWorker\AnimBase\AnimateUtilFunctions.h" />
     <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.h" />
-    <ClInclude Include="Public\SRenderContent\_DEBUG\TimedDebugDrawDesc.h" />
     <ClInclude Include="Public\AnimWorker\AnimWorkee\IAnimWorkee.h" />
     <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeSimplePlayer.h" />
     <ClInclude Include="Private\AnimWorker\AnimWorkerBase.h" />
     <ClInclude Include="BuildSettings.h" />
     <ClInclude Include="Public\AnimComponents\SAnimatorBaseComponent.h" />
     <ClInclude Include="Public\AnimWorker\IAnimWorker.h" />
+    <ClInclude Include="Public\CollisionComp\SSphereColliderComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SCubeMapRenderComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightComponent.h" />
     <ClInclude Include="Public\SRenderContent\RenderComponent\SRenderLightDirectionalComponent.h" />

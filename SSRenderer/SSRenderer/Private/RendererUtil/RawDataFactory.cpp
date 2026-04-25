@@ -10,7 +10,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	SSDefaultVertex* Vertices = (SSDefaultVertex*)DBG_MALLOC(sizeof(SSDefaultVertex) * 24);
 	Vertices[0] = // 아래면
 	{
-		.Pos = Vector4f(-0.5, 0, 0.5, 1),
+		.Pos = Vector4f(-0.5, -0.5, 0.5, 1),
 		.Normal = Vector4f(0, -1, 0, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -21,7 +21,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[1] =
 	{
-		.Pos = Vector4f(-0.5, 0, -0.5, 1),
+		.Pos = Vector4f(-0.5, -0.5, -0.5, 1),
 		.Normal = Vector4f(0, -1, 0, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -32,7 +32,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[2] =
 	{
-		.Pos = Vector4f(0.5, 0, -0.5, 1),
+		.Pos = Vector4f(0.5, -0.5, -0.5, 1),
 		.Normal = Vector4f(0, -1, 0, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -43,7 +43,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[3] =
 	{
-		.Pos = Vector4f(0.5, 0, 0.5, 1),
+		.Pos = Vector4f(0.5, -0.5, 0.5, 1),
 		.Normal = Vector4f(0, -1, 0, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -56,7 +56,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 
 	Vertices[4] = // 앞면
 	{
-		.Pos = Vector4f(0.5, 0, 0.5, 1),
+		.Pos = Vector4f(0.5, -0.5, 0.5, 1),
 		.Normal = Vector4f(0, 0, 1, 0),
 		.Tangent = Vector4f(-1, 0, 0, 0),
 		.Uv =
@@ -67,7 +67,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[5] =
 	{
-		.Pos = Vector4f(0.5, 1, 0.5, 1),
+		.Pos = Vector4f(0.5, 0.5, 0.5, 1),
 		.Normal = Vector4f(0, 0, 1, 0),
 		.Tangent = Vector4f(-1, 0, 0, 0),
 		.Uv =
@@ -78,7 +78,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[6] =
 	{
-		.Pos = Vector4f(-0.5, 1, 0.5, 1),
+		.Pos = Vector4f(-0.5, 0.5, 0.5, 1),
 		.Normal = Vector4f(0, 0, 1, 0),
 		.Tangent = Vector4f(-1, 0, 0, 0),
 		.Uv =
@@ -89,7 +89,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[7] =
 	{
-		.Pos = Vector4f(-0.5, 0, 0.5, 1),
+		.Pos = Vector4f(-0.5, -0.5, 0.5, 1),
 		.Normal = Vector4f(0, 0, 1, 0),
 		.Tangent = Vector4f(-1, 0, 0, 0),
 		.Uv =
@@ -102,7 +102,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 
 	Vertices[8] = // 왼쪽면
 	{
-		.Pos = Vector4f(-0.5, 0, 0.5, 1),
+		.Pos = Vector4f(-0.5, -0.5, 0.5, 1),
 		.Normal = Vector4f(-1, 0, 0, 0),
 		.Tangent = Vector4f(0, 0, -1, 0),
 		.Uv =
@@ -113,7 +113,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[9] =
 	{
-		.Pos = Vector4f(-0.5, 1, 0.5, 1),
+		.Pos = Vector4f(-0.5, 0.5, 0.5, 1),
 		.Normal = Vector4f(-1, 0, 0, 0),
 		.Tangent = Vector4f(0, 0, -1, 0),
 		.Uv =
@@ -124,7 +124,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[10] = 
 	{
-		.Pos = Vector4f(-0.5, 1, -0.5, 1),
+		.Pos = Vector4f(-0.5, 0.5, -0.5, 1),
 		.Normal = Vector4f(-1, 0, 0, 0),
 		.Tangent = Vector4f(0, 0, -1, 0),
 		.Uv =
@@ -135,7 +135,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[11] =
 	{
-		.Pos = Vector4f(-0.5, 0, -0.5, 1),
+		.Pos = Vector4f(-0.5, -0.5, -0.5, 1),
 		.Normal = Vector4f(-1, 0, 0, 0),
 		.Tangent = Vector4f(0, 0, -1, 0),
 		.Uv =
@@ -148,7 +148,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 
 	Vertices[12] = // 오른쪽면
 	{
-		.Pos = Vector4f(0.5, 0, -0.5, 1),
+		.Pos = Vector4f(0.5, -0.5, -0.5, 1),
 		.Normal = Vector4f(1, 0, 0, 0),
 		.Tangent = Vector4f(0, 0, 1, 0),
 		.Uv =
@@ -159,7 +159,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[13] =
 	{
-		.Pos = Vector4f(0.5, 1, -0.5, 1),
+		.Pos = Vector4f(0.5, 0.5, -0.5, 1),
 		.Normal = Vector4f(1, 0, 0, 0),
 		.Tangent = Vector4f(0, 0, 1, 0),
 		.Uv =
@@ -170,7 +170,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[14] =
 	{
-		.Pos = Vector4f(0.5, 1, 0.5, 1),
+		.Pos = Vector4f(0.5, 0.5, 0.5, 1),
 		.Normal = Vector4f(1, 0, 0, 0),
 		.Tangent = Vector4f(0, 0, 1, 0),
 		.Uv =
@@ -181,7 +181,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[15] =
 	{
-		.Pos = Vector4f(0.5, 0, 0.5, 1),
+		.Pos = Vector4f(0.5, -0.5, 0.5, 1),
 		.Normal = Vector4f(1, 0, 0, 0),
 		.Tangent = Vector4f(0, 0, 1, 0),
 		.Uv =
@@ -194,7 +194,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 
 	Vertices[16] = // 뒤쪽면
 	{
-		.Pos = Vector4f(-0.5, 0, -0.5, 1),
+		.Pos = Vector4f(-0.5, -0.5, -0.5, 1),
 		.Normal = Vector4f(0, 0, -1, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -205,7 +205,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[17] =
 	{
-		.Pos = Vector4f(-0.5, 1, -0.5, 1),
+		.Pos = Vector4f(-0.5, 0.5, -0.5, 1),
 		.Normal = Vector4f(0, 0, -1, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -216,7 +216,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[18] =
 	{
-		.Pos = Vector4f(0.5, 1, -0.5, 1),
+		.Pos = Vector4f(0.5, 0.5, -0.5, 1),
 		.Normal = Vector4f(0, 0, -1, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -227,7 +227,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[19] =
 	{
-		.Pos = Vector4f(0.5, 0, -0.5, 1),
+		.Pos = Vector4f(0.5, -0.5, -0.5, 1),
 		.Normal = Vector4f(0, 0, -1, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -240,7 +240,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 
 	Vertices[20] = // 위쪽면
 	{
-		.Pos = Vector4f(-0.5, 1, -0.5, 1),
+		.Pos = Vector4f(-0.5, 0.5, -0.5, 1),
 		.Normal = Vector4f(0, 1, 0, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -251,7 +251,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[21] =
 	{
-		.Pos = Vector4f(-0.5, 1, 0.5, 1),
+		.Pos = Vector4f(-0.5, 0.5, 0.5, 1),
 		.Normal = Vector4f(0, 1, 0, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -262,7 +262,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[22] =
 	{
-		.Pos = Vector4f(0.5, 1, 0.5, 1),
+		.Pos = Vector4f(0.5, 0.5, 0.5, 1),
 		.Normal = Vector4f(0, 1, 0, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =
@@ -273,7 +273,7 @@ MeshRawDataDefault* CreateCube1mRawData()
 	};
 	Vertices[23] =
 	{
-		.Pos = Vector4f(0.5, 1, -0.5, 1),
+		.Pos = Vector4f(0.5, 0.5, -0.5, 1),
 		.Normal = Vector4f(0, 1, 0, 0),
 		.Tangent = Vector4f(1, 0, 0, 0),
 		.Uv =

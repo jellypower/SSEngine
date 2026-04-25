@@ -41,6 +41,7 @@ public:
 
 public:
 	virtual void StartUpXXX() override;
+	virtual void SetFramePhase(EFramePhase InPhase) override;
 	virtual void PerFrameXXX() override;
 
 	virtual void BeginMainProfile(SS::SHasherW RecordItemName) override;

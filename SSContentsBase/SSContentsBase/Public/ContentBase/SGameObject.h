@@ -6,6 +6,7 @@
 
 #include "SSContentsBase/ModuleExportKeyword.h"
 
+enum class EFramePhase;
 class SWorld;
 class SComponentBase;
 
@@ -27,9 +28,12 @@ private:
 	SGameObject* _Parent = nullptr;
 
 	uint64 _TransformCommitedFrameCnt = 0;
+	EFramePhase _TransformCommitedPhase;
 	bool _bIsHierarchyInitialized = false;
 	bool _bTransformCommitReserved = false;
 
+public:
+	SGameObject();
 
 public:
 	bool IsRootInWorld() const;
@@ -57,6 +61,7 @@ public:
 	XMMATRIX CalcWorldTransformMatrix() const;
 	Quaternion CalcWorldRot() const;
 
+	EFramePhase GetTransformCommitedPhase() const { return _TransformCommitedPhase; }
 	uint64 GetTransformCommittedFrameCnt() const { return _TransformCommitedFrameCnt; }
 	bool IsTransformCommitReserved() const { return _bTransformCommitReserved; }
 	const XMMATRIX& GetCommittedWorldTransformMat() const { return _CommittedWorldTransformMat; }

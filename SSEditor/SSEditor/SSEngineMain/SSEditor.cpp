@@ -2,18 +2,21 @@
 
 #include "SSEditor.h"
 
-#include <SSEngineDefault/Public/CommonTypes/DirEnums.h>
 
 
-#include "TestCodes/MeshSerializeTest.h"
 #include "ImGUI_AssetManager.h"
 #include "ImGUI_Profiler.h"
 #include "ImGUI_WorldManager.h"
 #include "ModuleEntryScriptRunner.h"
 #include "SSImGUIInitializer.h"
+#include "TestCodes/MeshSerializeTest.h"
 
 
 
+#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
+#include "SSContentsBase/Public/SRenderContent/RenderComponent/SStaticMeshRenderComponent.h"
+#include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
+#include "SSContentsBase/Public/CollisionComp/SSphereColliderComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
@@ -21,12 +24,11 @@
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
-#include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
 
+#include "SSEngineDefault/Public/CommonTypes/DirEnums.h"
 #include "SSEngineDefault/Public/RawInput/KeyCodeEnums.h"
-
-
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 #include "SSEngineDefault/Public/RawProfiler/ScopedProfile.h"
@@ -34,6 +36,7 @@
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/SSStringW.h"
+#include "SSEngineDefault/Public/Collision/CollMathInline.h"
 
 #include "SSAssetDBManager/Public/IAssetDBLoader.h"
 
@@ -49,14 +52,23 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 
 
+#include "SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h"
+#include "SSCollision/Public/CollisionBase/ICollDevice.h"
+#include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
+
+
+#include "SSGameModule/Public/SSGame.h"
+#include "SSGameModule/Public/PlayerController/SPlayerController.h"
+
 
 SSEditor* g_Editor = nullptr;
 
-SSEditor::SSEditor(IRenderer* EngineRenderer) :
+SSEditor::SSEditor(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice) :
 	_hashMap_TMP(200)
 {
 
 	_Renderer = EngineRenderer;
+	_CollDevice = EngineCollDevice;
 
 	if (g_ImGuiInitializer != nullptr)
 	{
@@ -108,25 +120,21 @@ void SSEditor::StartupEngine()
 
 	// DEBUG
 	{
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshAssetMap =
-			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::Mesh);
+		IAssetManagerMutable* AM = _Renderer->GetMutableAssetManager();
 
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MeshAssetMap = AM->GetAssetMap(EAssetType::Mesh);
 		for (const SS::pair<SS::SHasherW, IAssetBase*>& MeshAssetItemPair : MeshAssetMap)
 		{
 			MeshSerializeTest(_Renderer, MeshAssetItemPair.first);
 		}
 
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& MdlcAssetMap =
-			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::ModelCombination);
-
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& MdlcAssetMap = AM->GetAssetMap(EAssetType::ModelCombination);
 		for (const SS::pair<SS::SHasherW, IAssetBase*>& MdlcAssetItemPair : MdlcAssetMap)
 		{
 			MdlcSerializeTest(_Renderer, MdlcAssetItemPair.first);
 		}
 
-		const SS::HashMap<SS::SHasherW, IAssetBase*>& RenderAnimMap =
-			_Renderer->GetMutableAssetManager()->GetAssetMap(EAssetType::RenderAnim);
-
+		const SS::HashMap<SS::SHasherW, IAssetBase*>& RenderAnimMap = AM->GetAssetMap(EAssetType::RenderAnim);
 		for (const SS::pair<SS::SHasherW, IAssetBase*>& RenderAnimAssetItemPair : RenderAnimMap)
 		{
 			RenderAnimSerializeTest(_Renderer, RenderAnimAssetItemPair.first);
@@ -137,9 +145,10 @@ void SSEditor::StartupEngine()
 	
 
 	IRenderWorld* NewRenderWorld = _Renderer->CreateRenderWorld();
+	ICollisionWorld* NewCollWorld = _CollDevice->CreateCollWorld("EditorCollWorld");
 
 	_DefaultWorld = NewSObject<SWorld>(L"World");
-	_DefaultWorld->InitializeWorld(NewRenderWorld);
+	_DefaultWorld->InitializeWorld(NewRenderWorld, NewCollWorld);
 
 	{
 		_ImGUI_AssetViewer = DBG_NEW ImGUI_AssetManager(_Renderer);
@@ -147,46 +156,23 @@ void SSEditor::StartupEngine()
 		_ImGUI_Profiler = DBG_NEW ImGUI_Profiler();
 	}
 
+
+
+	if (true)
 	{
-		// Floor
-		SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor");
-		_DefaultWorld->AddToWorld(Floor);
-		Floor->SetPosition(Vector4f(0, -0.1, 0, 1));
-		Floor->SetScale(Vector4f(10, 0.1, 10, 0));
+		_Game = DBG_NEW SSGame(_DefaultWorld);
+		_Game->SetInGameFocus(true);
+		_Game->StartUpGame();
 
-
-		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Manny.mdlc");
-		TEMP_MdlcObj->SetRotation(Quaternion::FromEulerRotation({ -XM_PIDIV2, 0, 0, 0 }));
-//		TEMP_MdlcObj = SRendererUtil::InstantiateMDLC(L"ContentsAssets/SKM_Quinn_Loco_1.mdlc");
-		SBlendSpaceAnimTestComponent* AnimComp = TEMP_MdlcObj->CreateComponent<SBlendSpaceAnimTestComponent>(L"AnimatorComp");
-
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_F.ranim", E8Dir::U);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FR.ranim", E8Dir::UR);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_R.ranim", E8Dir::R);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BR.ranim", E8Dir::DR);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_B.ranim", E8Dir::D);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_BL.ranim", E8Dir::DL);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_L.ranim", E8Dir::L);
-		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Run_FL.ranim", E8Dir::UL);
-
-
-		_DefaultWorld->AddToWorld(TEMP_MdlcObj);
-
+		_Renderer->SetMainRenderCamera(
+			_Game->GetMainPlayerController()->GetCameraComp()->GetRenderCamera());
+		
 	}
+	
 
 
 	{
-		SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");
-		SCubeMapRenderComponent* CubeMapComp = CubemapObject->CreateComponent<SCubeMapRenderComponent>(L"CubemapComponent");
-		CubeMapComp->SetCubeMapTextureAssetName("ContentsAssets/T_Skybox01.tex");
-		SGameObjectConstructor::FinishConstructHierarchy(CubemapObject);
-		_DefaultWorld->AddToWorld(CubemapObject);
-	}
-
-
-	{
-		SGameObject* CameraObject = NewSObject<SGameObject>(L"DefaultCameraObject");
+		SGameObject* CameraObject = NewSObject<SGameObject>(L"EditorFreeCam");
 		SCameraComponent* CameraComp = CameraObject->CreateComponent<SCameraComponent>(L"CameraComponent");
 		SGameObjectConstructor::FinishConstructHierarchy(CameraObject);
 		_DefaultWorld->AddToWorld(CameraObject);
@@ -199,32 +185,18 @@ void SSEditor::StartupEngine()
 
 		Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));
 		CameraObject->SetRotation(StartRot);
-		TEMP_Camera = CameraComp;
+		_FreeCam = CameraComp;
 
 		Vector4f RotEuler = XMEulerFromQuaternion(StartRot.SimdVec);
 		TEMP_CamXRot = RotEuler.X;
 		TEMP_CamYRot = RotEuler.Y;
-
-		_Renderer->SetMainRenderCamera(CameraComp->GetRenderCamera());
-	}
-
-
-	{
-		SGameObject* LightObject = NewSObject<SGameObject>(L"GlobalLight");
-		SRenderLightDirectionalComponent* LightComp = LightObject->CreateComponent<SRenderLightDirectionalComponent>(L"SRenderLightDirectionalComponent");
-		LightComp->_Desc.ShadowMapSize = Vector2f(4096.f, 4096.f);
-		LightComp->_Desc.bEnableShadowMap = true;
-		SGameObjectConstructor::FinishConstructHierarchy(LightObject);
-		_DefaultWorld->AddToWorld(LightObject);
-
-		TEMP_Light = LightComp;
 	}
 }
 
 void SSEditor::EnginePerFrame()
 {
 	SCOPE_PROFILE(Engine);
-
+	g_FrameInfoProcessor->SetFramePhase(EFramePhase::Contents);
 	{
 		SCOPE_PROFILE(BeginImGUI);
 		Run_g_ImGuiInitializer__OnBeginFrameImGui();
@@ -232,14 +204,56 @@ void SSEditor::EnginePerFrame()
 
 	{
 		SCOPE_PROFILE(Editor);
-		ProcessImGUI();
+
+		if (_Game == nullptr || _Game->IsInGameFocus() == false)
+		{
+			ProcessImGUI();
+		}
 	}
 
 
 	{
 		SCOPE_PROFILE(Contents);
-		TEMP_ProcessContents();
+
+		if (SSInput::GetKeyDown(EKeyCode::KEY_P))
+		{
+			bool bWasGameFocus = _Game->IsInGameFocus();
+			_Game->SetInGameFocus(!bWasGameFocus);
+
+			if (bWasGameFocus)
+			{
+				Transform CharacterTransform =_Game->GetMainPlayerController()->GetCameraComp()->GetGameObject()->GetTransform();
+				_FreeCam->GetGameObject()->SetTransform(CharacterTransform);
+				_Renderer->SetMainRenderCamera(_FreeCam->GetRenderCamera());
+			}
+			else
+			{
+				_Renderer->SetMainRenderCamera(_Game->GetMainPlayerController()->GetCameraComp()->GetRenderCamera());
+			}
+		}
+
+
+		if (_Game->IsInGameFocus())
+		{
+			_Game->PerFrameGame();
+		}
+		else
+		{
+			EditorControl();
+		}
+
 		_DefaultWorld->PerFrameContents();
+	}
+
+	{
+		SCOPE_PROFILE(SimulateCollision);
+		{
+			SCOPE_PROFILE(TransformCommit_Pre_Physics);
+			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Collision);
+			_DefaultWorld->ProcessTransformCommit();
+			SS_ASSERT(_DefaultWorld->DEBUG_Validate_TransformCommit());
+		}
+		_DefaultWorld->PerFrameCollision();
 	}
 
 	{
@@ -247,24 +261,31 @@ void SSEditor::EnginePerFrame()
 		_DefaultWorld->PerFrameAnim();
 	}
 
-	{
-		SCOPE_PROFILE(TransformCommit);
-		_DefaultWorld->ProcessTransformCommit();
-	}
-
 
 	{
 		SCOPE_PROFILE(Render);
+		{
+			SCOPE_PROFILE(TransformCommit_Pre_Render);
+			g_FrameInfoProcessor->SetFramePhase(EFramePhase::Render);
+			_DefaultWorld->ProcessTransformCommit();
+			SS_ASSERT(_DefaultWorld->DEBUG_Validate_TransformCommit());
+		}
 		_DefaultWorld->ProcessDebugDraw(_Renderer);
 		_Renderer->ReserveOneTimeCallback_BeforeGALRenderDeviceEndRender(&Run_g_ImGuiInitializer_OnEndFrameImGui);
 		_Renderer->PerFrame();
 	}
 
-	int a = 0;
 }
 
 void SSEditor::CleanupEngine()
 {
+	if (_Game != nullptr)
+	{
+		_Game->CleanupGame();
+		delete _Game;
+	}
+
+
 	{
 		delete _ImGUI_Profiler;
 		_ImGUI_Profiler = nullptr;
@@ -276,7 +297,7 @@ void SSEditor::CleanupEngine()
 		_ImGUI_AssetViewer = nullptr;
 	}
 
-	_DefaultWorld->DestroyAllObjectsInWorld();
+	_DefaultWorld->CleanupWorld();
 
 	bool IsAnyObjectReminInWorld = _DefaultWorld->IsAnyObjectRemainInWorld();
 	SS_ASSERT(IsAnyObjectReminInWorld == false);
@@ -303,12 +324,15 @@ void SSEditor::CleanupEngine()
 	_Renderer->CleanUp();
 	delete _Renderer;
 	_Renderer = nullptr;
+
+	delete _CollDevice;
+	_CollDevice = nullptr;
 }
 
-void SSEditor::TEMP_ProcessContents()
+void SSEditor::EditorControl()
 {
 	float DeltaTime = SSFrameInfo::GetDeltaTime();
-	SGameObject* CamGameObj = TEMP_Camera->GetGameObject();
+	SGameObject* CamGameObj = _FreeCam->GetGameObject();
 	Vector4f Forward = CamGameObj->GetTransform().GetForward();
 	Vector4f Right = CamGameObj->GetTransform().GetRight();
 	Vector4f Up = CamGameObj->GetTransform().GetUp();
@@ -389,8 +413,6 @@ void SSEditor::TEMP_ProcessContents()
 		}
 	}
 
-	Quaternion::FromEulerRotation(Vector4f(45, 45, 90, 0));
-
 
 	SGameObject* PickedGameObject = _ImGUI_WorldManager->GetPickedObject();
 	if (PickedGameObject != nullptr)
@@ -436,53 +458,6 @@ void SSEditor::TEMP_ProcessContents()
 
 			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -OBJ_ROT_SPEED);
 			PickedGameObject->SetRotation(CurRot);
-		}
-	}
-	else
-	{
-		constexpr float OBJ_ROT_SPEED = 3;
-		if (SSInput::GetKey(EKeyCode::KEY_LEFT))
-		{
-			SGameObject* LightGO = TEMP_Light->GetGameObject();
-			Quaternion CurRot = LightGO->GetTransform().Rotation;
-			const SGameObject* Parent = LightGO->GetParent();
-			Vector4f UpVector = Parent->GetTransform().GetUp();
-
-			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * 10);
-			LightGO->SetRotation(CurRot);
-		}
-
-		if (SSInput::GetKey(EKeyCode::KEY_RIGHT))
-		{
-			SGameObject* LightGO = TEMP_Light->GetGameObject();
-			Quaternion CurRot = LightGO->GetTransform().Rotation;
-			const SGameObject* Parent = LightGO->GetParent();
-			Vector4f UpVector = Parent->GetTransform().GetUp();
-
-			CurRot = Quaternion::RotateAxisAngle(CurRot, UpVector, SSFrameInfo::GetDeltaTime() * -10);
-			LightGO->SetRotation(CurRot);
-		}
-
-		if (SSInput::GetKey(EKeyCode::KEY_UP))
-		{
-			SGameObject* LightGO = TEMP_Light->GetGameObject();
-			Quaternion CurRot = LightGO->GetTransform().Rotation;
-			const SGameObject* Parent = LightGO->GetParent();
-			Vector4f RightVector = Parent->GetTransform().GetRight();
-
-			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * 10);
-			LightGO->SetRotation(CurRot);
-		}
-
-		if (SSInput::GetKey(EKeyCode::KEY_DOWN))
-		{
-			SGameObject* LightGO = TEMP_Light->GetGameObject();
-			Quaternion CurRot = LightGO->GetTransform().Rotation;
-			const SGameObject* Parent = LightGO->GetParent();
-			Vector4f RightVector = Parent->GetTransform().GetRight();
-
-			CurRot = Quaternion::RotateAxisAngle(CurRot, RightVector, SSFrameInfo::GetDeltaTime() * -10);
-			LightGO->SetRotation(CurRot);
 		}
 	}
 }

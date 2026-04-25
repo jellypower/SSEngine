@@ -31,6 +31,11 @@ namespace SS {
 		return mul.m128_f32[0] + mul.m128_f32[1] + mul.m128_f32[2];
 	}
 
+	FORCEINLINE Vector4f Cross(const Vector4f& lhs, const Vector4f& rhs)
+	{
+		return XMVector3Cross(lhs.SimdVec, rhs.SimdVec);
+	}
+
 
 	FORCEINLINE float abs(float InValue)
 	{
@@ -114,5 +119,40 @@ namespace SS {
 		Vector4f Result = { v1Width, v2Width, v3Width , 0 };
 
 		return Result / WholeWidth;
+	}
+
+
+	FORCEINLINE float CalcBiggestScaleAxis(const XMMATRIX& InMat)
+	{
+		XMVECTOR Axis = {
+			InMat.r[0].m128_f32[0],
+			InMat.r[1].m128_f32[0],
+			InMat.r[2].m128_f32[0],
+			InMat.r[3].m128_f32[0]
+		};
+		float xAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+
+
+		Axis = {
+			InMat.r[0].m128_f32[1],
+			InMat.r[1].m128_f32[1],
+			InMat.r[2].m128_f32[1],
+			InMat.r[3].m128_f32[1]
+		};
+		float yAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+
+
+		Axis = {
+	InMat.r[0].m128_f32[2],
+	InMat.r[1].m128_f32[2],
+	InMat.r[2].m128_f32[2],
+	InMat.r[3].m128_f32[2]
+		};
+		float zAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+
+
+		float GreatesAxisSqr = xAxisSqr > yAxisSqr ? xAxisSqr : yAxisSqr;
+		GreatesAxisSqr = GreatesAxisSqr > zAxisSqr ? GreatesAxisSqr : zAxisSqr;
+		return sqrt(GreatesAxisSqr);
 	}
 };

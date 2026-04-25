@@ -1,6 +1,8 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 
+#include <SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h>
+
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
@@ -36,7 +38,7 @@ void SCameraComponent::PreDestructHierarchy()
 	_RenderCamera = nullptr;
 }
 
-void SCameraComponent::OnGameObjectTransformCommited()
+void SCameraComponent::OnGameObjectTransformCommited(EFramePhase CommitPhase)
 {
 	const SGameObject* Parent = GetGameObject();
 	const Transform& ParentTransform = Parent->GetTransform();

@@ -39,19 +39,20 @@ void SSkinnedMeshRenderComponent::PerFrame(float DeltaTime)
 	}
 }
 
-void SSkinnedMeshRenderComponent::OnGameObjectTransformCommited()
+void SSkinnedMeshRenderComponent::OnGameObjectTransformCommited(EFramePhase CommitPhase)
 {
-	// noop
+	// SRenderComponentBase::OnGameObjectTransformCommited 에서
+	// 적용한 월드 트랜스폼이 작동 안하도록 하기
 }
 
-void SSkinnedMeshRenderComponent::OnChildrenGameObjectTransformCommitted()
+void SSkinnedMeshRenderComponent::OnChildrenGameObjectTransformCommitted(EFramePhase CommitPhase)
 {
-	__super::OnChildrenGameObjectTransformCommitted();
-
+	// 기존 트랜스폼 무력화하기
+	// TODO: 기존 트랜스폼 무력화하는 코드 필요 없어보임 -> 어차피 Bone의 WorldTransform만 쓰는듯
 	_RenderInstance->SetWorldTransformMatrix(XMMatrixIdentity());
 	_RenderInstance->SetWorldRotation(Quaternion());
 
-	UpdateRenderInstanceBonePose();
+	UpdateRenderInstanceBonePose(); // 대신 전부 
 }
 
 void SSkinnedMeshRenderComponent::PostConstructHierarchy()

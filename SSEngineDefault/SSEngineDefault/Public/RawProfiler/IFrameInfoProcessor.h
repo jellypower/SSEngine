@@ -12,6 +12,15 @@ struct ProfileResultItem
 	uint64 TickEnd;
 };
 
+enum class EFramePhase : int32
+{
+	Contents,
+	Collision,
+	Render,
+
+	Count
+};
+
 class IFrameInfoProcessor : public INoncopyable
 {
 protected:
@@ -22,6 +31,8 @@ protected:
 	double _deltaTime = 0;
 	double _elapsedTime = 0;
 	double _SmoothDeltaTime = 0;
+
+	EFramePhase _FramePhase = EFramePhase::Count; 
 
 
 public:
@@ -34,6 +45,7 @@ public:
 	uint64 GetDeltaTick() const { return _deltaTick; }
 	double GetElapsedTime() const { return _elapsedTime; }
 	uint64 GetFrameCnt() const { return _frameCount; }
+	EFramePhase GetFramePhase() const { return _FramePhase; }
 
 public:
 	virtual const SS::PooledList<ProfileResultItem> GetLastProfileResult() const = 0;
@@ -41,6 +53,9 @@ public:
 
 public:
 	virtual void StartUpXXX() = 0;
+
+	virtual void SetFramePhase(EFramePhase Phase) = 0;
+
 	virtual void PerFrameXXX() = 0;
 
 	virtual void BeginMainProfile(SS::SHasherW RecordName) = 0;
