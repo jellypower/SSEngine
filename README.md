@@ -45,7 +45,18 @@
 - 시점고정 및 조준: 마우스 우클릭
 - 에디터 모드 토글: P
 
+# 관련 링크
+- 엔진 제작 일지: https://velog.io/@jellypower/series/%EB%82%98%EB%8A%94-%EB%A7%8C%EB%93%A0%EB%8B%A4-%EA%B2%8C%EC%9E%84%EC%97%94%EC%A7%84
+- 데모영상 모음:
+    - 애니메이션 블렌드 스페이스: https://youtu.be/J_K8yV4KCV8?si=NNhoajY9qWv9HO9p
+    - 가속도 기반 캐릭터 무브먼트: https://youtu.be/KHo7lmSJnLM?si=jeiCSwU_f6rGcJwt
+    - Convex한 오브젝트간의 충돌판정: https://youtu.be/iz16O6yGidU?si=sZ4iAbdajRUEDG6G
+
+
 ---
+
+
+
 
 # SSEngine
 
@@ -93,5 +104,13 @@
 - **Movement**: W / A / S / D
 - **Aim / Lock Camera**: Right Mouse Click (Hold)
 - **Toggle Editor Mode**: P
+
+# 관련 링크
+- Engine Development Logs (Devlog): https://velog.io/@jellypower/series/%EB%82%98%EB%8A%94-%EB%A7%8C%EB%93%A0%EB%8B%A4-%EA%B2%8C%EC%9E%84%EC%97%94%EC%A7%84
+- Demo Videos:
+    - Animation Blend Spaces: https://youtu.be/J_K8yV4KCV8?si=NNhoajY9qWv9HO9p
+    - Acceleration-based Character Movement: https://youtu.be/KHo7lmSJnLM?si=jeiCSwU_f6rGcJwt
+    - Collision Detection between Convex Objects: https://youtu.be/iz16O6yGidU?si=sZ4iAbdajRUEDG6G
+
 
 ---
