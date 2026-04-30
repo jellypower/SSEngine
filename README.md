@@ -55,7 +55,9 @@
 
 ---
 
-
+<br/>
+<br/>
+<br/>
 
 
 # SSEngine
@@ -105,7 +107,7 @@
 - **Aim / Lock Camera**: Right Mouse Click (Hold)
 - **Toggle Editor Mode**: P
 
-# 관련 링크
+# Related Links
 - Engine Development Logs (Devlog): https://velog.io/@jellypower/series/%EB%82%98%EB%8A%94-%EB%A7%8C%EB%93%A0%EB%8B%A4-%EA%B2%8C%EC%9E%84%EC%97%94%EC%A7%84
 - Demo Videos:
     - Animation Blend Spaces: https://youtu.be/J_K8yV4KCV8?si=NNhoajY9qWv9HO9p
