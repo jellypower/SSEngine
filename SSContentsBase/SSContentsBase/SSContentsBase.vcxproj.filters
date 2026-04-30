@@ -84,6 +84,21 @@
     <ClCompile Include="Private\AnimComponents\SBlendSpaceAnimTestComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Private\CollisionComp\SColliderBaseComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\CollisionComp\SBoxColliderComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\CollisionComp\SSphereColliderComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SCharacterMovementComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SRigidBodyBaseComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ContentBase\SComponentBase.h">
@@ -155,9 +170,6 @@
     <ClInclude Include="Public\SRenderContent\_DEBUG\SRenderDebugUtil.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\SRenderContent\_DEBUG\TimedDebugDrawDesc.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Private\AnimWorker\AnimWorkee\AnimWorkeeBlendSpace.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -168,6 +180,21 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CollisionComp\SColliderBaseComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CollisionComp\SBoxColliderComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CollisionComp\SSphereColliderComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SCharacterMovementComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SRigidBodyBaseComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

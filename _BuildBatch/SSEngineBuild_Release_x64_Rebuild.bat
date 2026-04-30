@@ -12,10 +12,11 @@ set MODULE_NAMES[0]=SSEngineDefault
 set MODULE_NAMES[1]=SObject
 set MODULE_NAMES[2]=SSGAL
 set MODULE_NAMES[3]=SSRenderer
-set MODULE_NAMES[4]=SSFBXImporter
-set MODULE_NAMES[5]=SSAssetDBManager
-set MODULE_NAMES[6]=SSContentsBase
-set MODULE_NAMES[7]=SSEditor
+set MODULE_NAMES[4]=SSCollision
+set MODULE_NAMES[5]=SSFBXImporter
+set MODULE_NAMES[6]=SSAssetDBManager
+set MODULE_NAMES[7]=SSContentsBase
+set MODULE_NAMES[8]=SSEditor
 
 set MODULE_CNT=7
 

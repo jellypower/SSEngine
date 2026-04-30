@@ -22,7 +22,7 @@ public:
 	virtual void PreDestructHierarchy() override;
 	// virtual void PreDestruct() override;
 
-	void OnGameObjectTransformCommited() override;
+	void OnGameObjectTransformCommited(EFramePhase CommitPhase) override;
 
 protected:
 	virtual void ConstructRenderInstance() = 0;

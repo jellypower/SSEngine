@@ -1,23 +1,26 @@
 ﻿#include "pch.h"
 
+#include <SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h>
 #include <SSEngineDefault/Public/WindowManager/IWindowManager.h>
-#include <SSEngineDefault/Public/WindowManager/WindowUtils.h>
 
 
 #include "Resource.h"
 
-#include "ModuleEntryScriptRunner.h"
+
+
 #include "SSBuildSettings.h"
 
+#include "ModuleEntryScriptRunner.h"
 
 
-
-#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/RawInput/IRawInputProcessor.h"
+#include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 #include "SSEngineDefault/Public/RawInput/RawInputUtils.h"
+#include "SSEngineDefault/Public/WindowManager/WindowUtils.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringW.h"
+#include "SSEngineDefault/Public/TestCodes/TestFunctions.h"
 
-#include "SSGame/SSGame.h"
+#include "SSGame/SSGameApp.h"
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
 
@@ -83,9 +86,9 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 	g_FrameInfoProcessor->StartUpXXX();
 
 
-	g_Game = DBG_NEW SSGame(g_Renderer);
+	g_GameApp = DBG_NEW SSGameApp(g_Renderer, g_CollDevice);
 
-	g_Game->StartupEngine();
+	g_GameApp->StartupEngine();
 	while (WM_QUIT != msg.message)
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -97,17 +100,17 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 		{
 			g_RawInputProcessor->ProcessInputStartOfFrame();
 			g_FrameInfoProcessor->PerFrameXXX();
-			g_Game->EnginePerFrame();
+			g_GameApp->EnginePerFrame();
 			g_RawInputProcessor->ProcessInputEndOfFrame();
 			g_MainWindowManager->ProcessWindowEndOfFrame();
 		}
 	}
-	g_Game->CleanupEngine();
+	g_GameApp->CleanupEngine();
 
 	// End Of Loop
 	{
-		delete g_Game;
-		g_Game = nullptr;
+		delete g_GameApp;
+		g_GameApp = nullptr;
 	}
 
 

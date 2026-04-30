@@ -36,16 +36,7 @@
     <ClInclude Include="ModuleEntryScriptRunner.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SSGame\SSGame.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSGame\PlayerController\SPlayerController.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSGame\Character\SCharacterComponent.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SSGame\PlayerController\SCameraController.h">
+    <ClInclude Include="SSGame\SSGameApp.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,16 +50,7 @@
     <ClCompile Include="ModuleEntryScriptRunner.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSGame\SSGame.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSGame\PlayerController\SPlayerController.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSGame\Character\SCharacterComponent.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SSGame\PlayerController\SCameraController.cpp">
+    <ClCompile Include="SSGame\SSGameApp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

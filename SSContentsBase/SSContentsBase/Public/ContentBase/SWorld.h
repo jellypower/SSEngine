@@ -3,13 +3,15 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 #include "SSContentsBase/ModuleExportKeyword.h"
-#include "SSContentsBase/Public/SRenderContent/_DEBUG/TimedDebugDrawDesc.h"
+
+#include "SSRenderer/Public/DEBUG/DebugDrawDesc.h"
 
 class IRenderer;
 class IAnimWorker;
 class SAnimatorBaseComponent;
 class SComponentBase;
 class IRenderWorld;
+class ICollisionWorld;
 class RenderWorld;
 constexpr int32 WORLD_OBJECTMAP_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 WORLD_OBJECTMAP_HASHBUCKET_SIZE = 512;
@@ -28,6 +30,7 @@ private:
 	SS::HashMap<SObjHashCode, SGameObject*> _TransformCommitNeededObjs;
 
 	IRenderWorld* _RenderWorld = nullptr;
+	ICollisionWorld* _CollWorld = nullptr;
 	IAnimWorker* _AnimWorker = nullptr;
 
 	double _TimeScale = 1;
@@ -36,22 +39,25 @@ public:
 	SWorld();
 	virtual ~SWorld();
 	void PostConstruct() override;
-	void PreDestruct() override;
-	virtual void InitializeWorld(IRenderWorld* InRenderWorld);
+	virtual void InitializeWorld(IRenderWorld* InRenderWorld, ICollisionWorld* InCollWorld);
 
 public:
+	bool DEBUG_Validate_TransformCommit() const;
+
 	void PerFrameContents();
 	void PerFrameAnim();
+	void PerFrameCollision();
 
 	double GetTimeScale() const { return _TimeScale; }
 	IAnimWorker* GetAnimWorker() const { return _AnimWorker; }
 	IRenderWorld* GetRenderWorld() const { return _RenderWorld; }
+	ICollisionWorld* GetCollWorld() const { return _CollWorld; }
 	SGameObject* GetWorldRootObject() const { return _WorldRootObject; }
 	bool IsAnyObjectRemainInWorld() const;
 
 	void AddToWorld(SGameObject* InNewWorldObject, SGameObject* ParentObject = nullptr);
 	void RemoveFromWorld(SGameObject* InObjectToRemove);
-	void DestroyAllObjectsInWorld();
+	void CleanupWorld();
 
 	void ProcessTransformCommit();
 	void AddTransformCommitNeededObj(SGameObject* InObj);

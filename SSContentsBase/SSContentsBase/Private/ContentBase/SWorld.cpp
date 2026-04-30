@@ -1,6 +1,11 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
+#include <SSCollision/Public/RigidBody/IRigidBodyBase.h>
+#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
+#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
+#include <SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h>
+
 #include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
 #include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
 
@@ -13,8 +18,11 @@
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
 
-#include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderComponentBase.h"
+#include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SRigidBodyBaseComponent.h"
+
 #include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
 
 SWorld::SWorld() :
@@ -26,11 +34,6 @@ SWorld::SWorld() :
 
 SWorld::~SWorld()
 {
-	bool Remain = _RenderWorld->IsAnyInstanceRemainInWorld();
-	SS_ASSERT(Remain == false);
-
-	delete _RenderWorld;
-	_RenderWorld = nullptr;
 }
 
 void SWorld::PostConstruct()
@@ -40,23 +43,34 @@ void SWorld::PostConstruct()
 	AddWorldRootObject(_WorldRootObject);
 }
 
-void SWorld::PreDestruct()
-{
-	if (_AnimWorker != nullptr)
-	{
-		delete _AnimWorker;
-		_AnimWorker = nullptr;
-	}
 
-	DelSObject(_WorldRootObject);
-	_WorldRootObject = nullptr;
-}
-
-void SWorld::InitializeWorld(IRenderWorld* InRenderWorld)
+void SWorld::InitializeWorld(IRenderWorld* InRenderWorld, ICollisionWorld* InCollWorld)
 {
 	_RenderWorld = InRenderWorld;
+	_CollWorld = InCollWorld;
 
 	_AnimWorker = DBG_NEW AnimWorkerBase(this);
+}
+
+bool SWorld::DEBUG_Validate_TransformCommit() const
+{
+	SCOPE_PROFILE(DEBUG_Validate_TransformCommit);
+	for (SS::pair<SObjHashCode, SGameObject*> Item : _ObjectsByHashCode)
+	{
+		const SGameObject* GO = Item.second;
+		if (GO->IsTransformCommitReserved())
+		{
+			SGameObject* const* Found = _TransformCommitNeededObjs.Find(Item.first);
+
+			if (Found == nullptr)
+			{
+				// 게임오브젝트에는 트랜스폼이 커밋됐다고 나오는데 맵에선 없으면 안됨.
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 void SWorld::PerFrameContents()
@@ -77,6 +91,28 @@ void SWorld::PerFrameAnim()
 	_AnimWorker->EndUpdateAnimation();
 }
 
+void SWorld::PerFrameCollision()
+{
+	const float DeltaTime = SSFrameInfo::GetDeltaTime();
+	const float SmoothDeltaTime = SSFrameInfo::GetSmoothDeltaTime();
+
+	_CollWorld->OnBeginSimulation();
+	_CollWorld->SimulateMovement(SmoothDeltaTime * _TimeScale);
+	_CollWorld->OnEndSimulation();
+
+	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& RigidBodies = _CollWorld->GetRigidBodyByHashCode();
+	for (const SS::pair<SObjHashCode, IRigidBodyBase*>& RigidBodyItem : RigidBodies)
+	{
+		if (RigidBodyItem.second->IsMovedOnThisTick() == false)
+		{
+			continue;
+		}
+
+		SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
+		RigidBodyIComp->PostCollision_SyncTransform();
+	}
+}
+
 bool SWorld::IsAnyObjectRemainInWorld() const
 {
 	for (const SS::pair<SObjHashCode, SGameObject*>& item : _ObjectsByHashCode)
@@ -89,16 +125,45 @@ bool SWorld::IsAnyObjectRemainInWorld() const
 	return false;
 }
 
-void SWorld::DestroyAllObjectsInWorld()
+void SWorld::CleanupWorld()
 {
 	int32 ChildCnt = _WorldRootObject->GetChildCnt();
+
+	SS::PooledList<SGameObject*> RootedObjs;
+	RootedObjs.Reserve(ChildCnt);
+
 	for (int32 i = 0; i < ChildCnt; i++)
 	{
 		SGameObject* ChildItem = _WorldRootObject->GetChild(i);
-		RemoveFromWorld(ChildItem);
-
-		SGameObjectConstructor::DestroyAll(ChildItem);
+		RemoveFromWorld(ChildItem); // 일단 전부 World로부터 빼내기
+		RootedObjs.PushBack(ChildItem); 
 	}
+
+	if (_AnimWorker != nullptr)
+	{
+		delete _AnimWorker;
+		_AnimWorker = nullptr;
+	}
+
+
+	bool Remain = _RenderWorld->IsAnyInstanceRemainInWorld();
+	SS_ASSERT(Remain == false);
+
+	_CollWorld->FinalizeCollWorld();
+	delete _CollWorld;
+	_CollWorld = nullptr;
+
+	delete _RenderWorld;
+	_RenderWorld = nullptr;
+
+
+	for (int32 i = 0; i < ChildCnt; i++)
+	{
+		SGameObjectConstructor::DestroyAll(RootedObjs[i]); // 처리 완료하고 Destroy
+	}
+
+	DelSObject(_WorldRootObject);
+	_WorldRootObject = nullptr;
 }
 
 void SWorld::ProcessTransformCommit()
@@ -110,11 +175,14 @@ void SWorld::ProcessTransformCommit()
 	PC1 = GetPerofrmanceCounter();
 
 	uint64 CurFrameCnt = SSFrameInfo::GetFrameCnt();
+	EFramePhase CurFramePhase = SSFrameInfo::GetFramePhase();
+
 
 	for (SS::pair<SObjHashCode, SGameObject*>& PairItem : _TransformCommitNeededObjs)
 	{
 		SGameObject* TransformCommitStartObject = PairItem.second;
-		if (TransformCommitStartObject->GetTransformCommittedFrameCnt() == CurFrameCnt)
+		if (TransformCommitStartObject->GetTransformCommittedFrameCnt() == CurFrameCnt &&
+			TransformCommitStartObject->GetTransformCommitedPhase() == CurFramePhase)
 		{
 			continue;
 		}
@@ -313,6 +381,49 @@ void SWorld::AddWorldRootObject(SGameObject* InWorldRootObject)
 
 void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
 {
+	// Process Colision
+	IMeshAsset* Cube = g_Renderer->GetCommonRenderAssetSet()->GetCube1mMesh();
+	IMeshAsset* Sphere = g_Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
+
+	const SS::PooledList<CDDD_Line>& CDDDListLine = _CollWorld->GetDDDList_Line();
+	for (const CDDD_Line& Item : CDDDListLine)
+	{
+		SRenderDebugUtil::DrawLine(
+			this,
+			Item.Start,
+			Item.End,
+			Item.bUseDepth,
+			0.3f,
+			Item.Color,
+			Item.Time);
+	}
+
+	const SS::PooledList<CDDD_Mesh>& CDDDListMesh = _CollWorld->GetDDDList_Mesh();
+	for (const CDDD_Mesh& Item : CDDDListMesh)
+	{
+		IMeshAsset* MeshAsset = Cube;
+		switch (Item.Type)
+		{
+		case ECollDebugDraw_MeshType::Point: MeshAsset = Sphere; break;
+		case ECollDebugDraw_MeshType::Box: MeshAsset = Cube; break;
+		case ECollDebugDraw_MeshType::Sphere: MeshAsset = Sphere; break;
+		}
+
+		SRenderDebugUtil::DrawDebugMesh(
+			this,
+			Item.WMatrix,
+			Item.RotMatrix,
+			MeshAsset,
+			Item.bUseDepth,
+			Item.Color,
+			Item.Time
+		);
+	}
+	
+	_CollWorld->FlushDDDList();
+
+
+	//
 	for (int i = 0; i < _MeshDebugDrawTasks.GetSize(); i++)
 	{
 		InRenderer->DrawWireFrame(_MeshDebugDrawTasks[i].RenderDesc);

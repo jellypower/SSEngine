@@ -121,11 +121,20 @@
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(OutDir)LIB\$(TargetName)_$(Configuration)_$(Platform).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)..\SSEditor\$(IntDir)"
 copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSEditor\$(IntDir)"
-copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSEditor\$(IntDir)"</Command>
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\DLL\"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\_BuildResults\$(Configuration)\DLL\"
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\LIB\"
+copy "$(OutDir)LIB\$(TargetName)_$(Configuration)_$(Platform).lib" "$(SolutionDir)..\_BuildResults\$(Configuration)\LIB\"
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\SYMBOLS\"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\_BuildResults\$(Configuration)\SYMBOLS\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,11 +158,20 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
       <EnableUAC>false</EnableUAC>
       <OutputFile>$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(OutDir)LIB\$(TargetName)_$(Configuration)_$(Platform).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)..\SSEditor\$(IntDir)"
 copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\SSEditor\$(IntDir)"
-copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\SSEditor\$(IntDir)"</Command>
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\DLL\"
+copy "$(OutDir)DLL\$(TargetName)_$(Configuration)_$(Platform)$(TargetExt)" "$(SolutionDir)..\_BuildResults\$(Configuration)\DLL\"
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\LIB\"
+copy "$(OutDir)LIB\$(TargetName)_$(Configuration)_$(Platform).lib" "$(SolutionDir)..\_BuildResults\$(Configuration)\LIB\"
+
+mkdir "$(SolutionDir)..\_BuildResults\$(Configuration)\SYMBOLS\"
+copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDir)..\_BuildResults\$(Configuration)\SYMBOLS\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -168,6 +186,10 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\PWin32\RawInput\Win32SSRawInputProcessor.h" />
     <ClInclude Include="Private\PWin32\WindowManager\Win32WindowManager.h" />
     <ClInclude Include="Private\PWin32\WindowManager\WindowUtil_Internal.h" />
+    <ClInclude Include="Public\Collision\AABBBox.h" />
+    <ClInclude Include="Public\Collision\CollMath.h" />
+    <ClInclude Include="Public\Collision\CollMathInline.h" />
+    <ClInclude Include="Public\Collision\SimplexV4.h" />
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
     <ClInclude Include="Public\CommonTypes\DirEnums.h" />
     <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h" />
@@ -266,6 +288,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\PWin32\WindowManager\Win32Window.cpp" />
     <ClCompile Include="Private\PWin32\WindowManager\WindowUtils.cpp" />
     <ClCompile Include="Private\PWin32\WindowManager\WindowUtil_Internal.cpp" />
+    <ClCompile Include="Private\PCommon\Collision\CollMath.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

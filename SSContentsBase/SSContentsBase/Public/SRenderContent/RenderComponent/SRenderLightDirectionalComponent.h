@@ -18,5 +18,5 @@ public:
 	virtual void OnExitTheWorld() override;
 	virtual void PreDestructHierarchy() override;
 
-	virtual void OnGameObjectTransformCommited() override;
+	virtual void OnGameObjectTransformCommited(EFramePhase CommitPhase) override;
 };

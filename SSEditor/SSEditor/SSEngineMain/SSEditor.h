@@ -5,6 +5,9 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class SSGame;
+class SColliderBaseComponent;
+class ICollDevice;
 class ImGUI_Profiler;
 class ImGUI_WorldManager;
 class IAssetDBLoader;
@@ -24,7 +27,7 @@ extern SSEditor* g_Editor;
 class SSEditor
 {
 public:
-	SSEditor(IRenderer* EngineRenderer);
+	SSEditor(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice);
 	~SSEditor();
 
 	void StartupEngine();
@@ -32,8 +35,7 @@ public:
 	void CleanupEngine();
 
 
-
-	void TEMP_ProcessContents();
+	void EditorControl();
 
 
 #pragma region IMGUI
@@ -49,9 +51,11 @@ private:
 
 private:
 	SWorld* _DefaultWorld = nullptr;
+	SSGame* _Game = nullptr;
 
 private:
 	IRenderer* _Renderer = nullptr;
+	ICollDevice* _CollDevice = nullptr;
 
 
 	
@@ -59,11 +63,12 @@ private:
 	SGameObject* TEMP_MdlcObj = nullptr;
 	
 
-	SCameraComponent* TEMP_Camera = nullptr;
+	SCameraComponent* _FreeCam = nullptr;
 	SRenderLightDirectionalComponent* TEMP_Light = nullptr;
 	float TEMP_CamXRot = 0;
 	float TEMP_CamYRot = 0;
 	float TEMP_Speed = 10.f;
+
 
 
 private:
