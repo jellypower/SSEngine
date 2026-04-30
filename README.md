@@ -52,7 +52,7 @@
     - 가속도 기반 캐릭터 무브먼트: https://youtu.be/KHo7lmSJnLM?si=jeiCSwU_f6rGcJwt
     - Convex한 오브젝트간의 충돌판정: https://youtu.be/iz16O6yGidU?si=sZ4iAbdajRUEDG6G
 
-
+## 바로가기
 [<img src="https://github.com/jellypower/zzPublicImageDataBase/blob/main/Icon/Youtube_logo.png" width="64"/>](https://www.youtube.com/watch?v=J_K8yV4KCV8&list=PLn_nqBk81UiCGGYGs5YFQIz098fdHk2NS&index=3)
 [<img src="https://github.com/jellypower/zzPublicImageDataBase/blob/main/Icon/velog_icon.png" width="64"/>](https://velog.io/@jellypower/series/%EB%82%98%EB%8A%94-%EB%A7%8C%EB%93%A0%EB%8B%A4-%EA%B2%8C%EC%9E%84%EC%97%94%EC%A7%84)
 
@@ -117,8 +117,8 @@
     - Acceleration-based Character Movement: https://youtu.be/KHo7lmSJnLM?si=jeiCSwU_f6rGcJwt
     - Collision Detection between Convex Objects: https://youtu.be/iz16O6yGidU?si=sZ4iAbdajRUEDG6G
 
+## Shortcut
 [<img src="https://github.com/jellypower/zzPublicImageDataBase/blob/main/Icon/Youtube_logo.png" width="64"/>](https://www.youtube.com/watch?v=J_K8yV4KCV8&list=PLn_nqBk81UiCGGYGs5YFQIz098fdHk2NS&index=3)
 [<img src="https://github.com/jellypower/zzPublicImageDataBase/blob/main/Icon/velog_icon.png" width="64"/>](https://velog.io/@jellypower/series/%EB%82%98%EB%8A%94-%EB%A7%8C%EB%93%A0%EB%8B%A4-%EA%B2%8C%EC%9E%84%EC%97%94%EC%A7%84)
-
 
 ---
