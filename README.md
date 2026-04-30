@@ -1,1 +1,97 @@
-First Commit
+# SSEngine
+
+![image.png](attachment:d0f42911-259e-48a5-82bd-a646c053c5bb:image.png)
+
+- Unity 와 Unreal이 가지고 있는 각자의 강점을 융합하여 **나만의 게임엔진**을 만들어내고자 하는 프로젝트입니다.
+- 단순히 기술적 공부를 위한 개발이 아닌 실제 제품을 만들어 낼 수 있을만큼 구조화된 엔진을 만들어내는것을 목표로 하는 프로젝트입니다.
+
+# 프로젝트 정보
+
+## 엔진 구조
+
+![SSEngine_Simple_Architecture.png](attachment:27da07c5-d033-4314-9683-b6c56be51047:SSEngine_Simple_Architecture.png)
+
+- **`EngineDefault.dll`**: 엔진 전역에서 **공통**적으로 사용가능한 기본 타입, 컨테이너, 수학함수 등을 포함하는 모듈
+- **`Game.dll`**: 실제 **콘텐츠**가 제작되는 모듈. 게임의 기본 기능들을 활용해 월드를 어떻게 구성하고 캐릭터를 어떻게 조작할지에 대한 룰을 정의합니다.
+- **`ContentsBase.dll`**: 콘텐츠단에서 쉽게 사용할 수 있게 **다양한 렌더, 물리 기능들을 추상화**하여 올려주는 모듈. (ex. StaticMeshComponent, AnimationComponent …)
+- **`Renderer.dll`**: 렌더 패스를 구성하거나, 렌더링에 필요한 오브젝트(라이트, 메시)등을 추상화해 ContentsBase에서 사용할 수 있게 구현된 기능을 모아두는 **렌더 기능 모듈**.
+- **`GAL.dll`**: **그래픽스 API종속적인 기능과 리소스를 추상화**하여 렌더러에 노출하는 모듈.
+- **`Collision.dll`**: **충돌**, 오브젝트움직임, 물리, 오버랩과 같은 기능을 포함하는 모듈.
+- **`SObject.dll`**: 컨텐츠 레벨의 오브젝트를 식별하기 위한 **고유 ID**를 발행하고 고유 ID를 활용한 델리게이트, 라이프사이클 관리에 도움을 주는 기능을 포함하는 모듈.
+- **`Editor.exe`**: 실제 Windows메시지 루프가 있는 **게임 엔트리**용 exe 프로젝트.
+
+## 빌드 및 실행방법
+
+### 프로젝트 빌드
+
+- 프로젝트 root 에 위치한 _BuildBatch 폴더에 있는 다음의 배치파일들을 실행해 빌드합니다.
+    - `SSEngineBuild_Debug_x64.bat`: 디버그 옵션으로 빌드합니다
+    - `SSEngineBuild_Debug_x64_Rebuild.bat`: 디버그 옵션으로 전체 프로젝트를 다시 빌드합니다
+    - `SSEngineBuild_Release_x64.bat`: 릴리즈 옵션으로 빌드합니다
+    - `SSEngineBuild_Release_x64_Rebuild.bat`: 릴리즈 옵션으로 전체 프로젝트를 다시 빌드합니다
+
+### 설정 및 실행
+
+1. 위 배치파일들을 통해 빌드 옵션에 따른 바이너리가 만들어졌으면 실행할 exe의 작업 디렉토리(기본 설정은 SSEngine\SSEditor\SSEditor) 에 리소스를 위치시킵니다.
+2. 리소스 파일들은 GitHub의 Release섹션에 `Resource.zip` 에서 다운받을 수 있습니다.
+3. 해당 파일을 압축해제하고 작업 디렉토리에 리소스를 위치시킵니다.
+4. 이제 `SSEditor.sln` 파일을 열어 `f5`로 프로젝트를 실행하거나 빌드된 exe를 더블클릭하여 실행할 수 있습니다.
+    - *주의: exe를 통해 실행할 경우 Working Directory가 달라지기에 exe파일이 위치한 폴더에 Resource를 배치해야 합니다.*
+
+# **기본 컨트롤**
+
+- 시점조작: 마우스 이동
+- 움직이기: W/A/S/D
+- 시점고정 및 조준: 마우스 우클릭
+- 에디터 모드 토글: P
+
+---
+
+# SSEngine
+
+![image.png](attachment:d0f42911-259e-48a5-82bd-a646c053c5bb:image.png)
+
+- This project aims to develop a proprietary game engine by merging the unique strengths of both Unity and Unreal Engine.
+- Rather than developing solely for technical study, the objective is to build a highly structured, production-ready engine capable of powering real-world commercial products.
+
+# 프로젝트 정보
+
+## 엔진 구조
+
+![SSEngine_Simple_Architecture.png](attachment:27da07c5-d033-4314-9683-b6c56be51047:SSEngine_Simple_Architecture.png)
+
+- **`EngineDefault.dll`**: A core module containing fundamental types, containers, and mathematical functions used globally throughout the engine.
+- **`Game.dll`**: The gameplay logic module where actual content is authored. It defines world composition and character control rules using the engine's base features.
+- **`ContentsBase.dll`**: Provides high-level abstractions of rendering and physics features (e.g., `StaticMeshComponent`, `AnimationComponent`) for easy access within the gameplay layer.
+- **`Renderer.dll`**: A dedicated rendering module that manages render pass composition and provides abstractions for renderable objects (lights, meshes) used by `ContentsBase`.
+- **`GAL.dll`**: Abstracts Graphics API-specific functions and resources, exposing a unified interface to the Renderer.
+- **`Collision.dll`**: Handles collision detection, object movement, physics, and overlap event functionality.
+- **`SObject.dll`**: Manages unique ID issuance for content-level objects and provides utilities for ID-based delegates and lifecycle management.
+- **`Editor.exe`**: The main entry point executable for the engine, containing the Windows message loop.
+
+## Build and Execution
+
+### Building the Project
+
+- Navigate to the `_BuildBatch` folder in the project root and run the following batch files to build:
+    - `SSEngineBuild_Debug_x64.bat`: Builds the project with Debug configurations.
+    - `SSEngineBuild_Debug_x64_Rebuild.bat`: Performs a clean rebuild with Debug configurations.
+    - `SSEngineBuild_Release_x64.bat`: Builds the project with Release configurations.
+    - `SSEngineBuild_Release_x64_Rebuild.bat`: Performs a clean rebuild with Release configurations.
+
+### 설정 및 실행
+
+1. Once the binaries are generated, place the necessary resources into the working directory of the executable (Default: `SSEngine\SSEditor\SSEditor`).
+2. Resource files can be downloaded from **Resource.zip** in the GitHub **Releases** section.
+3. Extract the zip file and ensure the resources are placed correctly in the working directory.
+4. You can then run the project via **SSEditor.sln** (Press `F5`) or by launching the built `.exe` directly.
+    - *Note: If launching via the `.exe` file, the resources must be located in the same folder as the executable due to the change in working directory.*
+
+# **기본 컨트롤**
+
+- **Camera Look**: Mouse Movement
+- **Movement**: W / A / S / D
+- **Aim / Lock Camera**: Right Mouse Click (Hold)
+- **Toggle Editor Mode**: P
+
+---
