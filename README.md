@@ -1,6 +1,6 @@
 # SSEngine
 
-![image.png](attachment:d0f42911-259e-48a5-82bd-a646c053c5bb:image.png)
+![image.png](https://github.com/jellypower/zzPublicImageDataBase/blob/main/Portfolio/SSEngine/SSEngine_Play_Capture.png)
 
 - Unity 와 Unreal이 가지고 있는 각자의 강점을 융합하여 **나만의 게임엔진**을 만들어내고자 하는 프로젝트입니다.
 - 단순히 기술적 공부를 위한 개발이 아닌 실제 제품을 만들어 낼 수 있을만큼 구조화된 엔진을 만들어내는것을 목표로 하는 프로젝트입니다.
@@ -9,7 +9,7 @@
 
 ## 엔진 구조
 
-![SSEngine_Simple_Architecture.png](attachment:27da07c5-d033-4314-9683-b6c56be51047:SSEngine_Simple_Architecture.png)
+![SSEngine_Simple_Architecture.png](https://github.com/jellypower/zzPublicImageDataBase/blob/main/Portfolio/SSEngine/SSEngine_Simple_Architecture.png)
 
 - **`EngineDefault.dll`**: 엔진 전역에서 **공통**적으로 사용가능한 기본 타입, 컨테이너, 수학함수 등을 포함하는 모듈
 - **`Game.dll`**: 실제 **콘텐츠**가 제작되는 모듈. 게임의 기본 기능들을 활용해 월드를 어떻게 구성하고 캐릭터를 어떻게 조작할지에 대한 룰을 정의합니다.
@@ -49,16 +49,16 @@
 
 # SSEngine
 
-![image.png](attachment:d0f42911-259e-48a5-82bd-a646c053c5bb:image.png)
+![image.png](https://github.com/jellypower/zzPublicImageDataBase/blob/main/Portfolio/SSEngine/SSEngine_Play_Capture.png)
 
 - This project aims to develop a proprietary game engine by merging the unique strengths of both Unity and Unreal Engine.
 - Rather than developing solely for technical study, the objective is to build a highly structured, production-ready engine capable of powering real-world commercial products.
 
-# 프로젝트 정보
+# Project Info
 
-## 엔진 구조
+## Engine Architecture
 
-![SSEngine_Simple_Architecture.png](attachment:27da07c5-d033-4314-9683-b6c56be51047:SSEngine_Simple_Architecture.png)
+![SSEngine_Simple_Architecture.png](https://github.com/jellypower/zzPublicImageDataBase/blob/main/Portfolio/SSEngine/SSEngine_Simple_Architecture.png)
 
 - **`EngineDefault.dll`**: A core module containing fundamental types, containers, and mathematical functions used globally throughout the engine.
 - **`Game.dll`**: The gameplay logic module where actual content is authored. It defines world composition and character control rules using the engine's base features.
@@ -79,7 +79,7 @@
     - `SSEngineBuild_Release_x64.bat`: Builds the project with Release configurations.
     - `SSEngineBuild_Release_x64_Rebuild.bat`: Performs a clean rebuild with Release configurations.
 
-### 설정 및 실행
+### Setup and Execution
 
 1. Once the binaries are generated, place the necessary resources into the working directory of the executable (Default: `SSEngine\SSEditor\SSEditor`).
 2. Resource files can be downloaded from **Resource.zip** in the GitHub **Releases** section.
@@ -87,7 +87,7 @@
 4. You can then run the project via **SSEditor.sln** (Press `F5`) or by launching the built `.exe` directly.
     - *Note: If launching via the `.exe` file, the resources must be located in the same folder as the executable due to the change in working directory.*
 
-# **기본 컨트롤**
+# Controls
 
 - **Camera Look**: Mouse Movement
 - **Movement**: W / A / S / D
