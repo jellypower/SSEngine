@@ -12,29 +12,29 @@
 
 CollDevice::CollDevice()
 {
-	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, mDefaultAllocatorCallback, mDefaultErrorCallback);
-	if (!mFoundation) throw("PxCreateFoundation failed!");
-	mPvd = PxCreatePvd(*mFoundation);
-	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-	mPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
-	mToleranceScale.length = 100;        // typical length of an object
-	mToleranceScale.speed = 981;         // typical speed of an object, gravity*1s is a reasonable choice
-	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, mToleranceScale, true, mPvd);
-	physx::PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
-	sceneDesc.gravity = physx::PxVec3(0.f, -9.81f, 0.f);
-	mDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
-	sceneDesc.cpuDispatcher = mDispatcher;
-	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
-	mScene = mPhysics->createScene(sceneDesc);
-
-
-	physx::PxPvdSceneClient* pvdClient = mScene->getScenePvdClient();
-	if (pvdClient)
-	{
-		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
+//	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, mDefaultAllocatorCallback, mDefaultErrorCallback);
+//	if (!mFoundation) throw("PxCreateFoundation failed!");
+//	mPvd = PxCreatePvd(*mFoundation);
+//	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+//	mPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+//	mToleranceScale.length = 100;        // typical length of an object
+//	mToleranceScale.speed = 981;         // typical speed of an object, gravity*1s is a reasonable choice
+//	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, mToleranceScale, true, mPvd);
+//	physx::PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
+//	sceneDesc.gravity = physx::PxVec3(0.f, -9.81f, 0.f);
+//	mDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+//	sceneDesc.cpuDispatcher = mDispatcher;
+//	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+//	mScene = mPhysics->createScene(sceneDesc);
+//
+//
+//	physx::PxPvdSceneClient* pvdClient = mScene->getScenePvdClient();
+//	if (pvdClient)
+//	{
+//		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+//		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+//		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+//	}
 }
 
 ICollisionWorld* CollDevice::CreateCollWorld(SS::SHasherW InWorldName) const
