@@ -114,8 +114,8 @@
     - The currently compatible version is **`2020.3.4`**.
     - Place the `lib` and `include` folders from the downloaded SDK into the following directory: `SSEngine/ExternLibs/FBXSDK` (If the `ExternLibs` folder does not exist, please create it manually.)
     - **FBX SDK Links:**
-        - [Download FBX SDK 2020.3.4 (Direct)](https://www.notion.so/SSEngine-3529c82980f78057b2a4d6550a0f4d13?pvs=21)
-        - [Official Autodesk FBX SDK Download Page](https://www.notion.so/SSEngine-3529c82980f78057b2a4d6550a0f4d13?pvs=21)
+        - [Download FBX SDK 2020.3.4 (Direct)](https://www.autodesk.com/content/dam/autodesk/www/adn/fbx/2020-3-4/fbx202034_fbxsdk_vs2022_win.exe)
+        - [Official Autodesk FBX SDK Download Page](https://aps.autodesk.com/developer/overview/fbx-sdk)
 
 ### Building the Project
 
