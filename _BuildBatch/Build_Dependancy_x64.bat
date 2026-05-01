@@ -55,6 +55,13 @@ set "IMGUI_BUILD_OPTION_RELEASE=/m /nologo /verbosity:quiet /clp:ErrorsOnly;NoSu
 set IMGUI_BUILD_SLN_PATH="..\SSImgui\SSImgui.sln"
 
 
+
+set FBX_SDK_LIB_FOLDER_DEBUG=..\ExternLibs\FBXSDK\lib\x64\Debug
+set FBX_SDK_LIB_FOLDER_RELEASE=..\ExternLibs\FBXSDK\lib\x64\Release
+set FBX_SDK_DLL_COPY_TARGET_DEBUG=..\_BuildResults\Debug\DLL
+set FBX_SDK_DLL_COPY_TARGET_RELEASE=..\_BuildResults\Release\DLL
+
+
 :: ======================================================= Run ======================================================= 
 
 
@@ -140,9 +147,24 @@ echo     Building with Checked option...
 echo     ================ ~ImGui_Build ================
 
 
-echo ================ ~Build_Dependancy_Debug_x64 ================
+
+echo.
+echo.
+echo     ================ FBX_SDK_Copy_DLL ================
 echo.
 
+if not exist "%FBX_SDK_DLL_COPY_TARGET_DEBUG%" mkdir "%FBX_SDK_DLL_COPY_TARGET_DEBUG%"
+if not exist "%FBX_SDK_DLL_COPY_TARGET_RELEASE%" mkdir "%FBX_SDK_DLL_COPY_TARGET_RELEASE%"
+
+
+
+echo     ================ ~FBX_SDK_Copy_DLL ================
+
+echo ================ ~Build_Dependancy_Debug_x64 ================
+
+
+echo.
+echo.
 pause
 
 endlocal
