@@ -49,6 +49,10 @@ set SSENGINE_PHYSX_BUILD_RESULT_DEBUG=..\_BuildResults\PhysX_Debug_x64
 set SSENGINE_PHYSX_BUILD_RESULT_RELEASE=..\_BuildResults\PhysX_Checked_x64
 
 
+set "IMGUI_BUILD_OPTION_DEBUG=/m /nologo /verbosity:quiet /clp:ErrorsOnly;NoSummary /p:Configuration="Debug""
+set "IMGUI_BUILD_OPTION_RELEASE=/m /nologo /verbosity:quiet /clp:ErrorsOnly;NoSummary /p:Configuration="Release""
+set IMGUI_BUILD_SLN_PATH="..\SSImgui\SSImgui.sln"
+
 
 :: ======================================================= Run ======================================================= 
 
@@ -73,7 +77,7 @@ echo.
 echo.
 echo     ================ PhysX_Generate_Project ================
 echo.
-call %PHYSX_BULID_TOOL_PATH%/generate_projects.bat vc17win64-cpu-only
+: call %PHYSX_BULID_TOOL_PATH%/generate_projects.bat vc17win64-cpu-only
 echo     ================ ~PhysX_Generate_Project ================
 
 
@@ -111,6 +115,20 @@ for /L %%i in (0,1,%PHYSX_NEEDED_MODULE_CNT%) do (
 
 
 echo     ================ ~PhysX_Copy_BuildResult ================
+
+
+
+echo.
+echo.
+echo     ================ ImGui_Build ================
+echo.
+
+echo     Building with Debug option... 
+%MSBUILD_PATH% %IMGUI_BUILD_SLN_PATH% %IMGUI_BUILD_OPTION_DEBUG%
+echo     Building with Checked option... 
+%MSBUILD_PATH% %IMGUI_BUILD_SLN_PATH% %IMGUI_BUILD_OPTION_RELEASE%
+
+echo     ================ ~ImGui_Build ================
 
 
 echo ================ ~Build_Dependancy_Debug_x64 ================
