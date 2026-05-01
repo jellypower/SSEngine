@@ -7,6 +7,7 @@ setlocal EnableDelayedExpansion
 echo ================ Build_Dependancy_Debug_x64 ================
 
 set MSBUILD_PATH="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
+set MS_NUGET_PATH="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
 
 
 set SSGAL_MODULE_NAME=SSGAL
@@ -61,7 +62,7 @@ echo.
 echo.
 echo     ================ Restore_DX12_Nuget_Package ================
 echo.
-%MSBUILD_PATH% %SSGAL_MODULE_PATH% /t:Restore
+%MSBUILD_PATH% %SSGAL_MODULE_PATH% -t:Restore -p:RestorePackagesConfig=true
 echo     ================ ~Restore_DX12_Nuget_Package ================
 
 
