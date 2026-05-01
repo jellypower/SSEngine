@@ -46,7 +46,7 @@ for /L %%i in (0,1,%PHYSX_NEEDED_MODULE_CNT%) do (
 
 
 set SSENGINE_PHYSX_BUILD_RESULT_DEBUG=..\_BuildResults\PhysX_Debug_x64
-set SSENGINE_PHYSX_BUILD_RESULT_RELEASE=..\_BuildResults\PhysX_Checked_x64
+set SSENGINE_PHYSX_BUILD_RESULT_RELEASE=..\_BuildResults\PhysX_Release_x64
 
 
 set "IMGUI_BUILD_OPTION_DEBUG=/m /nologo /verbosity:quiet /clp:ErrorsOnly;NoSummary /p:Configuration="Debug""
@@ -101,16 +101,24 @@ if %ERRORLEVEL% neq 0 (
      echo         @@@@@@@ PHYSX BUILD FAILED !!! Errno: %ERRORLEVEL% @@@@@@@
 )
 
-if not exist "../_BuildResults/PhysX_Debug_x64" mkdir "../_BuildResults/PhysX_Debug_x64"
+echo.
+echo.
+echo     Copy PhysX Debug Bins... 
+echo.
+if not exist "%SSENGINE_PHYSX_BUILD_RESULT_DEBUG%" mkdir "%SSENGINE_PHYSX_BUILD_RESULT_DEBUG%"
 for /L %%i in (0,1,%PHYSX_NEEDED_MODULE_CNT%) do (
 
     copy /y "!PHYSX_MODULE_PREFIX_DEBUG[%%i]!.*" "%SSENGINE_PHYSX_BUILD_RESULT_DEBUG%\"
 )
 
-if not exist "../_BuildResults/PhysX_Checked_x64" mkdir "../_BuildResults/PhysX_Checked_x64"
+echo.
+echo.
+echo     Copy PhysX Release Bins... 
+echo.
+if not exist "%SSENGINE_PHYSX_BUILD_RESULT_RELEASE%" mkdir "%SSENGINE_PHYSX_BUILD_RESULT_RELEASE%"
 for /L %%i in (0,1,%PHYSX_NEEDED_MODULE_CNT%) do (
 
-    copy /y "!PHYSX_MODULE_PREFIX_DEBUG[%%i]!.*" "%SSENGINE_PHYSX_BUILD_RESULT_RELEASE%/"
+    copy /y "!PHYSX_MODULE_PREFIX_CHECKED[%%i]!.*" "%SSENGINE_PHYSX_BUILD_RESULT_RELEASE%/"
 )
 
 
