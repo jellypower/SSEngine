@@ -77,7 +77,7 @@ echo.
 echo.
 echo     ================ PhysX_Generate_Project ================
 echo.
-: call %PHYSX_BULID_TOOL_PATH%/generate_projects.bat vc17win64-cpu-only
+call %PHYSX_BULID_TOOL_PATH%/generate_projects.bat vc17win64-cpu-only
 echo     ================ ~PhysX_Generate_Project ================
 
 

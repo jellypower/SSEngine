@@ -18,7 +18,7 @@ set MODULE_NAMES[6]=SSAssetDBManager
 set MODULE_NAMES[7]=SSContentsBase
 set MODULE_NAMES[8]=SSEditor
 
-set MODULE_CNT=7
+set MODULE_CNT=8
 
 for /L %%i in (0,1,%MODULE_CNT%) do (
     set MODULE_PATH[%%i]="../!MODULE_NAMES[%%i]!/!MODULE_NAMES[%%i]!.sln"
