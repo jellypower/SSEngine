@@ -156,4 +156,4 @@
 
 # **Note on Troubleshooting:**
 
-Dependency configuration may fail due to various environmental factors. If you encounter any issues, please contact us at [**dongcheold147@gmail.com](mailto:dongcheold147@gmail.com)** for support.
+Dependency configuration may fail due to various environmental factors. If you encounter any issues, please contact us at **[dongcheold147@gmail.com](mailto:dongcheold147@gmail.com)** for support.
