@@ -51,6 +51,7 @@
     - *주의: exe를 직접 실행할 경우 Working Directory가 달라지기에 exe파일이 위치한 폴더에 Resource를 배치해야 합니다.*
 4. _BuildBatch 폴더에 있는 `Copy_Built_DLLs.bat` 를 실행합니다.
     - 해당 배치는 외부 라이브러리의 빌드된 DLL(PhysX, FBXSDK ...)을 실제 실행할 exe폴더에 카피합니다.
+    - 해당 배치파일은 Debug빌드와 Release빌드 할 때 각 각 실행해줘야 정상 실행이 가능합니다.
 5. 이제 `SSEditor.sln` 파일을 열어 `f5`로 프로젝트를 실행하거나 빌드된 exe를 더블클릭하여 실행할 수 있습니다.
 
 
@@ -138,6 +139,7 @@
    - *Note: If launching via the `.exe` file, the resources must be located in the same folder as the executable due to the change in working directory.*
 4. Run Copy_Built_DLLs.bat located in the _BuildBatch folder.
     - This batch file copies the built DLLs of external libraries (PhysX, FBXSDK, etc.) into the folder where the actual executable (exe) is located.
+    - This batch file must be run for both Debug and Release builds respectively to ensure the application runs correctly.
 5. You can then run the project via **SSEditor.sln** (Press `F5`) or by launching the built `.exe` directly.
  
 
