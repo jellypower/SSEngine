@@ -24,14 +24,14 @@
 
 ### 종속성 로드
 
-- 프로젝트 root 에 위치한 _BuildBatch 폴더에 있는 `Build_Dependancy_x64.bat` 를 실행합니다.
-    - **주의:** `PhysX` 를 빌드하기 위해선 `cmake`다운로드와 환경변수 등록이 필요합니다. **(PATH)**
-- 본 엔진은 모델을 로딩하기 위해 `FBXSDK` 를 다운받아야 합니다.
+1. 본 엔진은 모델을 로딩하기 위해 `FBXSDK` 를 다운받아야 합니다.
     - 현재 호환되는 버전은 `2020.3.4` 입니다.
     - 다운받은 SDK의 `lib`와 `include` 폴더를 루트폴더에 `SSEngine/ExternLibs/FBXSDK` 폴더 안에 위치시킵니다. (만약 ExternLibs 폴더가 없다면 폴더를 만들어주세요)
     - FBXSDK 링크
         - [FBX SDK 2020.3.4 다운로드](https://www.autodesk.com/content/dam/autodesk/www/adn/fbx/2020-3-4/fbx202034_fbxsdk_vs2022_win.exe)
         - [오토데스크 공식 FBX SDK 다운로드 페이지](https://aps.autodesk.com/developer/overview/fbx-sdk)
+2. 프로젝트 root 에 위치한 _BuildBatch 폴더에 있는 `Build_Dependancy_x64.bat` 를 실행합니다.
+    - **주의:** `PhysX` 를 빌드하기 위해선 `cmake`다운로드와 환경변수 등록이 필요합니다. **(PATH)**
 
 
 ### 프로젝트 빌드
@@ -108,14 +108,15 @@
 
 ### Dependency Loading
 
-- Run `Build_Dependancy_x64.bat` located in the `_BuildBatch` folder at the project root.
-    - **Note:** To build `PhysX`, you must have `CMake` installed and registered in your system environment variables.
-- This engine requires the `FBX SDK` for model loading.
+1. This engine requires the `FBX SDK` for model loading.
     - The currently compatible version is **`2020.3.4`**.
     - Place the `lib` and `include` folders from the downloaded SDK into the following directory: `SSEngine/ExternLibs/FBXSDK` (If the `ExternLibs` folder does not exist, please create it manually.)
     - **FBX SDK Links:**
         - [Download FBX SDK 2020.3.4 (Direct)](https://www.autodesk.com/content/dam/autodesk/www/adn/fbx/2020-3-4/fbx202034_fbxsdk_vs2022_win.exe)
         - [Official Autodesk FBX SDK Download Page](https://aps.autodesk.com/developer/overview/fbx-sdk)
+2. Run `Build_Dependancy_x64.bat` located in the `_BuildBatch` folder at the project root.
+    - **Note:** To build `PhysX`, you must have `CMake` installed and registered in your system environment variables.
+
 
 ### Building the Project
 

@@ -56,10 +56,10 @@ set IMGUI_BUILD_SLN_PATH="..\SSImgui\SSImgui.sln"
 
 
 
-set FBX_SDK_LIB_FOLDER_DEBUG=..\ExternLibs\FBXSDK\lib\x64\Debug
-set FBX_SDK_LIB_FOLDER_RELEASE=..\ExternLibs\FBXSDK\lib\x64\Release
-set FBX_SDK_DLL_COPY_TARGET_DEBUG=..\_BuildResults\Debug\DLL
-set FBX_SDK_DLL_COPY_TARGET_RELEASE=..\_BuildResults\Release\DLL
+set FBX_SDK_LIB_PREFIX_DEBUG=..\ExternLibs\FBXSDK\lib\x64\Debug\libfbxsdk
+set FBX_SDK_LIB_PREFIX_RELEASE=..\ExternLibs\FBXSDK\lib\x64\Release\libfbxsdk
+set FBX_SDK_COPY_TARGET_PREFIX_DEBUG=..\_BuildResults\Debug
+set FBX_SDK_COPY_TARGET_PREFIX_RELEASE=..\_BuildResults\Release
 
 
 :: ======================================================= Run ======================================================= 
@@ -153,10 +153,17 @@ echo.
 echo     ================ FBX_SDK_Copy_DLL ================
 echo.
 
-if not exist "%FBX_SDK_DLL_COPY_TARGET_DEBUG%" mkdir "%FBX_SDK_DLL_COPY_TARGET_DEBUG%"
-if not exist "%FBX_SDK_DLL_COPY_TARGET_RELEASE%" mkdir "%FBX_SDK_DLL_COPY_TARGET_RELEASE%"
+echo Copy DEBUG FBX bins to _BuildResults
+if not exist "%FBX_SDK_COPY_TARGET_PREFIX_DEBUG%\DLL" mkdir "%FBX_SDK_COPY_TARGET_PREFIX_DEBUG%\DLL"
+if not exist "%FBX_SDK_COPY_TARGET_PREFIX_DEBUG%\LIB" mkdir "%FBX_SDK_COPY_TARGET_PREFIX_DEBUG%\LIB"
+copy /y "%FBX_SDK_LIB_PREFIX_DEBUG%.dll" "%FBX_SDK_COPY_TARGET_PREFIX_DEBUG%\DLL"
+copy /y "%FBX_SDK_LIB_PREFIX_DEBUG%.lib" "%FBX_SDK_COPY_TARGET_PREFIX_DEBUG%\LIB"
 
-
+echo Copy DEBUG FBX bins to _BuildResults
+if not exist "%FBX_SDK_COPY_TARGET_PREFIX_RELEASE%\DLL" mkdir "%FBX_SDK_COPY_TARGET_PREFIX_RELEASE%\DLL"
+if not exist "%FBX_SDK_COPY_TARGET_PREFIX_RELEASE%\LIB" mkdir "%FBX_SDK_COPY_TARGET_PREFIX_RELEASE%\LIB"
+copy /y "%FBX_SDK_LIB_PREFIX_RELEASE%.lib" "%FBX_SDK_COPY_TARGET_PREFIX_RELEASE%\LIB"
+copy /y "%FBX_SDK_LIB_PREFIX_RELEASE%.dll" "%FBX_SDK_COPY_TARGET_PREFIX_RELEASE%\DLL"
 
 echo     ================ ~FBX_SDK_Copy_DLL ================
 
