@@ -44,12 +44,15 @@
 
 ### 설정 및 실행
 
-1. 위 배치파일들을 통해 빌드 옵션에 따른 바이너리가 만들어졌으면 실행할 exe의 작업 디렉토리(기본 설정은 SSEngine\SSEditor\SSEditor) 에 리소스를 위치시킵니다.
+1. 위 배치파일들을 통해 빌드 옵션에 따른 바이너리가 만들어졌으면 실행할 exe의 작업 디렉토리(기본 설정은 `SSEngine\SSEditor\SSEditor`) 에 리소스를 위치시킵니다.
     - 만약 이미 `Resource` 폴더가 있다면 전부 삭제하고 다시 붙여넣어 주세요.
 2. 리소스 파일들은 GitHub의 Release섹션에 `Resource.zip` 에서 다운받을 수 있습니다.
 3. 해당 파일을 압축해제하고 작업 디렉토리에 리소스를 위치시킵니다.
-4. 이제 `SSEditor.sln` 파일을 열어 `f5`로 프로젝트를 실행하거나 빌드된 exe를 더블클릭하여 실행할 수 있습니다.
-    - *주의: exe를 통해 실행할 경우 Working Directory가 달라지기에 exe파일이 위치한 폴더에 Resource를 배치해야 합니다.*
+    - *주의: exe를 직접 실행할 경우 Working Directory가 달라지기에 exe파일이 위치한 폴더에 Resource를 배치해야 합니다.*
+4. _BuildBatch 폴더에 있는 `Copy_Built_DLLs.bat` 를 실행합니다.
+    - 해당 배치는 외부 라이브러리의 빌드된 DLL(PhysX, FBXSDK ...)을 실제 실행할 exe폴더에 카피합니다.
+5. 이제 `SSEditor.sln` 파일을 열어 `f5`로 프로젝트를 실행하거나 빌드된 exe를 더블클릭하여 실행할 수 있습니다.
+
 
 # **기본 컨트롤**
 
@@ -132,8 +135,11 @@
     - If the `Resource` folder already exists, please delete it entirely and then paste the new one.
 2. Resource files can be downloaded from **Resource.zip** in the GitHub **Releases** section.
 3. Extract the zip file and ensure the resources are placed correctly in the working directory.
-4. You can then run the project via **SSEditor.sln** (Press `F5`) or by launching the built `.exe` directly.
-    - *Note: If launching via the `.exe` file, the resources must be located in the same folder as the executable due to the change in working directory.*
+   - *Note: If launching via the `.exe` file, the resources must be located in the same folder as the executable due to the change in working directory.*
+4. Run Copy_Built_DLLs.bat located in the _BuildBatch folder.
+    - This batch file copies the built DLLs of external libraries (PhysX, FBXSDK, etc.) into the folder where the actual executable (exe) is located.
+5. You can then run the project via **SSEditor.sln** (Press `F5`) or by launching the built `.exe` directly.
+ 
 
 # Controls
 
