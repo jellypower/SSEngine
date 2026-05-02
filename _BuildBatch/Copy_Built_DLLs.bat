@@ -35,13 +35,13 @@ echo     ================ ~Copy_PhysX_Built_Dlls ================
 
 echo.
 echo.
-echo     ================ Copy_FBXSD_Built_Dlls ================
+echo     ================ Copy_FBXSDK_Built_Dlls ================
 echo.
 
 copy /y "%SSENGINE_FBXSDK_BUILD_RESULT_PREFIX_DEBUG%\DLL\libfbxsdk.dll" "%DLL_COPY_TARGET_DEBUG%"
 copy /y "%SSENGINE_FBXSDK_BUILD_RESULT_PREFIX_RELEASE%\DLL\libfbxsdk.dll" "%DLL_COPY_TARGET_RELEASE%"
 
-echo     ================ ~Copy_FBXSD_Built_Dlls ================
+echo     ================ ~Copy_FBXSDK_Built_Dlls ================
 echo.
 
 
