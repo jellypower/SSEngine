@@ -1,8 +1,8 @@
-# Project Goals
-- Project name: SSEngine
-- The goal is to build a personal game engine by combining the strengths of both Unity and Unreal Engine
-- The aim is not just technical study, but a structured engine capable of shipping a real product
-- Targeting cross-platform compatibility beyond Windows in the long term
+# SSEngine — Claude Instructions
+
+For engine architecture, module structure, and data flows, see [Architecture.md](Architecture.md).
+
+---
 
 # Development Environment
 - IDE: Visual Studio 2022
@@ -10,32 +10,6 @@
 - Platform: Windows x64
 - Graphics API: DirectX 12 (managed via NuGet)
 - Build System: MSBuild (each module has its own independent .sln)
-
-
-# Engine Architecture
-
-## Engine Modules
-/SSEngineDefault          -> Contains primitive types, containers, and math functions shared across the entire engine
-/SSContentsBase           -> Abstracts various rendering and physics features into a content-friendly interface
-/SSRenderer               -> Manages render passes, render object instances, and the renderable context of the current World. Exposes interfaces consumed by ContentsBase
-/SSGAL                    -> Abstracts graphics API-specific resources and functionality, exposing them to the Renderer
-/SSCollision              -> Handles collision detection, object movement, physics simulation, and overlap queries
-/SObject                  -> Issues unique IDs for content-level objects and provides delegate and lifecycle management built on top of those IDs. Roughly analogous to UObject in Unreal Engine
-/SSAssetDBManager         -> Manages the project asset list using SQLite. Primary purpose is hiding SQLite internals from the rest of the engine
-/SSFBXImporter            -> Converts models to the engine's internal format using FBXSDK. Serialization lives in SSRenderer; this module exists mainly to encapsulate FBXSDK internals
-/SSGameModule             -> The module where actual game content is authored, using features exposed by EngineDefault, ContentsBase, and other engine layers
-
-## Third-Party Modules
-- Listed in .claudeignore since they are not modified directly
-/ExternLibs/FBXSDK        -> FBXSDK for model importing. Currently using version 2020.3.4
-/PhysX                    -> NVIDIA PhysX for physics and collision. Currently using CPU-only mode (no CUDA)
-/ss-sqllite               -> Custom-built SQLite for asset and content data management. No plans to modify directly
-/SSImgui                  -> Custom-built Dear ImGui for editor UI. No plans to modify directly
-
-
-## Executables
-/SSEditor                 -> Windows message loop entry point for the game. Editor features and ImGui are implemented directly inside this project
-/SSGame                   -> Windows message loop entry point for shipping. All editor features are stripped out; only game runtime functionality is included
 
 
 # Build Instructions
