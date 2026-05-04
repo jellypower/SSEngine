@@ -8,17 +8,18 @@ set "BUILD_OPTION=/m /nologo /verbosity:minimal /clp:Summary;ErrorsOnly /p:Confi
 
 
 
-set MODULE_NAMES[0]=SSEngineDefault
-set MODULE_NAMES[1]=SObject
-set MODULE_NAMES[2]=SSGAL
-set MODULE_NAMES[3]=SSRenderer
-set MODULE_NAMES[4]=SSCollision
-set MODULE_NAMES[5]=SSFBXImporter
-set MODULE_NAMES[6]=SSAssetDBManager
-set MODULE_NAMES[7]=SSContentsBase
-set MODULE_NAMES[8]=SSEditor
-
-set MODULE_CNT=7
+set MODULE_NAMES[0]=ss-sqllite
+set MODULE_NAMES[1]=SSEngineDefault
+set MODULE_NAMES[2]=SObject
+set MODULE_NAMES[3]=SSGAL
+set MODULE_NAMES[4]=SSRenderer
+set MODULE_NAMES[5]=SSCollision
+set MODULE_NAMES[6]=SSFBXImporter
+set MODULE_NAMES[7]=SSAssetDBManager
+set MODULE_NAMES[8]=SSContentsBase
+set MODULE_NAMES[9]=SSGameModule
+set MODULE_NAMES[10]=SSEditor
+set MODULE_CNT=10
 
 for /L %%i in (0,1,%MODULE_CNT%) do (
     set MODULE_PATH[%%i]="../!MODULE_NAMES[%%i]!/!MODULE_NAMES[%%i]!.sln"

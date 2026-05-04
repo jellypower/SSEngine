@@ -18,10 +18,6 @@ private:
 	SObjHashCode _GameObjectHashCode = nullptr;
 
 	ICollisionWorld* _IncludedCollWorld = nullptr;
-	ISpatialAccelerationStructure* _IncludedSAS = nullptr;
-
-	int64 _SASProxyIdx = -1;
-
 
 public:
 	virtual const Vector4f& GetExtent() const override;
@@ -49,16 +45,12 @@ public:
 	virtual const AABBBox& GetBBox() const override;
 
 public:
+	virtual void* GetInternalHandle() const override;
+
 	virtual SObjHashCode GetGameObjectID() const override;
 	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) override;
 
 	virtual void OnEnterTheCollWorld(ICollisionWorld* InCollWorld) override;
 	virtual void OnExitFromCollWorld() override;
 	virtual ICollisionWorld* GetIncludedCollWorld() const override;
-
-	virtual void OnEnterTheSAS(ISpatialAccelerationStructure* InSAS) override;
-	virtual void OnExitTheSAS() override;
-	virtual ISpatialAccelerationStructure* GetIncludedSAS() const override;
-	virtual void SetSASProxyIdx(int64 InSASProxyIdx) override;
-	virtual int64 GetSASProxyIdx() const override;
 };

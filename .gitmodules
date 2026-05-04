@@ -1,3 +1,7 @@
 [submodule "PhysX"]
 	path = PhysX
 	url = https://github.com/jellypower/PhysX.git
+[submodule "SSImgui/SSImgui/imgui"]
+	path = SSImgui/SSImgui/imgui
+	url = https://github.com/jellypower/imgui.git
+	branch = docking

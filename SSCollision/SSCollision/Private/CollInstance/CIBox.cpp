@@ -47,12 +47,6 @@ void CIBox::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quatern
 	_BBox.Max = WorldPos + RotatedExtent;
 
 
-	if (_IncludedSAS != nullptr)
-	{
-		_IncludedSAS->AddUpdateNeededCollInstance(this);
-	}
-
-
 	{
 		CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, {0,0,1,1}, true, 0);
 
@@ -117,6 +111,11 @@ const AABBBox& CIBox::GetBBox() const
 	return _BBox;
 }
 
+void* CIBox::GetInternalHandle() const
+{
+	return nullptr;
+}
+
 
 void CIBox::OnEnterTheCollWorld(ICollisionWorld* InCollWorld)
 {
@@ -133,32 +132,6 @@ ICollisionWorld* CIBox::GetIncludedCollWorld() const
 	return _IncludedCollWorld;
 }
 
-void CIBox::OnEnterTheSAS(ISpatialAccelerationStructure* InSAS)
-{
-	if (_IncludedSAS != nullptr)
-	{
-		SS_INTERRUPT();
-		return;
-	}
-
-	_IncludedSAS = InSAS;
-}
-
-void CIBox::OnExitTheSAS()
-{
-	if (_IncludedSAS == nullptr)
-	{
-		SS_INTERRUPT();
-		return;
-	}
-
-	_IncludedSAS = nullptr;
-}
-
-ISpatialAccelerationStructure* CIBox::GetIncludedSAS() const
-{
-	return _IncludedSAS;
-}
 
 const Vector4f& CIBox::GetExtent() const
 {
@@ -178,15 +151,4 @@ SObjHashCode CIBox::GetGameObjectID() const
 void CIBox::SetGameObjectIDXXX(SObjHashCode InHashCode)
 {
 	_GameObjectHashCode = InHashCode;
-}
-
-
-void CIBox::SetSASProxyIdx(int64 InSASProxyIdx)
-{
-	_SASProxyIdx = InSASProxyIdx;
-}
-
-int64 CIBox::GetSASProxyIdx() const
-{
-	return _SASProxyIdx;
 }

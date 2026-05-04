@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSCollision;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\SSAssetDBManager;$(SolutionDir)..\SSGameModule;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSCollision;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\SSAssetDBManager;$(SolutionDir)..\SSGameModule;$(SolutionDir)..\SSImgui\SSImgui;$(SolutionDir)..\SSImgui\SSImgui\imgui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -127,7 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSCollision;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\SSAssetDBManager;$(SolutionDir)..\SSGameModule;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui;$(SolutionDir)..\ExternLibs\SSImgui\SSImgui\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\SSEngineDefault;$(SolutionDir)..\SObject;$(SolutionDir)..\SSCollision;$(SolutionDir)..\SSRenderer;$(SolutionDir)..\SSFBXImporter;$(SolutionDir)..\SSGAL;$(SolutionDir)..\SSContentsBase;$(SolutionDir)..\SSAssetDBManager;$(SolutionDir)..\SSGameModule;$(SolutionDir)..\SSImgui\SSImgui;$(SolutionDir)..\SSImgui\SSImgui\imgui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
