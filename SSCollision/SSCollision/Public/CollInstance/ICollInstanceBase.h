@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/Collision/AABBBox.h"
 
-class ISpatialAccelerationStructure;
+// class ISpatialAccelerationStructure;
 class ICollisionWorld;
 
 enum class ECollShapeType : int32
@@ -34,6 +34,9 @@ public:
 	virtual const AABBBox& GetBBox() const = 0;
 
 public:
+
+	virtual void* GetInternalHandle() const = 0;
+
 	virtual SObjHashCode GetGameObjectID() const = 0;
 	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) = 0;
 
@@ -41,9 +44,9 @@ public:
 	virtual void OnExitFromCollWorld() = 0;
 	virtual ICollisionWorld* GetIncludedCollWorld() const = 0;
 
-	virtual void OnEnterTheSAS(ISpatialAccelerationStructure* InSAS) = 0;
-	virtual void OnExitTheSAS() = 0;
-	virtual ISpatialAccelerationStructure* GetIncludedSAS() const = 0;
-	virtual void SetSASProxyIdx(int64 InSASProxyIdx) = 0;
-	virtual int64 GetSASProxyIdx() const = 0;
+//	virtual void OnEnterTheSAS(ISpatialAccelerationStructure* InSAS) = 0;
+//	virtual void OnExitTheSAS() = 0;
+//	virtual ISpatialAccelerationStructure* GetIncludedSAS() const = 0;
+//	virtual void SetSASProxyIdx(int64 InSASProxyIdx) = 0;
+//	virtual int64 GetSASProxyIdx() const = 0;
 };

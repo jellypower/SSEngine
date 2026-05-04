@@ -4,6 +4,11 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+namespace physx
+{
+	class PxScene;
+}
+
 class SASSweepAndPrune;
 constexpr int32 COLLWORLD_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 COLLWORLD_BUCKET_CAPACITY = 1024;
@@ -15,12 +20,15 @@ private:
 	SS::SHasherW _WorldName;
 	SS::HashMap<SObjHashCode, ICollInstanceBase*> _CollInstanceByHashCode;
 	SS::HashMap<SObjHashCode, IRigidBodyBase*> _RigidBodyByHashCode;
+	SS::HashMap<physx::PxRigidActor*, SObjHashCode> _HashCodeByRigidActor;
 
-	SASSweepAndPrune* _SASSweepAndPruen = nullptr;
+
+
+	physx::PxScene* _PhysXScene = nullptr;
 
 
 public:
-	CollisionWorld(const SS::SHasherW& worldName);
+	CollisionWorld(const SS::SHasherW& worldName, physx::PxScene* PhysxScene);
 	virtual ~CollisionWorld();
 
 public:

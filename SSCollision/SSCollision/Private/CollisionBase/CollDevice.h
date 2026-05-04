@@ -1,24 +1,24 @@
 ﻿#pragma once
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
 
-#include <physx/include/PxPhysics.h>
-#include <physx/include/PxPhysicsAPI.h>
 
 class CollDevice : public ICollDevice
 {
 private:
-	physx::PxDefaultAllocator	mDefaultAllocatorCallback;
-	physx::PxDefaultErrorCallback	mDefaultErrorCallback;
-	physx::PxFoundation* mFoundation = NULL;
-	physx::PxPhysics* mPhysics = NULL;
-	physx::PxTolerancesScale	mToleranceScale;
-	physx::PxDefaultCpuDispatcher* mDispatcher = NULL;
-	physx::PxScene* mScene = NULL;
-	physx::PxMaterial* mMaterial = NULL;
-	physx::PxPvd* mPvd = NULL;
+	physx::PxDefaultAllocator _DefaultAllocatorCallback;
+	physx::PxDefaultErrorCallback _DefaultErrorCallback;
+	physx::PxTolerancesScale _ToleranceScale;
+
+	physx::PxFoundation* _Foundation = nullptr; // PhysX용 winapi 셋같은거
+	physx::PxPvd* _Pvd = nullptr; // 
+	physx::PxPhysics* _Physics = nullptr;
+	physx::PxDefaultCpuDispatcher* _Dispatcher = nullptr;
+
+	physx::PxMaterial* _Material = nullptr;
 
 public:
 	CollDevice();
+	virtual ~CollDevice();
 
 public:
 	virtual ICollisionWorld* CreateCollWorld(SS::SHasherW InWorldName) const override;

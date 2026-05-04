@@ -48,11 +48,6 @@ void CISphere::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quat
 	_BBox.Min = _WorldMat.r[3] - vRadius;
 	_BBox.Max = _WorldMat.r[3] + vRadius;
 
-	if (_IncludedSAS != nullptr)
-	{
-		_IncludedSAS->AddUpdateNeededCollInstance(this);
-	}
-
 	CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
 	CollDebug_Private::DrawShape(_IncludedCollWorld, ECollDebugDraw_MeshType::Sphere, _WorldMat, _WorldRot,
 		Vector4f::Zero, true);
@@ -107,6 +102,11 @@ const AABBBox& CISphere::GetBBox() const
 	return _BBox;
 }
 
+void* CISphere::GetInternalHandle() const
+{
+	return nullptr;
+}
+
 
 SObjHashCode CISphere::GetGameObjectID() const
 {
@@ -131,41 +131,4 @@ void CISphere::OnExitFromCollWorld()
 ICollisionWorld* CISphere::GetIncludedCollWorld() const
 {
 	return _IncludedCollWorld;
-}
-
-void CISphere::OnEnterTheSAS(ISpatialAccelerationStructure* InSAS)
-{
-	if (_IncludedSAS != nullptr)
-	{
-		SS_INTERRUPT();
-		return;
-	}
-
-	_IncludedSAS = InSAS;
-}
-
-void CISphere::OnExitTheSAS()
-{
-	if (_IncludedSAS == nullptr)
-	{
-		SS_INTERRUPT();
-		return;
-	}
-
-	_IncludedSAS = nullptr;
-}
-
-ISpatialAccelerationStructure* CISphere::GetIncludedSAS() const
-{
-	return _IncludedSAS;
-}
-
-void CISphere::SetSASProxyIdx(int64 InSASProxyIdx)
-{
-	_SASProxyIdx = InSASProxyIdx;
-}
-
-int64 CISphere::GetSASProxyIdx() const
-{
-	return _SASProxyIdx;
 }

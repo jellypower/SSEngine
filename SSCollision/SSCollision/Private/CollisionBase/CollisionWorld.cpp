@@ -5,33 +5,38 @@
 #include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 #include "SSCollision/Public/RigidBody/IRigidBodyBase.h"
 
-CollisionWorld::CollisionWorld(const SS::SHasherW& worldName) :
-	_WorldName(worldName),
+
+CollisionWorld::CollisionWorld(const SS::SHasherW& worldName, physx::PxScene* PhysxScene) :
 	_CollInstanceByHashCode(COLLWORLD_HASHMAP_SIZE, COLLWORLD_BUCKET_CAPACITY),
-	_RigidBodyByHashCode(1024, 256)
+	_RigidBodyByHashCode(1024, 256),
+	_HashCodeByRigidActor(COLLWORLD_HASHMAP_SIZE, COLLWORLD_BUCKET_CAPACITY)
 {
-	_SASSweepAndPruen = DBG_NEW SASSweepAndPrune();
+	_PhysXScene = PhysxScene;
+	_WorldName = worldName;
 }
 
 CollisionWorld::~CollisionWorld()
 {
-	if (_SASSweepAndPruen->IsAnyInstanceExists())
-	{
-		SS_INTERRUPT();
-	}
+	PX_RELEASE(_PhysXScene);
 
-	delete _SASSweepAndPruen;
+//	if (_SASSweepAndPruen->IsAnyInstanceExists())
+//	{
+//		SS_INTERRUPT();
+//	}
+//
+//	delete _SASSweepAndPruen;
 }
 
 void CollisionWorld::FinalizeCollWorld()
 {
-	_SASSweepAndPruen->FinalizePendingInstances();
+//	_SASSweepAndPruen->FinalizePendingInstances();
 }
 
 bool CollisionWorld::IsAnyInstanceRemainInWorld() const
 {
 	return
-	_CollInstanceByHashCode.GetCnt() != 0 || 
+		_HashCodeByRigidActor.GetCnt() != 0 ||
+		_CollInstanceByHashCode.GetCnt() != 0 ||
 		_RigidBodyByHashCode.GetCnt() != 0;
 }
 
@@ -48,12 +53,18 @@ const SS::HashMap<SObjHashCode, IRigidBodyBase*>& CollisionWorld::GetRigidBodyBy
 void CollisionWorld::QueryCollidableWith(SS::PooledList<ICollInstanceBase*>& OutList,
 	ICollInstanceBase* CollTarget) const
 {
-	_SASSweepAndPruen->QueryCollidableWith(OutList, CollTarget);
+//	_SASSweepAndPruen->QueryCollidableWith(OutList, CollTarget);
 }
 
 void CollisionWorld::AddToWorld(ICollInstanceBase* InCollInstance)
 {
 	SObjHashCode GOID = InCollInstance->GetGameObjectID();
+	if (GOID == nullptr)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
 	if (_CollInstanceByHashCode.Find(GOID) != nullptr)
 	{
 		SS_ASSERT(false);
@@ -61,7 +72,7 @@ void CollisionWorld::AddToWorld(ICollInstanceBase* InCollInstance)
 	}
 
 	_CollInstanceByHashCode.Add(GOID, InCollInstance);
-	_SASSweepAndPruen->AddCollInstance(InCollInstance);
+//	_SASSweepAndPruen->AddCollInstance(InCollInstance);
 	InCollInstance->OnEnterTheCollWorld(this);
 }
 
@@ -97,7 +108,7 @@ void CollisionWorld::RemoveCollFromWorld(ICollInstanceBase* InCollInstance)
 
 	SS_ASSERT(CollInstanceToRemove == InCollInstance);
 	_CollInstanceByHashCode.Remove(InID);
-	_SASSweepAndPruen->RemoveCollInstance(InCollInstance);
+//	_SASSweepAndPruen->RemoveCollInstance(InCollInstance);
 	CollInstanceToRemove->OnExitFromCollWorld();
 }
 
@@ -143,7 +154,7 @@ void CollisionWorld::OnBeginSimulation()
 
 	UpdateInitialTransforms();
 
-	_SASSweepAndPruen->UpdateSAPStructure();
+//	_SASSweepAndPruen->UpdateSAPStructure();
 }
 
 void CollisionWorld::SimulateMovement(float DeltaTime)

@@ -12,34 +12,52 @@
 
 CollDevice::CollDevice()
 {
-//	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, mDefaultAllocatorCallback, mDefaultErrorCallback);
-//	if (!mFoundation) throw("PxCreateFoundation failed!");
-//	mPvd = PxCreatePvd(*mFoundation);
-//	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-//	mPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
-//	mToleranceScale.length = 100;        // typical length of an object
-//	mToleranceScale.speed = 981;         // typical speed of an object, gravity*1s is a reasonable choice
-//	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, mToleranceScale, true, mPvd);
-//	physx::PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
-//	sceneDesc.gravity = physx::PxVec3(0.f, -9.81f, 0.f);
-//	mDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
-//	sceneDesc.cpuDispatcher = mDispatcher;
-//	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
-//	mScene = mPhysics->createScene(sceneDesc);
-//
-//
-//	physx::PxPvdSceneClient* pvdClient = mScene->getScenePvdClient();
-//	if (pvdClient)
-//	{
-//		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-//		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-//		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-//	}
+	_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, _DefaultAllocatorCallback, _DefaultErrorCallback);
+	if (!_Foundation) throw("PxCreateFoundation failed!");
+	_Pvd = PxCreatePvd(*_Foundation);
+	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+	_Pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+	_ToleranceScale.length = 100;        // typical length of an object
+	_ToleranceScale.speed = 981;         // typical speed of an object, gravity*1s is a reasonable choice
+	_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_Foundation, _ToleranceScale, true, _Pvd);
+
+	_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+}
+
+CollDevice::~CollDevice()
+{
+	PX_RELEASE(_Dispatcher);
+	PX_RELEASE(_Physics);
+	if (_Pvd)
+	{
+		physx::PxPvdTransport* transport = _Pvd->getTransport();
+		PX_RELEASE(_Pvd);
+		PX_RELEASE(transport);
+	}
+	PX_RELEASE(_Foundation);
 }
 
 ICollisionWorld* CollDevice::CreateCollWorld(SS::SHasherW InWorldName) const
 {
-	return DBG_NEW CollisionWorld(InWorldName);
+	physx::PxSceneDesc sceneDesc(_Physics->getTolerancesScale());
+	sceneDesc.gravity = physx::PxVec3(0.f, -9.81f, 0.f);
+	sceneDesc.cpuDispatcher = _Dispatcher;
+	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+
+	physx::PxScene* PhysXScene = _Physics->createScene(sceneDesc);
+
+
+	physx::PxPvdSceneClient* pvdClient = PhysXScene->getScenePvdClient();
+	if (pvdClient)
+	{
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+	}
+
+
+
+	return DBG_NEW CollisionWorld(InWorldName, PhysXScene);
 }
 
 ICIBox* CollDevice::CreateCollBox()
