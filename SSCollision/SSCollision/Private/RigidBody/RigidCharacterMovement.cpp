@@ -4,20 +4,27 @@
 #include <cmath>
 
 #include "SSCollision/Private/CollDetect/CollDebug_Private.h"
-#include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
+#include "SSCollision/Private/CollInstance/CIUtils_Private.h"
 #include "SSCollision/Public/DEBUG/CollDebugDrawDescs.h"
+#include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
 
-RigidCharacterMovement::RigidCharacterMovement()
+
+RigidCharacterMovement::RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc, physx::PxRigidBody* InActor)
 {
-	_AccelMultiplier = 20;
-	_GroundFriction = 3;
-	_MaxSpeed = 5.f;
-	_MaxTurnSpeed = 5;
-	_FaceTurnSpeed = 10;
-	_FaceMode = ECharacterFaceMode::LerpToVelocity;
+	_ComponentID = InDesc.ComponentID;
+
+	_AccelMultiplier = InDesc.AccelMultiplier;
+	_GroundFriction = InDesc.GroundFriction;
+	_MaxSpeed = InDesc.MaxSpeed;
+	_MaxTurnSpeed = InDesc.MaxTurnSpeed;
+	_FaceTurnSpeed = InDesc.FaceTurnSpeed;
+	_FaceMode = InDesc.FaceMode;
+
 
 	_EnteredFace = { 0, 1 };
 	_CurFace = { 0, 1 };
+
+	_PxActor = InActor;
 }
 
 ERigidBodyType RigidCharacterMovement::GetRigidBodyType() const
@@ -25,15 +32,10 @@ ERigidBodyType RigidCharacterMovement::GetRigidBodyType() const
 	return ERigidBodyType::CharacterMovement;
 }
 
-void RigidCharacterMovement::UpdateInitialTransform(Vector4f Pos, Quaternion Rot)
-{
-	_SimulateBeginPos = Pos;
-	_SimulateBeginRot = Rot;
-}
 
-bool RigidCharacterMovement::IsMovedOnThisTick() const
+bool RigidCharacterMovement::IsTransformModifiedOnThisTick() const
 {
-	return _bMovedOnThisTick;
+	return _bTransformModifiedOnThisTick;
 }
 
 void RigidCharacterMovement::SimulateMovement(float DeltaTime)
@@ -58,10 +60,6 @@ bool RigidCharacterMovement::IsMovedOnThisSimulation() const
 	return _bMovedOnThisSimulation;
 }
 
-Vector4f RigidCharacterMovement::GetSimulatedPosDelta() const
-{
-	return _SimulatedPosDelta;
-}
 
 bool RigidCharacterMovement::IsRotatedOnThisSimulation() const
 {
@@ -70,17 +68,54 @@ bool RigidCharacterMovement::IsRotatedOnThisSimulation() const
 	return false;
 }
 
-Quaternion RigidCharacterMovement::GetSimulatedRotDelta() const
+
+void RigidCharacterMovement::SetSimulBeginPosAndRot(const Vector4f& InPos, const Quaternion& InRot)
+{
+	_SimulBeginPos = InPos;
+}
+
+const Vector4f& RigidCharacterMovement::GetSimulBeginPos() const
+{
+	return _SimulBeginPos;
+}
+
+
+const Vector4f& RigidCharacterMovement::GetSimulEndPos() const
+{
+	return _SimulEndPos;
+}
+
+Vector4f RigidCharacterMovement::CalcPosDelta() const
+{
+	return _SimulEndPos - _SimulBeginPos;
+}
+
+const Quaternion& RigidCharacterMovement::GetSimulBeginRot() const
 {
 	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
 	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
 	return Quaternion();
 }
 
+
+const Quaternion& RigidCharacterMovement::GetSimulEndRot() const
+{
+	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
+	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
+	return Quaternion();
+}
+
+Quaternion RigidCharacterMovement::CalcRotDelta() const
+{
+	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
+	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
+	return  Quaternion();
+}
+
 void RigidCharacterMovement::OnBeginSimulation()
 {
-	_bMovedOnThisTick = false;
-	_SimulatedPosDelta = Vector4f::Zero;
+	_bTransformModifiedOnThisTick = false;
+	_SimulBeginPos = _SimulEndPos;
 }
 
 
@@ -176,10 +211,11 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 		}
 		else
 		{
-			_bMovedOnThisTick = true;
+			_bTransformModifiedOnThisTick = true;
 			_bMovedOnThisSimulation = true;
-			_SimulatedPosDelta.X += (_MoveLateralVelocity.X * DeltaTime);
-			_SimulatedPosDelta.Z += (_MoveLateralVelocity.Y * DeltaTime);
+			
+			_SimulEndPos.X = _SimulBeginPos.X + (_MoveLateralVelocity.X * DeltaTime);
+			_SimulEndPos.Z = _SimulBeginPos.Z + (_MoveLateralVelocity.Y * DeltaTime);
 		}
 
 	}
@@ -188,18 +224,16 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 
 	// DEBUG
 	{
-		Vector4f CurPos = _CollInstance->GetWorldPos();
-
 		float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
 		float VelLen = sqrt(VeloSqrLen);
 		Vector2f Velo = _MoveLateralVelocity.GetNormalized();
 		Velo = Velo * (VelLen / _MaxSpeed);
-		Vector4f End = CurPos;
+		Vector4f End = _SimulEndPos;
 		End.X += Velo.X;
 		End.Z += Velo.Y;
 
 		CDDD_Line Desc;
-		Desc.Start = CurPos;
+		Desc.Start = _SimulEndPos;
 		Desc.End = End;
 		Desc.Color = { 1, 0, 0, 1 };
 		Desc.bUseDepth = true;
@@ -286,6 +320,8 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 
 	if (_bFaceChangedOnThisTick)
 	{
+		_bTransformModifiedOnThisTick = true;
+
 		float Diff = TargetYaw - PrevYaw;
 		if (Diff > XM_PI) // ex) PrevYaw=0 to TargetYaw=270
 		{
@@ -305,33 +341,53 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 
 	// Debug
 	{
-		Vector4f Start = _CollInstance->GetWorldPos();
-		Vector4f End = Start;
+		Vector4f End = _SimulBeginPos;
 		End.X += _CurFace.X;
 		End.Z += _CurFace.Y;
 
 		CDDD_Line Desc;
-		Desc.Start = Start;
+		Desc.Start = _SimulBeginPos;
 		Desc.End = End;
 		Desc.Color = { 0, 1, 0, 1 };
 		Desc.bUseDepth = true;
-		CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
+		CollDebug_Private::DrawLine(_IncludedCollWorld, Desc);
 	}
 }
 
 void RigidCharacterMovement::BindCollisionInstance(ICollInstanceBase* BoundCI)
 {
+	if (_CollInstance != nullptr)
+	{
+		SS_ASSERT_MSG(false, "TOOD: Attach multiple Colinstance");
+		return;
+	}
+
 	_CollInstance = BoundCI;
+	physx::PxShape* Shape = ExtractPxShape(_CollInstance);
+	_PxActor->attachShape(*Shape);
 }
+
+void RigidCharacterMovement::DetachCollInstance(ICollInstanceBase* BoundCI)
+{
+	if (_CollInstance != BoundCI)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	physx::PxShape* Shape = ExtractPxShape(BoundCI);
+	_PxActor->detachShape(*Shape);
+}
+
 
 SObjHashCode RigidCharacterMovement::GetGameObjectID() const
 {
-	return _GameObjectHashCode;
+	return _ComponentID;
 }
 
-void RigidCharacterMovement::SetGameObjectIDXXX(SObjHashCode InHashCode)
+ICollisionWorld* RigidCharacterMovement::GetIncludedCollWorld() const
 {
-	_GameObjectHashCode = InHashCode;
+	return _IncludedCollWorld;
 }
 
 ICollInstanceBase* RigidCharacterMovement::GetCollInstance() const

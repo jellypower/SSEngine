@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
+#include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
 #include "SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h"
 
 #include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
@@ -127,8 +128,7 @@ void SCharacterMovementComponent::PostCollision_SyncTransform()
 	SGameObject* GO = GetGameObject();
 	Transform NewTransform = GO->GetTransform();
 
-	NewTransform.Position = NewTransform.Position +
-		_RigidCharacterMovement->GetSimulatedPosDelta();
+	NewTransform.Position = _RigidCharacterMovement->GetSimulEndPos();
 
 	Vector2f CurFace = _RigidCharacterMovement->GetCurFaceDir();
 
@@ -140,8 +140,17 @@ void SCharacterMovementComponent::PostCollision_SyncTransform()
 
 void SCharacterMovementComponent::ConstructRigidBodyInstance()
 {
-	_RigidCharacterMovement = g_CollDevice->CreateCharacterMovement();
-	_RigidCharacterMovement->SetGameObjectIDXXX(GetHashCode());
+	RIGID_CHARACTERMOVEMENT_DESC Desc;
+
+	const SGameObject* GO = GetGameObject();
+
+	Desc.InitialWorldPos = GO->GetTransform().Position;
+	Desc.InitialWorldRot = GO->GetTransform().Rotation;
+	Desc.ComponentID = GetHashCode();
+	Desc.FaceMode = ECharacterFaceMode::LerpToVelocity;
+
+
+	_RigidCharacterMovement = g_CollDevice->CreateCharacterMovement(Desc);
 }
 
 void SCharacterMovementComponent::DestructRigidBodyInstance()

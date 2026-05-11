@@ -243,13 +243,19 @@ XMMATRIX Transform::AsMatrix() const
 
 XMMATRIX Transform::AsInverseMatrix() const
 {
-	XMMATRIX MScaling = XMMatrixScalingFromVector(Scale.SimdVec);
+	XMVECTOR InvScale = XMVectorReciprocal(Scale.SimdVec);
+	XMMATRIX MInvScaling = XMMatrixScalingFromVector(InvScale);
 
-	XMMATRIX M = XMMatrixRotationQuaternion(Rotation.SimdVec);
-	M.r[3] = XMVectorAdd(M.r[3], Position.SimdVec);
-	M = InverseRigid(M);
-	M = XMMatrixMultiply(M, MScaling);
-	return M;
+	XMVECTOR InvRot = XMQuaternionInverse(Rotation.SimdVec);
+	XMMATRIX MInvRigid = XMMatrixRotationQuaternion(InvRot);
+
+	XMVECTOR InvPos = XMVectorNegate(Position.SimdVec); // -t
+	XMVECTOR RotatedInvPos = XMVector3Rotate(InvPos, InvRot); // R^-1 * (-t)
+
+	MInvRigid.r[3] = XMVectorSelect(MInvRigid.r[3], RotatedInvPos, XMVectorSelectControl(1, 1, 1, 0));
+	MInvRigid.r[3] = XMVectorSetW(MInvRigid.r[3], 1.0f);
+
+	return XMMatrixMultiply(MInvScaling, MInvRigid);
 }
 
 Transform Transform::Inverse() const

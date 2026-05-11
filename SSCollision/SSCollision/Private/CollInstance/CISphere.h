@@ -1,50 +1,54 @@
 ﻿#pragma once
 #include "SSCollision/Public/CollInstance/ICISphere.h"
 
+struct CI_SPHERE_DESC;
+class IRigidBodyBase;
+
 class CISphere : public ICISphere
 {
 private:
+	SObjHashCode _GameObjectHashCode;
+
 	float _Radius = 0.5f;
-	AABBBox _BBox;
 	Vector4f _Offset = Vector4f(0, 0, 0 , 1);
+	Transform _ColliderTransform;
 
-	XMMATRIX _WorldMat;
-	Quaternion _WorldRot;
+	IRigidBodyBase* _OwnerRigidBody = nullptr;
 
-	SObjHashCode _GameObjectHashCode = nullptr;
+	physx::PxShape* _Shape = nullptr;
 
-	ICollisionWorld* _IncludedCollWorld = nullptr;
 
 public:
-	float GetRadius() const override;
-	void SetRadius(float InRadius) override;
+	CISphere(const CI_SPHERE_DESC& Desc, physx::PxShape* InShape);
+	virtual ~CISphere();
 
+	// CI
+public:
 	virtual ECollShapeType GetCollShapeType() const override;
 
-	virtual void CollProcess_MoveObjecet(const Vector4f& MoveDelta) override;
-	virtual void CollProcess_RotateObjecet(const Quaternion& RotDelta) override;
-
-	virtual void SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot) override;
+	virtual void SyncColliderTransform_ByContent(const Transform& LocalTransform) override;
 
 	virtual const Vector4f& GetOffset() const override;
 	virtual void SetOffset(const Vector4f& InOffset) override;
 
-	virtual Vector4f GetWorldPos() const override;
-	const XMMATRIX& GetWorldTransformMat() const override;
-	const Quaternion& GetWorldRot() const override;
-
-	// 오브젝트의 pivot기준으로 Dir방향쪽으로 가장 멀리 나가있는 점 찾아주는 코드
 	virtual Vector4f CalcFurthest(const Vector4f& Dir) const override;
 	virtual const AABBBox& GetBBox() const override;
 
-public:
-	virtual void* GetInternalHandle() const override;
-
-
 	virtual SObjHashCode GetGameObjectID() const override;
-	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) override;
-
-	virtual void OnEnterTheCollWorld(ICollisionWorld* InRenderWorld) override;
-	virtual void OnExitFromCollWorld() override;
 	virtual ICollisionWorld* GetIncludedCollWorld() const override;
+
+
+	// ICISphere
+public:
+	virtual float GetRadius() const override;
+	virtual void SetRadius(float InRadius) override;
+
+
+	// CISphere
+public:
+	physx::PxShape* GetPxShape() const { return _Shape; }
+
+private:
+	Transform CalcSphereTransform() const;
+	void ApplyLocalTransformChange();
 };

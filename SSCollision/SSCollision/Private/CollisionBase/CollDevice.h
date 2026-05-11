@@ -14,7 +14,7 @@ private:
 	physx::PxPhysics* _Physics = nullptr;
 	physx::PxDefaultCpuDispatcher* _Dispatcher = nullptr;
 
-	physx::PxMaterial* _Material = nullptr;
+	physx::PxMaterial* _DefaultMaterial = nullptr;
 
 public:
 	CollDevice();
@@ -22,9 +22,9 @@ public:
 
 public:
 	virtual ICollisionWorld* CreateCollWorld(SS::SHasherW InWorldName) const override;
-	virtual ICIBox* CreateCollBox() override;
-	virtual ICISphere* CreateCollSphere() override;
-	virtual IRigidCahracterMovement* CreateCharacterMovement() override;
+	virtual ICIBox* CreateCollBox(const CI_BOX_DESC& InDesc) override;
+	virtual ICISphere* CreateCollSphere(const CI_SPHERE_DESC& InDesc) override;
+	virtual IRigidCahracterMovement* CreateCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc) override;
 
 
 	// Static Functions

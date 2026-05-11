@@ -1,28 +1,27 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/ContentBase/SWorld.h"
 
-#include <SSCollision/Public/RigidBody/IRigidBodyBase.h>
-#include <SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h>
-#include <SSRenderer/Public/SSRendererGlobalVariableSet.h>
-#include <SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h>
-
-#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
-#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
-
+#include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+#include "SSCollision/Public/RigidBody/IRigidBodyBase.h"
+#include "SSCollision/Public/RigidBody/IRigidBodyCustomSim.h"
+#include "SSCollision/Public/RigidBody/IRigidBodyDynamic.h"
 
 #include "SSContentsBase/Private/AnimWorker/AnimWorkerBase.h"
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SRigidBodyBaseComponent.h"
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"
+#include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
+#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
+#include "SSEngineDefault/Public/RawProfiler/ProfilerUtils.h"
+#include "SSEngineDefault/Public/RawProfiler/ScopeProfMacro.h"
+#include "SSEngineDefault/Public/RawProfiler/SSFrameInfo.h"
+
+#include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
 #include "SSRenderer/Public/RenderInstance/IRenderInstance.h"
-
-#include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
-#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SRigidBodyBaseComponent.h"
-
-#include "SSContentsBase/Public/ContentBase/SGameObjectConstructor.h"
-#include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
 
 SWorld::SWorld() :
@@ -93,17 +92,40 @@ void SWorld::PerFrameAnim()
 
 void SWorld::PerFrameCollision()
 {
-	const float DeltaTime = SSFrameInfo::GetDeltaTime();
 	const float SmoothDeltaTime = SSFrameInfo::GetSmoothDeltaTime();
 
 	_CollWorld->OnBeginSimulation();
 	_CollWorld->SimulateMovement(SmoothDeltaTime * _TimeScale);
 	_CollWorld->OnEndSimulation();
 
-	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& RigidBodies = _CollWorld->GetRigidBodyByHashCode();
-	for (const SS::pair<SObjHashCode, IRigidBodyBase*>& RigidBodyItem : RigidBodies)
+	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& StaticRigidBodies = _CollWorld->GetStaticRigidBodies();
+	for (const SS::pair<SObjHashCode, IRigidBodyBase*>& RigidBodyItem : StaticRigidBodies)
 	{
-		if (RigidBodyItem.second->IsMovedOnThisTick() == false)
+		if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
+		{
+			continue;
+		}
+
+		SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
+		RigidBodyIComp->PostCollision_SyncTransform();
+	}
+
+	const auto& DynamicRigidBodies = _CollWorld->GetDynamicRigidBodies();
+	for (const SS::pair<SObjHashCode, IRigidBodyDynamic*>& RigidBodyItem : DynamicRigidBodies)
+	{
+		if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
+		{
+			continue;
+		}
+
+		SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
+		RigidBodyIComp->PostCollision_SyncTransform();
+	}
+
+	const SS::HashMap<SObjHashCode, IRigidBodyCustomSim*>& CustomRigidBodies = _CollWorld->GetCustomSimBodies();
+	for (const SS::pair<SObjHashCode, IRigidBodyCustomSim*>& RigidBodyItem : CustomRigidBodies)
+	{
+		if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
 		{
 			continue;
 		}

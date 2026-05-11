@@ -132,3 +132,13 @@ FORCEINLINE XMVECTOR XMPitchYawRotFromDir(const XMVECTOR& InDir)
 	XMVECTOR Euler = { Pitch, Yaw, 0, 0 };
 	return XMQuaternionRotationRollPitchYawFromVector(Euler);
 }
+
+
+FORCEINLINE XMVECTOR ExtractScale(const XMMATRIX& InMat)
+{
+	float scaleXSqr = XMVectorGetX(XMVector3LengthSq(InMat.r[0])); // X-axis basis
+	float scaleYSqr = XMVectorGetX(XMVector3LengthSq(InMat.r[1])); // Y-axis basis
+	float scaleZSqr = XMVectorGetX(XMVector3LengthSq(InMat.r[2])); // Z-axis basis
+
+	return XMVectorSqrt({ scaleXSqr, scaleYSqr, scaleZSqr });
+}

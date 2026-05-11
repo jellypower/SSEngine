@@ -124,35 +124,24 @@ namespace SS {
 
 	FORCEINLINE float CalcBiggestScaleAxis(const XMMATRIX& InMat)
 	{
-		XMVECTOR Axis = {
-			InMat.r[0].m128_f32[0],
-			InMat.r[1].m128_f32[0],
-			InMat.r[2].m128_f32[0],
-			InMat.r[3].m128_f32[0]
-		};
-		float xAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+		XMVECTOR L0 = XMVector3LengthSq(InMat.r[0]);
+		XMVECTOR L1 = XMVector3LengthSq(InMat.r[1]);
+		XMVECTOR L2 = XMVector3LengthSq(InMat.r[2]);
 
+		XMVECTOR MaxL = XMVectorMax(L0, XMVectorMax(L1, L2));
 
-		Axis = {
-			InMat.r[0].m128_f32[1],
-			InMat.r[1].m128_f32[1],
-			InMat.r[2].m128_f32[1],
-			InMat.r[3].m128_f32[1]
-		};
-		float yAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+		return sqrtf(XMVectorGetX(MaxL));
+	}
 
+	FORCEINLINE float GetBiggest(XMVECTOR InVector)
+	{
+		// (x, y, z, w) -> (max(x,y), max(x,y), max(z,w), max(z,w))
+		XMVECTOR t1 = XMVectorMax(InVector, XMVectorSwizzle(InVector, 1, 0, 3, 2));
 
-		Axis = {
-	InMat.r[0].m128_f32[2],
-	InMat.r[1].m128_f32[2],
-	InMat.r[2].m128_f32[2],
-	InMat.r[3].m128_f32[2]
-		};
-		float zAxisSqr = XMVector3LengthSq(Axis).m128_f32[0];
+		// (max(x,y,z,w), ...)
+		XMVECTOR t2 = XMVectorMax(t1, XMVectorSwizzle(t1, 2, 3, 0, 1));
 
-
-		float GreatesAxisSqr = xAxisSqr > yAxisSqr ? xAxisSqr : yAxisSqr;
-		GreatesAxisSqr = GreatesAxisSqr > zAxisSqr ? GreatesAxisSqr : zAxisSqr;
-		return sqrt(GreatesAxisSqr);
+		// 결과 추출
+		return XMVectorGetX(t2);
 	}
 };

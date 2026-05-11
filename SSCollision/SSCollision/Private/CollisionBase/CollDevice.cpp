@@ -7,6 +7,8 @@
 #include "SSCollision/Private/CollDetect/CollCalc_Private.h"
 #include "SSCollision/Private/CollInstance/CISphere.h"
 #include "SSCollision/Private/RigidBody/RigidCharacterMovement.h"
+#include "SSCollision/Public/CollInstance/CICreationDesc.h"
+#include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
 
 #include "SSEngineDefault/Public/Collision/CollMathInline.h"
 
@@ -22,10 +24,12 @@ CollDevice::CollDevice()
 	_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_Foundation, _ToleranceScale, true, _Pvd);
 
 	_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+	_DefaultMaterial = _Physics->createMaterial(0.5f, 0.5f, 0.6f);
 }
 
 CollDevice::~CollDevice()
 {
+	PX_RELEASE(_DefaultMaterial);
 	PX_RELEASE(_Dispatcher);
 	PX_RELEASE(_Physics);
 	if (_Pvd)
@@ -56,23 +60,44 @@ ICollisionWorld* CollDevice::CreateCollWorld(SS::SHasherW InWorldName) const
 	}
 
 
-
 	return DBG_NEW CollisionWorld(InWorldName, PhysXScene);
 }
 
-ICIBox* CollDevice::CreateCollBox()
+ICIBox* CollDevice::CreateCollBox(const CI_BOX_DESC& InDesc)
 {
-	return DBG_NEW CIBox();
+	physx::PxShape* Shape = _Physics->createShape(
+		physx::PxBoxGeometry(InDesc.Extent.X, InDesc.Extent.Y, InDesc.Extent.Z),
+		*_DefaultMaterial,
+		true);
+
+	CIBox* NewBox = DBG_NEW CIBox(InDesc, Shape);
+	return NewBox;
 }
 
-ICISphere* CollDevice::CreateCollSphere()
+ICISphere* CollDevice::CreateCollSphere(const CI_SPHERE_DESC& InDesc)
 {
-	return DBG_NEW CISphere();
+	physx::PxShape* Shape = _Physics->createShape(
+		physx::PxSphereGeometry(InDesc.Radius),
+		*_DefaultMaterial,
+		true);
+
+	CISphere* NewSphere = DBG_NEW CISphere(InDesc, Shape);
+	return NewSphere;
 }
 
-IRigidCahracterMovement* CollDevice::CreateCharacterMovement()
+IRigidCahracterMovement* CollDevice::CreateCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc)
 {
-	return DBG_NEW RigidCharacterMovement();
+	physx::PxTransform NewPxTransform;
+
+	NewPxTransform.p = { InDesc.InitialWorldPos.X,InDesc.InitialWorldPos.Y,InDesc.InitialWorldPos.Z};
+	NewPxTransform.q = { InDesc.InitialWorldRot.X,InDesc.InitialWorldRot.Y ,InDesc.InitialWorldRot.Z ,InDesc.InitialWorldRot.W };
+
+	physx::PxRigidDynamic* body = _Physics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
+
+	body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
+	physx::PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
+
+	return DBG_NEW RigidCharacterMovement(InDesc, body);
 }
 
 bool CollDevice::AreColliding(const ICollInstanceBase* c1, const ICollInstanceBase* c2)

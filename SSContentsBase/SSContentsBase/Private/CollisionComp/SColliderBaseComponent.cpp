@@ -17,19 +17,12 @@ void SColliderBaseComponent::PostConstructHierarchy()
 
 void SColliderBaseComponent::OnEnterTheWorld()
 {
-	SWorld* IncludedWorld = GetIncludedWorld();
-	ICollisionWorld* CollWorld = IncludedWorld->GetCollWorld();
 
-	CollWorld->AddToWorld(GetCollInstance());
 }
 
 void SColliderBaseComponent::OnExitTheWorld()
 {
-	SWorld* IncludedWorld = GetIncludedWorld();
-	ICollisionWorld* CollWorld = IncludedWorld->GetCollWorld();
 
-	ICollInstanceBase* CollInstance = GetCollInstance();
-	CollWorld->RemoveCollFromWorld(CollInstance);
 }
 
 void SColliderBaseComponent::PreDestructHierarchy()
@@ -40,12 +33,21 @@ void SColliderBaseComponent::PreDestructHierarchy()
 void SColliderBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPhase)
 {
 	SGameObject* Owner = GetGameObject();
-	GetCollInstance()->SyncWorldTransform_ByContent(
-		Owner->GetCommittedWorldTransformMat(),
-		Owner->GetCommittedWorldRotation());
+
+	if (Owner->IsTransformCommitReserved())
+	{
+		GetCollInstance()->SyncColliderTransform_ByContent(Owner->GetTransform());
+	}
 }
 
 void SColliderBaseComponent::SetOffset(const Vector4f& InOffset)
 {
-	GetCollInstance()->SetOffset(InOffset);
+	_Offset = InOffset;
+
+
+	ICollInstanceBase* CI = GetCollInstance();
+	if (CI != nullptr)
+	{
+		CI->SetOffset(InOffset);
+	}
 }

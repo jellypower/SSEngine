@@ -1,10 +1,10 @@
 ﻿#define SSCONTENTBASE_MODULE_EXPORT
 #include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
 
-#include <SSCollision/Public/DEBUG/CollDebugDrawDescs.h>
 
 #include "SSCollision/Public/CollInstance/ICIBox.h"
 #include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
+#include "SSCollision/Public/CollInstance/CICreationDesc.h"
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
 #include "SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h"
 
@@ -18,7 +18,11 @@
 
 void SBoxColliderComponent::SetExtent(const Vector4f& Extent)
 {
-	_CollInstance->SetExtent(Extent);
+	_Extent = Extent;
+	if (_CollInstance != nullptr)
+	{
+		_CollInstance->SetExtent(Extent);
+	}
 }
 
 bool SBoxColliderComponent::ShouldProcessPerFrameInherently() const
@@ -32,19 +36,21 @@ void SBoxColliderComponent::PerFrame(float DeltaTime)
 
 	SGameObject* OwnerGameObject = GetGameObject();
 	SWorld* IncludedWorld = OwnerGameObject->GetIncludedWorldRef();
-
+	const XMMATRIX& WorldTransformMat = OwnerGameObject->GetCommittedWorldTransformMat();
+	const Quaternion& WorldRot = OwnerGameObject->GetCommittedWorldRotation();
 	const ICIBox* BoxCollider = static_cast<ICIBox*>(GetCollInstance());
 
 	
 	Transform DebugTransform;
 	DebugTransform.Scale = BoxCollider->GetExtent() * 2;
+	DebugTransform.Position = GetOffset();
 	XMMATRIX DebugDrawExtent = DebugTransform.AsMatrix();
-	DebugDrawExtent = DebugDrawExtent * BoxCollider->GetWorldTransformMat();
+	DebugDrawExtent = DebugDrawExtent * WorldTransformMat;
 
 	SRenderDebugUtil::DrawDebugMesh(
 		IncludedWorld,
 		DebugDrawExtent,
-		BoxCollider->GetWorldRot().AsMatrix(),
+		WorldRot.AsMatrix(),
 		Cube,
 		true);
 }
@@ -61,8 +67,14 @@ ICollInstanceBase* SBoxColliderComponent::GetCollInstance() const
 
 void SBoxColliderComponent::ConstructCollInstance()
 {
-	_CollInstance = g_CollDevice->CreateCollBox();
-	_CollInstance->SetGameObjectIDXXX(GetHashCode());
+	CI_BOX_DESC Desc;
+	Desc.InitialLclTransform = GetGameObject()->GetTransform();
+	Desc.Offset = GetOffset();
+	Desc.ComponentID = GetHashCode();
+	Desc.Extent = _Extent;
+
+	_CollInstance = g_CollDevice->CreateCollBox(Desc);
+	
 }
 
 void SBoxColliderComponent::DestructCollInstance()

@@ -7,6 +7,8 @@ class SSCONTENTBASE_MODULE SBoxColliderComponent : public SColliderBaseComponent
 {
 private:
 	ICIBox* _CollInstance = nullptr;
+	Vector4f _Extent;
+	
 
 public:
 	void SetExtent(const Vector4f& Extent);

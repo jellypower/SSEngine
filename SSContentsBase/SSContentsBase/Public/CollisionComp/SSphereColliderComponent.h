@@ -7,6 +7,7 @@ class SSCONTENTBASE_MODULE SSphereColliderComponent : public SColliderBaseCompon
 {
 private:
 	ICISphere* _CollInstance = nullptr;
+	float _Radius = 1;
 
 public:
 	void SetRadius(float InRadius);

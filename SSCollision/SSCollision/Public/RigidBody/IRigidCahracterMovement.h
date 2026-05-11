@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "IRigidBodyBase.h"
+#include "IRigidBodyCustomSim.h"
+#include "IRigidBodyDynamic.h"
 
 
 enum class ECharacterFaceMode
@@ -11,7 +13,7 @@ enum class ECharacterFaceMode
 };
 
 
-class IRigidCahracterMovement : public IRigidBodyBase
+class IRigidCahracterMovement : public IRigidBodyCustomSim
 {
 public:
 	virtual bool IsCurFaceEditedOnThisTick() const = 0;

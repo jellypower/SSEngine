@@ -1,15 +1,20 @@
 ﻿#include "pch.h"
 #include "CollisionWorld.h"
 
+#include "SSCollision/Private/CollInstance/CIUtils_Private.h"
+#include "SSCollision/Private/RigidBody/RIUtils_Private.h"
 #include "SSCollision/Private/SpatialSystem/SASSweepAndPrune.h"
 #include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 #include "SSCollision/Public/RigidBody/IRigidBodyBase.h"
+#include "SSCollision/Public/RigidBody/IRigidBodyCustomSim.h"
+#include "SSCollision/Public/RigidBody/IRigidBodyDynamic.h"
+#include "SSCollision/Public/RigidBody/RIUtils_Public.h"
 
 
 CollisionWorld::CollisionWorld(const SS::SHasherW& worldName, physx::PxScene* PhysxScene) :
-	_CollInstanceByHashCode(COLLWORLD_HASHMAP_SIZE, COLLWORLD_BUCKET_CAPACITY),
-	_RigidBodyByHashCode(1024, 256),
-	_HashCodeByRigidActor(COLLWORLD_HASHMAP_SIZE, COLLWORLD_BUCKET_CAPACITY)
+	_StaticRigidBodies(COLLWORLD_HASHMAP_SIZE, COLLWORLD_BUCKET_CAPACITY),
+	_DynamicRigidBodies(1024, 128),
+	_CustomSimBodies(1024, 128)
 {
 	_PhysXScene = PhysxScene;
 	_WorldName = worldName;
@@ -35,9 +40,24 @@ void CollisionWorld::FinalizeCollWorld()
 bool CollisionWorld::IsAnyInstanceRemainInWorld() const
 {
 	return
-		_HashCodeByRigidActor.GetCnt() != 0 ||
-		_CollInstanceByHashCode.GetCnt() != 0 ||
-		_RigidBodyByHashCode.GetCnt() != 0;
+		_StaticRigidBodies.GetCnt() != 0 ||
+		_DynamicRigidBodies.GetCnt() != 0 ||
+		_CustomSimBodies.GetCnt() != 0;
+}
+
+const SS::HashMap<SObjHashCode, IRigidBodyBase*>& CollisionWorld::GetStaticRigidBodies() const
+{
+	return _StaticRigidBodies;
+}
+
+const SS::HashMap<SObjHashCode, IRigidBodyDynamic*>& CollisionWorld::GetDynamicRigidBodies() const
+{
+	return _DynamicRigidBodies;
+}
+
+const SS::HashMap<SObjHashCode, IRigidBodyCustomSim*>& CollisionWorld::GetCustomSimBodies() const
+{
+	return _CustomSimBodies;
 }
 
 SS::SHasherW CollisionWorld::GetWorldName() const
@@ -45,10 +65,6 @@ SS::SHasherW CollisionWorld::GetWorldName() const
 	return _WorldName;
 }
 
-const SS::HashMap<SObjHashCode, IRigidBodyBase*>& CollisionWorld::GetRigidBodyByHashCode() const
-{
-	return _RigidBodyByHashCode;
-}
 
 void CollisionWorld::QueryCollidableWith(SS::PooledList<ICollInstanceBase*>& OutList,
 	ICollInstanceBase* CollTarget) const
@@ -56,147 +72,136 @@ void CollisionWorld::QueryCollidableWith(SS::PooledList<ICollInstanceBase*>& Out
 //	_SASSweepAndPruen->QueryCollidableWith(OutList, CollTarget);
 }
 
-void CollisionWorld::AddToWorld(ICollInstanceBase* InCollInstance)
-{
-	SObjHashCode GOID = InCollInstance->GetGameObjectID();
-	if (GOID == nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
-
-	if (_CollInstanceByHashCode.Find(GOID) != nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
-
-	_CollInstanceByHashCode.Add(GOID, InCollInstance);
-//	_SASSweepAndPruen->AddCollInstance(InCollInstance);
-	InCollInstance->OnEnterTheCollWorld(this);
-}
 
 void CollisionWorld::AddToWorld(IRigidBodyBase* InRigidBody)
 {
-	SObjHashCode GOID = InRigidBody->GetGameObjectID();
-	if (_RigidBodyByHashCode.Find(GOID) != nullptr)
+	const SObjHashCode GOID = InRigidBody->GetGameObjectID();
+	const ERigidBodyType RIType = InRigidBody->GetRigidBodyType();
+	const ERigidBodySimType SimType = GetRigidBodySimType(RIType);
+
+	if (SimType == ERigidBodySimType::Static)
+	{
+		if (_StaticRigidBodies.Find(GOID) != nullptr)
+		{
+			SS_ASSERT(false);
+			return;
+		}
+
+		_StaticRigidBodies.Add(GOID, InRigidBody);
+	}
+	else if (SimType == ERigidBodySimType::Dynamic)
+	{
+		if (_DynamicRigidBodies.Find(GOID) != nullptr)
+		{
+			SS_ASSERT(false);
+			return;
+		}
+
+		_DynamicRigidBodies.Add(GOID, static_cast<IRigidBodyDynamic*>(InRigidBody));
+	}
+	else if (SimType == ERigidBodySimType::CustomSim)
+	{
+		if (_CustomSimBodies.Find(GOID) != nullptr)
+		{
+			SS_ASSERT(false);
+			return;
+		}
+
+		_CustomSimBodies.Add(GOID, static_cast<IRigidBodyCustomSim*>(InRigidBody));
+	}
+	else
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	_RigidBodyByHashCode.Add(GOID, InRigidBody);
+	physx::PxActor* PxActor = ExtractPxActor(InRigidBody);
+	_PhysXScene->addActor(*PxActor);
 	InRigidBody->OnEnterTheCollWorld(this);
 }
 
-void CollisionWorld::RemoveCollFromWorld(ICollInstanceBase* InCollInstance)
-{
-	SObjHashCode InID = InCollInstance->GetGameObjectID();
-	ICollInstanceBase** ppCollInstance = _CollInstanceByHashCode.Find(InID);
-	if (ppCollInstance == nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
 
-	ICollInstanceBase* CollInstanceToRemove = *ppCollInstance;
-	if (CollInstanceToRemove == nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
-
-	SS_ASSERT(CollInstanceToRemove == InCollInstance);
-	_CollInstanceByHashCode.Remove(InID);
-//	_SASSweepAndPruen->RemoveCollInstance(InCollInstance);
-	CollInstanceToRemove->OnExitFromCollWorld();
-}
 
 void CollisionWorld::RemoveRigidFromWorld(IRigidBodyBase* InRigidBody)
 {
-	SObjHashCode InID = InRigidBody->GetGameObjectID();
-	IRigidBodyBase** ppCollInstance = _RigidBodyByHashCode.Find(InID);
-	if (ppCollInstance == nullptr)
+	const SObjHashCode GOID = InRigidBody->GetGameObjectID();
+	const ERigidBodyType RIType = InRigidBody->GetRigidBodyType();
+	const ERigidBodySimType SimType = GetRigidBodySimType(RIType);
+
+	IRigidBodyBase* Found = nullptr;
+
+	if (SimType == ERigidBodySimType::Static)
+	{
+		bool bResult = _StaticRigidBodies.Remove(GOID);
+		if (bResult == false)
+		{
+			SS_INTERRUPT();
+		}
+	}
+	else if (SimType == ERigidBodySimType::Dynamic)
+	{
+		bool bResult = _DynamicRigidBodies.Remove(GOID);
+		if (bResult == false)
+		{
+			SS_INTERRUPT();
+		}
+	}
+	else if (SimType == ERigidBodySimType::CustomSim)
+	{
+		bool bResult = _CustomSimBodies.Remove(GOID);
+		if (bResult == false)
+		{
+			SS_INTERRUPT();
+		}
+	}
+	else
 	{
 		SS_ASSERT(false);
 		return;
 	}
 
-	IRigidBodyBase* RigidBodyToRemove = *ppCollInstance;
-	if (RigidBodyToRemove == nullptr)
-	{
-		SS_ASSERT(false);
-		return;
-	}
 
-	SS_ASSERT(RigidBodyToRemove == InRigidBody);
-	_RigidBodyByHashCode.Remove(InID);
+	physx::PxActor* PxActor = ExtractPxActor(InRigidBody);
+	_PhysXScene->removeActor(*PxActor);
 	InRigidBody->OnExitFromCollWorld();
-}
-
-void CollisionWorld::UpdateInitialTransforms()
-{
-	for (SS::pair<SObjHashCode, IRigidBodyBase*>& PairItem : _RigidBodyByHashCode)
-	{
-		ICollInstanceBase* ICI = PairItem.second->GetCollInstance();
-		PairItem.second->UpdateInitialTransform(ICI->GetWorldPos(), ICI->GetWorldRot());
-	}
 }
 
 
 void CollisionWorld::OnBeginSimulation()
 {
-	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode)
+	for (SS::pair<SObjHashCode, IRigidBodyCustomSim*>& item : _CustomSimBodies)
 	{
-		IRigidBodyBase* RigidBodyItem = Item.second;
-		RigidBodyItem->OnBeginSimulation();
+		item.second->OnBeginSimulation();
 	}
 
-	UpdateInitialTransforms();
-
-//	_SASSweepAndPruen->UpdateSAPStructure();
+	for (SS::pair<SObjHashCode, IRigidBodyDynamic*>& item : _DynamicRigidBodies)
+	{
+		item.second->OnBeginSimulation();
+	}
 }
 
 void CollisionWorld::SimulateMovement(float DeltaTime)
 {
-	// TODO: 1. 일단 움직이고 움직임을 반영합니다. 멀티스레드 가능
-	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode)
+	for (SS::pair<SObjHashCode, IRigidBodyCustomSim*>& item : _CustomSimBodies)
 	{
-		IRigidBodyBase* RigidBodyItem = Item.second;
-		RigidBodyItem->SimulateMovement(DeltaTime);
-
-		ICollInstanceBase* ColItem = RigidBodyItem->GetCollInstance();
-
-		if (RigidBodyItem->IsMovedOnThisSimulation())
-		{
-			ColItem->CollProcess_MoveObjecet(RigidBodyItem->GetSimulatedPosDelta());
-			// 일단 움직이고 나서 충돌체크 하는지 검사하려면 실제 Collision을 바꿔줘야 함
-		}
-
-		if (RigidBodyItem->IsRotatedOnThisSimulation())
-		{
-			ColItem->CollProcess_RotateObjecet(RigidBodyItem->GetSimulatedRotDelta());
-			// 일단 움직이고 나서 충돌체크 하는지 검사하려면 실제 Collision을 바꿔줘야 함
-		}
+		item.second->SimulateMovement(DeltaTime);
 	}
 
-	// TODO: 동기화
-	// TODO: 2. 각 오브젝트 별로 본인과 충돌하는 오브젝트를 찾고 어디로 이동해야 할지 결정합니다. (멀티스레드 가능)
-
-
-	// TODO: 동기화 
-	// TODO: 3. 결정한 대로 오브젝트를 움직입니다. (멀티스레드 불가능)
-
+	_PhysXScene->simulate(DeltaTime);
+	_PhysXScene->fetchResults(true);
 
 }
 
 void CollisionWorld::OnEndSimulation()
 {
-	// 원본 위치와 다르면 GameObejct가 SetTransform할 수 있도록 유도해줘야 한다.
-	for (SS::pair<SObjHashCode, IRigidBodyBase*> Item : _RigidBodyByHashCode)
+	for (SS::pair<SObjHashCode, IRigidBodyCustomSim*>& item : _CustomSimBodies)
 	{
-		IRigidBodyBase* RigidBodyItem = Item.second;
-		RigidBodyItem->OnEndSimulation();
+		item.second->OnEndSimulation();
+	}
+
+	for (SS::pair<SObjHashCode, IRigidBodyDynamic*>& item : _DynamicRigidBodies)
+	{
+		item.second->OnEndSimulation();
 	}
 }
 

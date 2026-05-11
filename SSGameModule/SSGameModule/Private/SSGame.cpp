@@ -114,9 +114,9 @@ void SSGame::StartUpGame()
 		CharacterComp->BindColliderComponent(BoxComp);
 
 
-		SGameObjectConstructor::FinishConstructHierarchy(_MainCharacter);
 		BoxComp->SetExtent(Vector4f(0.3f, 0.9, 0.3f, 0));
 		BoxComp->SetOffset(Vector4f(0, 0.9f, 0, 0));
+		SGameObjectConstructor::FinishConstructHierarchy(_MainCharacter);
 
 
 		AnimComp->SetRenderAnimAsset(L"ContentsAssets/SKM_Quinn_Loco_02/root|Idle.ranim", E8Dir::None);
@@ -184,8 +184,8 @@ void SSGame::StartUpGame()
 				Cube->SetTransform(CubeTransform);
 
 				SBoxColliderComponent* BoxCollider = Cube->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-				SGameObjectConstructor::FinishConstructHierarchy(Cube);
 				BoxCollider->SetExtent({ 0.5f, 0.5f, 0.5f, 0 });
+				SGameObjectConstructor::FinishConstructHierarchy(Cube);
 
 				_DefaultWorld->AddToWorld(Cube);
 			}
@@ -264,7 +264,7 @@ void SSGame::PerFrame_DEBUGDRAW()
 	{
 		Transform DebugDrawTransform;
 
-		DebugDrawTransform.Position = ICI->GetWorldPos();
+//		DebugDrawTransform.Position = ICI->GetWorldPos();
 		DebugDrawTransform.Scale = { 0.1f, 0.1f, 0.1f, 0 };
 
 		SRenderDebugUtil::DrawDebugMesh(
