@@ -3,6 +3,7 @@
 
 #include "SSCollision/Public/CollInstance/ICISphere.h"
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
+#include "SSCollision/Public/CollInstance/CICreationDesc.h"
 #include "SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h"
 
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
@@ -15,7 +16,12 @@
 
 void SSphereColliderComponent::SetRadius(float InRadius)
 {
-	_CollInstance->SetRadius(InRadius);
+	_Radius = InRadius;
+
+	if (_CollInstance != nullptr)
+	{
+		_CollInstance->SetRadius(InRadius);
+	}
 }
 
 bool SSphereColliderComponent::ShouldProcessPerFrameInherently() const
@@ -36,7 +42,7 @@ void SSphereColliderComponent::PerFrame(float DeltaTime)
 
 	Transform transform;
 
-	transform.Scale = Vector4f( 2, 2, 2, 0 ) * (BiggestScale * Radius);
+	transform.Scale = Vector4f(2, 2, 2, 0) * (BiggestScale * Radius);
 	transform.Position = WorldTransformMat.r[3];
 
 	SRenderDebugUtil::DrawDebugMesh(
@@ -58,8 +64,14 @@ ICollInstanceBase* SSphereColliderComponent::GetCollInstance() const
 
 void SSphereColliderComponent::ConstructCollInstance()
 {
-	_CollInstance = g_CollDevice->CreateCollSphere();
-	_CollInstance->SetGameObjectIDXXX(GetHashCode());
+	const SGameObject* GO = GetGameObject();
+
+	CI_SPHERE_DESC Desc;
+	Desc.InitialLclTransform = GO->GetTransform();
+	Desc.ComponentID = GetHashCode();
+	Desc.Radius = _Radius;
+
+	_CollInstance = g_CollDevice->CreateCollSphere(Desc);
 }
 
 void SSphereColliderComponent::DestructCollInstance()

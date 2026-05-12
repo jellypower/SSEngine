@@ -410,3 +410,10 @@ _BuildResults
 
 # SSEngine Resources
 *.apak
+
+# Claude / MCP
+.claude/
+*.mcp.json
+mcp.json
+.mcp.json
+.mcp/

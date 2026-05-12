@@ -1,0 +1,12 @@
+# External tools (binary executables, not source)
+ExternLibs/_TOOLS/
+PhysX/
+ExternLibs/FBXSDK/
+_BuildResults/
+.vs/
+ss-sqllite/
+SSImgui/
+
+
+# Editor binary resources (icons, RC compiled files)
+SSEditor/SSEditor/Resource/

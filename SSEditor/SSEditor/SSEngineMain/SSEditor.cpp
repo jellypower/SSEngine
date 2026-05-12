@@ -180,7 +180,7 @@ void SSEditor::StartupEngine()
 
 		CameraComp->SetFOVWithDegrees(60);
 		CameraComp->SetNearZ(0.01f);
-		CameraComp->SetFarZ(20.f);
+		CameraComp->SetFarZ(400.f);
 		CameraObject->SetPosition(Vector4f(0, 0, -10.f, 0));
 
 		Quaternion StartRot = Quaternion::FromLookDirect(Vector4f(0, 0.25, 1, 0));

@@ -66,13 +66,13 @@ void CollDebug_Private::DrawBoundBox(
 	bool bUseDepth, 
 	float Time)
 {
-	DrawBoundBox(
-		InWorldToDraw,
-		CollInstance->GetWorldPos(),
-		CollInstance->GetBBox(),
-		Color,
-		bUseDepth,
-		Time);
+//	DrawBoundBox(
+//		InWorldToDraw,
+//		CollInstance->get(),
+//		CollInstance->GetBBox(),
+//		Color,
+//		bUseDepth,
+//		Time);
 }
 
 void CollDebug_Private::DrawBoundBox(

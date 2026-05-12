@@ -2,10 +2,15 @@
 #include "SSContentsBase/Public/ContentBase/SComponentBase.h"
 
 
+class SRigidBodyBaseComponent;
 class ICollInstanceBase;
 
 class SSCONTENTBASE_MODULE SColliderBaseComponent : public SComponentBase
 {
+private:
+	Vector4f _Offset;
+	SRigidBodyBaseComponent* _OwnerRigidBody = nullptr;
+
 public:
 	// virtual void PostConstruct() override;
 	virtual void PostConstructHierarchy() override;
@@ -21,7 +26,11 @@ public:
 	virtual Vector4f CalcFurthest(const Vector4f& Dir) const = 0;
 	virtual ICollInstanceBase* GetCollInstance() const = 0;
 
+	Vector4f GetOffset() const { return _Offset; }
 	void SetOffset(const Vector4f& InOffset);
+
+	void BindRigidBodyComponent(SRigidBodyBaseComponent* InOwner);
+
 
 protected:
 	virtual void ConstructCollInstance() = 0;

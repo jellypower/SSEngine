@@ -34,6 +34,8 @@ private:
 	void PerFrame_DEBUGDRAW();
 
 
+	SGameObject* CreateDynamicCube(Transform InTransform);
+
 private:
 	SWorld* _DefaultWorld = nullptr;
 

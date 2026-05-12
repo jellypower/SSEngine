@@ -11,14 +11,17 @@
 
 ![SSEngine_Simple_Architecture.png](https://github.com/jellypower/zzPublicImageDataBase/blob/main/Portfolio/SSEngine/SSEngine_Simple_Architecture.png)
 
-- **`EngineDefault.dll`**: 엔진 전역에서 **공통**적으로 사용가능한 기본 타입, 컨테이너, 수학함수 등을 포함하는 모듈
-- **`Game.dll`**: 실제 **콘텐츠**가 제작되는 모듈. 게임의 기본 기능들을 활용해 월드를 어떻게 구성하고 캐릭터를 어떻게 조작할지에 대한 룰을 정의합니다.
-- **`ContentsBase.dll`**: 콘텐츠단에서 쉽게 사용할 수 있게 **다양한 렌더, 물리 기능들을 추상화**하여 올려주는 모듈. (ex. StaticMeshComponent, AnimationComponent …)
-- **`Renderer.dll`**: 렌더 패스를 구성하거나, 렌더링에 필요한 오브젝트(라이트, 메시)등을 추상화해 ContentsBase에서 사용할 수 있게 구현된 기능을 모아두는 **렌더 기능 모듈**.
-- **`GAL.dll`**: **그래픽스 API종속적인 기능과 리소스를 추상화**하여 렌더러에 노출하는 모듈.
-- **`Collision.dll`**: **충돌**, 오브젝트움직임, 물리, 오버랩과 같은 기능을 포함하는 모듈.
+- **`SSEngineDefault.dll`**: 엔진 전역에서 **공통**적으로 사용가능한 기본 타입, 컨테이너, 수학함수 등을 포함하는 모듈
+- **`SSGameModule.dll`**: 실제 **콘텐츠**가 제작되는 모듈. 게임의 기본 기능들을 활용해 월드를 어떻게 구성하고 캐릭터를 어떻게 조작할지에 대한 룰을 정의합니다.
+- **`SSContentsBase.dll`**: 콘텐츠단에서 쉽게 사용할 수 있게 **다양한 렌더, 물리 기능들을 추상화**하여 올려주는 모듈. (ex. StaticMeshComponent, AnimationComponent …)
+- **`SSRenderer.dll`**: 렌더 패스를 구성하거나, 렌더링에 필요한 오브젝트(라이트, 메시)등을 추상화해 ContentsBase에서 사용할 수 있게 구현된 기능을 모아두는 **렌더 기능 모듈**.
+- **`SSGAL.dll`**: **그래픽스 API종속적인 기능과 리소스를 추상화**하여 렌더러에 노출하는 모듈. (DirectX 12)
+- **`SSCollision.dll`**: **충돌**, 오브젝트움직임, 물리, 오버랩과 같은 기능을 포함하는 모듈. (PhysX 기반)
 - **`SObject.dll`**: 컨텐츠 레벨의 오브젝트를 식별하기 위한 **고유 ID**를 발행하고 고유 ID를 활용한 델리게이트, 라이프사이클 관리에 도움을 주는 기능을 포함하는 모듈.
-- **`Editor.exe`**: 실제 Windows메시지 루프가 있는 **게임 엔트리**용 exe 프로젝트.
+- **`SSAssetDBManager.dll`**: SQLite를 활용해 프로젝트의 **에셋 목록을 관리**하는 모듈.
+- **`SSFBXImporter.dll`**: FBXSDK를 활용해 모델을 **엔진 내부 포맷으로 변환**하는 모듈.
+- **`SSEditor.exe`**: 실제 Windows메시지 루프가 있는 **게임 엔트리**용 exe 프로젝트. 에디터 및 ImGui 기능 포함.
+- **`SSGame.exe`**: 에디터 기능을 제외한 **게임 구동 전용** exe 프로젝트.
 
 ## 빌드 및 실행방법
 
@@ -99,14 +102,17 @@
 
 ![SSEngine_Simple_Architecture.png](https://github.com/jellypower/zzPublicImageDataBase/blob/main/Portfolio/SSEngine/SSEngine_Simple_Architecture.png)
 
-- **`EngineDefault.dll`**: A core module containing fundamental types, containers, and mathematical functions used globally throughout the engine.
-- **`Game.dll`**: The gameplay logic module where actual content is authored. It defines world composition and character control rules using the engine's base features.
-- **`ContentsBase.dll`**: Provides high-level abstractions of rendering and physics features (e.g., `StaticMeshComponent`, `AnimationComponent`) for easy access within the gameplay layer.
-- **`Renderer.dll`**: A dedicated rendering module that manages render pass composition and provides abstractions for renderable objects (lights, meshes) used by `ContentsBase`.
-- **`GAL.dll`**: Abstracts Graphics API-specific functions and resources, exposing a unified interface to the Renderer.
-- **`Collision.dll`**: Handles collision detection, object movement, physics, and overlap event functionality.
+- **`SSEngineDefault.dll`**: A core module containing fundamental types, containers, and mathematical functions used globally throughout the engine.
+- **`SSGameModule.dll`**: The gameplay logic module where actual content is authored. It defines world composition and character control rules using the engine's base features.
+- **`SSContentsBase.dll`**: Provides high-level abstractions of rendering and physics features (e.g., `StaticMeshComponent`, `AnimationComponent`) for easy access within the gameplay layer.
+- **`SSRenderer.dll`**: A dedicated rendering module that manages render pass composition and provides abstractions for renderable objects (lights, meshes) used by `SSContentsBase`.
+- **`SSGAL.dll`**: Abstracts Graphics API-specific functions and resources, exposing a unified interface to the Renderer. (DirectX 12)
+- **`SSCollision.dll`**: Handles collision detection, object movement, physics, and overlap event functionality. (PhysX-based)
 - **`SObject.dll`**: Manages unique ID issuance for content-level objects and provides utilities for ID-based delegates and lifecycle management.
-- **`Editor.exe`**: The main entry point executable for the engine, containing the Windows message loop.
+- **`SSAssetDBManager.dll`**: Manages the project asset list using SQLite.
+- **`SSFBXImporter.dll`**: Converts models into the engine's internal format using FBXSDK.
+- **`SSEditor.exe`**: The main entry point executable containing the Windows message loop. Editor features and ImGui are implemented directly inside this project.
+- **`SSGame.exe`**: A shipping entry point executable with all editor features stripped out, containing only game runtime functionality.
 
 ## Build and Execution
 
@@ -119,16 +125,16 @@
         - [Download FBX SDK 2020.3.4 (Direct)](https://www.autodesk.com/content/dam/autodesk/www/adn/fbx/2020-3-4/fbx202034_fbxsdk_vs2022_win.exe)
         - [Official Autodesk FBX SDK Download Page](https://aps.autodesk.com/developer/overview/fbx-sdk)
 2. Run `Build_Dependancy_x64.bat` located in the `_BuildBatch` folder at the project root.
-    - **Note:** To build `PhysX`, you must have `CMake` installed and registered in your system environment variables.
+    - **Note:** To build `PhysX`, you must have `CMake` installed and registered in your system environment variables **(PATH)**.
 
 
 ### Building the Project
 
 - Navigate to the `_BuildBatch` folder in the project root and run the following batch files to build:
-    - `SSEngineBuild_Debug_x64.bat`: Builds the project with Debug configurations.
-    - `SSEngineBuild_Debug_x64_Rebuild.bat`: Performs a clean rebuild with Debug configurations.
-    - `SSEngineBuild_Release_x64.bat`: Builds the project with Release configurations.
-    - `SSEngineBuild_Release_x64_Rebuild.bat`: Performs a clean rebuild with Release configurations.
+    - `SSEngineBuild_Debug_x64.bat`: Builds the project with Debug configuration.
+    - `SSEngineBuild_Debug_x64_Rebuild.bat`: Performs a clean rebuild with Debug configuration.
+    - `SSEngineBuild_Release_x64.bat`: Builds the project with Release configuration.
+    - `SSEngineBuild_Release_x64_Rebuild.bat`: Performs a clean rebuild with Release configuration.
 
 ### Setup and Execution
 
@@ -141,7 +147,7 @@
     - This batch file copies the built DLLs of external libraries (PhysX, FBXSDK, etc.) into the folder where the actual executable (exe) is located.
     - This batch file must be run for both Debug and Release builds respectively to ensure the application runs correctly.
 5. You can then run the project via **SSEditor.sln** (Press `F5`) or by launching the built `.exe` directly.
- 
+
 
 # Controls
 
@@ -157,12 +163,12 @@
     - Acceleration-based Character Movement: https://youtu.be/KHo7lmSJnLM?si=jeiCSwU_f6rGcJwt
     - Collision Detection between Convex Objects: https://youtu.be/iz16O6yGidU?si=sZ4iAbdajRUEDG6G
 
+# Note on Troubleshooting
+
+Dependency configuration may fail due to various environmental factors. If you encounter any issues, please contact **[dongcheold147@gmail.com](mailto:dongcheold147@gmail.com)** for support.
+
 ## Shortcut
 [<img src="https://github.com/jellypower/zzPublicImageDataBase/blob/main/Icon/Youtube_logo.png" width="64"/>](https://www.youtube.com/watch?v=J_K8yV4KCV8&list=PLn_nqBk81UiCGGYGs5YFQIz098fdHk2NS&index=3)
 [<img src="https://github.com/jellypower/zzPublicImageDataBase/blob/main/Icon/velog_icon.png" width="64"/>](https://velog.io/@jellypower/series/%EB%82%98%EB%8A%94-%EB%A7%8C%EB%93%A0%EB%8B%A4-%EA%B2%8C%EC%9E%84%EC%97%94%EC%A7%84)
 
 ---
-
-# **Note on Troubleshooting:**
-
-Dependency configuration may fail due to various environmental factors. If you encounter any issues, please contact us at **[dongcheold147@gmail.com](mailto:dongcheold147@gmail.com)** for support.

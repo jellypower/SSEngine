@@ -3,7 +3,9 @@
 
 #include "SSCollision/Private/CollDetect/CollDebug_Private.h"
 #include "SSCollision/Private/SpatialSystem/ISpatialAccelerationStructure.h"
+#include "SSCollision/Public/CollInstance/CICreationDesc.h"
 #include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+#include "SSCollision/Public/RigidBody/IRigidBodyBase.h"
 
 float CISphere::GetRadius() const
 {
@@ -13,6 +15,92 @@ float CISphere::GetRadius() const
 void CISphere::SetRadius(float InRadius)
 {
 	_Radius = InRadius;
+	ApplyLocalTransformChange();
+}
+
+Transform CISphere::CalcSphereTransform() const
+{
+	// Offset: Component's internal Variable
+	// ColliderTransform: GameObject's Transform
+	
+	Transform NewTransform = { _Offset, Quaternion(), {1, 1, 1, 0} };
+	NewTransform = NewTransform * _ColliderTransform;
+	return NewTransform;
+}
+
+void CISphere::ApplyLocalTransformChange()
+{
+	Transform NewTransform = CalcSphereTransform();
+
+	if (_Shape != nullptr)
+	{
+		physx::PxTransform PxPose = _Shape->getLocalPose();
+
+		Vector4f PrevPos = PxTransformConvert::Vec3FromPx(PxPose.p);
+		Quaternion PrevRot = PxTransformConvert::QuatFromPx(PxPose.q);
+
+		if (XMAlmostEqual(PrevPos.SimdVec, NewTransform.Position.SimdVec) == false ||
+			XMAlmostEqual(PrevRot.SimdVec, NewTransform.Rotation.SimdVec) == false)
+		{
+			PxPose.p = PxTransformConvert::Vec3ToPx(NewTransform.Position);
+			PxPose.q = PxTransformConvert::QuatToPx(NewTransform.Rotation);
+			_Shape->setLocalPose(PxPose);
+		}
+
+		physx::PxGeometryHolder Geom = _Shape->getGeometry();
+		if (Geom.getType() != physx::PxGeometryType::eSPHERE)
+		{
+			SS_INTERRUPT();
+			return;
+		}
+
+		NewTransform.Scale = XMVectorSetW(NewTransform.Scale.SimdVec, 0);
+		float NewRadius = SS::GetBiggest(NewTransform.Scale.SimdVec);
+		NewRadius *= _Radius;
+
+		physx::PxSphereGeometry SphereGeom = Geom.sphere();
+		float Diff = SphereGeom.radius - NewRadius;
+		Diff = Diff < 0 ? -Diff : Diff;
+		if (Diff > 0.001f)
+		{
+			SphereGeom.radius = NewRadius;
+			_Shape->setGeometry(SphereGeom);
+		}
+	}
+
+	if (_OwnerRigidBody != nullptr)
+	{
+		Transform ParentTransform =
+		{
+			_OwnerRigidBody->GetSimulBeginPos(),
+			_OwnerRigidBody->GetSimulBeginRot(),
+			{1, 0, 0, 0}
+		};
+
+
+		Transform DebugTransform = NewTransform;
+		DebugTransform.Scale = NewTransform.Scale * 2;
+		DebugTransform = DebugTransform * ParentTransform;
+		CollDebug_Private::DrawShape(
+			GetIncludedCollWorld(), ECollDebugDraw_MeshType::Box, DebugTransform.AsMatrix(), DebugTransform.Rotation,
+			{ 0,1,0,1 }, true);
+	}
+}
+
+CISphere::CISphere(const CI_SPHERE_DESC& Desc, physx::PxShape* InShape)
+{
+	_ColliderTransform = Desc.InitialLclTransform;
+	_Offset = Desc.Offset;
+	_GameObjectHashCode = Desc.ComponentID;
+	_Radius = Desc.Radius;
+
+	_Shape->userData = this;
+	_Shape = InShape;
+}
+
+CISphere::~CISphere()
+{
+	PX_RELEASE(_Shape);
 }
 
 ECollShapeType CISphere::GetCollShapeType() const
@@ -20,42 +108,10 @@ ECollShapeType CISphere::GetCollShapeType() const
 	return ECollShapeType::Sphere;
 }
 
-
-void CISphere::CollProcess_MoveObjecet(const Vector4f& MoveDelta)
+void CISphere::SyncColliderLclTransform_ByContent(const Transform& LocalTransform)
 {
-	_WorldMat.r[3] += MoveDelta.SimdVec;
-}
-
-void CISphere::CollProcess_RotateObjecet(const Quaternion& RotDelta)
-{
-	SS_ASSERT(false); // TODO: Impl
-}
-
-void CISphere::SyncWorldTransform_ByContent(const XMMATRIX& WorldMat, const Quaternion& WorldRot)
-{
-	_WorldMat =
-	{
-		{1,0,0,0},
-		{0,1,0,0},
-		{0,0,1,0},
-		_Offset.SimdVec
-	};
-	_WorldMat = _WorldMat * WorldMat;
-	_WorldRot = WorldRot;
-
-
-	XMVECTOR vRadius = { _Radius, _Radius, _Radius, 0 };
-	_BBox.Min = _WorldMat.r[3] - vRadius;
-	_BBox.Max = _WorldMat.r[3] + vRadius;
-
-	if (_IncludedSAS != nullptr)
-	{
-		_IncludedSAS->AddUpdateNeededCollInstance(this);
-	}
-
-	CollDebug_Private::DrawBoundBox(_IncludedCollWorld, this, Vector4f::Zero, true, 0);
-	CollDebug_Private::DrawShape(_IncludedCollWorld, ECollDebugDraw_MeshType::Sphere, _WorldMat, _WorldRot,
-		Vector4f::Zero, true);
+	_ColliderTransform = LocalTransform;
+	ApplyLocalTransformChange();
 }
 
 const Vector4f& CISphere::GetOffset() const
@@ -67,44 +123,18 @@ void CISphere::SetOffset(const Vector4f& InOffset)
 {
 	_Offset = InOffset;
 	_Offset.SimdVec = XMVectorSetW(_Offset.SimdVec, 1);
-}
-
-
-Vector4f CISphere::GetWorldPos() const
-{
-	return _WorldMat.r[3];
-}
-
-const XMMATRIX& CISphere::GetWorldTransformMat() const
-{
-	return _WorldMat;
-}
-
-const Quaternion& CISphere::GetWorldRot() const
-{
-	return _WorldRot;
+	ApplyLocalTransformChange();
 }
 
 
 Vector4f CISphere::CalcFurthest(const Vector4f& Dir) const
 {
-	float SqrLen = Dir.Get3DSqrLength();
-	if (SqrLen < 0.0001f)
-	{
-		return _WorldMat.r[3]; // Dir이 불분명하면 원점 리턴
-	}
-
-	float BiggestScale = SS::CalcBiggestScaleAxis(_WorldMat);
-
-	float Len = sqrt(SqrLen);
-	Vector4f NewDir = Dir * (BiggestScale * _Radius / Len); // Radius로 벡터 길이 변경
-
-	return NewDir.SimdVec + _WorldMat.r[3];
+	return Vector4f();
 }
 
 const AABBBox& CISphere::GetBBox() const
 {
-	return _BBox;
+	return AABBBox();
 }
 
 
@@ -113,59 +143,12 @@ SObjHashCode CISphere::GetGameObjectID() const
 	return _GameObjectHashCode;
 }
 
-void CISphere::SetGameObjectIDXXX(SObjHashCode InHashCode)
-{
-	_GameObjectHashCode = InHashCode;
-}
-
-void CISphere::OnEnterTheCollWorld(ICollisionWorld* InRenderWorld)
-{
-	_IncludedCollWorld = InRenderWorld;
-}
-
-void CISphere::OnExitFromCollWorld()
-{
-	_IncludedCollWorld = nullptr;
-}
-
 ICollisionWorld* CISphere::GetIncludedCollWorld() const
 {
-	return _IncludedCollWorld;
-}
-
-void CISphere::OnEnterTheSAS(ISpatialAccelerationStructure* InSAS)
-{
-	if (_IncludedSAS != nullptr)
+	if (_OwnerRigidBody == nullptr)
 	{
-		SS_INTERRUPT();
-		return;
+		return nullptr;
 	}
 
-	_IncludedSAS = InSAS;
-}
-
-void CISphere::OnExitTheSAS()
-{
-	if (_IncludedSAS == nullptr)
-	{
-		SS_INTERRUPT();
-		return;
-	}
-
-	_IncludedSAS = nullptr;
-}
-
-ISpatialAccelerationStructure* CISphere::GetIncludedSAS() const
-{
-	return _IncludedSAS;
-}
-
-void CISphere::SetSASProxyIdx(int64 InSASProxyIdx)
-{
-	_SASProxyIdx = InSASProxyIdx;
-}
-
-int64 CISphere::GetSASProxyIdx() const
-{
-	return _SASProxyIdx;
+	return _OwnerRigidBody->GetIncludedCollWorld();
 }

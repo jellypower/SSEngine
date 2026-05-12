@@ -4,6 +4,14 @@
 #include "SSEngineDefault/Public/SSContainer/HashMap.h"
 
 
+class IRigidBodyCustomSim;
+class IRigidBodyDynamic;
+
+namespace physx
+{
+	class PxScene;
+}
+
 class SASSweepAndPrune;
 constexpr int32 COLLWORLD_HASHMAP_SIZE = 1024 * 16;
 constexpr int32 COLLWORLD_BUCKET_CAPACITY = 1024;
@@ -13,36 +21,38 @@ class CollisionWorld : public ICollisionWorld
 {
 private:
 	SS::SHasherW _WorldName;
-	SS::HashMap<SObjHashCode, ICollInstanceBase*> _CollInstanceByHashCode;
-	SS::HashMap<SObjHashCode, IRigidBodyBase*> _RigidBodyByHashCode;
+	SS::HashMap<SObjHashCode, IRigidBodyBase*> _StaticRigidBodies;
+	SS::HashMap<SObjHashCode, IRigidBodyDynamic*> _DynamicRigidBodies;
+	SS::HashMap<SObjHashCode, IRigidBodyCustomSim*> _CustomSimBodies;
 
-	SASSweepAndPrune* _SASSweepAndPruen = nullptr;
+
+
+	physx::PxScene* _PhysXScene = nullptr;
 
 
 public:
-	CollisionWorld(const SS::SHasherW& worldName);
+	CollisionWorld(const SS::SHasherW& worldName, physx::PxScene* PhysxScene);
 	virtual ~CollisionWorld();
 
 public:
 	void FinalizeCollWorld() override;
 
 	// Add Remove From World
-	bool IsAnyInstanceRemainInWorld() const override;
 	SS::SHasherW GetWorldName() const override;
-	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& GetRigidBodyByHashCode() const override;
+	bool IsAnyInstanceRemainInWorld() const override;
+	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& GetStaticRigidBodies() const override;
+	const SS::HashMap<SObjHashCode, IRigidBodyDynamic*>& GetDynamicRigidBodies() const override;
+	const SS::HashMap<SObjHashCode, IRigidBodyCustomSim*>& GetCustomSimBodies() const override;
+
 
 	void QueryCollidableWith(SS::PooledList<ICollInstanceBase*>& OutList, ICollInstanceBase* CollTarget) const override;
 
-	void AddToWorld(ICollInstanceBase* InCollInstance) override;
-	void AddToWorld(IRigidBodyBase* InRigidBody) override;
-	void RemoveCollFromWorld(ICollInstanceBase* InCollInstance) override;
-	void RemoveRigidFromWorld(IRigidBodyBase* InRigidBody) override;
 	
-
+	void AddToWorld(IRigidBodyBase* InRigidBody) override;
+	void RemoveRigidFromWorld(IRigidBodyBase* InRigidBody) override;
 
 
 	// Transform Commit
-	virtual void UpdateInitialTransforms() override;
 
 	// Simulate
 	void OnBeginSimulation() override;

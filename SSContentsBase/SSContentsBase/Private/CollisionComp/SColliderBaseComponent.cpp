@@ -8,6 +8,7 @@
 
 #include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 #include "SSCollision/Public/CollisionBase/ICollisionWorld.h"
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SRigidBodyBaseComponent.h"
 
 
 void SColliderBaseComponent::PostConstructHierarchy()
@@ -17,19 +18,12 @@ void SColliderBaseComponent::PostConstructHierarchy()
 
 void SColliderBaseComponent::OnEnterTheWorld()
 {
-	SWorld* IncludedWorld = GetIncludedWorld();
-	ICollisionWorld* CollWorld = IncludedWorld->GetCollWorld();
 
-	CollWorld->AddToWorld(GetCollInstance());
 }
 
 void SColliderBaseComponent::OnExitTheWorld()
 {
-	SWorld* IncludedWorld = GetIncludedWorld();
-	ICollisionWorld* CollWorld = IncludedWorld->GetCollWorld();
 
-	ICollInstanceBase* CollInstance = GetCollInstance();
-	CollWorld->RemoveCollFromWorld(CollInstance);
 }
 
 void SColliderBaseComponent::PreDestructHierarchy()
@@ -39,13 +33,45 @@ void SColliderBaseComponent::PreDestructHierarchy()
 
 void SColliderBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPhase)
 {
-	SGameObject* Owner = GetGameObject();
-	GetCollInstance()->SyncWorldTransform_ByContent(
-		Owner->GetCommittedWorldTransformMat(),
-		Owner->GetCommittedWorldRotation());
+	if (CommitPhase != EFramePhase::Collision)
+	{
+		return;
+	}
+
+	SGameObject* GO = GetGameObject();
+	if (_OwnerRigidBody == nullptr)
+	{
+		GetCollInstance()->SyncColliderLclTransform_ByContent(GO->GetTransform());
+		return;
+	}
+
+	SGameObject* RigidGO = _OwnerRigidBody->GetGameObject();
+	if (RigidGO == GO)
+	{
+		Transform LclTransform = RigidGO->GetTransform();
+		LclTransform.Position = Vector4f::Zero;
+		LclTransform.Rotation = Quaternion();
+		GetCollInstance()->SyncColliderLclTransform_ByContent(LclTransform);
+	}
+	else
+	{
+		GetCollInstance()->SyncColliderLclTransform_ByContent(GO->GetTransform());
+	}
 }
 
 void SColliderBaseComponent::SetOffset(const Vector4f& InOffset)
 {
-	GetCollInstance()->SetOffset(InOffset);
+	_Offset = InOffset;
+
+	ICollInstanceBase* CI = GetCollInstance();
+	if (CI != nullptr)
+	{
+		CI->SetOffset(InOffset);
+	}
+}
+
+
+void SColliderBaseComponent::BindRigidBodyComponent(SRigidBodyBaseComponent* InOwner)
+{
+	_OwnerRigidBody = InOwner;
 }

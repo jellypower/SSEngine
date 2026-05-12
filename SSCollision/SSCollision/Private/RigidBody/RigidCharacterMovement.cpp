@@ -4,20 +4,27 @@
 #include <cmath>
 
 #include "SSCollision/Private/CollDetect/CollDebug_Private.h"
-#include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
+#include "SSCollision/Private/CollInstance/CIUtils_Private.h"
 #include "SSCollision/Public/DEBUG/CollDebugDrawDescs.h"
+#include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
 
-RigidCharacterMovement::RigidCharacterMovement()
+
+RigidCharacterMovement::RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc, physx::PxRigidDynamic* InActor)
 {
-	_AccelMultiplier = 20;
-	_GroundFriction = 3;
-	_MaxSpeed = 5.f;
-	_MaxTurnSpeed = 5;
-	_FaceTurnSpeed = 10;
-	_FaceMode = ECharacterFaceMode::LerpToVelocity;
+	_ComponentID = InDesc.ComponentID;
+
+	_AccelMultiplier = InDesc.AccelMultiplier;
+	_GroundFriction = InDesc.GroundFriction;
+	_MaxSpeed = InDesc.MaxSpeed;
+	_MaxTurnSpeed = InDesc.MaxTurnSpeed;
+	_FaceTurnSpeed = InDesc.FaceTurnSpeed;
+	_FaceMode = InDesc.FaceMode;
+
 
 	_EnteredFace = { 0, 1 };
 	_CurFace = { 0, 1 };
+
+	_PxActor = InActor;
 }
 
 ERigidBodyType RigidCharacterMovement::GetRigidBodyType() const
@@ -25,15 +32,10 @@ ERigidBodyType RigidCharacterMovement::GetRigidBodyType() const
 	return ERigidBodyType::CharacterMovement;
 }
 
-void RigidCharacterMovement::UpdateInitialTransform(Vector4f Pos, Quaternion Rot)
-{
-	_SimulateBeginPos = Pos;
-	_SimulateBeginRot = Rot;
-}
 
-bool RigidCharacterMovement::IsMovedOnThisTick() const
+bool RigidCharacterMovement::IsTransformModifiedOnThisTick() const
 {
-	return _bMovedOnThisTick;
+	return _bTransformModifiedOnThisTick;
 }
 
 void RigidCharacterMovement::SimulateMovement(float DeltaTime)
@@ -46,6 +48,17 @@ void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 
 	MovementPos(DeltaTime);
 	MovementRotate(DeltaTime);
+
+
+	physx::PxTransform Target;
+	Target.p = PxTransformConvert::Vec3ToPx(_SimulEndPos);
+
+	// SCharacterMovementComponent::PostCollision_SyncTransform 함수를 보면 결국
+	// 최종 로테이션의 Yaw값은 float Yaw = atan2(CurFace.X, CurFace.Y); 이렇게 계산함
+	// 그런데, PhysX는 오른손 좌표계니까 Yaw값만 뒤집어줘야 제대로된 KinematicTarget이 들어감
+	float Yaw = -atan2(_CurFace.X, _CurFace.Y);
+	Target.q = physx::PxQuat(Yaw, physx::PxVec3(0, 1, 0));
+	_PxActor->setKinematicTarget(Target);
 }
 
 void RigidCharacterMovement::OnEndSimulation()
@@ -53,34 +66,58 @@ void RigidCharacterMovement::OnEndSimulation()
 	_MoveInput = Vector2f::Zero;
 }
 
-bool RigidCharacterMovement::IsMovedOnThisSimulation() const
+void RigidCharacterMovement::SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, const Quaternion& InRot)
 {
-	return _bMovedOnThisSimulation;
+	_SimulBeginPos = InPos;
+
+	physx::PxTransform Pose;
+	Pose.p = PxTransformConvert::Vec3ToPx(InPos);
+	Pose.q = PxTransformConvert::QuatToPx(InRot);
+	_PxActor->setGlobalPose(Pose);
 }
 
-Vector4f RigidCharacterMovement::GetSimulatedPosDelta() const
+const Vector4f& RigidCharacterMovement::GetSimulBeginPos() const
 {
-	return _SimulatedPosDelta;
+	return _SimulBeginPos;
 }
 
-bool RigidCharacterMovement::IsRotatedOnThisSimulation() const
+
+const Vector4f& RigidCharacterMovement::GetSimulEndPos() const
 {
-	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
-	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
-	return false;
+	return _SimulEndPos;
 }
 
-Quaternion RigidCharacterMovement::GetSimulatedRotDelta() const
+Vector4f RigidCharacterMovement::CalcPosDelta() const
+{
+	return _SimulEndPos - _SimulBeginPos;
+}
+
+const Quaternion& RigidCharacterMovement::GetSimulBeginRot() const
 {
 	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
 	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
 	return Quaternion();
 }
 
+
+const Quaternion& RigidCharacterMovement::GetSimulEndRot() const
+{
+	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
+	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
+	return Quaternion();
+}
+
+Quaternion RigidCharacterMovement::CalcRotDelta() const
+{
+	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
+	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
+	return  Quaternion();
+}
+
 void RigidCharacterMovement::OnBeginSimulation()
 {
-	_bMovedOnThisTick = false;
-	_SimulatedPosDelta = Vector4f::Zero;
+	_bTransformModifiedOnThisTick = false;
+	_SimulBeginPos = _SimulEndPos;
 }
 
 
@@ -176,10 +213,11 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 		}
 		else
 		{
-			_bMovedOnThisTick = true;
+			_bTransformModifiedOnThisTick = true;
 			_bMovedOnThisSimulation = true;
-			_SimulatedPosDelta.X += (_MoveLateralVelocity.X * DeltaTime);
-			_SimulatedPosDelta.Z += (_MoveLateralVelocity.Y * DeltaTime);
+			
+			_SimulEndPos.X = _SimulBeginPos.X + (_MoveLateralVelocity.X * DeltaTime);
+			_SimulEndPos.Z = _SimulBeginPos.Z + (_MoveLateralVelocity.Y * DeltaTime);
 		}
 
 	}
@@ -188,18 +226,16 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 
 	// DEBUG
 	{
-		Vector4f CurPos = _CollInstance->GetWorldPos();
-
 		float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
 		float VelLen = sqrt(VeloSqrLen);
 		Vector2f Velo = _MoveLateralVelocity.GetNormalized();
 		Velo = Velo * (VelLen / _MaxSpeed);
-		Vector4f End = CurPos;
+		Vector4f End = _SimulEndPos;
 		End.X += Velo.X;
 		End.Z += Velo.Y;
 
 		CDDD_Line Desc;
-		Desc.Start = CurPos;
+		Desc.Start = _SimulEndPos;
 		Desc.End = End;
 		Desc.Color = { 1, 0, 0, 1 };
 		Desc.bUseDepth = true;
@@ -241,6 +277,7 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 				break;
 			}
 
+			// 만약 오른쪽(X+)으로 움직이는 경우에 TargetYaw값은 0이된다.
 			TargetYaw = atan2(VelocityNormalized.Y, VelocityNormalized.X);
 			TargetYaw += XM_2PI;
 			TargetYaw = fmod(TargetYaw, XM_2PI);
@@ -286,6 +323,8 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 
 	if (_bFaceChangedOnThisTick)
 	{
+		_bTransformModifiedOnThisTick = true;
+
 		float Diff = TargetYaw - PrevYaw;
 		if (Diff > XM_PI) // ex) PrevYaw=0 to TargetYaw=270
 		{
@@ -298,40 +337,60 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 
 		// TODO: 여기 문제있는듯. 고치자.
 		float NewYaw = SS::Lerp(PrevYaw, TargetYaw, TurnAmount);
-		
+		 
 		_CurFace.X = cos(NewYaw);
 		_CurFace.Y = sin(NewYaw);
 	}
 
 	// Debug
 	{
-		Vector4f Start = _CollInstance->GetWorldPos();
-		Vector4f End = Start;
+		Vector4f End = _SimulBeginPos;
 		End.X += _CurFace.X;
 		End.Z += _CurFace.Y;
 
 		CDDD_Line Desc;
-		Desc.Start = Start;
+		Desc.Start = _SimulBeginPos;
 		Desc.End = End;
 		Desc.Color = { 0, 1, 0, 1 };
 		Desc.bUseDepth = true;
-		CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
+		CollDebug_Private::DrawLine(_IncludedCollWorld, Desc);
 	}
 }
 
 void RigidCharacterMovement::BindCollisionInstance(ICollInstanceBase* BoundCI)
 {
+	if (_CollInstance != nullptr)
+	{
+		SS_ASSERT_MSG(false, "TOOD: Attach multiple Colinstance");
+		return;
+	}
+
 	_CollInstance = BoundCI;
+	physx::PxShape* Shape = ExtractPxShape(_CollInstance);
+	_PxActor->attachShape(*Shape);
 }
+
+void RigidCharacterMovement::DetachCollInstance(ICollInstanceBase* BoundCI)
+{
+	if (_CollInstance != BoundCI)
+	{
+		SS_ASSERT(false);
+		return;
+	}
+
+	physx::PxShape* Shape = ExtractPxShape(BoundCI);
+	_PxActor->detachShape(*Shape);
+}
+
 
 SObjHashCode RigidCharacterMovement::GetGameObjectID() const
 {
-	return _GameObjectHashCode;
+	return _ComponentID;
 }
 
-void RigidCharacterMovement::SetGameObjectIDXXX(SObjHashCode InHashCode)
+ICollisionWorld* RigidCharacterMovement::GetIncludedCollWorld() const
 {
-	_GameObjectHashCode = InHashCode;
+	return _IncludedCollWorld;
 }
 
 ICollInstanceBase* RigidCharacterMovement::GetCollInstance() const

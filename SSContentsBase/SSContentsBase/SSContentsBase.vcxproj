@@ -184,6 +184,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\AnimComponents\SAnimatorBaseComponent.cpp" />
     <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SRigidBodyBaseComponent.cpp" />
+    <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SRigidBodyDynamicComponent.cpp" />
+    <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SRigidBodyStaticComponent.cpp" />
     <ClCompile Include="Private\ContentBase\SComponentBase.cpp" />
     <ClCompile Include="Private\ContentBase\SGameObject.cpp" />
     <ClCompile Include="Private\ContentBase\SGameObjectConstructor.cpp" />
@@ -207,6 +209,8 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\CollisionComp\RigidBodyComponent\SCharacterMovementComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SRigidBodyStaticComponent.h" />
+    <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SRigidBodyDynamicComponent.h" />
     <ClInclude Include="Public\AnimComponents\SBlendSpaceAnimTestComponent.h" />
     <ClInclude Include="Public\CollisionComp\SBoxColliderComponent.h" />
     <ClInclude Include="Public\CollisionComp\RigidBodyComponent\SRigidBodyBaseComponent.h" />

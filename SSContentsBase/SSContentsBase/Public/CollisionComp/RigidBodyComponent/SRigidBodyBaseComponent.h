@@ -17,9 +17,6 @@ public:
 	virtual void PreDestructHierarchy() override;
 	// virtual void PreDestruct() override;
 
-	void BindColliderComponent(SColliderBaseComponent* InCollider);
-
-
 	void OnGameObjectTransformCommited(EFramePhase CommitPhase) override;
 
 
@@ -28,8 +25,11 @@ public:
 	virtual void PostCollision_SyncTransform() = 0;
 
 protected:
-
 	virtual void ConstructRigidBodyInstance() = 0;
 	virtual void DestructRigidBodyInstance() = 0;
-	
+
+
+private:
+	void BindColliderComponent(SColliderBaseComponent* InCollider);
+
 };

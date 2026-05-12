@@ -16,7 +16,9 @@ bool SGameObject::IsRootInWorld() const
 	SGameObject* Parent = GetParent();
 	if (Parent == nullptr)
 	{
-		return true; // 부모가 없는 경우에도 Root로 취급한다.
+		return true;
+		// 부모가 없는 경우에도 Root로 취급한다.
+		// 아직 World에 Add되지 않았을 수도 있음.
 	}
 	SWorld* World = GetIncludedWorldRef();
 
@@ -180,6 +182,7 @@ void SGameObject::SetParent(SGameObject* InNewParent)
 
 	_Parent = InNewParent;
 	InNewParent->_Children.PushBack(this);
+//	MarkTransformCommitNeeded();
 }
 
 void SGameObject::AddComponent(SComponentBase* InComponent)
@@ -274,9 +277,6 @@ void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const
 	XMMATRIX ThisTransformMat = _transform.AsMatrix();
 	_CommittedWorldTransformMat = ThisTransformMat * ParentWorldTransformMat;
 	_CommittedWorldRotation =  _transform.Rotation * ParentRotation;
-	_bTransformCommitReserved = false;
-	_TransformCommitedFrameCnt = ThisFrameCnt;
-	_TransformCommitedPhase = CurPhase;
 	for (SComponentBase* ComponentItem : _Components)
 	{
 		ComponentItem->OnGameObjectTransformCommited(CurPhase);
@@ -287,8 +287,12 @@ void SGameObject::CommitTransform(const XMMATRIX& ParentWorldTransformMat, const
 		ChildItem->CommitTransform(_CommittedWorldTransformMat, _CommittedWorldRotation);
 	}
 
+
 	for (SComponentBase* ComponentItem : _Components)
 	{
 		ComponentItem->OnChildrenGameObjectTransformCommitted(CurPhase);
 	}
+	_bTransformCommitReserved = false;
+	_TransformCommitedFrameCnt = ThisFrameCnt;
+	_TransformCommitedPhase = CurPhase;
 }
