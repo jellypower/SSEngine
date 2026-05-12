@@ -22,7 +22,7 @@ public:
 	virtual bool IsTransformModifiedOnThisTick() const = 0;
 
 	// Transform
-	virtual void SetSimulBeginPosAndRot(const Vector4f& InPos, const Quaternion& InRot) = 0;
+	virtual void SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, const Quaternion& InRot) = 0;
 	virtual const Vector4f& GetSimulBeginPos() const = 0;
 	virtual const Quaternion& GetSimulBeginRot() const = 0;
 	virtual void OnBeginSimulation() = 0;

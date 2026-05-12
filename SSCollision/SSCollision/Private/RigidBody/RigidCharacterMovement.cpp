@@ -62,21 +62,7 @@ void RigidCharacterMovement::OnEndSimulation()
 	_MoveInput = Vector2f::Zero;
 }
 
-bool RigidCharacterMovement::IsMovedOnThisSimulation() const
-{
-	return _bMovedOnThisSimulation;
-}
-
-
-bool RigidCharacterMovement::IsRotatedOnThisSimulation() const
-{
-	// 캐릭터의 Rotation은 _CurFace로 취급합니다.
-	// 즉, 물리 시뮬레이션에 의한 RotationDelta는 존재하지 않습니다.
-	return false;
-}
-
-
-void RigidCharacterMovement::SetSimulBeginPosAndRot(const Vector4f& InPos, const Quaternion& InRot)
+void RigidCharacterMovement::SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, const Quaternion& InRot)
 {
 	_SimulBeginPos = InPos;
 

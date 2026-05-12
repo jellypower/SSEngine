@@ -14,9 +14,6 @@ private:
 	Quaternion _SimulBeginRot;
 	Quaternion _SimulEndRot;
 
-	bool _bTransformModifiedOnThisTick = false;
-	bool _bMovedOnThisSimulation = false;
-	bool _bRotatedOnThisSimulation = false;
 
 private:
 	ICollisionWorld* _IncludedCollWorld = nullptr;
@@ -31,11 +28,9 @@ public:
 	virtual ERigidBodyType GetRigidBodyType() const override;
 
 	virtual bool IsTransformModifiedOnThisTick() const override;
-	virtual bool IsMovedOnThisSimulation() const override;
-	virtual bool IsRotatedOnThisSimulation() const override;
 
 	// Transform
-	virtual void SetSimulBeginPosAndRot(const Vector4f& InPos, const Quaternion& InRot) override;
+	virtual void SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, const Quaternion& InRot) override;
 	virtual const Vector4f& GetSimulBeginPos() const override;
 	virtual const Vector4f& GetSimulEndPos() const override;
 	virtual Vector4f CalcPosDelta() const override;

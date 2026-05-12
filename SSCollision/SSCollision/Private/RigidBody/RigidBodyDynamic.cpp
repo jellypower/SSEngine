@@ -24,20 +24,10 @@ ERigidBodyType RigidBodyDynamic::GetRigidBodyType() const
 
 bool RigidBodyDynamic::IsTransformModifiedOnThisTick() const
 {
-	return _bTransformModifiedOnThisTick;
+	return _PxActor != nullptr ? !_PxActor->isSleeping() : false;
 }
 
-bool RigidBodyDynamic::IsMovedOnThisSimulation() const
-{
-	return _bMovedOnThisSimulation;
-}
-
-bool RigidBodyDynamic::IsRotatedOnThisSimulation() const
-{
-	return _bRotatedOnThisSimulation;
-}
-
-void RigidBodyDynamic::SetSimulBeginPosAndRot(const Vector4f& InPos, const Quaternion& InRot)
+void RigidBodyDynamic::SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, const Quaternion& InRot)
 {
 	_SimulBeginPos = InPos;
 	_SimulBeginRot = InRot;
@@ -80,7 +70,6 @@ Quaternion RigidBodyDynamic::CalcRotDelta() const
 
 void RigidBodyDynamic::OnBeginSimulation()
 {
-	_bTransformModifiedOnThisTick = false;
 	_SimulBeginPos = _SimulEndPos;
 	_SimulBeginRot = _SimulEndRot;
 }
@@ -88,19 +77,8 @@ void RigidBodyDynamic::OnBeginSimulation()
 void RigidBodyDynamic::OnEndSimulation()
 {
 	physx::PxTransform Pose = _PxActor->getGlobalPose();
-
 	_SimulEndPos = { Pose.p.x, Pose.p.y, Pose.p.z, 1 };
 	_SimulEndRot = Quaternion(XMVectorSet(Pose.q.x, Pose.q.y, Pose.q.z, Pose.q.w));
-
-	Vector4f PosDelta = _SimulEndPos - _SimulBeginPos;
-	_bMovedOnThisSimulation =
-		XMVectorGetX(XMVector3LengthSq(PosDelta.SimdVec)) > 0.0001f;
-
-	Quaternion RotDelta = CalcRotDelta();
-	_bRotatedOnThisSimulation =
-		XMVectorGetX(XMVector3LengthSq(RotDelta.SimdVec)) > 0.0001f;
-
-	_bTransformModifiedOnThisTick = _bMovedOnThisSimulation || _bRotatedOnThisSimulation;
 }
 
 ICollInstanceBase* RigidBodyDynamic::GetCollInstance() const

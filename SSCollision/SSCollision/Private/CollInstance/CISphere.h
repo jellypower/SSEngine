@@ -26,7 +26,7 @@ public:
 public:
 	virtual ECollShapeType GetCollShapeType() const override;
 
-	virtual void SyncColliderTransform_ByContent(const Transform& LocalTransform) override;
+	virtual void SyncColliderLclTransform_ByContent(const Transform& LocalTransform) override;
 
 	virtual const Vector4f& GetOffset() const override;
 	virtual void SetOffset(const Vector4f& InOffset) override;

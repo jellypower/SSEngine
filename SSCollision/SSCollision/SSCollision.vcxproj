@@ -184,6 +184,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\CollDetect\CollDebug_Private.h" />
     <ClInclude Include="Private\CollInstance\CISphere.h" />
     <ClInclude Include="Private\CollInstance\CIUtils_Private.h" />
+    <ClInclude Include="Private\Util_Private\PxConvert.h" />
     <ClInclude Include="Private\RigidBody\RigidBodyDynamic.h" />
     <ClInclude Include="Private\RigidBody\RigidBodyStatic.h" />
     <ClInclude Include="Private\RigidBody\RIUtils_Private.h" />
@@ -229,6 +230,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Private\Util_Private\PxConvert.cpp" />
     <ClCompile Include="Private\RigidBody\RigidBodyDynamic.cpp" />
     <ClCompile Include="Private\RigidBody\RigidBodyStatic.cpp" />
     <ClCompile Include="Private\RigidBody\RigidCharacterMovement.cpp" />

@@ -115,7 +115,7 @@ ECollShapeType CISphere::GetCollShapeType() const
 	return ECollShapeType::Sphere;
 }
 
-void CISphere::SyncColliderTransform_ByContent(const Transform& LocalTransform)
+void CISphere::SyncColliderLclTransform_ByContent(const Transform& LocalTransform)
 {
 	_ColliderTransform = LocalTransform;
 	ApplyLocalTransformChange();

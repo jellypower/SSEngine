@@ -10,7 +10,7 @@
 
 CIBox::CIBox(const CI_BOX_DESC& Desc, physx::PxShape* InShape)
 {
-	_ColliderTransform = Desc.InitialLclTransform;
+	_ColliderLclTransform = Desc.InitialLclTransform;
 	_Offset = Desc.Offset;
 	_GameObjectHashCode = Desc.ComponentID;
 	_Extent = Desc.Extent;
@@ -29,9 +29,9 @@ ECollShapeType CIBox::GetCollShapeType() const
 	return ECollShapeType::Box;
 }
 
-void CIBox::SyncColliderTransform_ByContent(const Transform& LocalTransform)
+void CIBox::SyncColliderLclTransform_ByContent(const Transform& LocalTransform)
 {
-	_ColliderTransform = LocalTransform;
+	_ColliderLclTransform = LocalTransform;
 	ApplyLocalTransformChange();
 }
 
@@ -97,7 +97,7 @@ ICollisionWorld* CIBox::GetIncludedCollWorld() const
 Transform CIBox::CalcBoxTransform() const
 {
 	Transform NewTransform = { _Offset, Quaternion(), _Extent };
-	NewTransform = NewTransform * _ColliderTransform;
+	NewTransform = NewTransform * _ColliderLclTransform;
 	return NewTransform;
 }
 

@@ -25,7 +25,7 @@ public:
 	virtual ERigidBodyType GetRigidBodyType() const override;
 	virtual bool IsTransformModifiedOnThisTick() const override;
 
-	virtual void SetSimulBeginPosAndRot(const Vector4f& InPos, const Quaternion& InRot) override;
+	virtual void SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, const Quaternion& InRot) override;
 	virtual const Vector4f& GetSimulBeginPos() const override;
 	virtual const Quaternion& GetSimulBeginRot() const override;
 

@@ -13,7 +13,7 @@ private:
 	// 무게중심 기준으로 XYZ좌표의 길이(XYZ = {0.5, 0.5, 0.5} 여야 1*1*1짜리 박스임)
 	Vector4f _Extent = Vector4f(0.5f, 0.5f, 0.5f, 0);
 	Vector4f _Offset = Vector4f(0, 0, 0, 1);;
-	Transform _ColliderTransform;
+	Transform _ColliderLclTransform;
 
 	IRigidBodyBase* _OwnerRigidBody = nullptr;
 	ICollisionWorld* _IncludedCollWorld = nullptr;
@@ -28,7 +28,7 @@ public:
 public:
 	virtual ECollShapeType GetCollShapeType() const override;
 
-	virtual void SyncColliderTransform_ByContent(const Transform& LocalTransform) override;
+	virtual void SyncColliderLclTransform_ByContent(const Transform& LocalTransform) override;
 
 	virtual const Vector4f& GetOffset() const override;
 	virtual void SetOffset(const Vector4f& InOffset) override;

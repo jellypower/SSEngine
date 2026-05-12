@@ -18,7 +18,7 @@ public:
 	virtual ECollShapeType GetCollShapeType() const = 0;
 
 	// 기본적으로 GameObject의 World_Scale, Local_Rotation, Local_Pos이 들어감 
-	virtual void SyncColliderTransform_ByContent(const Transform& LocalTransform) = 0;
+	virtual void SyncColliderLclTransform_ByContent(const Transform& LocalTransform) = 0;
 
 	virtual const Vector4f& GetOffset() const = 0;
 	virtual void SetOffset(const Vector4f& InOffset) = 0;

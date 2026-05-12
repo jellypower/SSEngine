@@ -92,7 +92,7 @@ void SRigidBodyBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPh
 		return;
 	}
 
-	IRI->SetSimulBeginPosAndRot(
+	IRI->SetSimulBeginPosAndRot_ByContent(
 		GO->GetCommittedWorldTransformMat().r[3],
 		GO->GetCommittedWorldRotation());
 }

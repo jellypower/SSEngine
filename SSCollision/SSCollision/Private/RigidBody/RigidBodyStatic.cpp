@@ -28,7 +28,7 @@ bool RigidBodyStatic::IsTransformModifiedOnThisTick() const
 	return false;
 }
 
-void RigidBodyStatic::SetSimulBeginPosAndRot(const Vector4f& InPos, const Quaternion& InRot)
+void RigidBodyStatic::SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, const Quaternion& InRot)
 {
 	_SimulBeginPos = InPos;
 	_SimulBeginRot = InRot;

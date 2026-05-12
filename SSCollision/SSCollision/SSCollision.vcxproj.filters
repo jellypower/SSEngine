@@ -114,6 +114,9 @@
     <ClInclude Include="Private\RigidBody\RigidBodyStatic.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Private\Util_Private\PxConvert.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -162,6 +165,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\RigidBody\RigidBodyStatic.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Util_Private\PxConvert.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

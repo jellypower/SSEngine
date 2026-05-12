@@ -41,7 +41,7 @@ void SColliderBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPha
 	SGameObject* GO = GetGameObject();
 	if (_OwnerRigidBody == nullptr)
 	{
-		GetCollInstance()->SyncColliderTransform_ByContent(GO->GetTransform());
+		GetCollInstance()->SyncColliderLclTransform_ByContent(GO->GetTransform());
 		return;
 	}
 
@@ -51,11 +51,11 @@ void SColliderBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPha
 		Transform LclTransform = RigidGO->GetTransform();
 		LclTransform.Position = Vector4f::Zero;
 		LclTransform.Rotation = Quaternion();
-		GetCollInstance()->SyncColliderTransform_ByContent(LclTransform);
+		GetCollInstance()->SyncColliderLclTransform_ByContent(LclTransform);
 	}
 	else
 	{
-		GetCollInstance()->SyncColliderTransform_ByContent(GO->GetTransform());
+		GetCollInstance()->SyncColliderLclTransform_ByContent(GO->GetTransform());
 	}
 }
 
