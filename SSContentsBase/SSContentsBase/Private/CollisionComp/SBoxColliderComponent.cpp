@@ -27,7 +27,7 @@ void SBoxColliderComponent::SetExtent(const Vector4f& Extent)
 
 bool SBoxColliderComponent::ShouldProcessPerFrameInherently() const
 {
-	return true;
+	return false;
 }
 
 void SBoxColliderComponent::PerFrame(float DeltaTime)

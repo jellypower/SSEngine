@@ -5,6 +5,8 @@
 
 #include "SSCollision/Private/CollDetect/CollDebug_Private.h"
 #include "SSCollision/Private/CollInstance/CIUtils_Private.h"
+#include "SSCollision/Public/CollInstance/ICIBox.h"
+#include "SSCollision/Public/CollInstance/ICollInstanceBase.h"
 #include "SSCollision/Public/DEBUG/CollDebugDrawDescs.h"
 #include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
 
@@ -63,6 +65,10 @@ void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 
 void RigidCharacterMovement::OnEndSimulation()
 {
+#if DEBUG
+	CollDebug_Private::DrawPXRigid(this, {0, 1, 0, 0}, true);
+#endif
+
 	_MoveInput = Vector2f::Zero;
 }
 
