@@ -51,8 +51,12 @@ void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 
 
 	physx::PxTransform Target;
-	Target.p = { _SimulEndPos.X, _SimulEndPos.Y, _SimulEndPos.Z };
-	float Yaw = atan2f(_CurFace.Y, _CurFace.X);
+	Target.p = PxTransformConvert::Vec3ToPx(_SimulEndPos);
+
+	// SCharacterMovementComponent::PostCollision_SyncTransform 함수를 보면 결국
+	// 최종 로테이션의 Yaw값은 float Yaw = atan2(CurFace.X, CurFace.Y); 이렇게 계산함
+	// 그런데, PhysX는 오른손 좌표계니까 Yaw값만 뒤집어줘야 제대로된 KinematicTarget이 들어감
+	float Yaw = -atan2(_CurFace.X, _CurFace.Y);
 	Target.q = physx::PxQuat(Yaw, physx::PxVec3(0, 1, 0));
 	_PxActor->setKinematicTarget(Target);
 }
@@ -67,8 +71,8 @@ void RigidCharacterMovement::SetSimulBeginPosAndRot_ByContent(const Vector4f& In
 	_SimulBeginPos = InPos;
 
 	physx::PxTransform Pose;
-	Pose.p = { InPos.X, InPos.Y, InPos.Z };
-	Pose.q = { InRot.X, InRot.Y, InRot.Z, InRot.W };
+	Pose.p = PxTransformConvert::Vec3ToPx(InPos);
+	Pose.q = PxTransformConvert::QuatToPx(InRot);
 	_PxActor->setGlobalPose(Pose);
 }
 
@@ -273,6 +277,7 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 				break;
 			}
 
+			// 만약 오른쪽(X+)으로 움직이는 경우에 TargetYaw값은 0이된다.
 			TargetYaw = atan2(VelocityNormalized.Y, VelocityNormalized.X);
 			TargetYaw += XM_2PI;
 			TargetYaw = fmod(TargetYaw, XM_2PI);
@@ -332,7 +337,7 @@ void RigidCharacterMovement::MovementRotate(float DeltaTime)
 
 		// TODO: 여기 문제있는듯. 고치자.
 		float NewYaw = SS::Lerp(PrevYaw, TargetYaw, TurnAmount);
-		
+		 
 		_CurFace.X = cos(NewYaw);
 		_CurFace.Y = sin(NewYaw);
 	}

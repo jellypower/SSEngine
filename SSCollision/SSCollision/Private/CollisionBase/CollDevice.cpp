@@ -90,9 +90,8 @@ ICISphere* CollDevice::CreateCollSphere(const CI_SPHERE_DESC& InDesc)
 IRigidBodyBase* CollDevice::CreateStaticRigidBody(const RIGID_STATIC_DESC& InDesc)
 {
 	physx::PxTransform InitialPose;
-	InitialPose.p = { InDesc.InitialWorldPos.X, InDesc.InitialWorldPos.Y, InDesc.InitialWorldPos.Z };
-	InitialPose.q = { InDesc.InitialWorldRot.X, InDesc.InitialWorldRot.Y, InDesc.InitialWorldRot.Z, InDesc.InitialWorldRot.W };
-
+	InitialPose.p = PxTransformConvert::Vec3ToPx(InDesc.InitialWorldPos);
+	InitialPose.q = PxTransformConvert::QuatToPx(InDesc.InitialWorldRot);
 	physx::PxRigidStatic* Actor = _Physics->createRigidStatic(InitialPose);
 
 	return DBG_NEW RigidBodyStatic(InDesc, Actor);
@@ -100,12 +99,11 @@ IRigidBodyBase* CollDevice::CreateStaticRigidBody(const RIGID_STATIC_DESC& InDes
 
 IRigidCahracterMovement* CollDevice::CreateCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc)
 {
-	physx::PxTransform NewPxTransform;
+	physx::PxTransform InitialPose;
+	InitialPose.p = PxTransformConvert::Vec3ToPx(InDesc.InitialWorldPos);
+	InitialPose.q = PxTransformConvert::QuatToPx(InDesc.InitialWorldRot);
 
-	NewPxTransform.p = { InDesc.InitialWorldPos.X,InDesc.InitialWorldPos.Y,InDesc.InitialWorldPos.Z};
-	NewPxTransform.q = { InDesc.InitialWorldRot.X,InDesc.InitialWorldRot.Y ,InDesc.InitialWorldRot.Z ,InDesc.InitialWorldRot.W };
-
-	physx::PxRigidDynamic* body = _Physics->createRigidDynamic(physx::PxTransform(physx::PxIdentity));
+	physx::PxRigidDynamic* body = _Physics->createRigidDynamic(InitialPose);
 
 	body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 	physx::PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
@@ -116,8 +114,8 @@ IRigidCahracterMovement* CollDevice::CreateCharacterMovement(const RIGID_CHARACT
 IRigidBodyDynamic* CollDevice::CreateDynamicRigidBody(const RIGID_DYNAMIC_DESC& InDesc)
 {
 	physx::PxTransform InitialPose;
-	InitialPose.p = { InDesc.InitialWorldPos.X, InDesc.InitialWorldPos.Y, InDesc.InitialWorldPos.Z };
-	InitialPose.q = { InDesc.InitialWorldRot.X, InDesc.InitialWorldRot.Y, InDesc.InitialWorldRot.Z, InDesc.InitialWorldRot.W };
+	InitialPose.p = PxTransformConvert::Vec3ToPx(InDesc.InitialWorldPos);
+	InitialPose.q = PxTransformConvert::QuatToPx(InDesc.InitialWorldRot);
 
 	physx::PxRigidDynamic* Actor = _Physics->createRigidDynamic(InitialPose);
 	physx::PxRigidBodyExt::updateMassAndInertia(*Actor, InDesc.Mass);

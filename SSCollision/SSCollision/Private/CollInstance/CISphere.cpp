@@ -36,21 +36,14 @@ void CISphere::ApplyLocalTransformChange()
 	{
 		physx::PxTransform PxPose = _Shape->getLocalPose();
 
-		XMVECTOR PrevPos = XMVectorSet(PxPose.p.x, PxPose.p.x, PxPose.p.x, 1);
-		XMVECTOR PrevRot = XMVectorSet(PxPose.q.x, PxPose.q.y, PxPose.q.z, PxPose.q.w);
+		Vector4f PrevPos = PxTransformConvert::Vec3FromPx(PxPose.p);
+		Quaternion PrevRot = PxTransformConvert::QuatFromPx(PxPose.q);
 
-		if (XMAlmostEqual(PrevPos, NewTransform.Position.SimdVec) == false ||
-			XMAlmostEqual(PrevRot, NewTransform.Rotation.SimdVec) == false)
+		if (XMAlmostEqual(PrevPos.SimdVec, NewTransform.Position.SimdVec) == false ||
+			XMAlmostEqual(PrevRot.SimdVec, NewTransform.Rotation.SimdVec) == false)
 		{
-			PxPose.p = {
-				NewTransform.Position.X ,
-				NewTransform.Position.Y,
-				NewTransform.Position.Z };
-			PxPose.q = {
-				NewTransform.Rotation.X,
-				NewTransform.Rotation.Y,
-				NewTransform.Rotation.Z,
-				NewTransform.Rotation.W };
+			PxPose.p = PxTransformConvert::Vec3ToPx(NewTransform.Position);
+			PxPose.q = PxTransformConvert::QuatToPx(NewTransform.Rotation);
 			_Shape->setLocalPose(PxPose);
 		}
 

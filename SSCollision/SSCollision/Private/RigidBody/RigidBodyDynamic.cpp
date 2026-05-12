@@ -33,8 +33,8 @@ void RigidBodyDynamic::SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, c
 	_SimulBeginRot = InRot;
 
 	physx::PxTransform Pose;
-	Pose.p = { InPos.X, InPos.Y, InPos.Z };
-	Pose.q = { InRot.X, InRot.Y, InRot.Z, InRot.W };
+	Pose.p = PxTransformConvert::Vec3ToPx(InPos);
+	Pose.q = PxTransformConvert::QuatToPx(InRot);
 	_PxActor->setGlobalPose(Pose);
 }
 
@@ -77,8 +77,8 @@ void RigidBodyDynamic::OnBeginSimulation()
 void RigidBodyDynamic::OnEndSimulation()
 {
 	physx::PxTransform Pose = _PxActor->getGlobalPose();
-	_SimulEndPos = { Pose.p.x, Pose.p.y, Pose.p.z, 1 };
-	_SimulEndRot = Quaternion(XMVectorSet(Pose.q.x, Pose.q.y, Pose.q.z, Pose.q.w));
+	_SimulEndPos = PxTransformConvert::Vec3FromPx(Pose.p);
+	_SimulEndRot = PxTransformConvert::QuatFromPx(Pose.q);
 }
 
 ICollInstanceBase* RigidBodyDynamic::GetCollInstance() const
@@ -221,7 +221,7 @@ void RigidBodyDynamic::SetKinematic(bool bKinematic)
 
 void RigidBodyDynamic::SetKinematicTarget(const Vector4f& Pos, const Quaternion& Rot)
 {
-	physx::PxVec3 PxPos(Pos.X, Pos.Y, Pos.Z);
-	physx::PxQuat PxRot(Rot.X, Rot.Y, Rot.Z, Rot.W);
+	physx::PxVec3 PxPos = PxTransformConvert::Vec3ToPx(Pos);
+	physx::PxQuat PxRot = PxTransformConvert::QuatToPx(Rot);
 	_PxActor->setKinematicTarget(physx::PxTransform(PxPos, PxRot));
 }

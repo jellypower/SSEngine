@@ -34,8 +34,8 @@ void RigidBodyStatic::SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, co
 	_SimulBeginRot = InRot;
 
 	physx::PxTransform Pose;
-	Pose.p = { InPos.X, InPos.Y, InPos.Z };
-	Pose.q = { InRot.X, InRot.Y, InRot.Z, InRot.W };
+	Pose.p = PxTransformConvert::Vec3ToPx(InPos);
+	Pose.q = PxTransformConvert::QuatToPx(InRot);
 	_PxActor->setGlobalPose(Pose);
 }
 

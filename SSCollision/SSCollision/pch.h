@@ -8,12 +8,16 @@
 #include "SObject/Public/SObjHashCode.h"
 
 
-
 #include <physx/include/PxShape.h>
 #include <physx/include/PxActor.h>
 #include <physx/include/PxPhysics.h>
 #include <physx/include/PxPhysicsAPI.h>
 #include <physx/include/PxScene.h>
 #include <physx/include/foundation/PxAllocator.h>
+
+
+
+#include "SSCollision/Private/Util_Private/PxConvert.h"
+
 
 #endif //PCH_H

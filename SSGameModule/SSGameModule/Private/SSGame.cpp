@@ -117,7 +117,7 @@ void SSGame::StartUpGame()
 
 		SBoxColliderComponent* BoxComp = _MainCharacter->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
 		BoxComp->SetExtent(Vector4f(0.3f, 0.9, 0.3f, 0));
-		BoxComp->SetOffset(Vector4f(0, 0.9f, 0, 0));
+		BoxComp->SetOffset(Vector4f(0, 0.9f, 0.f, 0));
 		SCharacterMovementComponent* CharacterComp = _MainCharacter->CreateComponent<SCharacterMovementComponent>(L"SCharacterComponent");
 
 		CharacterComp->BindAnimComp(AnimComp);
@@ -170,6 +170,7 @@ void SSGame::StartUpGame()
 		_DefaultWorld->AddToWorld(CharacterModel);
 	}
 
+	if (true)
 	{
 
 		srand(time(NULL));
@@ -178,28 +179,34 @@ void SSGame::StartUpGame()
 		{
 			for (int32 z = -4; z <= 4; z += 4)
 			{
-				SGameObject* Cube = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Cube", false);
 
 				// generate random from -PI to PI
 				float r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI))) - XM_PI;
-				float PosNoiseX = (float)rand() / ((float)RAND_MAX / (2.0)) - 0.1;
-				float PosNoiseZ = (float)rand() / ((float)RAND_MAX / (2.0)) - 0.1;
+				float PosNoiseX = (float)rand() / ((float)RAND_MAX / (2.0)) - 1;
+				float PosNoiseZ = (float)rand() / ((float)RAND_MAX / (2.0)) - 1;
+
+				float ScaleNoiseX = (float)rand() / ((float)RAND_MAX / (0.75)) + 0.25;
+				float ScaleNoiseZ = (float)rand() / ((float)RAND_MAX / (0.75)) + 0.25;
+
 				PosNoiseX += x;
 				PosNoiseZ += z;
 				Transform CubeTransform;
 				CubeTransform.Position = { PosNoiseX,0.5,PosNoiseZ,1 };
 				CubeTransform.Rotation = Quaternion::FromEulerRotation({ 0, r,0,0 });
-				Cube->SetTransform(CubeTransform);
+				CubeTransform.Scale = { ScaleNoiseX , 1 , ScaleNoiseZ, 0 };
 
-				SBoxColliderComponent* BoxCollider = Cube->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-				BoxCollider->SetExtent({ 0.5f, 0.5f, 0.5f, 0 });
-				Cube->CreateComponent<SRigidBodyDynamicComponent>(L"SRigidBodyDynamicComponent");
-				SGameObjectConstructor::FinishConstructHierarchy(Cube);
-
+				SGameObject* Cube = CreateDynamicCube(CubeTransform);
 				_DefaultWorld->AddToWorld(Cube);
 			}
 		}
-
+	}
+	else
+	{
+		Transform CubeTransform;
+		CubeTransform.Position = { 1,0.5,0,1 };
+		CubeTransform.Scale = { 2, 1, 0.25f, 0 };
+		SGameObject* Cube = CreateDynamicCube(CubeTransform);
+		_DefaultWorld->AddToWorld(Cube);
 	}
 }
 
@@ -283,4 +290,17 @@ void SSGame::PerFrame_DEBUGDRAW()
 			false,
 			{ 1,0,0,1 });
 	}
+}
+
+SGameObject* SSGame::CreateDynamicCube(Transform InTransform)
+{
+	SGameObject* Cube = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Cube", false);
+	Cube->SetTransform(InTransform);
+
+	SBoxColliderComponent* BoxCollider = Cube->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+	BoxCollider->SetExtent({ 0.5f, 0.5f, 0.5f, 0 });
+	Cube->CreateComponent<SRigidBodyDynamicComponent>(L"SRigidBodyDynamicComponent");
+	SGameObjectConstructor::FinishConstructHierarchy(Cube);
+
+	return Cube;
 }

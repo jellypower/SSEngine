@@ -20,7 +20,11 @@ private:
 	Vector2f _MoveInput;
 
 	Vector2f _MoveLateralVelocity;
+	// _MoveLateralVelocity.Y값이 Z축 이동,
+	// _MoveLateralVelocity.X값이 X축 이동
 	Vector2f _CurFace;
+	// _CurFace.Y 값이 Z축 이동,
+	// _CurFace.X 값이 X축 이동
 	Vector2f _EnteredFace;
 
 private:
