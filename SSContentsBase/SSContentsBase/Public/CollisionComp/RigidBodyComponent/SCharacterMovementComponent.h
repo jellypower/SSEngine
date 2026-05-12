@@ -1,9 +1,8 @@
 ﻿#pragma once
 #include "SRigidBodyBaseComponent.h"
-#include "SSContentsBase/Public/ContentBase/SComponentBase.h"
 
-#include "SSCollision/Public/RigidBody/IRigidCahracterMovement.h"
-
+enum class ECharacterFaceMode;
+class IRigidCahracterMovement;
 class SColliderBaseComponent;
 class SBlendSpaceAnimTestComponent;
 

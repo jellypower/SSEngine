@@ -143,15 +143,97 @@ SGameObject
 ```
 Logic → Physics:
   SGameObject::CommitTransform()
-    └─ ICollInstanceBase::SyncWorldTransform_ByContent()
-         └─ ICollisionWorld::SimulateMovement()  [PhysX]
+    └─ SRigidBodyBaseComponent::OnGameObjectTransformCommited()
+         └─ IRigidBodyBase::SetSimulBeginPosAndRot()
+
+  ICollisionWorld::OnBeginSimulation()
+    └─ IRigidBodyBase::OnBeginSimulation()
+
+  ICollisionWorld::SimulateMovement(dt)
+    ├─ IRigidBodyCustomSim::SimulateMovement(dt)   ← custom logic (e.g. character movement)
+    └─ PxScene::simulate(dt) + fetchResults()      ← PhysX drives IRigidBodyDynamic
 
 Physics → Logic:
   ICollisionWorld::OnEndSimulation()
-    └─ IRigidBodyBase::SimulatedPosDelta / SimulatedRotDelta
+    └─ IRigidBodyBase::OnEndSimulation()           ← reads PxActor::getGlobalPose()
          └─ SRigidBodyBaseComponent::PostCollision_SyncTransform()
-              └─ SGameObject::SetWorldTransform()
+              └─ SGameObject::SetTransform()
 ```
+
+---
+
+## SSCollision Internal Architecture
+
+### IRigidBody Class Hierarchy
+
+```
+IRigidBodyBase                        (identity, collider binding, world lifecycle)
+  └─ IRigidbodySim                    (simulation result query: EndPos/Rot, deltas)
+       ├─ IRigidBodyCustomSim         (custom SimulateMovement logic)
+       │    └─ RigidCharacterMovement (character controller: lateral velocity, face dir)
+       └─ IRigidBodyDynamic           (PhysX-driven: force, impulse, velocity, mass)
+            └─ RigidBodyDynamic
+```
+
+### PhysX Ownership Model
+
+```
+IRigidBodyBase
+  └─ PxRigidActor*          ← owns the PhysX actor (added to PxScene)
+       └─ PxShape*           ← owned by ICollInstanceBase (CIBox / CISphere)
+                                attached via IRigidBodyBase::BindCollisionInstance()
+```
+
+- `IRigidBodyBase` is what gets added to `CollisionWorld` and `PxScene`
+- `ICollInstanceBase` is never added to the world directly — it lives as a shape on an actor
+- `ICollDevice` (singleton `g_CollDevice`) is the factory for all physics objects
+
+### CollisionWorld Storage
+
+```cpp
+SS::HashMap<SObjHashCode, IRigidBodyBase*>     _StaticRigidBodies
+SS::HashMap<SObjHashCode, IRigidBodyDynamic*>  _DynamicRigidBodies
+SS::HashMap<SObjHashCode, IRigidBodyCustomSim*> _CustomSimBodies
+```
+
+`ERigidBodyType` → `ERigidBodySimType` mapping lives in `RIUtils_Public.h`.  
+`ExtractPxActor(IRigidBodyBase*)` in `RIUtils_Private.cpp` downcasts to the concrete type to retrieve the `PxActor*`.
+
+### PhysX Coordinate System
+
+PhysX uses a right-handed coordinate system (Z points out of screen); DirectX uses left-handed (Z points into screen). Current convention: **write positions with Z as-is** (no conversion). All objects are transformed consistently so relative collision results are correct. Reading back simulation results does not require Z negation under this convention.
+
+### Creation Flow
+
+```
+g_CollDevice->CreateDynamicRigidBody(RIGID_DYNAMIC_DESC)
+  └─ PxPhysics::createRigidDynamic(initialPose)
+       └─ DBG_NEW RigidBodyDynamic(desc, pxActor)
+
+g_CollDevice->CreateCollBox(CI_BOX_DESC)
+  └─ PxPhysics::createShape(PxBoxGeometry, material, exclusive=true)
+       └─ DBG_NEW CIBox(desc, pxShape)
+
+CollisionWorld::AddToWorld(IRigidBodyBase*)
+  └─ ExtractPxActor(rigidBody)
+       └─ PxScene::addActor(*pxActor)
+```
+
+### SSContentsBase Collision Components
+
+```
+SRigidBodyBaseComponent              (handles world registration, transform sync interface)
+  ├─ SCharacterMovementComponent     → RigidCharacterMovement (IRigidBodyCustomSim)
+  └─ SRigidBodyDynamicComponent      → RigidBodyDynamic       (IRigidBodyDynamic)
+
+SColliderBaseComponent               (wraps ICollInstanceBase)
+  ├─ SBoxColliderComponent           → CIBox
+  └─ SSphereColliderComponent        → CISphere
+```
+
+Collider components are bound to a rigid body component via `SRigidBodyBaseComponent::BindColliderComponent()`, which calls `IRigidBodyBase::BindCollisionInstance()` → `PxActor::attachShape()`.
+
+---
 
 ### Asset Pipeline — Editor time
 

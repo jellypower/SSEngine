@@ -13,6 +13,20 @@ struct RIGID_CREATION_DESC
 
 
 
+struct RIGID_STATIC_DESC : public RIGID_CREATION_DESC
+{
+};
+
+
+struct RIGID_DYNAMIC_DESC : public RIGID_CREATION_DESC
+{
+	float Mass = 1.f;
+	float LinearDamping = 0.f;
+	float AngularDamping = 0.05f;
+	bool bGravityEnabled = true;
+	bool bKinematic = false;
+};
+
 struct RIGID_CHARACTERMOVEMENT_DESC : public RIGID_CREATION_DESC
 {
 	float AccelMultiplier = 20;

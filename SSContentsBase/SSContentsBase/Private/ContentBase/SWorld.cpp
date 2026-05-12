@@ -94,45 +94,53 @@ void SWorld::PerFrameCollision()
 {
 	const float SmoothDeltaTime = SSFrameInfo::GetSmoothDeltaTime();
 
-	_CollWorld->OnBeginSimulation();
-	_CollWorld->SimulateMovement(SmoothDeltaTime * _TimeScale);
-	_CollWorld->OnEndSimulation();
-
-	const SS::HashMap<SObjHashCode, IRigidBodyBase*>& StaticRigidBodies = _CollWorld->GetStaticRigidBodies();
-	for (const SS::pair<SObjHashCode, IRigidBodyBase*>& RigidBodyItem : StaticRigidBodies)
 	{
-		if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
-		{
-			continue;
-		}
-
-		SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
-		RigidBodyIComp->PostCollision_SyncTransform();
+		SCOPE_PROFILE(Simulate);
+		_CollWorld->OnBeginSimulation();
+		_CollWorld->SimulateMovement(SmoothDeltaTime * _TimeScale);
+		_CollWorld->OnEndSimulation();
 	}
 
-	const auto& DynamicRigidBodies = _CollWorld->GetDynamicRigidBodies();
-	for (const SS::pair<SObjHashCode, IRigidBodyDynamic*>& RigidBodyItem : DynamicRigidBodies)
+
 	{
-		if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
+		SCOPE_PROFILE(Apply);
+		const SS::HashMap<SObjHashCode, IRigidBodyBase*>& StaticRigidBodies = _CollWorld->GetStaticRigidBodies();
+		for (const SS::pair<SObjHashCode, IRigidBodyBase*>& RigidBodyItem : StaticRigidBodies)
 		{
-			continue;
+			if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
+			{
+				continue;
+			}
+
+			SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
+			RigidBodyIComp->PostCollision_SyncTransform();
 		}
 
-		SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
-		RigidBodyIComp->PostCollision_SyncTransform();
-	}
-
-	const SS::HashMap<SObjHashCode, IRigidBodyCustomSim*>& CustomRigidBodies = _CollWorld->GetCustomSimBodies();
-	for (const SS::pair<SObjHashCode, IRigidBodyCustomSim*>& RigidBodyItem : CustomRigidBodies)
-	{
-		if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
+		const auto& DynamicRigidBodies = _CollWorld->GetDynamicRigidBodies();
+		for (const SS::pair<SObjHashCode, IRigidBodyDynamic*>& RigidBodyItem : DynamicRigidBodies)
 		{
-			continue;
+			if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
+			{
+				continue;
+			}
+
+			SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
+			RigidBodyIComp->PostCollision_SyncTransform();
 		}
 
-		SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
-		RigidBodyIComp->PostCollision_SyncTransform();
+		const SS::HashMap<SObjHashCode, IRigidBodyCustomSim*>& CustomRigidBodies = _CollWorld->GetCustomSimBodies();
+		for (const SS::pair<SObjHashCode, IRigidBodyCustomSim*>& RigidBodyItem : CustomRigidBodies)
+		{
+			if (RigidBodyItem.second->IsTransformModifiedOnThisTick() == false)
+			{
+				continue;
+			}
+
+			SRigidBodyBaseComponent* RigidBodyIComp = static_cast<SRigidBodyBaseComponent*>(RigidBodyItem.first.GetSObject());
+			RigidBodyIComp->PostCollision_SyncTransform();
+		}
 	}
+
 }
 
 bool SWorld::IsAnyObjectRemainInWorld() const

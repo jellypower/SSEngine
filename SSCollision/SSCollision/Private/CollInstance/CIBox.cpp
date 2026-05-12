@@ -103,6 +103,7 @@ Transform CIBox::CalcBoxTransform() const
 
 void CIBox::ApplyLocalTransformChange()
 {
+
 	Transform NewTransform = CalcBoxTransform();
 
 	if (_Shape != nullptr)

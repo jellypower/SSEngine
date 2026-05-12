@@ -182,6 +182,7 @@ void SGameObject::SetParent(SGameObject* InNewParent)
 
 	_Parent = InNewParent;
 	InNewParent->_Children.PushBack(this);
+//	MarkTransformCommitNeeded();
 }
 
 void SGameObject::AddComponent(SComponentBase* InComponent)

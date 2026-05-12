@@ -108,6 +108,12 @@
     <ClInclude Include="Public\RigidBody\RIUtils_Public.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Private\RigidBody\RigidBodyDynamic.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\RigidBody\RigidBodyStatic.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -146,16 +152,16 @@
     <ClCompile Include="Private\SpatialSystem\SASSweepAndPrune.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Public\RigidBody\IRigidBodyDynamic.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Public\RigidBody\IRigidBodyCustomSim.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Private\RigidBody\RIUtils_Private.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Private\CollInstance\CIUtils_Private.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RigidBody\RigidBodyDynamic.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RigidBody\RigidBodyStatic.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

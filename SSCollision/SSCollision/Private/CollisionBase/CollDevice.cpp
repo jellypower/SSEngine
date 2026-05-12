@@ -6,6 +6,8 @@
 #include "SSCollision/Private/CollInstance/CIBox.h"
 #include "SSCollision/Private/CollDetect/CollCalc_Private.h"
 #include "SSCollision/Private/CollInstance/CISphere.h"
+#include "SSCollision/Private/RigidBody/RigidBodyStatic.h"
+#include "SSCollision/Private/RigidBody/RigidBodyDynamic.h"
 #include "SSCollision/Private/RigidBody/RigidCharacterMovement.h"
 #include "SSCollision/Public/CollInstance/CICreationDesc.h"
 #include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
@@ -19,12 +21,12 @@ CollDevice::CollDevice()
 	_Pvd = PxCreatePvd(*_Foundation);
 	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	_Pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
-	_ToleranceScale.length = 100;        // typical length of an object
-	_ToleranceScale.speed = 981;         // typical speed of an object, gravity*1s is a reasonable choice
+	_ToleranceScale.length = 1;          // typical length of an object (meter scale)
+	_ToleranceScale.speed = 9.81f;       // typical speed of an object, gravity*1s is a reasonable choice
 	_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_Foundation, _ToleranceScale, true, _Pvd);
 
 	_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
-	_DefaultMaterial = _Physics->createMaterial(0.5f, 0.5f, 0.6f);
+	_DefaultMaterial = _Physics->createMaterial(0.6f, 0.6f, 0.0f);
 }
 
 CollDevice::~CollDevice()
@@ -85,6 +87,17 @@ ICISphere* CollDevice::CreateCollSphere(const CI_SPHERE_DESC& InDesc)
 	return NewSphere;
 }
 
+IRigidBodyBase* CollDevice::CreateStaticRigidBody(const RIGID_STATIC_DESC& InDesc)
+{
+	physx::PxTransform InitialPose;
+	InitialPose.p = { InDesc.InitialWorldPos.X, InDesc.InitialWorldPos.Y, InDesc.InitialWorldPos.Z };
+	InitialPose.q = { InDesc.InitialWorldRot.X, InDesc.InitialWorldRot.Y, InDesc.InitialWorldRot.Z, InDesc.InitialWorldRot.W };
+
+	physx::PxRigidStatic* Actor = _Physics->createRigidStatic(InitialPose);
+
+	return DBG_NEW RigidBodyStatic(InDesc, Actor);
+}
+
 IRigidCahracterMovement* CollDevice::CreateCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc)
 {
 	physx::PxTransform NewPxTransform;
@@ -98,6 +111,18 @@ IRigidCahracterMovement* CollDevice::CreateCharacterMovement(const RIGID_CHARACT
 	physx::PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
 
 	return DBG_NEW RigidCharacterMovement(InDesc, body);
+}
+
+IRigidBodyDynamic* CollDevice::CreateDynamicRigidBody(const RIGID_DYNAMIC_DESC& InDesc)
+{
+	physx::PxTransform InitialPose;
+	InitialPose.p = { InDesc.InitialWorldPos.X, InDesc.InitialWorldPos.Y, InDesc.InitialWorldPos.Z };
+	InitialPose.q = { InDesc.InitialWorldRot.X, InDesc.InitialWorldRot.Y, InDesc.InitialWorldRot.Z, InDesc.InitialWorldRot.W };
+
+	physx::PxRigidDynamic* Actor = _Physics->createRigidDynamic(InitialPose);
+	physx::PxRigidBodyExt::updateMassAndInertia(*Actor, InDesc.Mass);
+
+	return DBG_NEW RigidBodyDynamic(InDesc, Actor);
 }
 
 bool CollDevice::AreColliding(const ICollInstanceBase* c1, const ICollInstanceBase* c2)

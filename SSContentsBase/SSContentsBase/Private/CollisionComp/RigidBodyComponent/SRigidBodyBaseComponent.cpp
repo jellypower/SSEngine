@@ -17,25 +17,40 @@ void SRigidBodyBaseComponent::PostConstructHierarchy()
 
 void SRigidBodyBaseComponent::OnEnterTheWorld()
 {
-	if (GetGameObject()->IsRootInWorld() == false)
+	SGameObject* GO = GetGameObject();
+	if (GO->IsRootInWorld() == false)
 	{
 		SS_INTERRUPT("RIgid body be must placed in Root.");
 		return;
 	}
 
-
 	SWorld* IncludedWorld = GetIncludedWorld();
 	ICollisionWorld* CollWorld = IncludedWorld->GetCollWorld();
 
-	IRigidBodyBase* RI = GetRigidBodyInstance();
-	ICollInstanceBase* BoundICI = RI->GetCollInstance();
-	if (BoundICI == nullptr)
+
+	SColliderBaseComponent* FoundCollider = GO->FindComponent<SColliderBaseComponent>();
+	if (FoundCollider == nullptr)
 	{
-		RI->BindCollisionInstance(_ColliderComp->GetCollInstance());
+		int32 ChildCnt = GO->GetChildCnt();
+		for (int32 i=0;i<ChildCnt;i++)
+		{
+			SGameObject* ChildGO = GO->GetChild(i);
+			FoundCollider = ChildGO->FindComponent<SColliderBaseComponent>();
+			if (FoundCollider != nullptr)
+			{
+				break;
+			}
+		}
 	}
 
+	if (FoundCollider == nullptr)
+	{
+		SS_ASSERT(false, L"Cannot work without Collider");
+		return;
+	}
 
-	CollWorld->AddToWorld(RI);
+	BindColliderComponent(FoundCollider);
+	CollWorld->AddToWorld(GetRigidBodyInstance());
 }
 
 void SRigidBodyBaseComponent::OnExitTheWorld()
@@ -56,18 +71,6 @@ void SRigidBodyBaseComponent::OnExitTheWorld()
 void SRigidBodyBaseComponent::PreDestructHierarchy()
 {
 	DestructRigidBodyInstance();
-}
-
-void SRigidBodyBaseComponent::BindColliderComponent(SColliderBaseComponent* InCollider)
-{
-	_ColliderComp = InCollider;
-	ICollInstanceBase* ICI = _ColliderComp->GetCollInstance();
-	IRigidBodyBase* IRI = GetRigidBodyInstance();
-
-	if (ICI != nullptr && IRI != nullptr)
-	{
-		IRI->BindCollisionInstance(ICI);
-	}
 }
 
 void SRigidBodyBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPhase)
@@ -92,4 +95,23 @@ void SRigidBodyBaseComponent::OnGameObjectTransformCommited(EFramePhase CommitPh
 	IRI->SetSimulBeginPosAndRot(
 		GO->GetCommittedWorldTransformMat().r[3],
 		GO->GetCommittedWorldRotation());
+}
+
+void SRigidBodyBaseComponent::BindColliderComponent(SColliderBaseComponent* InCollider)
+{
+	if (_ColliderComp != nullptr)
+	{
+		SS_ASSERT(false, L"TODO: Implement multiple Colliders");
+		return;
+	}
+
+	_ColliderComp = InCollider;
+	_ColliderComp->BindRigidBodyComponent(this);
+
+	ICollInstanceBase* ICI = _ColliderComp->GetCollInstance();
+	IRigidBodyBase* IRI = GetRigidBodyInstance();
+	if (ICI != nullptr && IRI != nullptr)
+	{
+		IRI->BindCollisionInstance(ICI);
+	}
 }

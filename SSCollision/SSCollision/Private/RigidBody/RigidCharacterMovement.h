@@ -35,10 +35,10 @@ private:
 	ICollisionWorld* _IncludedCollWorld = nullptr;
 	ICollInstanceBase* _CollInstance = nullptr;
 
-	physx::PxRigidBody* _PxActor = nullptr;
+	physx::PxRigidDynamic* _PxActor = nullptr;
 
 public:
-	RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc, physx::PxRigidBody* InActor);
+	RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc, physx::PxRigidDynamic* InActor);
 
 public:
 	virtual ERigidBodyType GetRigidBodyType() const override;

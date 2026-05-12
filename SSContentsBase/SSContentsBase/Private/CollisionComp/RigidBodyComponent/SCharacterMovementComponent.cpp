@@ -6,6 +6,8 @@
 #include "SSCollision/Public/CollisionBase/ICollDevice.h"
 #include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
 #include "SSCollision/Public/ModuleEntry/SSCollisionGlobalVariableSet.h"
+#include "SSCollision/Public/RigidBody/IRigidCahracterMovement.h"
+
 
 #include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
 #include "SSContentsBase/Public/ContentBase/SGameObject.h"

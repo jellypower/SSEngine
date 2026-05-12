@@ -9,7 +9,7 @@
 #include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
 
 
-RigidCharacterMovement::RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc, physx::PxRigidBody* InActor)
+RigidCharacterMovement::RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc, physx::PxRigidDynamic* InActor)
 {
 	_ComponentID = InDesc.ComponentID;
 
@@ -48,6 +48,13 @@ void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 
 	MovementPos(DeltaTime);
 	MovementRotate(DeltaTime);
+
+
+	physx::PxTransform Target;
+	Target.p = { _SimulEndPos.X, _SimulEndPos.Y, _SimulEndPos.Z };
+	float Yaw = atan2f(_CurFace.Y, _CurFace.X);
+	Target.q = physx::PxQuat(Yaw, physx::PxVec3(0, 1, 0));
+	_PxActor->setKinematicTarget(Target);
 }
 
 void RigidCharacterMovement::OnEndSimulation()
@@ -72,6 +79,11 @@ bool RigidCharacterMovement::IsRotatedOnThisSimulation() const
 void RigidCharacterMovement::SetSimulBeginPosAndRot(const Vector4f& InPos, const Quaternion& InRot)
 {
 	_SimulBeginPos = InPos;
+
+	physx::PxTransform Pose;
+	Pose.p = { InPos.X, InPos.Y, InPos.Z };
+	Pose.q = { InRot.X, InRot.Y, InRot.Z, InRot.W };
+	_PxActor->setGlobalPose(Pose);
 }
 
 const Vector4f& RigidCharacterMovement::GetSimulBeginPos() const

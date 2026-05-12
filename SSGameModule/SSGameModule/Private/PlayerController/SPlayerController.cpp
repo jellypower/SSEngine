@@ -10,6 +10,9 @@
 #include "SSContentsBase/Public/SRenderContent/Camera/SCameraComponent.h"
 #include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SCharacterMovementComponent.h"
 
+#include "SSCollision/Public/RigidBody/IRigidCahracterMovement.h"
+
+
 #include "SSEngineDefault/Public/RawInput/SSInput.h"
 #include "SSEngineDefault/Public/SSAlgorithm.h"
 #include "SSGameModule/Public/SSGame.h"

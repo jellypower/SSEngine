@@ -48,4 +48,18 @@ Run `_BuildBatch/Copy_Built_DLLs.bat` — copies built DLLs to the executable ou
 ## Structure
 - Headers split into Public/Private folders. Public headers are exposed to other modules; Private headers are internal implementation
 - Interfaces go in Public; concrete implementations go in Private
-- Each module uses a Precompiled Header (`pch.h`) for common includes
+- Each module uses a Precompiled Header (`pch.h`) for common includes — suggest creating 'pch.h' if there is no pch
+
+## Braces
+- Always use braces for control flow bodies, even single-line:
+```cpp
+// correct
+if (condition)
+{
+    DoSomething();
+}
+
+// forbidden
+if (condition)
+    DoSomething();
+```

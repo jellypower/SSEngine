@@ -32,6 +32,8 @@
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SCubeMapRenderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/RenderComponent/SRenderLightDirectionalComponent.h"
 #include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SCharacterMovementComponent.h"
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SRigidBodyDynamicComponent.h"
+#include "SSContentsBase/Public/CollisionComp/RigidBodyComponent/SRigidBodyStaticComponent.h"
 #include "SSContentsBase/Public/CollisionComp/SBoxColliderComponent.h"
 #include "SSContentsBase/Public/SRenderContent/_DEBUG/SRenderDebugUtil.h"
 
@@ -61,10 +63,17 @@ void SSGame::StartUpGame()
 {
 	{
 		// Floor
-		SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor");
-		_DefaultWorld->AddToWorld(Floor);
+		SGameObject* Floor = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Floor", false);
 		Floor->SetPosition(Vector4f(0, -0.1, 0, 1));
 		Floor->SetScale(Vector4f(30, 0.1, 30, 0));
+
+		SBoxColliderComponent* BoxCollider = Floor->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
+		BoxCollider->SetExtent({ 0.5f, 0.5f, 0.5f, 0 });
+		Floor->CreateComponent<SRigidBodyStaticComponent>(L"SRigidBodyDynamicComponent");
+
+		SGameObjectConstructor::FinishConstructHierarchy(Floor);
+		_DefaultWorld->AddToWorld(Floor);
+
 
 		// CubeMap
 		SGameObject* CubemapObject = NewSObject<SGameObject>(L"CubeMapObject");
@@ -107,15 +116,14 @@ void SSGame::StartUpGame()
 		CharacterModel->SetParent(_MainCharacter);
 
 		SBoxColliderComponent* BoxComp = _MainCharacter->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
-
-
-		SCharacterMovementComponent* CharacterComp = _MainCharacter->CreateComponent<SCharacterMovementComponent>(L"SCharacterComponent");
-		CharacterComp->BindAnimComp(AnimComp);
-		CharacterComp->BindColliderComponent(BoxComp);
-
-
 		BoxComp->SetExtent(Vector4f(0.3f, 0.9, 0.3f, 0));
 		BoxComp->SetOffset(Vector4f(0, 0.9f, 0, 0));
+		SCharacterMovementComponent* CharacterComp = _MainCharacter->CreateComponent<SCharacterMovementComponent>(L"SCharacterComponent");
+
+		CharacterComp->BindAnimComp(AnimComp);
+
+
+
 		SGameObjectConstructor::FinishConstructHierarchy(_MainCharacter);
 
 
@@ -166,9 +174,9 @@ void SSGame::StartUpGame()
 
 		srand(time(NULL));
 
-		for (int32 x = -12; x <= 12; x += 4)
+		for (int32 x = -4; x <= 4; x += 4)
 		{
-			for (int32 z = -12; z <= 12; z += 4)
+			for (int32 z = -4; z <= 4; z += 4)
 			{
 				SGameObject* Cube = SRendererUtil::InstantiateModel(CRAN::CUBE1M_MDL, L"Cube", false);
 
@@ -185,6 +193,7 @@ void SSGame::StartUpGame()
 
 				SBoxColliderComponent* BoxCollider = Cube->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
 				BoxCollider->SetExtent({ 0.5f, 0.5f, 0.5f, 0 });
+				Cube->CreateComponent<SRigidBodyDynamicComponent>(L"SRigidBodyDynamicComponent");
 				SGameObjectConstructor::FinishConstructHierarchy(Cube);
 
 				_DefaultWorld->AddToWorld(Cube);

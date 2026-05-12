@@ -5,6 +5,8 @@ enum class ERigidBodyType
 {
 	None,
 
+	Static,
+	Dynamic,
 	CharacterMovement,
 };
 
