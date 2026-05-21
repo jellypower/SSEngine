@@ -191,6 +191,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\SpatialSystem\SASSweepAndPrune.h" />
     <ClInclude Include="Private\SpatialSystem\ISpatialAccelerationStructure.h" />
     <ClInclude Include="Private\RigidBody\RigidCharacterMovement.h" />
+    <ClInclude Include="Private\Util_Private\PxCustomFilters.h" />
     <ClInclude Include="Public\CollInstance\CICreationDesc.h" />
     <ClInclude Include="Public\CollInstance\ICISphere.h" />
     <ClInclude Include="Public\DEBUG\CollDebugDrawDescs.h" />
@@ -237,6 +238,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\ModuleEntry\SSCollisionModuleEntry.cpp" />
     <ClCompile Include="Private\RigidBody\RIUtils_Private.cpp" />
     <ClCompile Include="Private\SpatialSystem\SASSweepAndPrune.cpp" />
+    <ClCompile Include="Private\Util_Private\PxCustomFilters.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

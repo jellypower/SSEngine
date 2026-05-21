@@ -25,4 +25,7 @@ public:
 	virtual void SetEnteredFace(Vector2f InDir) = 0;
 	virtual void AddMovementAccel(Vector2f InAccel) = 0;
 
+	virtual void RequestJump() = 0;
+	virtual bool IsGrounded() const = 0;
+
 };

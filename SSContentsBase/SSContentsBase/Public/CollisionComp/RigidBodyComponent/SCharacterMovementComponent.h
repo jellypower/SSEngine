@@ -37,6 +37,8 @@ public:
 	void SetFaceMode(ECharacterFaceMode Mode);
 	void SetEnteredFace(Vector2f InDir);
 	void AddAccel(Vector2f InAccel);
+	void RequestJump();
+	bool IsGrounded() const;
 
 private:
 	void Animate(float DeltaTime);

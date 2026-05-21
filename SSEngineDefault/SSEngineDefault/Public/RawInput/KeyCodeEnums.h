@@ -46,6 +46,7 @@ enum class EKeyCode : int32 {
 	KEY_LEFT,
 	KEY_RIGHT,
 
+	KEY_Space,
 	KEY_Ctrl,
 
 	Unknown,

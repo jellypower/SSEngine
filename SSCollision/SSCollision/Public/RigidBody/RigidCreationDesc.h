@@ -35,5 +35,7 @@ struct RIGID_CHARACTERMOVEMENT_DESC : public RIGID_CREATION_DESC
 	float MaxTurnSpeed = 5;
 	float FaceTurnSpeed = 10;
 	ECharacterFaceMode FaceMode;
+	float JumpImpulse = 5.f;
+	float GravityScale = 1.f;
 };
 

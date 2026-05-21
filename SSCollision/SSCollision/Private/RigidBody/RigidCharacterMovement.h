@@ -35,6 +35,12 @@ private:
 	Vector4f _SimulBeginPos;
 	Vector4f _SimulEndPos;
 
+	float _VerticalVelocity = 0.f;
+	bool _bIsGrounded = false;
+	bool _bJumpRequested = false;
+	float _JumpImpulse = 5.f;
+	float _GravityScale = 1.f;
+
 private:
 	ICollisionWorld* _IncludedCollWorld = nullptr;
 	ICollInstanceBase* _CollInstance = nullptr;
@@ -84,8 +90,12 @@ public:
 	virtual void SetEnteredFace(Vector2f InDir) override;
 	virtual void AddMovementAccel(Vector2f InAccel) override;
 
+	virtual void RequestJump() override;
+	virtual bool IsGrounded() const override;
+
 private:
 	void MovementPos(float DeltaTime);
+	void MovementVertical(float DeltaTime);
 	void MovementRotate(float DeltaTime);
 
 public:
