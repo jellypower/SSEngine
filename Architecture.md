@@ -144,18 +144,19 @@ SGameObject
 Logic → Physics:
   SGameObject::CommitTransform()
     └─ SRigidBodyBaseComponent::OnGameObjectTransformCommited()
-         └─ IRigidBodyBase::SetSimulBeginPosAndRot()
+         └─ IRigidBodyBase::SetSimulBeginPosAndRot_ByContent()   ← Vec3ToPx / QuatToPx
 
   ICollisionWorld::OnBeginSimulation()
     └─ IRigidBodyBase::OnBeginSimulation()
 
   ICollisionWorld::SimulateMovement(dt)
-    ├─ IRigidBodyCustomSim::SimulateMovement(dt)   ← custom logic (e.g. character movement)
-    └─ PxScene::simulate(dt) + fetchResults()      ← PhysX drives IRigidBodyDynamic
+    ├─ IRigidBodyCustomSim::SimulateMovement(dt)        ← custom logic (e.g. character movement)
+    │    └─ PxRigidDynamic::setKinematicTarget(pose)    ← Vec3ToPx applied; Yaw negated for RH
+    └─ PxScene::simulate(dt) + fetchResults()           ← PhysX drives IRigidBodyDynamic
 
 Physics → Logic:
   ICollisionWorld::OnEndSimulation()
-    └─ IRigidBodyBase::OnEndSimulation()           ← reads PxActor::getGlobalPose()
+    └─ IRigidBodyDynamic::OnEndSimulation()             ← Vec3FromPx / QuatFromPx
          └─ SRigidBodyBaseComponent::PostCollision_SyncTransform()
               └─ SGameObject::SetTransform()
 ```
@@ -168,11 +169,12 @@ Physics → Logic:
 
 ```
 IRigidBodyBase                        (identity, collider binding, world lifecycle)
+  ├─ RigidBodyStatic                  (PxRigidStatic; teleport-only via setGlobalPose)
   └─ IRigidbodySim                    (simulation result query: EndPos/Rot, deltas)
        ├─ IRigidBodyCustomSim         (custom SimulateMovement logic)
        │    └─ RigidCharacterMovement (character controller: lateral velocity, face dir)
        └─ IRigidBodyDynamic           (PhysX-driven: force, impulse, velocity, mass)
-            └─ RigidBodyDynamic
+            └─ RigidBodyDynamic       (isSleeping() used to gate transform sync)
 ```
 
 ### PhysX Ownership Model
@@ -201,14 +203,35 @@ SS::HashMap<SObjHashCode, IRigidBodyCustomSim*> _CustomSimBodies
 
 ### PhysX Coordinate System
 
-PhysX uses a right-handed coordinate system (Z points out of screen); DirectX uses left-handed (Z points into screen). Current convention: **write positions with Z as-is** (no conversion). All objects are transformed consistently so relative collision results are correct. Reading back simulation results does not require Z negation under this convention.
+PhysX uses a right-handed coordinate system (Z points out of screen); DirectX uses left-handed (Z points into screen). All conversions are handled by `PxTransformConvert` (`Private/Util_Private/PxConvert.h`):
+
+| Data | Rule |
+|---|---|
+| Position / Vec3 | negate Z |
+| Quaternion | negate X and Y components |
+
+Conversion is applied at every PhysX read/write boundary:
+
+- `CollDevice::Create*RigidBody()` — initial actor pose
+- `SetSimulBeginPosAndRot_ByContent()` — game-logic teleport (`Vec3ToPx` / `QuatToPx`)
+- `IRigidBodyDynamic::OnEndSimulation()` — read simulation result (`Vec3FromPx` / `QuatFromPx`)
+- `CIBox::ApplyLocalTransformChange()` — shape local pose (`Vec3ToPx` / `QuatToPx`)
+- `RigidCharacterMovement::SimulateMovement()` — kinematic target (`Vec3ToPx`; Yaw negated)
 
 ### Creation Flow
 
 ```
+g_CollDevice->CreateStaticRigidBody(RIGID_STATIC_DESC)
+  └─ PxPhysics::createRigidStatic(initialPose)          ← pose via Vec3ToPx / QuatToPx
+       └─ DBG_NEW RigidBodyStatic(desc, pxActor)
+
 g_CollDevice->CreateDynamicRigidBody(RIGID_DYNAMIC_DESC)
-  └─ PxPhysics::createRigidDynamic(initialPose)
+  └─ PxPhysics::createRigidDynamic(initialPose)         ← pose via Vec3ToPx / QuatToPx
        └─ DBG_NEW RigidBodyDynamic(desc, pxActor)
+
+g_CollDevice->CreateCharacterMovement(RIGID_CHARACTERMOVEMENT_DESC)
+  └─ PxPhysics::createRigidDynamic(initialPose)         ← eKINEMATIC flag set
+       └─ DBG_NEW RigidCharacterMovement(desc, pxActor)
 
 g_CollDevice->CreateCollBox(CI_BOX_DESC)
   └─ PxPhysics::createShape(PxBoxGeometry, material, exclusive=true)
