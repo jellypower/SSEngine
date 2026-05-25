@@ -21,6 +21,7 @@
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/ICommonRenderAssetSet.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/SSRendererGlobalVariableSet.h"
+#include "SSRenderer/Public/RenderInstance/IRenderCamera.h"
 
 
 #include "SSContentsBase/Public/AnimComponents/SBlendSpaceAnimTestComponent.h"
@@ -267,6 +268,7 @@ void SSGame::SetInGameFocus(bool bFocus)
 
 void SSGame::PerFrame_DEBUGDRAW()
 {
+	IMeshAsset* Cube = g_Renderer->GetCommonRenderAssetSet()->GetCube1mMesh();
 	IMeshAsset* Sphere = g_Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
 	IMeshAsset* Arrow = g_Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
 	IMeshAsset* HemiSphere = g_Renderer->GetCommonRenderAssetSet()->GetHemiSphereOutline1mMesh();
@@ -296,6 +298,27 @@ void SSGame::PerFrame_DEBUGDRAW()
 	DebugDrawTransform.Scale = { 1, 1, 1, 0 };
 	DebugDrawTransform.Position = { 0, 1,0,1 };
 
+
+	DebugDrawTransform.Position = { 3, 1,0,1 };
+	SRenderDebugUtil::DrawDebugMesh(
+		_DefaultWorld,
+		DebugDrawTransform,
+		Sphere,
+		true,
+		{ 1,0,0,1 });
+
+
+	DebugDrawTransform.Position = { 5, 1,0,1 };
+	SRenderDebugUtil::DrawDebugMesh(
+		_DefaultWorld,
+		DebugDrawTransform,
+		Cube,
+		true,
+		{ 1,1,0,1 });
+
+
+	DebugDrawTransform.Scale = { 1, 1, 1, 0 };
+	DebugDrawTransform.Position = { 0, 1,0,1 };
 	SRenderDebugUtil::DrawDebugMesh(
 		_DefaultWorld,
 		DebugDrawTransform,
@@ -304,26 +327,37 @@ void SSGame::PerFrame_DEBUGDRAW()
 		{ 1,0,0,1 });
 
 
-	SRenderDebugUtil::DrawLine(
-		_DefaultWorld,
-		{0, 0, 0, 1},
-		{ 1,0,0,1 },
-		false,
-		{ 1,0,0,1 });
+	const IRenderCamera* MainCam = g_Renderer->GetMainRenderCamera();
+	if (MainCam != nullptr)
+	{
+		const Transform& CamTransform = MainCam->GetCameraTransform();
+		Vector4f CamForward = CamTransform.GetForward() * 20;
+		Vector4f CamPos = CamTransform.Position;
+		CamPos = CamPos + CamForward;
 
-	SRenderDebugUtil::DrawLine(
-		_DefaultWorld,
-		{ 0, 0, 0, 1 },
-		{ 0,1,0,1 },
-		false,
-		{ 0,1,0,1 });
+		SRenderDebugUtil::DrawLine(
+			_DefaultWorld,
+			CamPos,
+			CamPos + Vector4f::Right,
+			false,
+			{ 1,0,0,1 });
 
-	SRenderDebugUtil::DrawLine(
-		_DefaultWorld,
-		{ 0, 0, 0, 1 },
-		{ 0,0, 1,1 },
-		false,
-		{ 0,0,1,1 });
+		SRenderDebugUtil::DrawLine(
+			_DefaultWorld,
+			CamPos,
+			CamPos + Vector4f::Up,
+			false,
+			{ 0,1,0,1 });
+
+		SRenderDebugUtil::DrawLine(
+			_DefaultWorld,
+			CamPos,
+			CamPos + Vector4f::Forward,
+			false,
+			{ 0,0,1,1 });
+	}
+
+
 
 }
 

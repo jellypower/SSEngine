@@ -1483,6 +1483,7 @@ void DX12GALRenderDeviceContext::DrawDebugMeshWire(const IMeshAsset* InMesh, con
 
 
 
+
 	TransientChunkHeader MeshTransformCBChunk = TransientMemAllocator->AllocChunk(sizeof(CBAModelBuffer));
 	DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)MeshTransformCBChunk.PageContent;
 	CBAModelBuffer* ModelCBSystemAddr = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + MeshTransformCBChunk.ChunkOffset);
@@ -1508,6 +1509,8 @@ void DX12GALRenderDeviceContext::DrawDebugMeshWire(const IMeshAsset* InMesh, con
 	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
 	const MeshRawDataDefault* RawData = static_cast<const MeshRawDataDefault*>(InMesh->GetMeshRawData());
 
+	// DrawDebugLineList나 DrawDebugLines에서 LineList로 그리는 기능이 있기 때문에 여기서 한 번 더 세팅 해줘야 한다.
+	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
 
 	for (int32 i = 0; i < SubMeshCnt; i++)
