@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+class IRigidBodyBase;
 struct AABBBox;
 enum class ECollDebugDraw_MeshType;
 struct CDDD_Line;
@@ -55,5 +56,12 @@ public:
 		bool bUseDepth = false,
 		float Scale = 0.1,
 		float Time = 0);
+
+	static void DrawPXRigid(
+		IRigidBodyBase* RIToDraw,
+		const Vector4f& Color = Vector4f::Zero,
+		bool bUseDepth = false,
+		float Time = 0
+	);
 };
 

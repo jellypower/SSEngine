@@ -48,6 +48,7 @@ EKeyCode WindowsVKCodeToSSKeyCode(WPARAM wParam)
 	case VK_LEFT: return EKeyCode::KEY_LEFT;
 	case VK_RIGHT: return EKeyCode::KEY_RIGHT;
 
+	case VK_SPACE: return EKeyCode::KEY_Space;
 	case VK_CONTROL: return EKeyCode::KEY_Ctrl;
 	}
 

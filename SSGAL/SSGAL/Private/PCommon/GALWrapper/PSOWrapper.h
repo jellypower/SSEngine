@@ -37,3 +37,9 @@ PipelineDesc ConstructPSOToDrawSkyMap();
 
 PipelineDesc ConstructPSOToDrawDebugWire(
 	GALRenderTarget* InDSV = nullptr);
+
+PipelineDesc ConstructPSOToDrawDebugLineList(
+	GALRenderTarget* InDSV = nullptr);
+
+PipelineDesc ConstructPSOToDrawDebugLines(
+	GALRenderTarget* InDSV = nullptr);

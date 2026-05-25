@@ -54,6 +54,10 @@ int32 MeshAsset::GetSubMeshCnt() const
 		MeshRawDataDefault* DefaultMeshRawData = (MeshRawDataDefault*)_MeshRawData;
 		return DefaultMeshRawData->_VertexHeader.subMeshCnt;
 	}
+	else if (_CachedMeshType == EMeshType::SimpleLine)
+	{
+		return 1;
+	}
 	else
 	{
 		SS_ASSERT(false);

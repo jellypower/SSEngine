@@ -61,6 +61,16 @@ void SCharacterMovementComponent::AddAccel(Vector2f InAccel)
 	_RigidCharacterMovement->AddMovementAccel(InAccel);
 }
 
+void SCharacterMovementComponent::RequestJump()
+{
+	_RigidCharacterMovement->RequestJump();
+}
+
+bool SCharacterMovementComponent::IsGrounded() const
+{
+	return _RigidCharacterMovement->IsGrounded();
+}
+
 void SCharacterMovementComponent::Animate(float DeltaTime)
 {
 	Vector2f CuFace = _RigidCharacterMovement->GetCurFaceDir();

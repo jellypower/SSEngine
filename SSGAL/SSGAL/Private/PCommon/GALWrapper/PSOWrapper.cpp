@@ -16,12 +16,15 @@
 static const SS::SHasherW VS_SMToDefaultPSInput(L"VS_SMToDefaultPSInput");
 static const SS::SHasherW VS_SKMToDefaultPSInput(L"VS_SKMToDefaultPSInput");
 static const SS::SHasherW VS_FullScreenQuad(L"VS_FullScreenQuad");
+static const SS::SHasherW VS_SimpleLineToPS(L"VS_SimpleLineToPS");
+static const SS::SHasherW VS_SimpleLineColorToPS(L"VS_SimpleLineColorToPS");
 
 
 static const SS::SHasherW PS_DeferredShadeGBufferOutput(L"PS_DeferredShadeGBufferOutput");
 static const SS::SHasherW PS_DeferredShading(L"PS_DeferredShading");
 static const SS::SHasherW PS_SkyMap(L"PS_SkyMap");
 static const SS::SHasherW PS_DrawSimpleColor(L"PS_DrawSimpleColor");
+static const SS::SHasherW PS_DrawSimpleColorFromVertex(L"PS_DrawSimpleColorFromVertex");
 
 
 
@@ -147,5 +150,33 @@ PipelineDesc ConstructPSOToDrawDebugWire(GALRenderTarget* InDSV)
 	NewPipelineDesc.DSColorFormat = InDSV == nullptr ? ERTColorFormat::Unknown : InDSV->GetRTColorFormat();
 	NewPipelineDesc.bUseTwoSideRender = true;
 	NewPipelineDesc.bUseWireFrame = true;
+	return NewPipelineDesc;
+}
+
+PipelineDesc ConstructPSOToDrawDebugLineList(GALRenderTarget* InDSV)
+{
+	PipelineDesc NewPipelineDesc;
+	NewPipelineDesc.VSName = VS_SimpleLineToPS;
+	NewPipelineDesc.PSName = PS_DrawSimpleColor;
+	NewPipelineDesc.LayoutType = EInputLayoutType::SS_SIMPLE_LINE_VERTEX_LAYOUT;
+	NewPipelineDesc.RootSignatureType = ERootSignatureType::DebugWire;
+	NewPipelineDesc.NumRenderTarget = 1;
+	NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R8G8B8A8_UNORM;
+	NewPipelineDesc.DSColorFormat = InDSV == nullptr ? ERTColorFormat::Unknown : InDSV->GetRTColorFormat();
+	NewPipelineDesc.bUseLineTopology = true;
+	return NewPipelineDesc;
+}
+
+PipelineDesc ConstructPSOToDrawDebugLines(GALRenderTarget* InDSV)
+{
+	PipelineDesc NewPipelineDesc;
+	NewPipelineDesc.VSName = VS_SimpleLineColorToPS;
+	NewPipelineDesc.PSName = PS_DrawSimpleColorFromVertex;
+	NewPipelineDesc.LayoutType = EInputLayoutType::SS_SIMPLE_LINE_COLOR_VERTEX_LAYOUT;
+	NewPipelineDesc.RootSignatureType = ERootSignatureType::DebugWire;
+	NewPipelineDesc.NumRenderTarget = 1;
+	NewPipelineDesc.RTColorFormats[0] = ERTColorFormat::R8G8B8A8_UNORM;
+	NewPipelineDesc.DSColorFormat = InDSV == nullptr ? ERTColorFormat::Unknown : InDSV->GetRTColorFormat();
+	NewPipelineDesc.bUseLineTopology = true;
 	return NewPipelineDesc;
 }

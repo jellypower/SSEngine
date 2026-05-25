@@ -1,6 +1,7 @@
 #include "RawDataFactory.h"
 
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshDataDefault.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSimpleLine.h"
 #include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
 MeshRawDataDefault* CreateCube1mRawData()
@@ -512,4 +513,202 @@ MeshRawDataDefault* CreateSphere1mRawData(int32 DetailLevel)
 
 
 	return SphereRawData;
+}
+
+MeshRawDataSimpleLine* CreateHemiSphereOutline1m(int32 DetailLevel)
+{
+	DetailLevel *= 4;
+
+	
+	const int32 VertexCnt =
+		(DetailLevel) + // 바닥면 원
+		(DetailLevel / 2 - 2) + // 위도 반원
+		(DetailLevel / 2 - 2) // 경도 반원
+		+ 1; // 극점 1개
+
+	SimpleLineVertex* Vertices = (SimpleLineVertex*)DBG_MALLOC(sizeof(SimpleLineVertex) * VertexCnt);
+
+	int32 CurVertexCnt = 0;
+
+	/// ============================================== vertex ============================================== 
+	for (int32 LongituteIdx = 0; LongituteIdx < DetailLevel; LongituteIdx++) // 경도(지구본 세로줄)
+	{
+		float LongtitudeRad = XM_2PI * ((float)LongituteIdx / (float)DetailLevel);
+
+		float x = 0.5 * sinf(LongtitudeRad); // 반구의 밑바닥 원형
+		float z = -0.5 * cosf(LongtitudeRad);
+
+		Vertices[CurVertexCnt++] =
+		{
+			.Pos = Vector4f(x, 0, z, 1)
+		};
+	}
+
+	const int32 QuaterCircleCnt = DetailLevel / 4;
+	for (int32 LatitudeIdx = 1; LatitudeIdx < QuaterCircleCnt; LatitudeIdx++)
+	{
+		float LongtitudeRad = XM_2PI * ((float)LatitudeIdx / (float)DetailLevel);
+
+		float z = -0.5 * cosf(LongtitudeRad); // Back 방향에서 Poll 으로 돌아감
+		float y = 0.5 * sinf(LongtitudeRad);
+
+		Vertices[CurVertexCnt++] =
+		{
+			.Pos = Vector4f(0, y, z, 1)
+		};
+	}
+
+	for (int32 LatitudeIdx = 1; LatitudeIdx < QuaterCircleCnt; LatitudeIdx++)
+	{
+		float LongtitudeRad = XM_2PI * ((float)LatitudeIdx / (float)DetailLevel);
+		LongtitudeRad += XM_PIDIV2;
+
+		float z = -0.5 * cosf(LongtitudeRad); // Poll 에서 Front 방향으로 돌아감
+		float y = 0.5 * sinf(LongtitudeRad);
+
+		Vertices[CurVertexCnt++] =
+		{
+			.Pos = Vector4f(0, y, z, 1)
+		};
+	}
+
+
+	for (int32 LatitudeIdx = 1; LatitudeIdx < QuaterCircleCnt; LatitudeIdx++)
+	{
+		float LongtitudeRad = XM_2PI * ((float)LatitudeIdx / (float)DetailLevel);
+
+		float x = -0.5 * cosf(LongtitudeRad); // Left 방향에서 Poll으로 돌아감
+		float y = 0.5 * sinf(LongtitudeRad);
+
+		Vertices[CurVertexCnt++] =
+		{
+			.Pos = Vector4f(x, y, 0, 1)
+		};
+	}
+
+	for (int32 LatitudeIdx = 1; LatitudeIdx < QuaterCircleCnt; LatitudeIdx++)
+	{
+		float LongtitudeRad = XM_2PI * ((float)LatitudeIdx / (float)DetailLevel);
+		LongtitudeRad += XM_PIDIV2;
+
+		float x = -0.5 * cosf(LongtitudeRad); // Poll 에서 Right로 돌아감
+		float y = 0.5 * sinf(LongtitudeRad);
+
+		Vertices[CurVertexCnt++] =
+		{
+			.Pos = Vector4f(x, y, 0, 1)
+		};
+	}
+
+	// North Pole
+	Vertices[CurVertexCnt++] =
+	{
+		.Pos = Vector4f(0, +0.5, 0, 1),
+	};
+
+	SS_ASSERT(CurVertexCnt == VertexCnt);
+
+
+
+	/// ============================================== Index ============================================== 
+	int32 IndexCnt =
+		(DetailLevel)+ // 바닥면 원
+		(DetailLevel / 2) + // 위도 반원
+		(DetailLevel / 2); // 경도 반원
+
+	IndexCnt *= 2; // Line은 인덱스가 시작, 끝 2개씩 들어감
+
+
+	const int32 CircleBackIdx = 0;
+	const int32 CircleRightIdx = DetailLevel / 4;
+	const int32 CircleFrontIdx = DetailLevel / 2;
+	const int32 CircleLeftIdx = DetailLevel / 4 * 3;
+	const int32 PollVertexIdx = VertexCnt - 1;
+
+
+	uint32* Indices = (uint32*)DBG_MALLOC(sizeof(uint32) * IndexCnt);
+
+	int32 CurIndexCnt = 0;
+	int32 VertexIdx = 0;
+	for (int32 LongituteIdx = 0; LongituteIdx < DetailLevel - 1; LongituteIdx++) // 바닥 원
+	{
+		Indices[CurIndexCnt++] = VertexIdx;
+		Indices[CurIndexCnt++] = VertexIdx + 1;
+
+		VertexIdx++;
+	}
+	Indices[CurIndexCnt++] = VertexIdx++;
+	Indices[CurIndexCnt++] = CircleBackIdx;
+
+
+
+	// Back에서 Poll까지 가는 쿼터
+	Indices[CurIndexCnt++] = CircleBackIdx;
+	Indices[CurIndexCnt++] = VertexIdx;
+	for (int32 LatitudeIdx = 1; LatitudeIdx < QuaterCircleCnt - 1; LatitudeIdx++)
+	{
+		Indices[CurIndexCnt++] = VertexIdx;
+		Indices[CurIndexCnt++] = VertexIdx + 1;
+
+		VertexIdx++;
+	}
+	Indices[CurIndexCnt++] = VertexIdx++;
+	Indices[CurIndexCnt++] = PollVertexIdx;
+
+	// Poll에서 Front로 가는 쿼터
+	Indices[CurIndexCnt++] = PollVertexIdx;
+	Indices[CurIndexCnt++] = VertexIdx;
+	for (int32 LatitudeIdx = 1; LatitudeIdx < QuaterCircleCnt - 1; LatitudeIdx++)
+	{
+		Indices[CurIndexCnt++] = VertexIdx;
+		Indices[CurIndexCnt++] = VertexIdx + 1;
+
+		VertexIdx++;
+	}
+	Indices[CurIndexCnt++] = VertexIdx++;
+	Indices[CurIndexCnt++] = CircleFrontIdx;
+
+
+	// Left에서 Poll으로 가는 쿼터
+	Indices[CurIndexCnt++] = CircleLeftIdx;
+	Indices[CurIndexCnt++] = VertexIdx;
+	for (int32 LatitudeIdx = 1; LatitudeIdx < QuaterCircleCnt - 1; LatitudeIdx++)
+	{
+		Indices[CurIndexCnt++] = VertexIdx;
+		Indices[CurIndexCnt++] = VertexIdx + 1;
+
+		VertexIdx++;
+	}
+	Indices[CurIndexCnt++] = VertexIdx++;
+	Indices[CurIndexCnt++] = PollVertexIdx;
+
+
+	// Poll에서 Right로 가는 쿼터
+	Indices[CurIndexCnt++] = PollVertexIdx;
+	Indices[CurIndexCnt++] = VertexIdx;
+	for (int32 LatitudeIdx = 1; LatitudeIdx < QuaterCircleCnt - 1; LatitudeIdx++)
+	{
+		Indices[CurIndexCnt++] = VertexIdx;
+		Indices[CurIndexCnt++] = VertexIdx + 1;
+
+		VertexIdx++;
+	}
+	Indices[CurIndexCnt++] = VertexIdx++;
+	Indices[CurIndexCnt++] = CircleRightIdx;
+
+	SS_ASSERT(CurIndexCnt == IndexCnt);
+
+
+
+	MeshRawDataSimpleLine* HemiSphereRawData = DBG_NEW MeshRawDataSimpleLine();
+
+
+	HemiSphereRawData->_vertexData = Vertices;
+	HemiSphereRawData->_indexData = Indices;
+
+	HemiSphereRawData->_vertexCnt = VertexCnt;
+	HemiSphereRawData->_IdxCnt = IndexCnt;
+
+
+	return HemiSphereRawData;
 }

@@ -161,5 +161,11 @@ void SPlayerController::ProcessInput(float DeltaTime)
 	}
 
 
+	if (SSInput::GetKeyDown(EKeyCode::KEY_Space))
+	{
+		_CharacterComp->RequestJump();
+	}
+
+
 
 }

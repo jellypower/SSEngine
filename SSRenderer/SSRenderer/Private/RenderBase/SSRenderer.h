@@ -1,9 +1,9 @@
 #pragma once
-#include <SSGAL/Public/SSGALInlineSettings.h>
-
-#include "SSRenderer/Public/RenderBase/IRenderer.h"
+#include "SSGAL/Public/SSGALInlineSettings.h"
 
 #include "SSRenderer/Public/DEBUG/DebugDrawDesc.h"
+#include "SSRenderer/Public/RenderBase/IRenderer.h"
+#include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
@@ -45,6 +45,8 @@ private:
 
 	SS::PooledList<DebugDrawMeshDesc> _DebugDrawItemsWithoutDepth;
 	SS::PooledList<DebugDrawMeshDesc> _DebugDrawItemsWithDepth;
+	SS::PooledList<SimpleLineColorVertex> _DebugDrawLinesWithDepth;
+	SS::PooledList<SimpleLineColorVertex> _DebugDrawLinesWithoutDepth;
 
 	SS::PooledList<GALRIMetadata*> _DeferredDestroyTargets[DEFERRED_DESTROY_MOD];
 	SS::PooledList<GALRWMetaData*> _DeferredDestoryGALRWs[DEFERRED_DESTROY_MOD];
@@ -113,7 +115,8 @@ public:
 
 
 public:
-	void DrawWireFrame(const DebugDrawMeshDesc& Desc) override;
+	virtual void DrawWireFrame(const DebugDrawMeshDesc& Desc) override;
+	virtual void DrawLine(const DebugDrawLineDesc& Desc) override;
 
 public:
 	void AddGALStateChangedAsset(IAssetBase* AssetToChange);

@@ -7,6 +7,7 @@
 #include "SSCollision/Private/CollInstance/CIUtils_Private.h"
 #include "SSCollision/Public/DEBUG/CollDebugDrawDescs.h"
 #include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
+#include "SSCollision/Private/Util_Private/PxCustomFilters.h"
 
 
 RigidCharacterMovement::RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc, physx::PxRigidDynamic* InActor)
@@ -19,6 +20,8 @@ RigidCharacterMovement::RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DES
 	_MaxTurnSpeed = InDesc.MaxTurnSpeed;
 	_FaceTurnSpeed = InDesc.FaceTurnSpeed;
 	_FaceMode = InDesc.FaceMode;
+	_JumpImpulse = InDesc.JumpImpulse;
+	_GravityScale = InDesc.GravityScale;
 
 
 	_EnteredFace = { 0, 1 };
@@ -46,9 +49,11 @@ void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 		DeltaTime = 0.1f; // 너무 큰 델타타임은 금지
 	}
 
-	MovementPos(DeltaTime);
-	MovementRotate(DeltaTime);
+	_SimulEndPos = _SimulBeginPos;
 
+	MovementPos(DeltaTime);
+	MovementVertical(DeltaTime);
+	MovementRotate(DeltaTime);
 
 	physx::PxTransform Target;
 	Target.p = PxTransformConvert::Vec3ToPx(_SimulEndPos);
@@ -63,12 +68,17 @@ void RigidCharacterMovement::SimulateMovement(float DeltaTime)
 
 void RigidCharacterMovement::OnEndSimulation()
 {
+#if DEBUG
+	CollDebug_Private::DrawPXRigid(this, {0, 1, 0, 0}, true);
+#endif
+
 	_MoveInput = Vector2f::Zero;
 }
 
 void RigidCharacterMovement::SetSimulBeginPosAndRot_ByContent(const Vector4f& InPos, const Quaternion& InRot)
 {
 	_SimulBeginPos = InPos;
+	_SimulEndPos = InPos;
 
 	physx::PxTransform Pose;
 	Pose.p = PxTransformConvert::Vec3ToPx(InPos);
@@ -203,11 +213,11 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 	_MoveInput = Vector2f::Zero;
 
 
-	// ApplyMovement
+	// ApplyMovement with sweep+slide
 	{
-		float PostSqrLen = _MoveLateralVelocity.GetSqrLength();
+		const float SqrLenPostInputProcess = _MoveLateralVelocity.GetSqrLength();
 
-		if (PostSqrLen < 0.01f * 0.01f)
+		if (SqrLenPostInputProcess < 0.01f * 0.01f)
 		{
 			_MoveLateralVelocity = Vector2f::Zero;
 		}
@@ -215,9 +225,117 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 		{
 			_bTransformModifiedOnThisTick = true;
 			_bMovedOnThisSimulation = true;
-			
-			_SimulEndPos.X = _SimulBeginPos.X + (_MoveLateralVelocity.X * DeltaTime);
-			_SimulEndPos.Z = _SimulBeginPos.Z + (_MoveLateralVelocity.Y * DeltaTime);
+
+			Vector4f DesiredMove = {
+				_MoveLateralVelocity.X * DeltaTime,
+				0.f,
+				_MoveLateralVelocity.Y * DeltaTime,
+				0.f
+			};
+
+			physx::PxScene* Scene = _PxActor->getScene();
+			physx::PxShape* Shape = ExtractPxShape(_CollInstance);
+
+
+			if (Scene == nullptr || Shape == nullptr) // 충돌이 없으면 그냥 움직임
+			{
+				_SimulEndPos.X += DesiredMove.X;
+				_SimulEndPos.Z += DesiredMove.Z;
+			}
+			else
+			{
+				SelfExcludeFilter Filter(_PxActor); // 나는 제외하고 Overlap을 진행
+				physx::PxQueryFilterData FilterData(
+					physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::ePREFILTER);
+
+				physx::PxTransform ShapeLocalPose = Shape->getLocalPose();
+
+				Vector4f RemainingMove = DesiredMove;
+				Vector4f CurPos = _SimulEndPos;
+
+				for (int32 Iter = 0; Iter < 3; ++Iter)
+				{
+					float MoveSqrLen = RemainingMove.X * RemainingMove.X + RemainingMove.Z * RemainingMove.Z;
+					if (MoveSqrLen < 0.00001f)
+					{
+						break;
+					}
+
+					float MoveLen = sqrtf(MoveSqrLen);
+					Vector4f MoveDir = { RemainingMove.X / MoveLen, 0.f, RemainingMove.Z / MoveLen, 0.f };
+
+					physx::PxTransform ActorPose;
+					ActorPose.p = PxTransformConvert::Vec3ToPx(CurPos);
+					ActorPose.q = _PxActor->getGlobalPose().q;
+					physx::PxTransform WorldGeomPose = ActorPose * ShapeLocalPose;
+
+					physx::PxVec3 SweepDir = PxTransformConvert::Vec3ToPx(MoveDir);
+
+					physx::PxSweepBuffer Hit;
+					bool bHit = Scene->sweep(
+						Shape->getGeometry(), 
+						WorldGeomPose, 
+						SweepDir, 
+						MoveLen, 
+						Hit,
+						physx::PxHitFlag::eDEFAULT, FilterData, &Filter);
+
+					if (bHit == false || Hit.block.distance >= MoveLen) // 부딧히는게 없으면 그냥 이동
+					{
+						CurPos.X += RemainingMove.X;
+						CurPos.Z += RemainingMove.Z;
+						break;
+					}
+
+					// SafeDist: 내가 충돌없이 이동할 수 있는 최대 거리
+					float SafeDist = Hit.block.distance > 0.001f ? Hit.block.distance - 0.001f : 0.f;
+					CurPos.X += MoveDir.X * SafeDist;
+					CurPos.Z += MoveDir.Z * SafeDist;
+
+					// Wall sliding: 벽 법선에서 XZ 성분만 사용
+					Vector4f HitNormal = PxTransformConvert::Vec3FromPx(Hit.block.normal);
+					HitNormal.Y = 0.f;
+					float NormalLen = sqrtf(HitNormal.X * HitNormal.X + HitNormal.Z * HitNormal.Z);
+					if (NormalLen < 0.001f)
+					{
+						break;
+					}
+					HitNormal.X /= NormalLen;
+					HitNormal.Z /= NormalLen;
+
+					float DotN = RemainingMove.X * HitNormal.X + RemainingMove.Z * HitNormal.Z;
+					// 노말이 밀어내는 방향이랑 내가 가는 방향이 반대라면
+					if (DotN < 0.f)
+					{
+						// DotN: Normal에 내가 움직이는 방향으로 수선을 내린다
+						// 즉 내 이동 방향이 얼마나 벽 쪽으로 이동하려 하는가를 구하는 것
+
+						// 그래서 내 움직임에서 벽쪽으로 들어가려는 힘만 그냥 빼버린다
+						RemainingMove.X -= HitNormal.X * DotN;
+						RemainingMove.Z -= HitNormal.Z * DotN;
+					}
+
+					// RemainingLen: 원래 이동하려 했던 거리중 충돌해서 아직 못 간 거리 -> 아직 이동 가능한 최대 거리
+					float RemainingLen = MoveLen - SafeDist;
+
+					// SlideSqrLen: 벽으로 뚫고들어간 힘이 빠지고 남은 가야 할 거리
+					float SlideSqrLen = RemainingMove.X * RemainingMove.X + RemainingMove.Z * RemainingMove.Z;
+
+					// RemainingLen 은 실제로 트레이스 하고나서 가려했던 움직임의 크기이고
+					// SlideSqrLen 은 실제로 슬라이딩을 완료한 이후의 움직임의 크기이다
+					// 트레이스랑 슬라이딩 완료하고 난 값이랑 오차가 있을 수 있기 때문에 그 오차만큼 보정해준다
+					if (SlideSqrLen > RemainingLen * RemainingLen && SlideSqrLen > 0.00001f)
+					{
+						float SlideLen = sqrtf(SlideSqrLen);
+						// RemainingLen값 으로 벡터 길이를 맞춰준다
+						RemainingMove.X *= (RemainingLen / SlideLen);
+						RemainingMove.Z *= (RemainingLen / SlideLen);
+					}
+				}
+
+				_SimulEndPos.X = CurPos.X;
+				_SimulEndPos.Z = CurPos.Z;
+			}
 		}
 
 	}
@@ -226,7 +344,6 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 
 	// DEBUG
 	{
-		float VeloSqrLen = _MoveLateralVelocity.GetSqrLength();
 		float VelLen = sqrt(VeloSqrLen);
 		Vector2f Velo = _MoveLateralVelocity.GetNormalized();
 		Velo = Velo * (VelLen / _MaxSpeed);
@@ -243,6 +360,117 @@ void RigidCharacterMovement::MovementPos(float DeltaTime)
 		// CollDebug_Private::DrawLine(_CollInstance->GetIncludedCollWorld(), Desc);
 	}
 
+}
+
+void RigidCharacterMovement::MovementVertical(float DeltaTime)
+{
+	constexpr float GRAVITY = 9.8f;
+	constexpr float FLOOR_SKIN = 0.01f;
+	constexpr float GROUNDED_CHECK_DIST = 0.12f;
+
+	physx::PxScene* Scene = _PxActor->getScene();
+	physx::PxShape* Shape = ExtractPxShape(_CollInstance);
+	
+
+	// 바닥 감지 (낙하 중이거나 지면에 있을 때만)
+	_bIsGrounded = false;
+	if (Scene != nullptr && Shape != nullptr && _VerticalVelocity <= 0.f)
+	{
+		physx::PxTransform ActorPose;
+		ActorPose.p = PxTransformConvert::Vec3ToPx(_SimulEndPos);
+		ActorPose.q = _PxActor->getGlobalPose().q;
+		physx::PxTransform WorldGeomPose = ActorPose * Shape->getLocalPose();
+
+		SelfExcludeFilter Filter(_PxActor);
+		physx::PxQueryFilterData FilterData(
+			physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::ePREFILTER);
+
+		physx::PxSweepBuffer GroundHit;
+		bool bGroundHit = Scene->sweep(
+			Shape->getGeometry(),  // 현재 Shape를 바닥으로 Sweep해본다
+			WorldGeomPose,
+			physx::PxVec3(0.f, -1.f, 0.f),
+			GROUNDED_CHECK_DIST,
+			GroundHit,
+			physx::PxHitFlag::eDEFAULT, 
+			FilterData, 
+			&Filter);
+
+		_bIsGrounded = bGroundHit;
+	}
+
+	// 바닥에 있을 때 점프
+	if (_bJumpRequested && _bIsGrounded)
+	{
+		_VerticalVelocity = _JumpImpulse;
+		_bIsGrounded = false;
+		_bTransformModifiedOnThisTick = true;
+	}
+	_bJumpRequested = false;
+
+	// 중력 적용
+	if (_bIsGrounded && _VerticalVelocity <= 0.f)
+	{
+		_VerticalVelocity = 0.f;
+	}
+	else
+	{
+		_VerticalVelocity -= GRAVITY * _GravityScale * DeltaTime;
+	}
+
+	float VertDelta = _VerticalVelocity * DeltaTime;
+	if (fabsf(VertDelta) < 0.0001f) // 수직으로 움직이지 않으면 패스
+	{
+		return;
+	}
+
+	_bTransformModifiedOnThisTick = true;
+
+	// 수직 방향 Sweep으로 움직여야 하는 경우 처리
+	if (Scene != nullptr && Shape != nullptr)
+	{
+		physx::PxTransform ActorPose;
+		ActorPose.p = PxTransformConvert::Vec3ToPx(_SimulEndPos);
+		ActorPose.q = _PxActor->getGlobalPose().q;
+		physx::PxTransform WorldGeomPose = ActorPose * Shape->getLocalPose();
+
+		float SweepSign = VertDelta > 0.f ? 1.f : -1.f; // 천장인지 바닥인지 체크
+		float SweepDist = fabsf(VertDelta);
+
+		SelfExcludeFilter Filter(_PxActor);
+		physx::PxQueryFilterData FilterData(
+			physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::ePREFILTER);
+
+		physx::PxSweepBuffer HitResult;
+		bool bHit = Scene->sweep(
+			Shape->getGeometry(), 
+			WorldGeomPose,
+			physx::PxVec3(0.f, SweepSign, 0.f),
+			SweepDist, 
+			HitResult,
+			physx::PxHitFlag::eDEFAULT, 
+			FilterData, 
+			&Filter);
+
+		if (bHit && HitResult.block.distance < SweepDist)
+		{
+			float SafeDist = HitResult.block.distance > FLOOR_SKIN ? HitResult.block.distance - FLOOR_SKIN : 0.f;
+			_SimulEndPos.Y += SweepSign * SafeDist;
+			_VerticalVelocity = 0.f;
+			if (SweepSign < 0.f) // 바닥에 부딧힌 경우는 Ground
+			{
+				_bIsGrounded = true;
+			}
+		}
+		else
+		{
+			_SimulEndPos.Y += VertDelta;
+		}
+	}
+	else
+	{
+		_SimulEndPos.Y += VertDelta;
+	}
 }
 
 void RigidCharacterMovement::MovementRotate(float DeltaTime)
@@ -430,6 +658,16 @@ Vector2f RigidCharacterMovement::GetLateralVelocity() const
 float RigidCharacterMovement::GetMaxSpeed() const
 {
 	return _MaxSpeed;
+}
+
+void RigidCharacterMovement::RequestJump()
+{
+	_bJumpRequested = true;
+}
+
+bool RigidCharacterMovement::IsGrounded() const
+{
+	return _bIsGrounded;
 }
 
 void RigidCharacterMovement::SetFaceMode(ECharacterFaceMode Mode)

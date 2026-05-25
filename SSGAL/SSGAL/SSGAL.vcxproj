@@ -190,6 +190,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="Private\DX12\GALPostProcessContext\DX12GALPPCDeferredShading.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALDefaultPBRMaterialAsset.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.cpp" />
+    <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALSimpleLineMeshAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderAsset\DX12GALSkinnedMeshAssetWrapper.cpp" />
     <ClCompile Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.cpp" />
@@ -235,6 +236,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Private\DX12\GALPostProcessContext\DX12GALPPCDeferredShading.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\GALMaterialAssets\DX12GALDefaultPBRMaterialAsset.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALMeshAssetWrapper.h" />
+    <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALSimpleLineMeshAssetWrapper.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALTextureAssetWrapper.h" />
     <ClInclude Include="Private\DX12\GALRenderAsset\DX12GALSkinnedMeshAssetWrapper.h" />
     <ClInclude Include="Private\DX12\GALRenderDevice\DX12GALRenderDevice.h" />

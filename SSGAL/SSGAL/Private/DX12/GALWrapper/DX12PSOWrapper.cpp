@@ -49,6 +49,25 @@ const D3D12_INPUT_ELEMENT_DESC* DX12PSOWrapper::GetInputElementDesc(EInputLayout
 		outElementCnt = _countof(inputElementDesc);
 		return inputElementDesc;
 	}
+	case EInputLayoutType::SS_SIMPLE_LINE_VERTEX_LAYOUT:
+	{
+		static D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		};
+		outElementCnt = _countof(inputElementDesc);
+		return inputElementDesc;
+	}
+	case EInputLayoutType::SS_SIMPLE_LINE_COLOR_VERTEX_LAYOUT:
+	{
+		static D3D12_INPUT_ELEMENT_DESC inputElementDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,  0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		};
+		outElementCnt = _countof(inputElementDesc);
+		return inputElementDesc;
+	}
 	case EInputLayoutType::SS_INPUTLAYOUT_NULL:
 	{
 		outElementCnt = 0;
@@ -124,7 +143,9 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 		psoDesc.RasterizerState.CullMode = InPipelineDesc.bUseTwoSideRender ? D3D12_CULL_MODE_NONE : D3D12_CULL_MODE_BACK;
 		psoDesc.RasterizerState.FillMode = InPipelineDesc.bUseWireFrame ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID;
 		psoDesc.SampleMask = UINT_MAX;
-		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.PrimitiveTopologyType = InPipelineDesc.bUseLineTopology
+			? D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE
+			: D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		psoDesc.NumRenderTargets = InPipelineDesc.NumRenderTarget;
 		for (int32 i = 0; i < InPipelineDesc.NumRenderTarget; i++)
 		{

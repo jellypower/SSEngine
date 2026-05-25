@@ -13,6 +13,7 @@
 
 #include "SSRenderer/Public/RenderAsset/CommonRenderAsset/CRAN.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/RenderAssetCreationUtils.h"
+#include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSimpleLine.h"
 
 
 void CommonRenderAssetSet::InitializeCommonAssets()
@@ -20,6 +21,7 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	static const SS::SHasherW NAME_EMPTY_PBR_MTL = CRAN::EMPTY_PBR_MTL;
 	static const SS::SHasherW NAME_CUBE1M_MESH = CRAN::CUBE1M_MESH;
 	static const SS::SHasherW NAME_SPHERE1M_MESH = CRAN::SPHERE1M_MESH;
+	static const SS::SHasherW NAME_HEMISPHERE1M_OUTLINE_MESH = CRAN::HEMISPHERE1M_OUTLINE_MESH;
 
 	IAssetManagerMutable* AssetManager = g_Renderer->GetMutableAssetManager();
 
@@ -60,6 +62,11 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 	AssetManager->AddToAssetPool(_Sphere1mModel);
 
 
+	_HemiSphereOutline1mMesh = CreateEmptyMeshAsset(NS_RUNTIME_CREATION_HASHER, NAME_HEMISPHERE1M_OUTLINE_MESH, NS_RUNTIME_CREATION_HASHER);
+	MeshRawDataSimpleLine* HemiSphereRawData = CreateHemiSphereOutline1m(8);
+	static_cast<IMeshAssetMutable*>(_HemiSphereOutline1mMesh)->InjectRawDataXXX(HemiSphereRawData);
+	AssetManager->AddToAssetPool(_HemiSphereOutline1mMesh);
+
 	AssetInstanceReferencer Referencer;
 	Referencer.Type = EAssetInstanceReferenceType::AssetName;
 	Referencer.AssetName = CRAN::AR_COMMON;
@@ -72,6 +79,8 @@ void CommonRenderAssetSet::InitializeCommonAssets()
 
 	_Cube1mModel->AddAssetReference(Referencer);
 	_Sphere1mModel->AddAssetReference(Referencer);
+
+	_HemiSphereOutline1mMesh->AddAssetReference(Referencer);
 }
 
 void CommonRenderAssetSet::ReleaseCachedAssets()
@@ -89,4 +98,6 @@ void CommonRenderAssetSet::ReleaseCachedAssets()
 	_Cube1mModel->RemoveAssetReference(Referencer);
 	_Sphere1mModel->RemoveAssetReference(Referencer);
 	_ArrowMesh->RemoveAssetReference(Referencer);
+
+	_HemiSphereOutline1mMesh->RemoveAssetReference(Referencer);
 }

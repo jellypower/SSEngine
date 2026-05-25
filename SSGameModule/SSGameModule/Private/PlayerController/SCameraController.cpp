@@ -25,7 +25,7 @@ void SCameraController::OnEnterTheWorld()
 	_PlayerCameraComp = GetGameObject()->FindComponent<SCameraComponent>();
 	_PlayerCameraComp->SetFOVWithDegrees(60);
 	_PlayerCameraComp->SetNearZ(0.01f);
-	_PlayerCameraComp->SetFarZ(400.f);
+	_PlayerCameraComp->SetFarZ(40.f);
 }
 
 void SCameraController::BindFollowTarget(SGameObject* Target)

@@ -24,6 +24,8 @@ struct CRAN
 	constexpr static const utf16* CUBE1M_MESH = L"__RUNTIME_CREATION__/Cube1m.mesh";
 	constexpr static const utf16* SPHERE1M_MESH = L"__RUNTIME_CREATION__/Sphere1m.mesh";
 
+	constexpr static const utf16* HEMISPHERE1M_OUTLINE_MESH = L"__RUNTIME_CREATION__/HemiSphereOutline1m.mesh";
+
 	constexpr static const utf16* CUBE1M_MDL = L"__RUNTIME_CREATION__/Cube1m.mdl";
 	constexpr static const utf16* SPHERE1M_MDL = L"__RUNTIME_CREATION__/Sphere1m.mdl";
 

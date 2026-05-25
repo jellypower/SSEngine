@@ -88,7 +88,7 @@ void SRenderDebugUtil::DrawDirectionalMesh(
 	WorldToDraw->DebugDrawMesh(WMatrix, RotMatrix, DirectionableMesh, bUseDepth, Color, Time);
 }
 
-void SRenderDebugUtil::DrawLine(
+void SRenderDebugUtil::DrawDirectionalLine(
 	SWorld* WorldToDraw, 
 	const Vector4f& StartPos, 
 	const Vector4f& EndPos, 
@@ -124,6 +124,17 @@ void SRenderDebugUtil::DrawLine(
 	ICommonRenderAssetSet* CommonAssets = g_Renderer->GetCommonRenderAssetSet();
 	IMeshAsset* ArrowMesh = CommonAssets->GetArrowMesh();
 	WorldToDraw->DebugDrawMesh(WMatrix, RotMatrix, ArrowMesh, bUseDepth, Color, Time);
+}
+
+void SRenderDebugUtil::DrawLine(
+	SWorld* WorldToDraw, 
+	const Vector4f& StartPos, 
+	const Vector4f& EndPos, 
+	bool bUseDepth,
+	const Vector4f& Color, 
+	float Time)
+{
+	WorldToDraw->DebugDrawLine(StartPos, EndPos, Color, Time, bUseDepth);
 }
 
 void SRenderDebugUtil::DrawDebugPose(

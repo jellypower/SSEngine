@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RigidBodyDynamic.h"
 
+#include "SSCollision/Private/CollDetect/CollDebug_Private.h"
 #include "SSCollision/Private/CollInstance/CIUtils_Private.h"
 #include "SSCollision/Public/RigidBody/RigidCreationDesc.h"
 
@@ -76,6 +77,10 @@ void RigidBodyDynamic::OnBeginSimulation()
 
 void RigidBodyDynamic::OnEndSimulation()
 {
+#if DEBUG
+	CollDebug_Private::DrawPXRigid(this, { 0, 1, 0, 0 }, true);
+#endif
+
 	physx::PxTransform Pose = _PxActor->getGlobalPose();
 	_SimulEndPos = PxTransformConvert::Vec3FromPx(Pose.p);
 	_SimulEndRot = PxTransformConvert::QuatFromPx(Pose.q);

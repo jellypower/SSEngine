@@ -30,6 +30,13 @@ void MeshSerializeTest(IRenderer* InRenderer, SS::SHasherW MeshToTest)
 	EMeshType MeshType = MeshRawDataMutable->GetMeshType();
 	if (MeshType != EMeshType::Rigid && MeshType != EMeshType::Skinned)
 	{
+		if (MeshType == EMeshType::SimpleLine)
+		{
+			// 대부분 RuntimeCreation이기 때문에 파일화 할 필요가 없다
+			// 그냥 무시한다
+			return;
+		}
+
 		SS_INTERRUPT();
 		return;
 	}
