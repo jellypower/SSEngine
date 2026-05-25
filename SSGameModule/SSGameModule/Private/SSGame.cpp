@@ -300,8 +300,31 @@ void SSGame::PerFrame_DEBUGDRAW()
 		_DefaultWorld,
 		DebugDrawTransform,
 		HemiSphere,
+		true,
+		{ 1,0,0,1 });
+
+
+	SRenderDebugUtil::DrawLine(
+		_DefaultWorld,
+		{0, 0, 0, 1},
+		{ 1,0,0,1 },
 		false,
 		{ 1,0,0,1 });
+
+	SRenderDebugUtil::DrawLine(
+		_DefaultWorld,
+		{ 0, 0, 0, 1 },
+		{ 0,1,0,1 },
+		false,
+		{ 0,1,0,1 });
+
+	SRenderDebugUtil::DrawLine(
+		_DefaultWorld,
+		{ 0, 0, 0, 1 },
+		{ 0,0, 1,1 },
+		false,
+		{ 0,0,1,1 });
+
 }
 
 SGameObject* SSGame::CreateDynamicCube(Transform InTransform)

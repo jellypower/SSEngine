@@ -40,3 +40,6 @@ PipelineDesc ConstructPSOToDrawDebugWire(
 
 PipelineDesc ConstructPSOToDrawDebugLineList(
 	GALRenderTarget* InDSV = nullptr);
+
+PipelineDesc ConstructPSOToDrawDebugLines(
+	GALRenderTarget* InDSV = nullptr);

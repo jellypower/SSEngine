@@ -23,6 +23,8 @@ class GALResourceUpdater;
 class GALRenderDevice;
 class SSTransientMemAllocator;
 
+struct SimpleLineColorVertex;
+
 enum class ERenderDeviceTaskPhase
 {
 	None = -1,
@@ -122,6 +124,10 @@ public:
 		const XMMATRIX& TransformMatrix,
 		const XMMATRIX& RotMatrix,
 		const Vector4f& InColor,
+		bool bUseDepth = false) = 0;
+	virtual void DrawDebugLines(
+		const SimpleLineColorVertex* InVertexData,
+		int32 VertexCount,
 		bool bUseDepth = false) = 0;
 	virtual void EndDrawDebug() = 0;
 	// ERenderDeviceTaskPhase::~DrawDebug

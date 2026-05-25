@@ -126,6 +126,17 @@ void SRenderDebugUtil::DrawDirectionalLine(
 	WorldToDraw->DebugDrawMesh(WMatrix, RotMatrix, ArrowMesh, bUseDepth, Color, Time);
 }
 
+void SRenderDebugUtil::DrawLine(
+	SWorld* WorldToDraw, 
+	const Vector4f& StartPos, 
+	const Vector4f& EndPos, 
+	bool bUseDepth,
+	const Vector4f& Color, 
+	float Time)
+{
+	WorldToDraw->DebugDrawLine(StartPos, EndPos, Color, Time, bUseDepth);
+}
+
 void SRenderDebugUtil::DrawDebugPose(
 	SWorld* WorldToDraw,
 	const XMMATRIX& PoseOriginMatrix,

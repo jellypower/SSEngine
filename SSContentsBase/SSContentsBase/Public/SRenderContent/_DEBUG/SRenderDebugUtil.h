@@ -57,6 +57,15 @@ public:
 		float Time = 0
 	);
 
+	static void DrawLine(
+		SWorld* WorldToDraw,
+		const Vector4f& StartPos,
+		const Vector4f& EndPos,
+		bool bUseDepth,
+		const Vector4f& Color = Vector4f::Zero,
+		float Time = 0
+	);
+
 
 	static void DrawDebugPose(
 		SWorld* WorldToDraw,

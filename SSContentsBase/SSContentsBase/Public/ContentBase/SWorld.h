@@ -77,6 +77,7 @@ private:
 	// DEBUG
 private:
 	SS::PooledList<TimedDebugDrawMeshDesc> _MeshDebugDrawTasks;
+	SS::PooledList<TimedDebugDrawLineDesc> _LineDebugDrawTasks;
 
 
 public:
@@ -89,5 +90,12 @@ public:
 		bool bUseDepth,
 		const Vector4f& Color,
 		float Time);
+
+	void DebugDrawLine(
+		const Vector4f& Start,
+		const Vector4f& End,
+		const Vector4f& Color,
+		float Time,
+		bool bUseDepth);
 	// ~DEBUG
 };

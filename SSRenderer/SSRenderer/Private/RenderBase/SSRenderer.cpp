@@ -113,7 +113,7 @@ const IRenderCamera* SSRenderer::GetMainRenderCamera() const
 
 void SSRenderer::HandoverMainViewportSwapChain(GALRenderTarget* InMainViewportSwapChain)
 {
-	SS_ASSERT(_MainViewportSwapChain == nullptr); // TODO: ³ªÁß¿¡ ¹Ù²Ù´Â ±â´ÉÀÌ ÇÊ¿äÇÒ±î?
+	SS_ASSERT(_MainViewportSwapChain == nullptr); // TODO: ë‚˜ì¤‘ì— ë°”ê¾¸ëŠ” ê¸°ëŠ¥ì´ í•„ìš”í• ê¹Œ?
 	_MainViewportSwapChain = InMainViewportSwapChain;
 }
 
@@ -357,14 +357,14 @@ void SSRenderer::PerFrame()
 
 	// BeginRender
 	{
-		// WaitForFence Æ÷ÇÔ
+		// WaitForFence í¬í•¨
 		SCOPE_PROFILE(BeginRender);
 		_MainDeviceContext->BeginRender();
 	}
 
 	// ProcessReserveDestroy
 	{
-		// ÀÌÀü ÇÁ·¹ÀÓ ÀÛ¾÷ÀÌ ³¡³ª¸é »õ ÀÛ¾÷ ¹Ð¾î³Ö±â
+		// ì´ì „ í”„ë ˆìž„ ìž‘ì—…ì´ ëë‚˜ë©´ ìƒˆ ìž‘ì—… ë°€ì–´ë„£ê¸°
 		SCOPE_PROFILE(ProcessReservedDestroy);
 		ProcessReservedDestroy();
 	}
@@ -381,7 +381,7 @@ void SSRenderer::PerFrame()
 			{
 				_MainDeviceContext->GenerateGALRI(RIItem);
 				_MainDeviceContext->SyncGALRI(RIItem, nullptr);
-				// Draw¿ë RenderInstance´Â SyncÇÒ ¶© Ä«¸Þ¶ó°¡ ÇÊ¿ä ¾øÀ½
+				// Drawìš© RenderInstanceëŠ” Syncí•  ë• ì¹´ë©”ë¼ê°€ í•„ìš” ì—†ìŒ
 			}
 		}
 
@@ -588,6 +588,30 @@ void SSRenderer::PerFrame()
 
 					_DebugDrawItemsWithoutDepth.Clear();
 				}
+
+
+				if (_DebugDrawLinesWithDepth.GetSize() > 0)
+				{
+					_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, _DSVRenderTarget);
+					_MainDeviceContext->DrawDebugLines(
+						_DebugDrawLinesWithDepth.GetData(), 
+						_DebugDrawLinesWithDepth.GetSize(),
+						true);
+
+					_DebugDrawLinesWithDepth.Clear();
+				}
+
+				if (_DebugDrawLinesWithoutDepth.GetSize() > 0)
+				{
+					_MainDeviceContext->SetRenderTarget(1, &_RTPostProcessResult, nullptr);
+					_MainDeviceContext->DrawDebugLines(
+						_DebugDrawLinesWithoutDepth.GetData(),
+						_DebugDrawLinesWithoutDepth.GetSize(),
+						false);
+
+					_DebugDrawLinesWithoutDepth.Clear();
+				}
+
 			}
 			_MainDeviceContext->EndDrawDebug();
 
@@ -622,7 +646,7 @@ void SSRenderer::PerFrame()
 
 
 	{
-		SCOPE_PROFILE(GALRDC_EndRender); // Present ÇÏ°í EndRenderÇØ¾ß ¾È°É¸°´Ù.
+		SCOPE_PROFILE(GALRDC_EndRender); // Present í•˜ê³  EndRenderí•´ì•¼ ì•ˆê±¸ë¦°ë‹¤.
 		_MainDeviceContext->EndRender();
 	}
 }
@@ -728,6 +752,20 @@ void SSRenderer::DrawWireFrame(const DebugDrawMeshDesc& Desc)
 	}
 }
 
+void SSRenderer::DrawLine(const DebugDrawLineDesc& Desc)
+{
+	if (Desc.bUseDepth)
+	{
+		_DebugDrawLinesWithDepth.PushBack({ Desc.Start, Desc.Color});
+		_DebugDrawLinesWithDepth.PushBack({ Desc.End, Desc.Color });
+	}
+	else
+	{
+		_DebugDrawLinesWithoutDepth.PushBack({ Desc.Start, Desc.Color });
+		_DebugDrawLinesWithoutDepth.PushBack({ Desc.End, Desc.Color });
+	}
+}
+
 void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 {
 	SCOPE_PROFILE(GPUAssetUpdate);
@@ -768,15 +806,15 @@ void SSRenderer::InstantiatePendingGALAssets(GALRenderDeviceContext* Executor)
 		{
 			if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0 && MaterialAssetItem->GetGALMaterialAsset() == nullptr)
 			{
-				Executor->GenerateMaterialGALAsset(MaterialAssetItem); // ·¹ÇÁ Ä«¿îÆ®°¡ 0¿¡¼­ ¿Ã¶úÀ¸¸é »ý¼º
+				Executor->GenerateMaterialGALAsset(MaterialAssetItem); // ë ˆí”„ ì¹´ìš´íŠ¸ê°€ 0ì—ì„œ ì˜¬ëžìœ¼ë©´ ìƒì„±
 			}
 			else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
 			{
-				MaterialAssetItem->ReleaseGALData(); // ·¹ÇÁ Ä«¿îÆ®°¡ 0À¸·Î ¶³¾îÁ³À¸¸é ÆÄ±«
+				MaterialAssetItem->ReleaseGALData(); // ë ˆí”„ ì¹´ìš´íŠ¸ê°€ 0ìœ¼ë¡œ ë–¨ì–´ì¡Œìœ¼ë©´ íŒŒê´´
 			}
 			else if (MaterialAssetItem->GetAssetInstanceReferenceCnt() > 0 && MaterialAssetItem->GetGALMaterialAsset() != nullptr)
 			{
-				MaterialAssetItem->GetGALMaterialAsset()->SyncMtlParam(); // ·¹ÇÁ Ä«¿îÆ®°¡ ±×´ë·Î¸é º¯°æ
+				MaterialAssetItem->GetGALMaterialAsset()->SyncMtlParam(); // ë ˆí”„ ì¹´ìš´íŠ¸ê°€ ê·¸ëŒ€ë¡œë©´ ë³€ê²½
 			}
 		}
 	}
@@ -796,7 +834,7 @@ void SSRenderer::ValidateReleaseAllGALAssets()
 		{
 			if (MeshAssetItem->GetAssetInstanceReferenceCnt() > 0)
 			{
-				SS_INTERRUPT(); // ·»´õ·¯°¡ ³»·Á°¡´Âµ¥ »ì¾ÆÀÖ´Â ¿¡¼ÂÀÌ Á¸ÀçÇØ¼± ¾ÈµË´Ï´Ù.
+				SS_INTERRUPT(); // ë Œë”ëŸ¬ê°€ ë‚´ë ¤ê°€ëŠ”ë° ì‚´ì•„ìžˆëŠ” ì—ì…‹ì´ ì¡´ìž¬í•´ì„  ì•ˆë©ë‹ˆë‹¤.
 			}
 			else if (MeshAssetItem->GetAssetInstanceReferenceCnt() <= 0 && MeshAssetItem->GetGALMeshAsset() != nullptr)
 			{

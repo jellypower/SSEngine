@@ -3,6 +3,23 @@
 
 class IMeshAsset;
 
+
+
+struct DebugDrawLineDesc
+{
+	Vector4f Start;
+	Vector4f End;
+	Vector4f Color;
+	bool bUseDepth = false;
+};
+
+struct TimedDebugDrawLineDesc
+{
+	DebugDrawLineDesc LineDesc;
+	float Time = 0;
+};
+
+
 struct DebugDrawMeshDesc
 {
 	IMeshAsset* MeshAsset = nullptr;

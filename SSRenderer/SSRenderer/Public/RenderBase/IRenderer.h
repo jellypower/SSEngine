@@ -5,6 +5,7 @@
 
 #include "SSRenderer/Public/RenderAsset/Mutable/IAssetManagerMutable.h"
 
+struct DebugDrawLineDesc;
 class GALRWMetaData;
 class GALRIMetadata;
 struct DebugDrawMeshDesc;
@@ -76,4 +77,5 @@ public:
 
 public:
 	virtual void DrawWireFrame(const DebugDrawMeshDesc& Desc) = 0;
+	virtual void DrawLine(const DebugDrawLineDesc& Desc) = 0;
 };

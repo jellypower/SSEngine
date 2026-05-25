@@ -125,6 +125,11 @@ public:
 		const Vector4f& InColor,
 		bool bUseDepth = false) override;
 
+	virtual void DrawDebugLines(
+		const SimpleLineColorVertex* InVertexData,
+		int32 VertexCount,
+		bool bUseDepth = false) override;
+
 	virtual void EndDrawDebug() override;
 	// ERenderDeviceTaskPhase::~DrawDebug
 

@@ -47,6 +47,7 @@
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/IMeshAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/Mutable/RenderAssetType/ITextureAssetMutable.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSkinned.h"
+#include "SSRenderer/Public/RenderCommon/SSVertexType.h"
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MtlData/MtlDataBase.h"
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderBase/IRenderWorld.h"
@@ -1007,7 +1008,7 @@ void DX12GALRenderDeviceContext::DrawDebugLineList(
 	PipelineDesc Desc = ConstructPSOToDrawDebugLineList(RTDepth);
 	SetPSOAndRootSignature(Desc);
 
-	TransientChunkHeader MeshTransformCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(CBAModelBuffer)));
+	TransientChunkHeader MeshTransformCBChunk = TransientMemAllocator->AllocChunk(sizeof(CBAModelBuffer));
 	DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)MeshTransformCBChunk.PageContent;
 	CBAModelBuffer* ModelCBSystemAddr = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + MeshTransformCBChunk.ChunkOffset);
 	D3D12_GPU_VIRTUAL_ADDRESS ModelCBGPUAdddr = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + MeshTransformCBChunk.ChunkOffset;
@@ -1016,7 +1017,7 @@ void DX12GALRenderDeviceContext::DrawDebugLineList(
 	CurCommandList->SetGraphicsRootConstantBufferView(0, ModelCBGPUAdddr);
 	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
 
-	TransientChunkHeader DrawColorCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(Vector4f)));
+	TransientChunkHeader DrawColorCBChunk = TransientMemAllocator->AllocChunk(sizeof(Vector4f));
 	DX12ConstantBufferResourcePage* ColorCBPage = (DX12ConstantBufferResourcePage*)DrawColorCBChunk.PageContent;
 	Vector4f* ColorCBSystemAddr = reinterpret_cast<Vector4f*>(ColorCBPage->ResourceSysMem + DrawColorCBChunk.ChunkOffset);
 	D3D12_GPU_VIRTUAL_ADDRESS ColorCBGPUAdddr = ColorCBPage->D3D12Resource->GetGPUVirtualAddress() + DrawColorCBChunk.ChunkOffset;
@@ -1028,6 +1029,56 @@ void DX12GALRenderDeviceContext::DrawDebugLineList(
 	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAsset->_VertexBufferView);
 	CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView);
 	CurCommandList->DrawIndexedInstanced(GALMeshAsset->_IndexCnt, 1, 0, 0, 0);
+}
+
+void DX12GALRenderDeviceContext::DrawDebugLines(
+	const SimpleLineColorVertex* InVertexData,
+	int32 VertexCount,
+	bool bUseDepth)
+{
+	if (_TaskPhase != ERenderDeviceTaskPhase::DrawDebug)
+	{
+		SS_INTERRUPT();
+		return;
+	}
+	if (VertexCount <= 0)
+	{
+		return;
+	}
+
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+	SSTransientMemAllocator* TransientMemAllocator = GetTransientCBAllocator(FrameMod);
+
+	GALRenderTarget* RTDepth = bUseDepth ? GetThisFrameBoundDSV() : nullptr;
+	PipelineDesc Desc = ConstructPSOToDrawDebugLines(RTDepth);
+	SetPSOAndRootSignature(Desc);
+
+	TransientChunkHeader ModelCBChunk = TransientMemAllocator->AllocChunk(sizeof(CBAModelBuffer));
+	DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)ModelCBChunk.PageContent;
+	CBAModelBuffer* ModelCBSysMem = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + ModelCBChunk.ChunkOffset);
+	D3D12_GPU_VIRTUAL_ADDRESS ModelCBGPUAddr = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + ModelCBChunk.ChunkOffset;
+	ModelCBSysMem->WMatrix = XMMatrixIdentity();
+	ModelCBSysMem->RotMatrix = XMMatrixIdentity();
+	CurCommandList->SetGraphicsRootConstantBufferView(0, ModelCBGPUAddr);
+	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+
+	const int32 VertexStride = sizeof(SimpleLineColorVertex);
+	const int32 VertexDataSize = VertexStride * VertexCount;
+	TransientChunkHeader VBChunk = TransientMemAllocator->AllocChunk(VertexDataSize);
+	DX12ConstantBufferResourcePage* VBPage = (DX12ConstantBufferResourcePage*)VBChunk.PageContent;
+	void* VBSysMem = VBPage->ResourceSysMem + VBChunk.ChunkOffset;
+	D3D12_GPU_VIRTUAL_ADDRESS VBGPUAddr = VBPage->D3D12Resource->GetGPUVirtualAddress() + VBChunk.ChunkOffset;
+	memcpy(VBSysMem, InVertexData, VertexDataSize);
+
+	D3D12_VERTEX_BUFFER_VIEW TransientVBView = {};
+	TransientVBView.BufferLocation = VBGPUAddr;
+	TransientVBView.SizeInBytes = (UINT)VertexDataSize;
+	TransientVBView.StrideInBytes = (UINT)VertexStride;
+
+	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+	CurCommandList->IASetVertexBuffers(0, 1, &TransientVBView);
+	CurCommandList->DrawInstanced((UINT)VertexCount, 1, 0, 0);
 }
 
 void DX12GALRenderDeviceContext::EndDrawDebug()
@@ -1432,7 +1483,7 @@ void DX12GALRenderDeviceContext::DrawDebugMeshWire(const IMeshAsset* InMesh, con
 
 
 
-	TransientChunkHeader MeshTransformCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(CBAModelBuffer)));
+	TransientChunkHeader MeshTransformCBChunk = TransientMemAllocator->AllocChunk(sizeof(CBAModelBuffer));
 	DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)MeshTransformCBChunk.PageContent;
 	CBAModelBuffer* ModelCBSystemAddr = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + MeshTransformCBChunk.ChunkOffset);
 	D3D12_GPU_VIRTUAL_ADDRESS ModelCBGPUAdddr = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + MeshTransformCBChunk.ChunkOffset;
@@ -1443,7 +1494,7 @@ void DX12GALRenderDeviceContext::DrawDebugMeshWire(const IMeshAsset* InMesh, con
 
 
 
-	TransientChunkHeader DrawColorCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(Vector4f)));
+	TransientChunkHeader DrawColorCBChunk = TransientMemAllocator->AllocChunk(sizeof(Vector4f));
 	DX12ConstantBufferResourcePage* ColorCBPage = (DX12ConstantBufferResourcePage*)DrawColorCBChunk.PageContent;
 	Vector4f* ColorCBSystemAddr = reinterpret_cast<Vector4f*>(ColorCBPage->ResourceSysMem + DrawColorCBChunk.ChunkOffset);
 	D3D12_GPU_VIRTUAL_ADDRESS ColorCBGPUAdddr = ColorCBPage->D3D12Resource->GetGPUVirtualAddress() + DrawColorCBChunk.ChunkOffset;

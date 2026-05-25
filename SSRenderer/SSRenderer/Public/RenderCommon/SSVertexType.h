@@ -8,6 +8,12 @@ struct alignas(16) SimpleLineVertex
 	Vector4f Pos;
 };
 
+struct alignas(16) SimpleLineColorVertex
+{
+	Vector4f Pos;
+	Vector4f Color;
+};
+
 struct alignas(16) SSDefaultVertex {
 	Vector4f Pos;
 	Vector4f Normal;

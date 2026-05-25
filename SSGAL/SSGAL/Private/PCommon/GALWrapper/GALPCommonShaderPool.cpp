@@ -34,6 +34,7 @@ void GALPCommonShaderPool::Initialize()
 			{L"VS_SKMToDefaultPSInput", L"Resource/Shader/VS_SKMToDefaultPSInput.hlsl", "Main", EShaderType::VertexShader},
 			{L"VS_FullScreenQuad", L"Resource/Shader/VS_FullScreenQuad.hlsl", "Main", EShaderType::VertexShader},
 			{L"VS_SimpleLineToPS", L"Resource/Shader/VS_SimpleLineToPS.hlsl", "Main", EShaderType::VertexShader},
+			{L"VS_SimpleLineColorToPS", L"Resource/Shader/VS_SimpleLineColorToPS.hlsl", "Main", EShaderType::VertexShader},
 
 			{L"PS_DeferredShadeGBufferOutput", L"Resource/Shader/PS_DeferredShadeGBufferOutput.hlsl", "Main", EShaderType::PixelShader},
 			{L"PS_IDDrawer", L"Resource/Shader/PS_IDDrawer.hlsl", "Main", EShaderType::PixelShader},
@@ -43,6 +44,7 @@ void GALPCommonShaderPool::Initialize()
 			{L"PS_SkyMap", L"Resource/Shader/PS_SkyMap.hlsl", "Main", EShaderType::PixelShader},
 
 			{L"PS_DrawSimpleColor", L"Resource/Shader/PS_DrawSimpleColor.hlsl", "Main", EShaderType::PixelShader},
+			{L"PS_DrawSimpleColorFromVertex", L"Resource/Shader/PS_DrawSimpleColorFromVertex.hlsl", "Main", EShaderType::PixelShader},
 		};
 
 		for (const ShaderConstructDesc& DescItem : DescSet)

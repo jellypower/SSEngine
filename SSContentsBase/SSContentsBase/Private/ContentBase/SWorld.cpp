@@ -412,6 +412,7 @@ void SWorld::AddWorldRootObject(SGameObject* InWorldRootObject)
 void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
 {
 	// Process Colision
+	const float ScaledDeltaTime = _TimeScale * SSFrameInfo::GetDeltaTime();
 	IMeshAsset* Cube = g_Renderer->GetCommonRenderAssetSet()->GetCube1mMesh();
 	IMeshAsset* Sphere = g_Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
 
@@ -453,7 +454,6 @@ void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
 	_CollWorld->FlushDDDList();
 
 
-	//
 	for (int i = 0; i < _MeshDebugDrawTasks.GetSize(); i++)
 	{
 		InRenderer->DrawWireFrame(_MeshDebugDrawTasks[i].RenderDesc);
@@ -461,12 +461,28 @@ void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
 
 	for (int i = 0; i < _MeshDebugDrawTasks.GetSize(); i++)
 	{
-		// TODO: 나중에 World별 DeltaTime으로 바꿀 수 있음
-		_MeshDebugDrawTasks[i].Time -= SSFrameInfo::GetDeltaTime();
+		_MeshDebugDrawTasks[i].Time -= ScaledDeltaTime;
 
 		if (_MeshDebugDrawTasks[i].Time < 0)
 		{
 			_MeshDebugDrawTasks.RemoveAtAndFillLast(i);
+			i--;
+		}
+	}
+
+
+	for (int32 i = 0; i < _LineDebugDrawTasks.GetSize(); i++)
+	{
+		InRenderer->DrawLine(_LineDebugDrawTasks[i].LineDesc);
+	}
+
+	for (int i = 0; i < _LineDebugDrawTasks.GetSize(); i++)
+	{
+		_LineDebugDrawTasks[i].Time -= ScaledDeltaTime;
+
+		if (_LineDebugDrawTasks[i].Time < 0)
+		{
+			_LineDebugDrawTasks.RemoveAtAndFillLast(i);
 			i--;
 		}
 	}
@@ -491,4 +507,17 @@ void SWorld::DebugDrawMesh(
 	NewDesc.Time = Time;
 
 	_MeshDebugDrawTasks.PushBack(NewDesc);
+}
+
+void SWorld::DebugDrawLine(const Vector4f& Start, const Vector4f& End, const Vector4f& Color, float Time,
+	bool bUseDepth)
+{
+	TimedDebugDrawLineDesc NewDesc;
+	NewDesc.LineDesc.Start = Start;
+	NewDesc.LineDesc.End = End;
+	NewDesc.LineDesc.Color = Color;
+	NewDesc.LineDesc.bUseDepth = bUseDepth;
+	NewDesc.Time = Time;
+
+	_LineDebugDrawTasks.PushBack(NewDesc);
 }
