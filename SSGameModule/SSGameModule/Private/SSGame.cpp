@@ -269,6 +269,7 @@ void SSGame::PerFrame_DEBUGDRAW()
 {
 	IMeshAsset* Sphere = g_Renderer->GetCommonRenderAssetSet()->GetSphere1mMesh();
 	IMeshAsset* Arrow = g_Renderer->GetCommonRenderAssetSet()->GetArrowMesh();
+	IMeshAsset* HemiSphere = g_Renderer->GetCommonRenderAssetSet()->GetHemiSphereOutline1mMesh();
 
 	ICollisionWorld* CollWorld = _DefaultWorld->GetCollWorld();
 	SColliderBaseComponent* CharacterCollider = _MainCharacter->FindComponent<SColliderBaseComponent>();
@@ -290,6 +291,17 @@ void SSGame::PerFrame_DEBUGDRAW()
 			false,
 			{ 1,0,0,1 });
 	}
+
+	Transform DebugDrawTransform;
+	DebugDrawTransform.Scale = { 1, 1, 1, 0 };
+	DebugDrawTransform.Position = { 0, 1,0,1 };
+
+	SRenderDebugUtil::DrawDebugMesh(
+		_DefaultWorld,
+		DebugDrawTransform,
+		HemiSphere,
+		false,
+		{ 1,0,0,1 });
 }
 
 SGameObject* SSGame::CreateDynamicCube(Transform InTransform)
@@ -299,7 +311,8 @@ SGameObject* SSGame::CreateDynamicCube(Transform InTransform)
 
 	SBoxColliderComponent* BoxCollider = Cube->CreateComponent<SBoxColliderComponent>(L"SBoxColliderComponent");
 	BoxCollider->SetExtent({ 0.5f, 0.5f, 0.5f, 0 });
-	Cube->CreateComponent<SRigidBodyDynamicComponent>(L"SRigidBodyDynamicComponent");
+	SRigidBodyDynamicComponent* RB = Cube->CreateComponent<SRigidBodyDynamicComponent>(L"SRigidBodyDynamicComponent");
+	RB->SetMass(20);
 	SGameObjectConstructor::FinishConstructHierarchy(Cube);
 
 	return Cube;

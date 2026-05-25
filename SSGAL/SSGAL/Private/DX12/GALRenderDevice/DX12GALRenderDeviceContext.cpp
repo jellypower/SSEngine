@@ -24,6 +24,7 @@
 #include "Private/PCommon/TestCodes/GALTestCodes.h"
 #include "SSGAL/Private/DX12/DX12CommonUtils/DDSTextureLoader12/DDSTextureLoader12.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALMeshAssetWrapper.h"
+#include "SSGAL/Private/DX12/GALRenderAsset/DX12GALSimpleLineMeshAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/DX12GALTextureAssetWrapper.h"
 #include "SSGAL/Private/DX12/GALRenderAsset/GALMaterialAssets/DX12GALDefaultPBRMaterialAsset.h"
 #include "SSGAL/Private/DX12/GALRenderInstance/DX12GALRIMetadata_SM.h"
@@ -212,6 +213,14 @@ bool DX12GALRenderDeviceContext::GenerateMeshGALAsset(IMeshAssetMutable* InMeshA
 	if (InMeshAsset->GetMeshType() == EMeshType::Skinned)
 	{
 		DX12GALSkinnedMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALSkinnedMeshAssetWrapper(InMeshAsset, this);
+		InMeshAsset->InjectGALMeshAsset(NewGALMeshAsset);
+		return true;
+	}
+
+
+	if (InMeshAsset->GetMeshType() == EMeshType::SimpleLine)
+	{
+		DX12GALSimpleLineMeshAssetWrapper* NewGALMeshAsset = DBG_NEW DX12GALSimpleLineMeshAssetWrapper(InMeshAsset, this);
 		InMeshAsset->InjectGALMeshAsset(NewGALMeshAsset);
 		return true;
 	}
@@ -949,8 +958,38 @@ void DX12GALRenderDeviceContext::DrawDebugWire(
 	const Vector4f& InColor,
 	bool bUseDepth)
 {
-	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
 
+	if (InMesh->GetMeshType() == EMeshType::SimpleLine)
+	{
+		DrawDebugLineList(
+			InMesh,
+			TransformMatrix,
+			RotMatrix,
+			InColor,
+			bUseDepth
+		);
+	}
+	else
+	{
+		DrawDebugMeshWire(
+			InMesh,
+			TransformMatrix,
+			RotMatrix,
+			InColor,
+			bUseDepth
+		);
+	}
+
+}
+
+void DX12GALRenderDeviceContext::DrawDebugLineList(
+	const IMeshAsset* InMesh,
+	const XMMATRIX& TransformMatrix,
+	const XMMATRIX& RotMatrix,
+	const Vector4f& InColor,
+	bool bUseDepth)
+{
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
 
 	if (_TaskPhase != ERenderDeviceTaskPhase::DrawDebug)
 	{
@@ -960,16 +999,13 @@ void DX12GALRenderDeviceContext::DrawDebugWire(
 	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
 	SSTransientMemAllocator* TransientMemAllocator = GetTransientCBAllocator(FrameMod);
 
-
 	GALRenderTarget* RTDepth = nullptr;
 	if (bUseDepth)
 	{
 		RTDepth = GetThisFrameBoundDSV();
 	}
-	PipelineDesc Desc = ConstructPSOToDrawDebugWire(RTDepth);
+	PipelineDesc Desc = ConstructPSOToDrawDebugLineList(RTDepth);
 	SetPSOAndRootSignature(Desc);
-
-
 
 	TransientChunkHeader MeshTransformCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(CBAModelBuffer)));
 	DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)MeshTransformCBChunk.PageContent;
@@ -980,8 +1016,6 @@ void DX12GALRenderDeviceContext::DrawDebugWire(
 	CurCommandList->SetGraphicsRootConstantBufferView(0, ModelCBGPUAdddr);
 	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
 
-
-
 	TransientChunkHeader DrawColorCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(Vector4f)));
 	DX12ConstantBufferResourcePage* ColorCBPage = (DX12ConstantBufferResourcePage*)DrawColorCBChunk.PageContent;
 	Vector4f* ColorCBSystemAddr = reinterpret_cast<Vector4f*>(ColorCBPage->ResourceSysMem + DrawColorCBChunk.ChunkOffset);
@@ -989,21 +1023,11 @@ void DX12GALRenderDeviceContext::DrawDebugWire(
 	(*ColorCBSystemAddr) = InColor;
 	CurCommandList->SetGraphicsRootConstantBufferView(2, ColorCBGPUAdddr);
 
-
-
-	int32 SubMeshCnt = InMesh->GetSubMeshCnt();
-	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(InMesh->GetGALMeshAsset());
-	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
-	const MeshRawDataDefault* RawData = static_cast<const MeshRawDataDefault*>(InMesh->GetMeshRawData());
-
-	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
-
-	for (int32 i = 0; i < SubMeshCnt; i++)
-	{
-		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
-		int32 CurIdxDataCnt = RawData->_VertexHeader.indexDataCnt[i];
-		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
-	}
+	const DX12GALSimpleLineMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALSimpleLineMeshAssetWrapper*>(InMesh->GetGALMeshAsset());
+	CurCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAsset->_VertexBufferView);
+	CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView);
+	CurCommandList->DrawIndexedInstanced(GALMeshAsset->_IndexCnt, 1, 0, 0, 0);
 }
 
 void DX12GALRenderDeviceContext::EndDrawDebug()
@@ -1379,6 +1403,66 @@ void DX12GALRenderDeviceContext::DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw,
 	{
 		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
 		int32 CurIdxDataCnt = DefaultMeshRawData->_VertexHeader.indexDataCnt[i];
+		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
+	}
+}
+
+void DX12GALRenderDeviceContext::DrawDebugMeshWire(const IMeshAsset* InMesh, const XMMATRIX& TransformMatrix,
+	const XMMATRIX& RotMatrix, const Vector4f& InColor, bool bUseDepth)
+{
+	const int32 FrameMod = RenderFrameInfo::GetFrameMod();
+
+
+	if (_TaskPhase != ERenderDeviceTaskPhase::DrawDebug)
+	{
+		SS_INTERRUPT();
+	}
+
+	ID3D12GraphicsCommandList* CurCommandList = GetCurrentDrawWorkerCmdList();
+	SSTransientMemAllocator* TransientMemAllocator = GetTransientCBAllocator(FrameMod);
+
+
+	GALRenderTarget* RTDepth = nullptr;
+	if (bUseDepth)
+	{
+		RTDepth = GetThisFrameBoundDSV();
+	}
+	PipelineDesc Desc = ConstructPSOToDrawDebugWire(RTDepth);
+	SetPSOAndRootSignature(Desc);
+
+
+
+	TransientChunkHeader MeshTransformCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(CBAModelBuffer)));
+	DX12ConstantBufferResourcePage* ModelCBPage = (DX12ConstantBufferResourcePage*)MeshTransformCBChunk.PageContent;
+	CBAModelBuffer* ModelCBSystemAddr = reinterpret_cast<CBAModelBuffer*>(ModelCBPage->ResourceSysMem + MeshTransformCBChunk.ChunkOffset);
+	D3D12_GPU_VIRTUAL_ADDRESS ModelCBGPUAdddr = ModelCBPage->D3D12Resource->GetGPUVirtualAddress() + MeshTransformCBChunk.ChunkOffset;
+	ModelCBSystemAddr->WMatrix = XMMatrixTranspose(TransformMatrix);
+	ModelCBSystemAddr->RotMatrix = XMMatrixTranspose(RotMatrix);
+	CurCommandList->SetGraphicsRootConstantBufferView(0, ModelCBGPUAdddr);
+	CurCommandList->SetGraphicsRootConstantBufferView(1, _CurRenderWorldGALData->_RenderEnvCBGPUMemAddr);
+
+
+
+	TransientChunkHeader DrawColorCBChunk = TransientMemAllocator->AllocChunk(sizeof(sizeof(Vector4f)));
+	DX12ConstantBufferResourcePage* ColorCBPage = (DX12ConstantBufferResourcePage*)DrawColorCBChunk.PageContent;
+	Vector4f* ColorCBSystemAddr = reinterpret_cast<Vector4f*>(ColorCBPage->ResourceSysMem + DrawColorCBChunk.ChunkOffset);
+	D3D12_GPU_VIRTUAL_ADDRESS ColorCBGPUAdddr = ColorCBPage->D3D12Resource->GetGPUVirtualAddress() + DrawColorCBChunk.ChunkOffset;
+	(*ColorCBSystemAddr) = InColor;
+	CurCommandList->SetGraphicsRootConstantBufferView(2, ColorCBGPUAdddr);
+
+
+
+	int32 SubMeshCnt = InMesh->GetSubMeshCnt();
+	const DX12GALMeshAssetWrapper* GALMeshAsset = static_cast<const DX12GALMeshAssetWrapper*>(InMesh->GetGALMeshAsset());
+	const D3D12_VERTEX_BUFFER_VIEW& GALMeshAssetVertexBuffer = GALMeshAsset->_VertexBufferView;
+	const MeshRawDataDefault* RawData = static_cast<const MeshRawDataDefault*>(InMesh->GetMeshRawData());
+
+	CurCommandList->IASetVertexBuffers(0, 1, &GALMeshAssetVertexBuffer);
+
+	for (int32 i = 0; i < SubMeshCnt; i++)
+	{
+		CurCommandList->IASetIndexBuffer(&GALMeshAsset->_IndexBufferView[i]);
+		int32 CurIdxDataCnt = RawData->_VertexHeader.indexDataCnt[i];
 		CurCommandList->DrawIndexedInstanced(CurIdxDataCnt, 1, 0, 0, 0);
 	}
 }

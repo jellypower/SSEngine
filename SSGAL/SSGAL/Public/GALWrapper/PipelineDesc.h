@@ -15,6 +15,7 @@ enum class EInputLayoutType : int32
 
 	SS_DEFAULT_VS_RIGID_VERTEX_LAYOUT,
 	SS_DEFAULT_VS_SKIN_VERTEX_LAYOUT,
+	SS_SIMPLE_LINE_VERTEX_LAYOUT,
 
 	SS_INPUTLAYOUT_NULL,
 };
@@ -48,6 +49,7 @@ struct PipelineDesc
 	ERTColorFormat		RTColorFormats[RT_NUM_MAX] = { ERTColorFormat::None, }; // RenderTargetColorFormat
 	bool				bUseTwoSideRender = false;
 	bool				bUseWireFrame = false;
+	bool				bUseLineTopology = false;
 };
 
 inline bool operator==(const PipelineDesc& lhs, const PipelineDesc& rhs)
@@ -60,6 +62,7 @@ inline bool operator==(const PipelineDesc& lhs, const PipelineDesc& rhs)
 	bResult = bResult && lhs.DSColorFormat == rhs.DSColorFormat;
 	bResult = bResult && lhs.bUseTwoSideRender == rhs.bUseTwoSideRender;
 	bResult = bResult && lhs.bUseWireFrame == rhs.bUseWireFrame;
+	bResult = bResult && lhs.bUseLineTopology == rhs.bUseLineTopology;
 
 	if (bResult == false)
 	{
@@ -85,6 +88,7 @@ inline uint32 HashValue(const PipelineDesc& inValue)
 	uint32 ui32DSColorFormat = (uint32)inValue.DSColorFormat;
 	uint32 uiUseTwoSideRender = inValue.bUseTwoSideRender ? 1 : 0;
 	uint32 uiUseWireFrame = inValue.bUseWireFrame ? 1 : 0;
+	uint32 uiUseLineTopology = inValue.bUseLineTopology ? 1 : 0;
 
 
 	uint32 RTColorFormatHashValue = inValue.NumRenderTarget;
@@ -95,7 +99,7 @@ inline uint32 HashValue(const PipelineDesc& inValue)
 
 	int64 HashResult = (PSHashValue ^ VSHashValue ^ CSHashValue) >> 1 +
 		LayoutTypeHashValue + RootsignatureTypeHashValue + RTColorFormatHashValue + ui32DSColorFormat +
-		uiUseTwoSideRender + uiUseWireFrame;
+		uiUseTwoSideRender + uiUseWireFrame + uiUseLineTopology;
 
 	union {
 		struct {

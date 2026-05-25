@@ -242,6 +242,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\IModelCombinationAsset.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\ITextureAsset.h" />
+    <ClInclude Include="Public\RenderAsset\RenderAssetType\MeshData\MeshRawDataSimpleLine.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RAFileOutline\MeshRawDataHeaders.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderAssetCreationUtils.h" />
     <ClInclude Include="Public\RenderAsset\RenderAssetType\RenderKeyFrameAnimData\RenderAnimData.h" />

@@ -25,6 +25,8 @@ public:
 	IMeshAsset* GetSphere1mMesh() const { return _Sphere1mMesh; }
 	IMeshAsset* GetArrowMesh() const { return _ArrowMesh; }
 
+	IMeshAsset* GetHemiSphereOutline1mMesh() const { return _HemiSphereOutline1mMesh; }
+
 public:
 	virtual void InitializeCommonAssets() = 0;
 	virtual void ReleaseCachedAssets() = 0;
@@ -42,6 +44,7 @@ protected:
 
 	IMeshAsset* _Cube1mMesh = nullptr;
 	IMeshAsset* _Sphere1mMesh = nullptr;
+	IMeshAsset* _HemiSphereOutline1mMesh = nullptr;
 
 	IMeshAsset* _ArrowMesh = nullptr;
 };

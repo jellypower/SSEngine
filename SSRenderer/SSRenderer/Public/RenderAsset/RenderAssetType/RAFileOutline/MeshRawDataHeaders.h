@@ -8,17 +8,25 @@ enum class EMeshType : int32
 	None = 0,
 	Rigid = 1,
 	Skinned = 2,
+	SimpleLine,
+
+	Count
 };
 
 
 constexpr int32 EachVertexSizeOfType(EMeshType InType)
 {
+	static_assert(static_cast<int32>(EMeshType::Count) == 4);
+
 	switch (InType)
 	{
 	case EMeshType::None: return 0;
 	case EMeshType::Rigid: return sizeof(SSDefaultVertex);
 	case EMeshType::Skinned: return sizeof(SSSkinnedVertex);
+	case EMeshType::SimpleLine: return sizeof(SimpleLineVertex);
 	}
+
+	return -1;
 }
 
 

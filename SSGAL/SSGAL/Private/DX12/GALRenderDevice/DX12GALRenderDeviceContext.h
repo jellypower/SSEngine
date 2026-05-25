@@ -117,12 +117,14 @@ public:
 
 	// ERenderDeviceTaskPhase::DrawDebug
 	virtual void BeginDrawDebug() override;
+
 	virtual void DrawDebugWire(
 		const IMeshAsset* InMesh,
 		const XMMATRIX& TransformMatrix,
 		const XMMATRIX& RotMatrix,
 		const Vector4f& InColor,
 		bool bUseDepth = false) override;
+
 	virtual void EndDrawDebug() override;
 	// ERenderDeviceTaskPhase::~DrawDebug
 
@@ -133,6 +135,19 @@ private:
 	void DrawShadowStaticMesh(IRIMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 	void DrawShadowSkinnedMesh(IRISkinnedMesh* RIToDraw, const XMMATRIX& DrawMat, const XMMATRIX& DrawRotMat);
 
+
+	void DrawDebugMeshWire(
+		const IMeshAsset* InMesh,
+		const XMMATRIX& TransformMatrix,
+		const XMMATRIX& RotMatrix,
+		const Vector4f& InColor,
+		bool bUseDepth);
+	void DrawDebugLineList(
+		const IMeshAsset* InMesh,
+		const XMMATRIX& TransformMatrix,
+		const XMMATRIX& RotMatrix,
+		const Vector4f& InColor,
+		bool bUseDepth);
 
 public:
 	ID3D12CommandQueue* GetD3DCommandQueue() const { return _D3DCommandQueue; }
