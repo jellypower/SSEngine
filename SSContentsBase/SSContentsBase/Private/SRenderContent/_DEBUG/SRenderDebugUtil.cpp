@@ -88,7 +88,7 @@ void SRenderDebugUtil::DrawDirectionalMesh(
 	WorldToDraw->DebugDrawMesh(WMatrix, RotMatrix, DirectionableMesh, bUseDepth, Color, Time);
 }
 
-void SRenderDebugUtil::DrawLine(
+void SRenderDebugUtil::DrawDirectionalLine(
 	SWorld* WorldToDraw, 
 	const Vector4f& StartPos, 
 	const Vector4f& EndPos, 

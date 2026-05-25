@@ -47,7 +47,7 @@ public:
 		float Time = 0
 	);
 
-	static void DrawLine(
+	static void DrawDirectionalLine(
 		SWorld* WorldToDraw,
 		const Vector4f& StartPos,
 		const Vector4f& EndPos,

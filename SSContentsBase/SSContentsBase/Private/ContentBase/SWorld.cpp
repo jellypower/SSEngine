@@ -418,7 +418,7 @@ void SWorld::ProcessDebugDraw(IRenderer* InRenderer)
 	const SS::PooledList<CDDD_Line>& CDDDListLine = _CollWorld->GetDDDList_Line();
 	for (const CDDD_Line& Item : CDDDListLine)
 	{
-		SRenderDebugUtil::DrawLine(
+		SRenderDebugUtil::DrawDirectionalLine(
 			this,
 			Item.Start,
 			Item.End,
