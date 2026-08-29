@@ -167,6 +167,6 @@ void SCharacterMovementComponent::ConstructRigidBodyInstance()
 
 void SCharacterMovementComponent::DestructRigidBodyInstance()
 {
-	delete _RigidCharacterMovement;
+	_RigidCharacterMovement->Release();
 	_RigidCharacterMovement = nullptr;
 }

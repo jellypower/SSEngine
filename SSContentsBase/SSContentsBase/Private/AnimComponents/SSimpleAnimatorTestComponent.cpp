@@ -78,7 +78,7 @@ void SSimpleAnimatorTestComponent::ReconstructBoneBinding()
 
 	if (_AnimWorkee != nullptr)
 	{
-		delete _AnimWorkee;
+		_AnimWorkee->Release();
 	}
 
 	_AnimWorkee = DBG_NEW AnimWorkeeSimplePlayer(this);
@@ -88,7 +88,7 @@ void SSimpleAnimatorTestComponent::PreDestructHierarchy()
 {
 	if (_AnimWorkee != nullptr)
 	{
-		delete _AnimWorkee;
+		_AnimWorkee->Release();
 	}
 }
 

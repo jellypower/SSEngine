@@ -94,7 +94,7 @@ void MdlcSerializeTest(IRenderer* InRenderer, SS::SHasherW MdlcToTest)
 		}
 	}
 
-	delete CreatedMdlcAsset;
+	CreatedMdlcAsset->Release();
 }
 
 void RenderAnimSerializeTest(IRenderer* InRenderer, SS::SHasherW RenderAnimToTest)

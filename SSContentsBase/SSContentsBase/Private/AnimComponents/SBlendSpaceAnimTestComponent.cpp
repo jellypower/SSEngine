@@ -43,7 +43,7 @@ void SBlendSpaceAnimTestComponent::ReconstructBoneBinding()
 
 	if (_AnimWorkee != nullptr)
 	{
-		delete _AnimWorkee;
+		_AnimWorkee->Release();
 	}
 
 	_AnimWorkee = DBG_NEW AnimWorkeeBlendSpace(this);
@@ -54,7 +54,7 @@ void SBlendSpaceAnimTestComponent::PreDestructHierarchy()
 {
 	if (_AnimWorkee != nullptr)
 	{
-		delete _AnimWorkee;
+		_AnimWorkee->Release();
 	}
 }
 

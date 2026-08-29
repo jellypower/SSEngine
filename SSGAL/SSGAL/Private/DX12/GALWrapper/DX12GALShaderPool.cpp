@@ -13,6 +13,8 @@ void DX12GALShaderPool::Release()
 		ShaderItem->ReleaseShaderInstance();
 		ShaderItem->Release();
 	}
+
+	delete this;
 }
 
 GALShaderWrapper* DX12GALShaderPool::CreateShader(const ShaderConstructDesc& InDesc)

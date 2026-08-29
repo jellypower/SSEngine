@@ -73,8 +73,8 @@ ImGUI_AssetManager::ImGUI_AssetManager(IRenderer* InRenderer)
 ImGUI_AssetManager::~ImGUI_AssetManager()
 {
 	_FbxImporterToImport->ClearFbxSceneFile();
-	delete _FbxImporterToImport;
-	delete _AssetDBLoaderToExport;
+	_FbxImporterToImport->Release();
+	_AssetDBLoaderToExport->Release();
 }
 
 void ImGUI_AssetManager::PerFrame()
@@ -610,7 +610,7 @@ void ImGUI_AssetManager::ReleaseAllAssetList(SS::PooledList<IAssetBase*>& AssetL
 			MeshAssetItem->ReleaseGALData();
 		}
 
-		delete ImportAssetItem;
+		ImportAssetItem->Release();
 	}
 
 	AssetList.Clear();

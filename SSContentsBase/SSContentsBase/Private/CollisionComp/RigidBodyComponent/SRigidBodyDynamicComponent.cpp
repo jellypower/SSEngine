@@ -129,6 +129,6 @@ void SRigidBodyDynamicComponent::ConstructRigidBodyInstance()
 
 void SRigidBodyDynamicComponent::DestructRigidBodyInstance()
 {
-	delete _RigidBodyDynamic;
+	_RigidBodyDynamic->Release();
 	_RigidBodyDynamic = nullptr;
 }

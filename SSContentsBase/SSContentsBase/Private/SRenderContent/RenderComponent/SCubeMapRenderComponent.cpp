@@ -56,5 +56,5 @@ void SCubeMapRenderComponent::DestructRenderInstance()
 	}
 
 	_RenderInstance->ReleaseGALMetaData();
-	delete _RenderInstance;
+	_RenderInstance->Release();
 }

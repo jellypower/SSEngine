@@ -306,7 +306,7 @@ void SSEditor::CleanupEngine()
 	_DefaultWorld = nullptr;
 
 	_AssetDBLoader->ClearDB();
-	delete _AssetDBLoader;
+	_AssetDBLoader->Release();
 	_AssetDBLoader = nullptr;
 
 	_Renderer->GetCommonRenderAssetSet()->ReleaseCachedAssets();
@@ -322,10 +322,10 @@ void SSEditor::CleanupEngine()
 	g_ImGuiInitializer = nullptr;
 
 	_Renderer->CleanUp();
-	delete _Renderer;
+	_Renderer->Release();
 	_Renderer = nullptr;
 
-	delete _CollDevice;
+	_CollDevice->Release();
 	_CollDevice = nullptr;
 }
 

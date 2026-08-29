@@ -5,7 +5,7 @@
 
 void Win32WindowManager::Release()
 {
-	delete _MainWindow;
+	_MainWindow->Release();
 
 	delete this;
 }

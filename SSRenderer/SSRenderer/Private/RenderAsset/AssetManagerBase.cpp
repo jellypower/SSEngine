@@ -52,7 +52,7 @@ void AssetManagerBase::ReleaseAllAssets()
 	{
 		IMeshAsset* MeshAsset = (IMeshAsset*)AssetItemPair.second;
 		MeshAsset->ReleaseSystemData();
-		MeshAsset->ReleaseGALData();
+//		MeshAsset->ReleaseGALData();
 		MeshAsset->Release();
 	}
 	MeshAssetMap.Clear();

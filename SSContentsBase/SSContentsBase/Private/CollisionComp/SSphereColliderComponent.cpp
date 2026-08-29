@@ -88,5 +88,5 @@ void SSphereColliderComponent::DestructCollInstance()
 		return;
 	}
 
-	delete _CollInstance;
+	_CollInstance->Release();
 }

@@ -5,7 +5,7 @@ class IRenderWorld;
 class GALRenderTarget;
 
 
-class IRenderCamera : ISSUnknown
+class IRenderCamera : public ISSUnknown
 {
 public:
 	virtual IRenderWorld* GetIcludedRenderWorld() const = 0;

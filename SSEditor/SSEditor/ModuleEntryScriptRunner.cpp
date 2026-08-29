@@ -12,6 +12,7 @@
 #include "SSEngineDefault/Public/SSThread/PWin32/SSThreadUtil_Win32.h"
 #include "SSEngineDefault/Public/WindowManager/IWindowManager.h"
 #include "SSEngineDefault/Public/WindowManager/WindowUtils.h"
+#include "SSEngineDefault/Public/SSThread/IThreadManager.h"
 
 #include "SObject/Public/SObjectGlobalHashMap.h"
 #include "SObject/Public/GlobalVariableSet/SObjectGlobalVariableSet.h"
@@ -204,15 +205,15 @@ void RunModuleEntryScriptPostInitWindow(
 void RunModuleExitScript()
 {
 	// Cleanup Renderer
-	delete g_ThreadManager;
+	g_ThreadManager->Release();
 	g_ThreadManager = nullptr;
 	delete g_ObjectHashMap;
 	g_ObjectHashMap = nullptr;
-	delete g_RawInputProcessor;
+	g_RawInputProcessor->Release();
 	g_RawInputProcessor = nullptr;
-	delete g_FrameInfoProcessor;
+	g_FrameInfoProcessor->Release();
 	g_FrameInfoProcessor = nullptr;
-	delete g_MainWindowManager;
+	g_MainWindowManager->Release();
 	g_MainWindowManager = nullptr;
 
 	DestroyGlobalHasherPool();

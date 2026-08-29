@@ -18,7 +18,7 @@ struct HasherPoolNode
 	utf16 _str[0];
 };
 
-class IHasherPool : ISSUnknown
+class IHasherPool : public ISSUnknown
 {
 public:
 	virtual const HasherPoolNode* FindOrAddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) = 0;

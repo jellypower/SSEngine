@@ -91,5 +91,5 @@ void SBoxColliderComponent::DestructCollInstance()
 		return;
 	}
 
-	delete _CollInstance;
+	_CollInstance->Release();
 }

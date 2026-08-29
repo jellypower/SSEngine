@@ -48,7 +48,7 @@ void SRenderLightDirectionalComponent::OnExitTheWorld()
 void SRenderLightDirectionalComponent::PreDestructHierarchy()
 {
 	_RenderLight->ReleaseGALMetaData();
-	delete _RenderLight;
+	_RenderLight->Release();
 	_RenderLight = nullptr;
 }
 

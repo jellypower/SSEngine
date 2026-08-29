@@ -606,7 +606,7 @@ void SHasherPoolTest()
 	}
 
 	if (_CrtCheckMemory() == false) SS_INTERRUPT();
-	delete PoolForTest;
+	PoolForTest->Release();
 }
 
 void SHasherTest()

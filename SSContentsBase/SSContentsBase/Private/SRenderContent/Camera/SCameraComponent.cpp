@@ -34,7 +34,7 @@ void SCameraComponent::OnExitTheWorld()
 
 void SCameraComponent::PreDestructHierarchy()
 {
-	delete _RenderCamera;
+	_RenderCamera->Release();
 	_RenderCamera = nullptr;
 }
 

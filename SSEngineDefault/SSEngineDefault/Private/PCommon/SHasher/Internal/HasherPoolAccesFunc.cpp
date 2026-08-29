@@ -48,6 +48,6 @@ const HasherPoolNode* FindOrAddHasherNode(const utf16* InStr)
 
 void DestroyGlobalHasherPool()
 {
-	delete g_HasherPool;
+	g_HasherPool->Release();
 	g_HasherPool = nullptr;
 }

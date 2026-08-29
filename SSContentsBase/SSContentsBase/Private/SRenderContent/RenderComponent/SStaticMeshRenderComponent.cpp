@@ -26,5 +26,5 @@ void SStaticMeshRenderComponent::DestructRenderInstance()
 	}
 
 	_RenderInstance->ReleaseGALMetaData();
-	delete _RenderInstance;
+	_RenderInstance->Release();
 }

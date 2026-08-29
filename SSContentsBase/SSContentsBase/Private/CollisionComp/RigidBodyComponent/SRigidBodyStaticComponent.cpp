@@ -34,6 +34,6 @@ void SRigidBodyStaticComponent::ConstructRigidBodyInstance()
 
 void SRigidBodyStaticComponent::DestructRigidBodyInstance()
 {
-	delete _RigidBodyStatic;
+	_RigidBodyStatic->Release();
 	_RigidBodyStatic = nullptr;
 }

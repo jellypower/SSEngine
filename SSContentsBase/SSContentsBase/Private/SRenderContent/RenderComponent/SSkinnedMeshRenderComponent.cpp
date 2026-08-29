@@ -87,7 +87,7 @@ void SSkinnedMeshRenderComponent::DestructRenderInstance()
 	}
 
 	_RenderInstance->ReleaseGALMetaData();
-	delete _RenderInstance;
+	_RenderInstance->Release();
 }
 
 

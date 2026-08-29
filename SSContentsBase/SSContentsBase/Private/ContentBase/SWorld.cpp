@@ -171,7 +171,7 @@ void SWorld::CleanupWorld()
 
 	if (_AnimWorker != nullptr)
 	{
-		delete _AnimWorker;
+		_AnimWorker->Release();
 		_AnimWorker = nullptr;
 	}
 
@@ -180,10 +180,10 @@ void SWorld::CleanupWorld()
 	SS_ASSERT(Remain == false);
 
 	_CollWorld->FinalizeCollWorld();
-	delete _CollWorld;
+	_CollWorld->Release();
 	_CollWorld = nullptr;
 
-	delete _RenderWorld;
+	_RenderWorld->Release();
 	_RenderWorld = nullptr;
 
 
