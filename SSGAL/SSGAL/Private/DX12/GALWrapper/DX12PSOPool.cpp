@@ -11,6 +11,11 @@ DX12PSOPool::DX12PSOPool(DX12GALRenderDevice* InRenderDevice)
 	_OwnerDevice = InRenderDevice;
 }
 
+void DX12PSOPool::Release()
+{
+	delete this;
+}
+
 PSOWrapper* DX12PSOPool::CreatePSO(const PipelineDesc& PipelineDesc)
 {
 	DX12PSOWrapper* NewPSOWrapper = DBG_NEW DX12PSOWrapper(PipelineDesc, this);
@@ -18,7 +23,7 @@ PSOWrapper* DX12PSOPool::CreatePSO(const PipelineDesc& PipelineDesc)
 	if(NewPSOWrapper->IsValid() == false)
 	{
 		DEBUG_BREAK();
-		delete NewPSOWrapper;
+		NewPSOWrapper->Release();
 		return nullptr;
 	}
 

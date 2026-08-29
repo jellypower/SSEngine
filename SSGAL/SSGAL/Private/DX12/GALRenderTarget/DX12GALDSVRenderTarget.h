@@ -23,7 +23,8 @@ private:
 
 public:
 	DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevice, const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr);
-	virtual ~DX12GALDSVRenderTarget();
+	void Release() override;
+
 
 
 public:

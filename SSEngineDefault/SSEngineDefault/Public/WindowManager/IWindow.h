@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
+#include "SSEngineDefault/Public/ISSUnknown.h"
 #include "SSEngineDefault/Public/SSVector.h"
 
-class IWindow : public INoncopyable
+class IWindow : public ISSUnknown
 {
 public:
 	virtual void ResizeWindowXXX(uint32 width, uint32 height) = 0;

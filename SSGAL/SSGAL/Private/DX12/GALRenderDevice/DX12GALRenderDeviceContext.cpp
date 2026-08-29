@@ -141,25 +141,25 @@ DX12GALRenderDeviceContext::DX12GALRenderDeviceContext(DX12GALRenderDevice* InRe
 	}
 }
 
-DX12GALRenderDeviceContext::~DX12GALRenderDeviceContext()
+void DX12GALRenderDeviceContext::Release()
 {
 	CloseHandle(_FenceEvent);
 	_Fence->Release();
 	_D3DCommandQueue->Release();
 
 
-	for (int32 i=0;i<GAL_NESTED_FRAME_CNT;i++)
+	for (int32 i = 0; i < GAL_NESTED_FRAME_CNT; i++)
 	{
 		_DrawWorkerCommandLists[i]->Release();
 		_DrawWorkerCommandAllocators[i]->Release();
 
-		delete _ResourceUpdater[i];
+		_ResourceUpdater[i]->Release();
 
 		_TransientCBAllocator[i]->ReleaseDefaultPages();
-		delete _TransientCBAllocator[i];
+		_TransientCBAllocator[i]->Release();
 	}
 
-
+	delete this;
 }
 
 bool DX12GALRenderDeviceContext::IsValid() const

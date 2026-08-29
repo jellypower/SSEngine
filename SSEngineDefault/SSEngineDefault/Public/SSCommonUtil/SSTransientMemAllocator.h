@@ -5,7 +5,7 @@
 #include "SSEngineDefault/Public/SSEngineDefault.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 
-class SSENGINEDEFAULT_MODULE SSTransientMemAllocator : public INoncopyable
+class SSENGINEDEFAULT_MODULE SSTransientMemAllocator : public ISSUnknown
 {
 private:
 	// Allocator Setting

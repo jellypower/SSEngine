@@ -23,6 +23,7 @@ private:
 
 public:
 	RigidBodyDynamic(const RIGID_DYNAMIC_DESC& InDesc, physx::PxRigidDynamic* InActor);
+	void Release() override;
 
 public:
 	virtual ERigidBodyType GetRigidBodyType() const override;

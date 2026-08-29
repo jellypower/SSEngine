@@ -3,7 +3,7 @@
 
 enum class EMeshType : int32;
 
-struct MeshRawDataBase : public INoncopyable
+struct MeshRawDataBase : public ISSNoncopyable
 {
 public:
 	virtual EMeshType GetMeshType() const = 0;

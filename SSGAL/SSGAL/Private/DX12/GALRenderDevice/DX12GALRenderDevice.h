@@ -14,7 +14,7 @@ class DX12GALRenderDevice : public PCommonGALRenderDevice
 {
 public:
 	DX12GALRenderDevice(bool EnableDebugLayer, bool EnableGPUBaseValidataion);
-	virtual ~DX12GALRenderDevice();
+	void Release() override;
 
 public:
 

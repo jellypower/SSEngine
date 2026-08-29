@@ -22,4 +22,4 @@
 #include "SSEngineInlineSettings.h"
 #include "SSStaticMath.h"
 
-#include "INoncopyable.h"
+#include "ISSUnknown.h"

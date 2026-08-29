@@ -7,7 +7,8 @@ class DX12GALCPUReadableTexture : public GALCPUReadableTexture
 {
 public:
 	DX12GALCPUReadableTexture(DX12GALRenderDevice* InOwnerDevice, ERTColorFormat InColorFormat,  Vector2i32 InWidthHeight, int32 Pitch, const utf16* ResourceName);
-	~DX12GALCPUReadableTexture();
+	void Release() override;
+	
 
 public:
 	virtual const Vector2i32& GetResourceWidthHeight() const override;

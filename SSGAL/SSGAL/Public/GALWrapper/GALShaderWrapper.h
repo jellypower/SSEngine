@@ -4,7 +4,6 @@
 #include "SSEngineDefault/Public/SSContainer/Allocators/InlineAllocator.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSEngineDefault/Public/SSContainer/SSString/FixedStringA.h"
-#include "SSEngineDefault/Public/INoncopyable.h"
 #include "SSEngineDefault/Public/SHasher/SHasherW.h"
 
 
@@ -35,7 +34,7 @@ struct ShaderConstructDesc
 };
 
 
-class GALShaderWrapper : public INoncopyable
+class GALShaderWrapper : public ISSUnknown
 {
 
 public:

@@ -12,6 +12,11 @@ SSCustomMemChunkAllocator::SSCustomMemChunkAllocator(int32 InEachPageSize, int32
 	}
 }
 
+void SSCustomMemChunkAllocator::Release()
+{
+	delete this;
+}
+
 void SSCustomMemChunkAllocator::ReleaseDefaultPages()
 {
 	const bool bInUse = IsAnyChunkInUse();

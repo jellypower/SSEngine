@@ -34,9 +34,7 @@ PSOWrapper::PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOwnerPSOPo
 {
 }
 
-PSOWrapper::~PSOWrapper()
-{
-}
+
 
 PipelineDesc ConstructPSODescToDrawMesh(EMeshType InMeshType, EMaterialType InMtlType, int32 NumRenderTarget,
 	GALRenderTarget* const* InRenderTargets, GALRenderTarget* InDSV)

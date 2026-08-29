@@ -15,13 +15,15 @@ MeshAsset::MeshAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::S
 	_LastUpdateTime = LastUpdateTime;
 }
 
-MeshAsset::~MeshAsset()
+void MeshAsset::Release()
 {
 	if (_MeshRawData != nullptr)
 	{
 		delete _MeshRawData;
 		_MeshRawData = nullptr;
 	}
+
+	delete this;
 }
 
 void MeshAsset::InjectRawDataXXX(MeshRawDataBase* InRawData)
@@ -126,6 +128,6 @@ void MeshAsset::ReleaseSystemData()
 
 void MeshAsset::ReleaseGALData()
 {
-	delete _GALMeshAsset;
+	_GALMeshAsset->Release();
 	_GALMeshAsset = nullptr;
 }

@@ -22,7 +22,7 @@ private:
 
 public:
 	CIBox(const CI_BOX_DESC& Desc, physx::PxShape* InShape);
-	virtual ~CIBox();
+	void Release() override;
 
 	// CI
 public:

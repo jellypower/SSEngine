@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "DX12GALUAVRenderTarget.h"
 
+#include "SSEngineDefault/Public/SSCommonUtil/SSCustomMemAllocator.h"
+
 #include "Private/DX12/GALRenderDevice/DX12GALRenderDevice.h"
 #include "Private/DX12/Utils/SSDX12Utils.h"
 
@@ -42,9 +44,20 @@ DX12GALUAVRenderTarget::DX12GALUAVRenderTarget(DX12GALRenderDevice* InRenderDevi
 	}
 }
 
-DX12GALUAVRenderTarget::~DX12GALUAVRenderTarget()
+void DX12GALUAVRenderTarget::Release()
 {
+	if (_InitializedDesc.bUseSRV)
+	{
+		SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
+		DescriptorTableAllocatorForTex->ReleaseChunk(_SRVDescTableChunk);
+	}
+
+	_RenderTargetResource->Release();
+	_RenderTargetDescHeap->Release();
+
 	_UAVDescHeap->Release();
+
+	delete this;
 }
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE DX12GALUAVRenderTarget::GetCurrentUAV() const

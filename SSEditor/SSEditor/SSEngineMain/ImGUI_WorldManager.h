@@ -13,7 +13,7 @@ class SObjHashCode;
 class SGameObject;
 class SWorld;
 
-class ImGUI_WorldManager : INoncopyable
+class ImGUI_WorldManager : public ISSNoncopyable
 {
 public:
 	ImGUI_WorldManager(SWorld* InWorld);

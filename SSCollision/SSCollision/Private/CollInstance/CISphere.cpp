@@ -98,9 +98,11 @@ CISphere::CISphere(const CI_SPHERE_DESC& Desc, physx::PxShape* InShape)
 	_Shape = InShape;
 }
 
-CISphere::~CISphere()
+void CISphere::Release()
 {
 	PX_RELEASE(_Shape);
+
+	delete this;
 }
 
 ECollShapeType CISphere::GetCollShapeType() const

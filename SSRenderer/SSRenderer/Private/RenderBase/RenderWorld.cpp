@@ -22,11 +22,9 @@ RenderWorld::RenderWorld(const utf16* InWorldName) :
 	_RenderWorldName = InWorldName;
 }
 
-RenderWorld::~RenderWorld()
+void RenderWorld::Release()
 {
 	SS_ASSERT(_RenderInstanceByHashCode.GetCnt() == 0);
-
-
 	int32 CurFrameMod = RenderFrameInfo::GetFrameMod();
 
 	for (int32 Offset = 0; Offset < GAL_NESTED_FRAME_CNT; Offset++)
@@ -48,11 +46,13 @@ RenderWorld::~RenderWorld()
 		g_Renderer->ReserveDestroyGALRW(_GALMetadata[ItemIdx], DestroyDelay);
 		_GALMetadata[ItemIdx] = nullptr;
 	}
+
+	delete this;
 }
 
-
 bool RenderWorld::IsAnyInstanceRemainInWorld() const
-{return _RenderInstanceByHashCode.GetCnt() != 0;
+{
+	return _RenderInstanceByHashCode.GetCnt() != 0;
 }
 
 SS::SHasherW RenderWorld::GetWorldName() const

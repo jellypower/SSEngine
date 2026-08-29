@@ -13,6 +13,11 @@ SSRawInputProcessorBase::SSRawInputProcessorBase()
 	memset(_mouseState, 0, sizeof(_mouseState));
 }
 
+void SSRawInputProcessorBase::Release()
+{
+	delete this;
+}
+
 Vector2f SSRawInputProcessorBase::GetMouseDelta() const
 {
 	IWindow* FocusingWin = g_MainWindowManager->GetFocusingWindow();

@@ -18,6 +18,11 @@ RigidBodyDynamic::RigidBodyDynamic(const RIGID_DYNAMIC_DESC& InDesc, physx::PxRi
 	_PxActor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, InDesc.bKinematic);
 }
 
+void RigidBodyDynamic::Release()
+{
+	delete this;
+}
+
 ERigidBodyType RigidBodyDynamic::GetRigidBodyType() const
 {
 	return ERigidBodyType::Dynamic;

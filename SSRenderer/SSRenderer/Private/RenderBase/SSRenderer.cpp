@@ -50,9 +50,11 @@ SSRenderer::SSRenderer(GALRenderDevice* InRenderDevice) :
 	_CommonRenderAssetSet = DBG_NEW CommonRenderAssetSet();
 }
 
-SSRenderer::~SSRenderer()
+void SSRenderer::Release()
 {
-	delete _CommonRenderAssetSet;
+	_CommonRenderAssetSet->Release();
+
+	delete this;
 }
 
 ICommonRenderAssetSet* SSRenderer::GetCommonRenderAssetSet() const
@@ -146,7 +148,7 @@ void SSRenderer::ProcessReservedDestroy()
 	SS::PooledList<GALRIMetadata*>& DestroyTargets = _DeferredDestroyTargets[DestroyTargetMod];
 	for (GALRIMetadata* GALRIItem : DestroyTargets)
 	{
-		delete GALRIItem;
+		GALRIItem->Release();
 	}
 	DestroyTargets.Clear();
 
@@ -154,7 +156,7 @@ void SSRenderer::ProcessReservedDestroy()
 	SS::PooledList<GALRWMetaData*>& DestroyGALRWs = _DeferredDestoryGALRWs[DestroyTargetMod];
 	for (GALRWMetaData* GALRWItem : DestroyGALRWs)
 	{
-		delete GALRWItem;
+		GALRWItem->Release();
 	}
 	DestroyGALRWs.Clear();
 
@@ -660,15 +662,15 @@ void SSRenderer::FinalizeRendering()
 
 void SSRenderer::CleanUp()
 {
-	delete _DeferredShadingContext;
+	_DeferredShadingContext->Release();
 	_DeferredShadingContext = nullptr;
 
-	delete _RTPostProcessResult;
-	delete _RTGBufferEmissive;
-	delete _RTGBufferMetallicRoughness;
-	delete _RTGBufferWorldPos;
-	delete _RTGBufferAlbedo;
-	delete _RTGBufferNormal;
+	_RTPostProcessResult->Release();
+	_RTGBufferEmissive->Release();
+	_RTGBufferMetallicRoughness->Release();
+	_RTGBufferWorldPos->Release();
+	_RTGBufferAlbedo->Release();
+	_RTGBufferNormal->Release();
 	_RTPostProcessResult = nullptr;
 	_RTGBufferEmissive = nullptr;
 	_RTGBufferMetallicRoughness = nullptr;
@@ -676,26 +678,26 @@ void SSRenderer::CleanUp()
 	_RTGBufferAlbedo = nullptr;
 	_RTGBufferNormal = nullptr;
 
-	delete _DSVRenderTarget;
+	_DSVRenderTarget->Release();
 	_DSVRenderTarget = nullptr;
 
-	delete _PixelPickerCPUReadableTex;
+	_PixelPickerCPUReadableTex->Release();
 	_PixelPickerCPUReadableTex = nullptr;
 
-	delete _PixelPickerRenderTarget;
+	_PixelPickerRenderTarget->Release();
 	_PixelPickerRenderTarget = nullptr;
 
 	_AssetManager->ReleaseAllAssets();
-	delete _AssetManager;
+	_AssetManager->Release();
 	_AssetManager = nullptr;
 
-	delete _MainDeviceContext;
+	_MainDeviceContext->Release();
 	_MainDeviceContext = nullptr;
 
-	delete _MainViewportSwapChain;
+	_MainViewportSwapChain->Release();
 	_MainViewportSwapChain = nullptr;
 
-	delete _GALRenderDevice;
+	_GALRenderDevice->Release();
 	_GALRenderDevice = nullptr;
 }
 
@@ -885,7 +887,7 @@ void SSRenderer::FinalizeAllReservedDestroy()
 		SS::PooledList<GALRIMetadata*>& DestroyTargets = _DeferredDestroyTargets[i];
 		for (GALRIMetadata* GALRIItem : DestroyTargets)
 		{
-			delete GALRIItem;
+			GALRIItem->Release();
 		}
 		DestroyTargets.Clear();
 
@@ -893,7 +895,7 @@ void SSRenderer::FinalizeAllReservedDestroy()
 		SS::PooledList<GALRWMetaData*>& DestroyGALRWs = _DeferredDestoryGALRWs[i];
 		for (GALRWMetaData* GALRWItem : DestroyGALRWs)
 		{
-			delete GALRWItem;
+			GALRWItem->Release();
 		}
 		DestroyGALRWs.Clear();
 	}

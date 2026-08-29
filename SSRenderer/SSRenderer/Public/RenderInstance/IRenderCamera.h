@@ -5,7 +5,7 @@ class IRenderWorld;
 class GALRenderTarget;
 
 
-class IRenderCamera : INoncopyable
+class IRenderCamera : ISSUnknown
 {
 public:
 	virtual IRenderWorld* GetIcludedRenderWorld() const = 0;

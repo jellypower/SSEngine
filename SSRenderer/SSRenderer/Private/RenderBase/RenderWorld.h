@@ -18,7 +18,7 @@ class RenderWorld : public IRenderWorld
 {
 public:
 	RenderWorld(const utf16* InWorldName);
-	virtual ~RenderWorld();
+	void Release() override;
 
 public:
 	const SS::HashMap<SObjHashCode, IRenderInstance*>& GetRenderInstanceMap() const { return _RenderInstanceByHashCode; }

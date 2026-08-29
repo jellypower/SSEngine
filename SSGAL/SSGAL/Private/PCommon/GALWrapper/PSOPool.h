@@ -4,7 +4,7 @@
 
 class GALRenderDevice;
 
-class PSOPool : public INoncopyable
+class PSOPool : public ISSUnknown
 {
 protected:
 	SS::HashMap<PipelineDesc, PSOWrapper*> _PSOMap;
@@ -13,8 +13,8 @@ protected:
 
 public:
 	PSOPool();
-	virtual ~PSOPool();
 
+public:
 	GALRenderDevice* GetOwnerDevice() const { return _OwnerDevice; }
 
 	const PSOWrapper* FindOrAddPSO(const PipelineDesc& PipelineDesc);

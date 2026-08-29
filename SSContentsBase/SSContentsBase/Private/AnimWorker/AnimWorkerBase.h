@@ -17,6 +17,7 @@ private:
 
 public:
 	AnimWorkerBase(SWorld* InWorld);
+	void Release() override;
 
 public:
 	virtual void AddToWorker(SAnimatorBaseComponent* InAnimator) override;

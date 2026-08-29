@@ -14,6 +14,11 @@ DX12GALShaderWrapper::DX12GALShaderWrapper(const ShaderConstructDesc& InDesc, GA
 	_shaderType = InDesc.InShaderType;
 }
 
+void DX12GALShaderWrapper::Release()
+{
+	delete this;
+}
+
 bool DX12GALShaderWrapper::CompileShaderInstance()
 {
 

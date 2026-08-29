@@ -7,6 +7,11 @@
 constexpr float CAM_FOV_MIN = 0.01f;
 constexpr float CAM_FOV_MAX = XM_PI * 0.99f;
 
+void RenderCamera::Release()
+{
+	delete this;
+}
+
 IRenderWorld* RenderCamera::GetIcludedRenderWorld() const
 {
 	return _OwnerRenderWorld;

@@ -19,7 +19,7 @@ private:
 
 public:
 	RigidBodyStatic(const RIGID_STATIC_DESC& InDesc, physx::PxRigidStatic* InActor);
-	virtual ~RigidBodyStatic();
+	void Release() override;
 
 public:
 	virtual ERigidBodyType GetRigidBodyType() const override;

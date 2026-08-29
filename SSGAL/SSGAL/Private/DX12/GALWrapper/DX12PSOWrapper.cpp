@@ -196,13 +196,15 @@ DX12PSOWrapper::DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOw
 	}
 }
 
-DX12PSOWrapper::~DX12PSOWrapper()
+void DX12PSOWrapper::Release()
 {
 	if (_PipelineState != nullptr)
 	{
 		_PipelineState->Release();
 		_PipelineState = nullptr;
 	}
+
+	delete this;
 }
 
 bool DX12PSOWrapper::IsValid() const

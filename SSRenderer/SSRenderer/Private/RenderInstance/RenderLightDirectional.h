@@ -6,6 +6,7 @@ class RenderLightDirectional : public IRenderLightDirectional
 {
 public:
 	RenderLightDirectional(const RenderLightDirectionalDesc& InDesc);
+	void Release() override;
 
 public:
 	// IRenderInstance

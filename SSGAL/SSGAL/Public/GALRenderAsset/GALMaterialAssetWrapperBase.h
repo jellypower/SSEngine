@@ -1,10 +1,9 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
 
 class IMaterialAsset;
 class GALRenderDevice;
 
-class GALMaterialAssetWrapperBase : public INoncopyable
+class GALMaterialAssetWrapperBase : public ISSUnknown
 {
 public:
 	virtual void SyncMtlParam() = 0;

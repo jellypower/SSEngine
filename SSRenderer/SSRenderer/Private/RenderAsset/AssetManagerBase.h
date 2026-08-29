@@ -8,7 +8,7 @@ protected:
 
 public:
 	AssetManagerBase(int32 AssetHashMapCapacity, int32 AssetHashMapBucketCapacity);
-	virtual ~AssetManagerBase();
+	void Release() override;
 
 	virtual void AddToAssetPool(IAssetBase* newAsset) override;
 	virtual void ReleaseAllAssets() override;

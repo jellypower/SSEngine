@@ -6,13 +6,11 @@
 
 class GALPCommonShaderPool : public GALShaderPool
 {
-private:
+protected:
 	SS::HashMap<SS::SHasherW, GALShaderWrapper*> _ShaderMap;
-
 
 public:
 	GALPCommonShaderPool();
-	virtual ~GALPCommonShaderPool();
 
 
 	virtual void Initialize() override;

@@ -153,6 +153,11 @@ AnimWorkeeBlendSpace::AnimWorkeeBlendSpace(const SBlendSpaceAnimTestComponent* A
 	}
 }
 
+void AnimWorkeeBlendSpace::Release()
+{
+	delete this;
+}
+
 const PoseSlot& AnimWorkeeBlendSpace::GetResultPose() const
 {
 	return _ResultPose;

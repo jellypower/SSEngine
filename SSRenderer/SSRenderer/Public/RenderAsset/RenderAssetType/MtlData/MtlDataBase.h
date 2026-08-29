@@ -20,7 +20,7 @@ inline SS::SHasherW GetPSNameOfMtlType(EMaterialType Type)
 	return SS::SHasherW::GetEmpty();
 }
 
-struct MtlDataBase : public INoncopyable
+struct MtlDataBase : public ISSNoncopyable
 {
 	EMaterialType _Type = EMaterialType::None;
 };

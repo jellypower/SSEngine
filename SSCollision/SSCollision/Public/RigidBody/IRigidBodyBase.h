@@ -14,7 +14,7 @@ enum class ERigidBodyType
 class ICollisionWorld;
 class ICollInstanceBase;
 
-class IRigidBodyBase : public INoncopyable
+class IRigidBodyBase : public ISSUnknown
 {
 public:
 	virtual ERigidBodyType GetRigidBodyType() const = 0;

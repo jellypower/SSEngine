@@ -1,10 +1,9 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
 
 class ITextureAsset;
 class GALRenderDevice;
 
-class GALTextureAssetWrapperBase : public INoncopyable
+class GALTextureAssetWrapperBase : public ISSUnknown
 {
 protected:
 	ITextureAsset* _OwnerTexture = nullptr;

@@ -13,17 +13,6 @@ GALPCommonShaderPool::GALPCommonShaderPool() :
 {
 }
 
-GALPCommonShaderPool::~GALPCommonShaderPool()
-{
-	for (SS::pair<SS::SHasherW, GALShaderWrapper*>& Item : _ShaderMap)
-	{
-		GALShaderWrapper* ShaderItem = Item.second;
-		ShaderItem->ReleaseShaderInstance();
-		delete ShaderItem;
-	}
-}
-
-
 void GALPCommonShaderPool::Initialize()
 {
 	// TEMP: InitializeShader

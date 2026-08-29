@@ -23,7 +23,7 @@ public:
 
 public:
 	DX12GALDefaultPBRMaterialAsset(IMaterialAsset* ownerMaterial, DX12GALRenderDevice* InOwnerRenderDevice);
-	virtual ~DX12GALDefaultPBRMaterialAsset() override;
+	void Release() override;
 
 public:
 	virtual void SyncMtlParam() override;

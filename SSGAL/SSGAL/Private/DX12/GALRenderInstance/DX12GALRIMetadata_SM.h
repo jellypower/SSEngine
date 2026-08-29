@@ -26,7 +26,8 @@ protected:
 
 public:
 	DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, const IRIMesh* InOwnerRenderInstance);
-	virtual ~DX12GALRIMetadata_SM();
+	void Release() override;
+	
 
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() override;
 };

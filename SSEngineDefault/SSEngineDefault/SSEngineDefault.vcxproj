@@ -192,6 +192,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\Collision\SimplexV4.h" />
     <ClInclude Include="Public\CommonSerializer\DefaultTypeSerializsers.h" />
     <ClInclude Include="Public\CommonTypes\DirEnums.h" />
+    <ClInclude Include="Public\ISSNoncopyable.h" />
     <ClInclude Include="Public\RawProfiler\ScopeProfMacro.h" />
     <ClInclude Include="Public\SHasher\Internal\HasherPoolAccesFunc.h" />
     <ClInclude Include="Public\SHasher\SHaserUtils.h" />
@@ -205,7 +206,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClInclude Include="Public\DeviceQuery.h" />
     <ClInclude Include="Public\GeometryType.h" />
     <ClInclude Include="Public\GlobalVariableSet\GlobalVariableSet.h" />
-    <ClInclude Include="Public\INoncopyable.h" />
+    <ClInclude Include="Public\ISSUnknown.h" />
     <ClInclude Include="Public\RawProfiler\IFrameInfoProcessor.h" />
     <ClInclude Include="Public\RawProfiler\ProfilerUtils.h" />
     <ClInclude Include="Public\RawInput\SSInput.h" />

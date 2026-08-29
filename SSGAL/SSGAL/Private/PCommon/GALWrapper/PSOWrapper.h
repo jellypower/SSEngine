@@ -4,7 +4,7 @@
 
 class PSOPool;
 
-class PSOWrapper : public INoncopyable
+class PSOWrapper : public ISSUnknown
 {
 private:
 	PSOPool* _OwnerPSOPool = nullptr;
@@ -12,8 +12,8 @@ private:
 
 public:
 	PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOwnerPSOPool);
-	virtual ~PSOWrapper();
 
+public:
 	virtual bool IsValid() const = 0;
 	const PipelineDesc& GetPipelineDesc() const { return _pipelineDesc; }
 };

@@ -1,11 +1,10 @@
 #pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
 
 class IRenderInstance;
 enum class ERenderInstanceType;
 
 // GAL Render Instance Metadata
-class GALRIMetadata : INoncopyable
+class GALRIMetadata : public ISSUnknown
 {
 protected:
 	const IRenderInstance* _OwnerRenderInstance = nullptr;

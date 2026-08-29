@@ -20,7 +20,7 @@ private:
 
 public:
 	CISphere(const CI_SPHERE_DESC& Desc, physx::PxShape* InShape);
-	virtual ~CISphere();
+	void Release() override;
 
 	// CI
 public:

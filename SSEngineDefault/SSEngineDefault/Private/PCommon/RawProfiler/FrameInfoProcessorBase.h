@@ -35,6 +35,10 @@ private: // tick
 	uint64 _PrevFrameStartTick = 0;
 	uint64 _FrameStartTick = 0;
 
+
+public:
+	virtual void Release() override;
+
 public:
 	virtual const SS::PooledList<ProfileResultItem> GetLastProfileResult() const override;
 	bool IsProfileEnabled() const override;

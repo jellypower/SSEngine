@@ -13,6 +13,7 @@ public:
 		int32 MinAllocSize, 
 		int32 AlignSize,
 		const utf16* AllocatorName);
+	void Release() override;
 
 protected:
 	void* AllocPage() override;

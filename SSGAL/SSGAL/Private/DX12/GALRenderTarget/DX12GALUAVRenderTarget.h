@@ -5,7 +5,8 @@ class DX12GALUAVRenderTarget : public DX12GALDefaultRenderTarget
 {
 public:
 	DX12GALUAVRenderTarget(DX12GALRenderDevice* InRenderDevice, const GALRenderTargetDesc& Desc, const utf16* ResourceName);
-	virtual ~DX12GALUAVRenderTarget();
+	void Release() override;
+	
 public:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrentUAV() const;
 

@@ -15,6 +15,11 @@ RISkinnedMesh::RISkinnedMesh() :
 {
 }
 
+void RISkinnedMesh::Release()
+{
+	delete this;
+}
+
 SObjHashCode RISkinnedMesh::GetGameObjectID() const
 {
 	return _GameObjectHashCode;

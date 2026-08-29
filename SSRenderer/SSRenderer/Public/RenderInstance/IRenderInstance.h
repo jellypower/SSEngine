@@ -27,7 +27,7 @@ enum class ERenderInstanceType : int32
 * RenderWorld에 포함되는 실제 렌더링 될 객체
 * 실제 객체 타입(StaticMesh, SkinnedMesh, ParticleMesh ...)에 따라서 다른 RenderInstance 타입과 메타데이터를 가지도록 만드는 것이 목표이다.
 */
-class IRenderInstance : public INoncopyable
+class IRenderInstance : public ISSUnknown
 {
 public:
 

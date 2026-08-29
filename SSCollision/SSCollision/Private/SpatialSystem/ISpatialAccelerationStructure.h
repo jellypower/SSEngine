@@ -11,7 +11,7 @@ enum class ESASType
 };
 
 
-class ISpatialAccelerationStructure : public INoncopyable
+class ISpatialAccelerationStructure : public ISSUnknown
 {
 public:
 	virtual void FinalizePendingInstances() = 0; // 종료시

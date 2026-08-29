@@ -139,7 +139,7 @@ DX12GALMeshAssetWrapper::DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX1
 	}
 }
 
-DX12GALMeshAssetWrapper::~DX12GALMeshAssetWrapper()
+void DX12GALMeshAssetWrapper::Release()
 {
 	if (_VertexBuffer != nullptr)
 	{
@@ -150,4 +150,6 @@ DX12GALMeshAssetWrapper::~DX12GALMeshAssetWrapper()
 	{
 		_IndexBuffer->Release();
 	}
+
+	delete this;
 }

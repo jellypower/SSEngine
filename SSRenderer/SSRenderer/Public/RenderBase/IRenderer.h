@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
+
 
 #include "SObject/Public/SObjHashCode.h"
 
@@ -26,7 +26,7 @@ class GALRenderTarget;
 
 
 
-class IRenderer : public INoncopyable
+class IRenderer : public ISSUnknown
 {
 protected:
 	GALRenderDeviceContext* _MainDeviceContext = nullptr;

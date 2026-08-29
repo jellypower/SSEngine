@@ -13,6 +13,7 @@ class AssetDBLoader : public IAssetDBLoader
 {
 public:
 	AssetDBLoader();
+	void Release() override;
 
 public:
 	bool StartLoadDB(SS::SHasherW InNameSpace) override;

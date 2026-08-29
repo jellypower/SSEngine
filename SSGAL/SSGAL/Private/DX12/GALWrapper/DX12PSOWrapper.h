@@ -14,7 +14,8 @@ private:
 	
 public:
 	DX12PSOWrapper(const PipelineDesc& InPipelineDesc, PSOPool* InOwnerPSOPool);
-	virtual ~DX12PSOWrapper();
+	virtual void Release() override;
+	
 
 	virtual bool IsValid() const override;
 

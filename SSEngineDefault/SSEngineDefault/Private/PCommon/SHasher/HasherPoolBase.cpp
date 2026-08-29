@@ -13,7 +13,7 @@ HasherPoolBase::HasherPoolBase(int32 InBucketCnt)
 	memset(_HasherBucket, 0, sizeof(HasherPoolNode*) * _HasherBucketCnt);
 }
 
-HasherPoolBase::~HasherPoolBase()
+void HasherPoolBase::Release()
 {
 	for (uint32 i = 0; i < _HasherBucketCnt; i++)
 	{
@@ -32,6 +32,8 @@ HasherPoolBase::~HasherPoolBase()
 	}
 
 	free(_HasherBucket);
+
+	delete this;
 }
 
 const HasherPoolNode* HasherPoolBase::FindOrAddHasherValue(const utf16* InStr, uint32 InStrLen, uint32 InHashedValue)

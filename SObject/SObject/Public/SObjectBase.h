@@ -2,12 +2,11 @@
 #include "SObjHashCode.h"
 
 
-class SObjectBase : public INoncopyable
+class SObjectBase : public ISSNoncopyable
 {
 private:
 	SObjHashCode _HashCode = nullptr;
 	SS::SHasherW _ObjectName;
-
 
 public:
 	SObjHashCode GetHashCode() const { return _HashCode; }

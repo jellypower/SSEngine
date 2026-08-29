@@ -20,17 +20,20 @@ CollisionWorld::CollisionWorld(const SS::SHasherW& worldName, physx::PxScene* Ph
 	_WorldName = worldName;
 }
 
-CollisionWorld::~CollisionWorld()
+void CollisionWorld::Release()
 {
 	PX_RELEASE(_PhysXScene);
 
-//	if (_SASSweepAndPruen->IsAnyInstanceExists())
-//	{
-//		SS_INTERRUPT();
-//	}
-//
-//	delete _SASSweepAndPruen;
+	//	if (_SASSweepAndPruen->IsAnyInstanceExists())
+	//	{
+	//		SS_INTERRUPT();
+	//	}
+	//
+	//	delete _SASSweepAndPruen;
+
+	delete this;
 }
+
 
 void CollisionWorld::FinalizeCollWorld()
 {

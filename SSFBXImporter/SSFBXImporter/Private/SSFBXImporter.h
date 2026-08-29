@@ -42,7 +42,7 @@ private:
 
 public:
 	SSFBXImporter();
-	virtual ~SSFBXImporter();
+	void Release() override;
 
 public:
 	virtual SS::SHasherW GetBoundFilePath() const override;

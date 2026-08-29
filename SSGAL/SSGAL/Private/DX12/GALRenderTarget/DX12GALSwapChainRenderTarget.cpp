@@ -102,7 +102,7 @@ DX12GALSwapChainRenderTarget::DX12GALSwapChainRenderTarget(DX12GALRenderDeviceCo
 	}
 }
 
-DX12GALSwapChainRenderTarget::~DX12GALSwapChainRenderTarget()
+void DX12GALSwapChainRenderTarget::Release()
 {
 	_swapChain->Release();
 	_RTVDescHeap->Release();
@@ -111,7 +111,10 @@ DX12GALSwapChainRenderTarget::~DX12GALSwapChainRenderTarget()
 	{
 		_DXRenderTargets[i]->Release();
 	}
+
+	delete this;
 }
+
 
 HRESULT DX12GALSwapChainRenderTarget::Present()
 {

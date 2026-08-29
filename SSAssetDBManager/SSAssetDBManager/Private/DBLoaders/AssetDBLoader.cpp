@@ -46,6 +46,11 @@ AssetDBLoader::AssetDBLoader()
 	_CreatedRAnims.Reserve(RESERVE_SIZE);
 }
 
+void AssetDBLoader::Release()
+{
+	delete this;
+}
+
 bool AssetDBLoader::StartLoadDB(SS::SHasherW InNameSpace)
 {
 	if (_BoundDBNameSpace.IsEmpty() == false)
@@ -432,7 +437,7 @@ void AssetDBLoader::FillEmptyAssetsFromApakFile()
 
 			if (ApakFileAccessor != nullptr)
 			{
-				delete ApakFileAccessor;
+				ApakFileAccessor->Release();
 			}
 
 			ApakFileAccessor = CreateApakFileAccessor(PathItem, _BoundDBNameSpace);
@@ -476,7 +481,7 @@ void AssetDBLoader::FillEmptyAssetsFromApakFile()
 
 	if (ApakFileAccessor != nullptr)
 	{
-		delete ApakFileAccessor;
+		ApakFileAccessor->Release();
 	}
 }
 

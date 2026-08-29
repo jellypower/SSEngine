@@ -3,7 +3,7 @@
 struct ShaderConstructDesc;
 class GALShaderWrapper;
 
-class GALShaderPool : public INoncopyable
+class GALShaderPool : public ISSUnknown
 {
 public:
 	virtual GALShaderWrapper* FindShader(SS::SHasherW InShaderName) const = 0;

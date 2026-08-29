@@ -25,8 +25,9 @@ AssetManagerBase::AssetManagerBase(int32 AssetHashMapCapacity, int32 AssetHashMa
 {
 }
 
-AssetManagerBase::~AssetManagerBase()
+void AssetManagerBase::Release()
 {
+	delete this;
 }
 
 void AssetManagerBase::AddToAssetPool(IAssetBase* newAsset)
@@ -52,7 +53,7 @@ void AssetManagerBase::ReleaseAllAssets()
 		IMeshAsset* MeshAsset = (IMeshAsset*)AssetItemPair.second;
 		MeshAsset->ReleaseSystemData();
 		MeshAsset->ReleaseGALData();
-		delete MeshAsset;
+		MeshAsset->Release();
 	}
 	MeshAssetMap.Clear();
 
@@ -62,7 +63,7 @@ void AssetManagerBase::ReleaseAllAssets()
 
 		for (SS::pair<SS::SHasherW, IAssetBase*>& AssetItem : AssetMap)
 		{
-			delete AssetItem.second;
+			AssetItem.second->Release();
 		}
 
 		AssetMap.Clear();

@@ -3,7 +3,7 @@
 class GALRenderDevice;
 class GALRenderDeviceContext;
 
-class GALResourceUpdater : INoncopyable
+class GALResourceUpdater : public ISSUnknown
 {
 public:
 	GALResourceUpdater(GALRenderDevice* RenderDevice, GALRenderDeviceContext* InRenderDeviceContext);

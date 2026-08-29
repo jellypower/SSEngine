@@ -14,6 +14,11 @@ TextureAsset::TextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName,
 	_LastUpdateTime = LastUpdateTime;
 }
 
+void TextureAsset::Release()
+{
+	delete this;
+}
+
 EAssetType TextureAsset::GetAssetType() const
 {
 	return ThisAssetType;
@@ -74,7 +79,7 @@ void TextureAsset::BindAssetManager(IAssetManager* InAssetManager)
 
 void TextureAsset::ReleaseGALData()
 {
-	delete _GALTextureAsset;
+	_GALTextureAsset->Release();
 	_GALTextureAsset = nullptr;
 }
 

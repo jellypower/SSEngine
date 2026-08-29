@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
+#include "SSEngineDefault/Public/ISSUnknown.h"
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 #include "SSEngineDefault/Public/SSVector.h"
 #include "SSEngineDefault/Public/SHasher/SHasherW.h"
@@ -21,7 +21,7 @@ enum class EFramePhase : int32
 	Count
 };
 
-class IFrameInfoProcessor : public INoncopyable
+class IFrameInfoProcessor : public ISSUnknown
 {
 protected:
 	uint64 _perfFrequency = 0;

@@ -10,6 +10,11 @@
 #include "SSRenderer/Public/RenderBase/IRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h"
 
+void RIStaticMesh::Release()
+{
+	delete this;
+}
+
 SObjHashCode RIStaticMesh::GetGameObjectID() const
 {
 	return _GameObjectHashCode;

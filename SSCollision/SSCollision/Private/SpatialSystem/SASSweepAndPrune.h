@@ -26,6 +26,7 @@ private:
 
 public:
 	SASSweepAndPrune();
+	void Release() override;
 
 public:
 	void FinalizePendingInstances() override;

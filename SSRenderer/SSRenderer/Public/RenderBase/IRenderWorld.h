@@ -6,7 +6,7 @@ class IRenderInstance;
 class GALRWMetaData;
 class IRenderer;
 
-class IRenderWorld : public INoncopyable
+class IRenderWorld : public ISSUnknown
 {
 public:
 	virtual bool IsAnyInstanceRemainInWorld() const = 0;

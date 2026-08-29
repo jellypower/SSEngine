@@ -8,7 +8,7 @@ class DX12GALSwapChainRenderTarget : public DX12GALRenderTargetBase
 {
 public:
 	DX12GALSwapChainRenderTarget(DX12GALRenderDeviceContext* InRenderDeviceContext, HWND InhWnd, IDXGIFactory4* InFactory);
-	virtual ~DX12GALSwapChainRenderTarget();
+	void Release() override;
 
 public:
 	HRESULT Present();

@@ -20,7 +20,7 @@ private:
 
 public:
 	DX12RootSignatureWrapper(ERootSignatureType RootSignatureType, RootSignaturePool* InOwnerRootSignaturePool);
-	virtual ~DX12RootSignatureWrapper();
+	void Release() override;
 
 	ID3D12RootSignature* GetRootSignatureInstantce() const { return _D3DRootSignature; }
 	virtual bool IsValid() const override;

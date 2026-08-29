@@ -7,7 +7,7 @@
 struct AssetInstanceReferencer;
 class IAssetBase;
 
-class IAssetManager : public INoncopyable
+class IAssetManager : public ISSUnknown
 {
 public:
 	virtual const SS::HashMap<SS::SHasherW, IAssetBase*>& GetAssetMap(EAssetType InAssetType) const = 0;

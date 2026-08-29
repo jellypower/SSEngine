@@ -129,7 +129,7 @@ DX12GALDefaultRenderTarget::DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRe
 	}
 }
 
-DX12GALDefaultRenderTarget::~DX12GALDefaultRenderTarget()
+void DX12GALDefaultRenderTarget::Release()
 {
 	if (_InitializedDesc.bUseSRV)
 	{
@@ -139,7 +139,10 @@ DX12GALDefaultRenderTarget::~DX12GALDefaultRenderTarget()
 
 	_RenderTargetResource->Release();
 	_RenderTargetDescHeap->Release();
+
+	delete this;
 }
+
 
 Vector2i32 DX12GALDefaultRenderTarget::GetResourceSize() const
 {

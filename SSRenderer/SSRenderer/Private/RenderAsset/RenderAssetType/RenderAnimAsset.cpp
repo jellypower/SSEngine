@@ -10,13 +10,15 @@ RenderAnimAsset::RenderAnimAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAsse
 	_LastUpdateTime = LastUpdateTime;
 }
 
-RenderAnimAsset::~RenderAnimAsset()
+void RenderAnimAsset::Release()
 {
 	if (_AnimRawData != nullptr)
 	{
 		delete _AnimRawData;
 		_AnimRawData = nullptr;
 	}
+
+	delete this;
 }
 
 EAssetType RenderAnimAsset::GetAssetType() const

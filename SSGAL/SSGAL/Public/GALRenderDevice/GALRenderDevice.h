@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "GALRenderDeviceContext.h"
-#include "SSEngineDefault/Public/INoncopyable.h"
 
 class GALPPCDeferredShading;
 enum class ERTColorFormat : int32;
@@ -19,7 +18,7 @@ enum class ERenderDevicePlatnform : uint8
 };
 
 // GraphicsAPI Abstraction Layer Device
-class GALRenderDevice : public INoncopyable
+class GALRenderDevice : public ISSUnknown
 {
 public:
 	IRenderer* GetOwnerRenderer() const { return _OwnerRenderer; }

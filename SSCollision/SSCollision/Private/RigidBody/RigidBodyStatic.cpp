@@ -13,9 +13,11 @@ RigidBodyStatic::RigidBodyStatic(const RIGID_STATIC_DESC& InDesc, physx::PxRigid
 	_PxActor = InActor;
 }
 
-RigidBodyStatic::~RigidBodyStatic()
+void RigidBodyStatic::Release()
 {
 	PX_RELEASE(_PxActor);
+
+	delete this;
 }
 
 ERigidBodyType RigidBodyStatic::GetRigidBodyType() const

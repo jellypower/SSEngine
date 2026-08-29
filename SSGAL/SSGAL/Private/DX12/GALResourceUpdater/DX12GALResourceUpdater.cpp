@@ -48,7 +48,7 @@ DX12GALResourceUpdater::DX12GALResourceUpdater(DX12GALRenderDevice* InRenderDevi
 	}
 }
 
-DX12GALResourceUpdater::~DX12GALResourceUpdater()
+void DX12GALResourceUpdater::Release()
 {
 	for (ID3D12Resource* UploadBufferItem : _DefaultUploadBuffers)
 	{
@@ -57,7 +57,7 @@ DX12GALResourceUpdater::~DX12GALResourceUpdater()
 	_DefaultUploadBuffers.Clear();
 
 
-	for (SS::PooledList<ID3D12Resource*>& BufferList: _LargeUploadBuffers)
+	for (SS::PooledList<ID3D12Resource*>& BufferList : _LargeUploadBuffers)
 	{
 		for (ID3D12Resource* ResourceItem : BufferList)
 		{
@@ -66,7 +66,10 @@ DX12GALResourceUpdater::~DX12GALResourceUpdater()
 
 		BufferList.Clear();
 	}
+
+	delete this;
 }
+
 
 void DX12GALResourceUpdater::ResetUpdateBuffer()
 {

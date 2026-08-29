@@ -81,7 +81,7 @@
     <ClInclude Include="Public\GeometryType.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Public\INoncopyable.h">
+    <ClInclude Include="Public\ISSUnknown.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\SSDebugLogger.h">
@@ -250,6 +250,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Public\Collision\CollMathInline.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\ISSNoncopyable.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

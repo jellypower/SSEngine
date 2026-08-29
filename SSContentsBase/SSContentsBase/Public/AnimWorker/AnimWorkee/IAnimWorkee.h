@@ -6,7 +6,7 @@
 
 struct PoseSlot;
 
-class IAnimWorkee : INoncopyable
+class IAnimWorkee : ISSUnknown
 {
 public:
 	virtual const PoseSlot& GetResultPose() const = 0;

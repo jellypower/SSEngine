@@ -10,7 +10,8 @@ class DX12GALRIMetadata_SKM : public DX12GALRIMetadata_SM
 {
 public:
 	DX12GALRIMetadata_SKM(GALRenderDevice* InRenderDevice, const IRISkinnedMesh* InOwnerRenderInstance);
-	virtual ~DX12GALRIMetadata_SKM();
+	void Release() override;
+	
 public:
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() override;
 

@@ -8,6 +8,7 @@ private:
 
 public:
 	TextureAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, ETextureType InType, time_t LastUpdateTime);
+	void Release() override;
 
 public:
 	EAssetType GetAssetType() const override;

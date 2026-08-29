@@ -12,7 +12,7 @@ class SWorld;
 
 extern SSGame* g_Game;
 
-class SSGAME_MODULE SSGame : INoncopyable
+class SSGAME_MODULE SSGame : ISSNoncopyable
 {
 public:
 	SSGame(SWorld* InDefaultWorld);

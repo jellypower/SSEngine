@@ -4,7 +4,7 @@ class GALRenderDevice;
 
 enum class ERTColorFormat : int32;
 
-class GALCPUReadableTexture : public INoncopyable
+class GALCPUReadableTexture : public ISSUnknown
 {
 public:
 	virtual const Vector2i32& GetResourceWidthHeight() const = 0;

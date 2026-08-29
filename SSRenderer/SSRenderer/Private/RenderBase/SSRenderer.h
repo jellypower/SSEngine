@@ -75,7 +75,7 @@ private:
 
 public:
 	SSRenderer(GALRenderDevice* InRenderDevice);
-	virtual ~SSRenderer();
+	void Release() override;
 
 public:
 	ICommonRenderAssetSet* GetCommonRenderAssetSet() const override;

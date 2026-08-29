@@ -1,11 +1,9 @@
 ﻿#pragma once
 #include "RootSignatureWrapper.h"
-#include "Public/GALRenderTarget/GALRTCommonEnums.h"
-#include "SSEngineDefault/Public/INoncopyable.h"
 
 class GALRenderDevice;
 
-class RootSignaturePool : public INoncopyable
+class RootSignaturePool : public ISSUnknown
 {
 protected:
 	GALRenderDevice* _OwnerRenderDevice = nullptr;

@@ -1,11 +1,10 @@
 #pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
 
 class GALRenderDevice;
 class IMeshAsset;
 
 
-class GALMeshAssetWrapperBase : public INoncopyable
+class GALMeshAssetWrapperBase : public ISSUnknown
 {
 protected:
 	IMeshAsset* _OwnerMeshAsset = nullptr;

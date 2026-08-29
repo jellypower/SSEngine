@@ -12,7 +12,7 @@ enum class ECollShapeType : int32
 	Sphere
 };
 
-class ICollInstanceBase : public INoncopyable
+class ICollInstanceBase : public ISSUnknown
 {
 public:
 	virtual ECollShapeType GetCollShapeType() const = 0;

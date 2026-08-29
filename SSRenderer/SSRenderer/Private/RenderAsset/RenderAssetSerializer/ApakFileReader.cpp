@@ -114,13 +114,15 @@ ApakFileReader::ApakFileReader(SS::SHasherW InFilePath, SS::SHasherW TargetDBNam
 	_FReadData.Clear();
 }
 
-ApakFileReader::~ApakFileReader()
+void ApakFileReader::Release()
 {
 	if (_hFile != nullptr)
 	{
 		fclose(_hFile);
 		_hFile = nullptr;
 	}
+
+	delete this;
 }
 
 SS::SHasherW ApakFileReader::GetApakAssetName(int32 Idx) const

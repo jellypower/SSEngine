@@ -67,7 +67,7 @@ DX12GALRWMetaData::DX12GALRWMetaData(DX12GALRenderDevice* InRenderDevice, IRende
 	}
 }
 
-DX12GALRWMetaData::~DX12GALRWMetaData()
+void DX12GALRWMetaData::Release()
 {
 	SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
 	SSCustomMemChunkAllocator* DescriptorTableAllocator = _OwnerRenderDevice->GetDescriptorTableAllocator();
@@ -75,6 +75,8 @@ DX12GALRWMetaData::~DX12GALRWMetaData()
 	DescriptorTableAllocator->ReleaseChunk(_WorldLightSettingDescTableChunk);
 	ConstantBufferAllocator->ReleaseChunk(_RenderLightParamCBChunk);
 	ConstantBufferAllocator->ReleaseChunk(_RenderEnvCBChunk);
+
+	delete this;
 }
 
 IRenderWorld* DX12GALRWMetaData::GetOwnerRenderWorld() const

@@ -41,10 +41,12 @@ SSFBXImporter::SSFBXImporter() :
 	_BoundNameSpace = FRAN::NS_FBX_IMPORT;
 }
 
-SSFBXImporter::~SSFBXImporter()
+void SSFBXImporter::Release()
 {
 	_FBXImporter->Destroy();
 	_FBXManager->Destroy();
+
+	delete this;
 }
 
 SS::SHasherW SSFBXImporter::GetBoundFilePath() const
@@ -198,7 +200,7 @@ void SSFBXImporter::ReleaseAllImportedAssets()
 			MeshAssetItem->ReleaseGALData();
 		}
 
-		delete ImportAssetItem;
+		ImportAssetItem->Release();
 	}
 
 	_ImportedAssets.Clear();

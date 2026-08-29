@@ -50,16 +50,18 @@ DX12GALRIDirectionalLightShadowMapMetadata::DX12GALRIDirectionalLightShadowMapMe
 	}
 }
 
-DX12GALRIDirectionalLightShadowMapMetadata::~DX12GALRIDirectionalLightShadowMapMetadata()
+void DX12GALRIDirectionalLightShadowMapMetadata::Release()
 {
 	if (_ShadowMap != nullptr)
 	{
-		delete _ShadowMap;
+		_ShadowMap->Release();
 		_ShadowMap = nullptr;
 	}
 
 	SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
 	ConstantBufferAllocator->ReleaseChunk(_ShadowMapCBChunk);
+
+	delete this;
 }
 
 ERenderInstanceType DX12GALRIDirectionalLightShadowMapMetadata::GetMetadataRenderInstanceType()

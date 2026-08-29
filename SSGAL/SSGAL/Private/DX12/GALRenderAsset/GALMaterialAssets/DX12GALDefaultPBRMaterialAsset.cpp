@@ -68,13 +68,15 @@ DX12GALDefaultPBRMaterialAsset::DX12GALDefaultPBRMaterialAsset(IMaterialAsset* o
 	DX12GALDefaultPBRMaterialAsset::SyncMtlParam();
 }
 
-DX12GALDefaultPBRMaterialAsset::~DX12GALDefaultPBRMaterialAsset()
+void DX12GALDefaultPBRMaterialAsset::Release()
 {
 	SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
 	SSCustomMemChunkAllocator* DesciptorHandleAllocator = _OwnerRenderDevice->GetDescriptorTableAllocator();
 
 	ConstantBufferAllocator->ReleaseChunk(_MtlCBParamChunk);
 	DesciptorHandleAllocator->ReleaseChunk(_MtlTexSRVDescTableChunk);
+
+	delete this;
 }
 
 void DX12GALDefaultPBRMaterialAsset::SyncMtlParam()

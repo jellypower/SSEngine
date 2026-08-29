@@ -12,6 +12,11 @@ AnimWorkerBase::AnimWorkerBase(SWorld* InWorld) :
 {
 }
 
+void AnimWorkerBase::Release()
+{
+	delete this;
+}
+
 
 void AnimWorkerBase::AddToWorker(SAnimatorBaseComponent* InAnimator)
 {

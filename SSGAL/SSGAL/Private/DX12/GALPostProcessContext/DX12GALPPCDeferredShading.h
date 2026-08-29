@@ -11,7 +11,7 @@ class DX12GALPPCDeferredShading : public GALPPCDeferredShading
 {
 public:
 	DX12GALPPCDeferredShading(DX12GALRenderDevice* InOwnerDevice);
-	virtual ~DX12GALPPCDeferredShading();
+	void Release() override;
 
 public:
 	virtual void SyncGALPPCParam() override;

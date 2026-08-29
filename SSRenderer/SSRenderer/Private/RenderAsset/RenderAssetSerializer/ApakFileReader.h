@@ -6,7 +6,7 @@ class ApakFileReader : public IApakFileReader
 {
 public:
 	ApakFileReader(SS::SHasherW InFilePath, SS::SHasherW TargetDBNameSpace);
-	virtual ~ApakFileReader() override;
+	void Release() override;
 
 public:
 	virtual SS::SHasherW GetApakAssetName(int32 Idx) const override;

@@ -12,7 +12,7 @@ class DX12GALRICubeMap : public GALRIMetadata
 {
 public:
 	DX12GALRICubeMap(DX12GALRenderDevice* OwnerRenderDevice, IRICubeMap* InOwnerCubeMap);
-	virtual ~DX12GALRICubeMap();
+	void Release() override;
 
 public:
 	ID3D12DescriptorHeap* GetCubeMapDescHeap() const { return _CubemapDescHeap; }

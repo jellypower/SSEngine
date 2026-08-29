@@ -12,6 +12,9 @@ class IMeshAsset;
 class RIStaticMesh : public IRIMesh
 {
 public:
+	void Release() override;
+
+public:
 	virtual SObjHashCode GetGameObjectID() const override;
 	virtual void SetGameObjectIDXXX(SObjHashCode InHashCode) override;
 

@@ -7,7 +7,7 @@ class DX12GALSkinnedMeshAssetWrapper : public DX12GALMeshAssetWrapper
 {
 public:
 	DX12GALSkinnedMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX12GALRenderDeviceContext* ResourceUpdateExecutor);
-	virtual ~DX12GALSkinnedMeshAssetWrapper();
+	void Release() override;
 
 public:
 	ID3D12Resource* _OriginalJointInverseResource = nullptr;

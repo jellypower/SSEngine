@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "SSEngineDefault/Public/RawProfiler/IFrameInfoProcessor.h"
 
-class ImGUI_Profiler : INoncopyable
+class ImGUI_Profiler : public ISSNoncopyable
 {
 private:
 	double _AvgDeltaTimeAcc = 0;

@@ -13,7 +13,7 @@ class ICollInstanceBase;
 class ICIBox;
 class ICollisionWorld;
 
-class ICollDevice : public INoncopyable
+class ICollDevice : public ISSUnknown
 {
 public:
 	virtual ICollisionWorld* CreateCollWorld(SS::SHasherW InWorldName) const = 0;

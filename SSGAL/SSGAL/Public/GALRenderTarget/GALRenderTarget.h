@@ -23,7 +23,7 @@ struct GALRenderTargetDesc
 
 
 
-class GALRenderTarget : public INoncopyable
+class GALRenderTarget : public ISSUnknown
 {
 public:
 	const BoundBox2f& GetScissorRectSize() const { return _ScissorRectSize; }

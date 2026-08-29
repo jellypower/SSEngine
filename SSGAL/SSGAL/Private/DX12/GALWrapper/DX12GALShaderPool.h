@@ -4,5 +4,9 @@
 class DX12GALShaderPool : public GALPCommonShaderPool
 {
 public:
+	void Release() override;
+
+public:
 	GALShaderWrapper* CreateShader(const ShaderConstructDesc& InDesc) override;
+
 };

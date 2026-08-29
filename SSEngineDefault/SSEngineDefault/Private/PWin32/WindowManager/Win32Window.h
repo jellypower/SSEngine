@@ -14,6 +14,7 @@ private:
 
 public:
 	Win32Window(HWND InHwnd, RECT InitWinRect);
+	virtual void Release() override;
 
 public:
 	virtual void ResizeWindowXXX(uint32 width, uint32 height) override;

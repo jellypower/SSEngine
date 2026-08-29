@@ -49,6 +49,7 @@ private:
 
 public:
 	RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DESC& InDesc, physx::PxRigidDynamic* InActor);
+	void Release() override;
 
 public:
 	virtual ERigidBodyType GetRigidBodyType() const override;

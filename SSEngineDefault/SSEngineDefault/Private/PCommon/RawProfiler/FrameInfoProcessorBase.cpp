@@ -7,6 +7,11 @@ constexpr double FRAME_LOW_LIMIT = 1 / 1000.0;
 
 const utf16* PER_FRAME = L"PF";
 
+void FrameInfoProcessorBase::Release()
+{
+	delete this;
+}
+
 const SS::PooledList<ProfileResultItem> FrameInfoProcessorBase::GetLastProfileResult() const
 {
 	return _LastProfileResult;

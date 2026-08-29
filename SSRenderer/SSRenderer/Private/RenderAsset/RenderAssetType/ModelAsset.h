@@ -7,6 +7,7 @@ class ModelAsset : public IModelAssetMutable
 {
 public:
 	ModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, time_t LastUpdateTime);
+	void Release() override;
 
 public:
 	EAssetType GetAssetType() const override;

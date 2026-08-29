@@ -101,10 +101,22 @@ DX12GALSkinnedMeshAssetWrapper::DX12GALSkinnedMeshAssetWrapper(IMeshAsset* owner
 	}
 }
 
-DX12GALSkinnedMeshAssetWrapper::~DX12GALSkinnedMeshAssetWrapper()
+void DX12GALSkinnedMeshAssetWrapper::Release()
 {
-	_OriginalJointInverseResource->Release();
+	if (_VertexBuffer != nullptr)
+	{
+		_VertexBuffer->Release();
+	}
 
+	if (_IndexBuffer != nullptr)
+	{
+		_IndexBuffer->Release();
+	}
+
+
+	_OriginalJointInverseResource->Release();
 	SSCustomMemChunkAllocator* DescriptorTableAllocatorForTex = _OwnerRenderDevice->GetDescriptorTableAllocatorForTex();
 	DescriptorTableAllocatorForTex->ReleaseChunk(_OriginalJointInverseSRVDescriptorChunk);
+
+	delete this;
 }

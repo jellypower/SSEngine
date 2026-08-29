@@ -18,6 +18,11 @@ ModelAsset::ModelAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS:
 	_LastUpdateTime = LastUpdateTime;
 }
 
+void ModelAsset::Release()
+{
+	delete this;
+}
+
 EAssetType ModelAsset::GetAssetType() const
 {
 	return ThisAssetType;

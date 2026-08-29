@@ -47,13 +47,15 @@ DX12RootSignatureWrapper::DX12RootSignatureWrapper(ERootSignatureType RootSignat
 	_D3DRootSignature->SetName(ToUtf16Str(RootSignatureType));
 }
 
-DX12RootSignatureWrapper::~DX12RootSignatureWrapper()
+void DX12RootSignatureWrapper::Release()
 {
 	if (_D3DRootSignature != nullptr)
 	{
 		_D3DRootSignature->Release();
 		_D3DRootSignature = nullptr;
 	}
+
+	delete this;
 }
 
 bool DX12RootSignatureWrapper::IsValid() const

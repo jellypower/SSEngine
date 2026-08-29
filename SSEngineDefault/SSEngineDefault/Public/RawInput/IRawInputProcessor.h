@@ -4,7 +4,7 @@
 #include "KeyCodeEnums.h"
 
 
-class IRawInputProcessor : public INoncopyable
+class IRawInputProcessor : public ISSUnknown
 {
 protected:
 	bool _prevFrameKeyState[static_cast<int32>(EKeyCode::Count)];

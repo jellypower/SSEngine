@@ -32,7 +32,7 @@ private:
 
 public:
 	CollDevice();
-	virtual ~CollDevice();
+	void Release() override;
 
 public:
 	virtual ICollisionWorld* CreateCollWorld(SS::SHasherW InWorldName) const override;

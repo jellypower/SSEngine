@@ -11,7 +11,7 @@ class MeshAsset : public IMeshAssetMutable
 {
 public:
 	MeshAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, time_t LastUpdateTime);
-	virtual ~MeshAsset();
+	void Release() override;
 
 public:
 	virtual void InjectRawDataXXX(MeshRawDataBase* InRawData) override;

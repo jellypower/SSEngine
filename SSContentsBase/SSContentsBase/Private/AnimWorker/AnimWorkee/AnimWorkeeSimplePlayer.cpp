@@ -72,6 +72,11 @@ AnimWorkeeSimplePlayer::AnimWorkeeSimplePlayer(const SSimpleAnimatorTestComponen
 	_RenderAnimAssetName = AnimComp->GetRenderAnimAssetName();
 }
 
+void AnimWorkeeSimplePlayer::Release()
+{
+	delete this;
+}
+
 const PoseSlot& AnimWorkeeSimplePlayer::GetResultPose() const
 {
 	return _ResultPose;

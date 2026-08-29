@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
+#include "SSEngineDefault/Public/ISSUnknown.h"
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
-class IThreadManager : INoncopyable
+class IThreadManager : ISSUnknown
 {
 public:
 	virtual bool IsInMainThread() const = 0;

@@ -23,7 +23,7 @@ private:
 
 public:
 	DX12GALRIDirectionalLightShadowMapMetadata(DX12GALRenderDevice* InRenderDevice, IRenderLightDirectional* InOwnerRenderLight);
-	virtual ~DX12GALRIDirectionalLightShadowMapMetadata();
+	void Release() override;
 
 public:
 	virtual ERenderInstanceType GetMetadataRenderInstanceType() override;

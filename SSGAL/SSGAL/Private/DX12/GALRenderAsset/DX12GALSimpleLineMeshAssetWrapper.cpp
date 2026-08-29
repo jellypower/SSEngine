@@ -110,7 +110,7 @@ DX12GALSimpleLineMeshAssetWrapper::DX12GALSimpleLineMeshAssetWrapper(IMeshAsset*
 	}
 }
 
-DX12GALSimpleLineMeshAssetWrapper::~DX12GALSimpleLineMeshAssetWrapper()
+void DX12GALSimpleLineMeshAssetWrapper::Release()
 {
 	if (_VertexBuffer != nullptr)
 	{
@@ -123,4 +123,6 @@ DX12GALSimpleLineMeshAssetWrapper::~DX12GALSimpleLineMeshAssetWrapper()
 		_IndexBuffer->Release();
 		_IndexBuffer = nullptr;
 	}
+
+	delete this;
 }

@@ -176,26 +176,25 @@ lb_loop:
 	}
 }
 
-DX12GALRenderDevice::~DX12GALRenderDevice()
+void DX12GALRenderDevice::Release()
 {
 	_PSOPool->ReleaseAllPSO();
-	delete _PSOPool;
+	_PSOPool->Release();
 	_PSOPool = nullptr;
 
-	delete _ShaderPool;
+	_ShaderPool->Release();
 
 	_rootSignaturePool->ReleaseAllRoogSignatures();
-	delete _rootSignaturePool;
-	_rootSignaturePool = nullptr;
+	_rootSignaturePool->Release();
 
 	_ConstantBufferResourceAllocator->ReleaseDefaultPages();
-	delete _ConstantBufferResourceAllocator;
+	_ConstantBufferResourceAllocator->Release();
 
 	_DescriptorTableAllocatorForTex->ReleaseDefaultPages();
-	delete _DescriptorTableAllocatorForTex;
+	_DescriptorTableAllocatorForTex->Release();
 
 	_DescriptorTableAllocator->ReleaseDefaultPages();
-	delete _DescriptorTableAllocator;
+	_DescriptorTableAllocator->Release();
 
 	_DXGIFactory->Release();
 
@@ -211,6 +210,8 @@ DX12GALRenderDevice::~DX12GALRenderDevice()
 		}
 		DEBUG_BREAK();
 	}
+
+	delete this;
 }
 
 ERenderDevicePlatnform DX12GALRenderDevice::GetRenderDevicePlatform() const
@@ -227,7 +228,7 @@ GALRenderDeviceContext* DX12GALRenderDevice::CreateRenderDeviceContext()
 		return NewDeviceContext;
 	}
 
-	delete NewDeviceContext;
+	NewDeviceContext->Release();
 	return nullptr;
 }
 

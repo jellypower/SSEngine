@@ -13,6 +13,11 @@ SASSweepAndPrune::SASSweepAndPrune() :
 {
 }
 
+void SASSweepAndPrune::Release()
+{
+	delete this;
+}
+
 ESASType SASSweepAndPrune::GetSASType() const
 {
 	return ESASType::SweepAndPrune;

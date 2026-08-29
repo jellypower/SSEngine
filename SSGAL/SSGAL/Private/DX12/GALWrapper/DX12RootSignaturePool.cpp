@@ -11,6 +11,11 @@ DX12RootSignaturePool::DX12RootSignaturePool(DX12GALRenderDevice* InOwnerRenderD
 	_OwnerRenderDevice = InOwnerRenderDevice;
 }
 
+void DX12RootSignaturePool::Release()
+{
+	delete this;
+}
+
 void DX12RootSignaturePool::InstantiateAllRootSignatures()
 {
 	for (int32 i = 0; i < (int32)ERootSignatureType::COUNT; i++)
@@ -19,7 +24,7 @@ void DX12RootSignaturePool::InstantiateAllRootSignatures()
 		if (_rootSignatures[i]->IsValid() == false)
 		{
 			SS_ASSERT(false);
-			delete _rootSignatures[i];
+			_rootSignatures[i]->Release();
 			_rootSignatures[i] = nullptr;
 		}
 	}
@@ -31,7 +36,7 @@ void DX12RootSignaturePool::ReleaseAllRoogSignatures()
 	{
 		if(_rootSignatures[i]->IsValid())
 		{
-			delete _rootSignatures[i];
+			_rootSignatures[i]->Release();
 			_rootSignatures[i] = nullptr;
 		}
 	}

@@ -6,7 +6,7 @@ class RenderAnimAsset : public IRenderAnimAssetMutable
 
 public:
 	RenderAnimAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, time_t LastUpdateTime);
-	virtual ~RenderAnimAsset();
+	void Release() override;
 
 public:
 	EAssetType GetAssetType() const override;

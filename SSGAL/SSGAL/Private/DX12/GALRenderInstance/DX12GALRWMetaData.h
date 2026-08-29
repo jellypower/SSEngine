@@ -33,7 +33,8 @@ private:
 
 public:
 	DX12GALRWMetaData(DX12GALRenderDevice* InRenderDevice, IRenderWorld* InOwnerRenderWorld);
-	virtual ~DX12GALRWMetaData();
+	void Release() override;
+	
 
 public:
 	IRenderWorld* GetOwnerRenderWorld() const override;

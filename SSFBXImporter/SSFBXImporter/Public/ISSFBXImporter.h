@@ -5,7 +5,7 @@ class IAssetBase;
 class ICommonRenderAssetSet;
 class IAssetManagerMutable;
 
-class ISSFBXImporter : public INoncopyable
+class ISSFBXImporter : public ISSUnknown
 {
 public:
 	virtual SS::SHasherW GetBoundFilePath() const = 0;

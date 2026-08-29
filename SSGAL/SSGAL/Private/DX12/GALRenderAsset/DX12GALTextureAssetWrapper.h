@@ -11,7 +11,7 @@ class DX12GALTextureAssetWrapper : public GALTextureAssetWrapperBase
 {
 public:
 	DX12GALTextureAssetWrapper(ITextureAssetMutable* OwnerAsset, DX12GALRenderDeviceContext* InExecutor);
-	virtual ~DX12GALTextureAssetWrapper();
+	void Release() override;
 
 public:
 	ID3D12Resource* _TexResource = nullptr;

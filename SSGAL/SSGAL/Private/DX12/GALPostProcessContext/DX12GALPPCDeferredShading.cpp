@@ -43,13 +43,13 @@ DX12GALPPCDeferredShading::DX12GALPPCDeferredShading(DX12GALRenderDevice* InOwne
 	}
 }
 
-DX12GALPPCDeferredShading::~DX12GALPPCDeferredShading()
+void DX12GALPPCDeferredShading::Release()
 {
 	SSCustomMemChunkAllocator* DesciptorHandleAllocator = _OwnerDevice->GetDescriptorTableAllocator();
-
 	DesciptorHandleAllocator->ReleaseChunk(_GBuffersSRVDescTableChunk);
-}
 
+	delete this;
+}
 
 void DX12GALPPCDeferredShading::SyncGALPPCParam()
 {

@@ -57,7 +57,7 @@ public:
 };
 
 
-class IAssetBase : public INoncopyable
+class IAssetBase : public ISSUnknown
 {
 protected:
 	SS::SHasherW _DBNameSpace;

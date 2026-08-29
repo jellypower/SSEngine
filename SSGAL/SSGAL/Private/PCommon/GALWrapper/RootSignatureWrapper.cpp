@@ -7,7 +7,3 @@ RootSignatureWrapper::RootSignatureWrapper(ERootSignatureType rootSignatureType,
 	: _rootSignatureType(rootSignatureType), _OwnerRenderSignaturePool(InOwnerRootSignaturePool)
 {
 }
-
-RootSignatureWrapper::~RootSignatureWrapper()
-{
-}

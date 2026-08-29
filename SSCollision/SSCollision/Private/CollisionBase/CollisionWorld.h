@@ -32,7 +32,7 @@ private:
 
 public:
 	CollisionWorld(const SS::SHasherW& worldName, physx::PxScene* PhysxScene);
-	virtual ~CollisionWorld();
+	void Release() override;
 
 public:
 	void FinalizeCollWorld() override;

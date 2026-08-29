@@ -18,7 +18,7 @@ private:
 	SS::PooledList<IWindow*> _Windows;
 
 public:
-	virtual ~Win32WindowManager();
+	virtual void Release() override;
 
 public:
 	virtual IWindow* GetMainWindow() const override;

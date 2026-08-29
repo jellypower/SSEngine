@@ -8,7 +8,7 @@ class IMaterialAsset;
 class ITextureAsset;
 
 
-class ICommonRenderAssetSet : public INoncopyable
+class ICommonRenderAssetSet : public ISSUnknown
 {
 public:
 	ITextureAsset* GetTexEMPTY() const { return _TexEMPTY; }

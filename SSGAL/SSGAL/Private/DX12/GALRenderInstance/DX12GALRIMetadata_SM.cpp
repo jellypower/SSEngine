@@ -39,11 +39,12 @@ DX12GALRIMetadata_SM::DX12GALRIMetadata_SM(GALRenderDevice* InRenderDevice, cons
 	}
 }
 
-DX12GALRIMetadata_SM::~DX12GALRIMetadata_SM()
+void DX12GALRIMetadata_SM::Release()
 {
 	SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
-
 	ConstantBufferAllocator->ReleaseChunk(_ModelCBChunk);
+
+	delete this;
 }
 
 ERenderInstanceType DX12GALRIMetadata_SM::GetMetadataRenderInstanceType()

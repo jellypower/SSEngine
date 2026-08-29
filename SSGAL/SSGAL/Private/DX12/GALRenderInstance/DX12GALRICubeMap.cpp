@@ -60,7 +60,7 @@ DX12GALRICubeMap::DX12GALRICubeMap(DX12GALRenderDevice* InOwnerRenderDevice, IRI
 	}
 }
 
-DX12GALRICubeMap::~DX12GALRICubeMap()
+void DX12GALRICubeMap::Release()
 {
 	{
 		SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
@@ -72,6 +72,8 @@ DX12GALRICubeMap::~DX12GALRICubeMap()
 		SSCustomMemChunkAllocator* DescriptorTableAllocator = _OwnerRenderDevice->GetDescriptorTableAllocator();
 		DescriptorTableAllocator->ReleaseChunk(_CubemapTextureDescTableChunk);
 	}
+
+	delete this;
 }
 
 ERenderInstanceType DX12GALRICubeMap::GetMetadataRenderInstanceType()

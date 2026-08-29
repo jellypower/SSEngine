@@ -11,7 +11,7 @@ class DX12GALMeshAssetWrapper : public GALMeshAssetWrapperBase
 {
 public:
 	DX12GALMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX12GALRenderDeviceContext* ResourceUpdateExecutor);
-	virtual ~DX12GALMeshAssetWrapper();
+	virtual void Release() override;
 
 public:
 	DX12GALRenderDevice* _OwnerRenderDevice = nullptr;

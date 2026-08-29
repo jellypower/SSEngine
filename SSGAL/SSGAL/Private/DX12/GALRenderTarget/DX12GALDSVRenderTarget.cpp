@@ -129,7 +129,7 @@ DX12GALDSVRenderTarget::DX12GALDSVRenderTarget(DX12GALRenderDevice* InRenderDevi
 	}
 }
 
-DX12GALDSVRenderTarget::~DX12GALDSVRenderTarget()
+void DX12GALDSVRenderTarget::Release()
 {
 	if (_InitializedDesc.bUseSRV)
 	{
@@ -139,6 +139,8 @@ DX12GALDSVRenderTarget::~DX12GALDSVRenderTarget()
 
 	_DSVHeap->Release();
 	_DepthStencil->Release();
+
+	delete this;
 }
 
 Vector2i32 DX12GALDSVRenderTarget::GetResourceSize() const

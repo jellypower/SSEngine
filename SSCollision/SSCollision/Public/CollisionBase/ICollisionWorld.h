@@ -9,7 +9,7 @@ class IRigidBodyDynamic;
 class IRigidBodyBase;
 class ICollInstanceBase;
 
-class ICollisionWorld : public INoncopyable
+class ICollisionWorld : public ISSUnknown
 {
 public:
 	virtual void FinalizeCollWorld() = 0;

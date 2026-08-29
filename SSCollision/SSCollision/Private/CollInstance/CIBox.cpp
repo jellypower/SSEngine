@@ -19,9 +19,11 @@ CIBox::CIBox(const CI_BOX_DESC& Desc, physx::PxShape* InShape)
 	_Shape->userData = this;
 }
 
-CIBox::~CIBox()
+void CIBox::Release()
 {
 	PX_RELEASE(_Shape);
+
+	delete this;
 }
 
 ECollShapeType CIBox::GetCollShapeType() const

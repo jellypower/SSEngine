@@ -57,9 +57,11 @@ DX12GALCPUReadableTexture::DX12GALCPUReadableTexture(DX12GALRenderDevice* InOwne
 	}
 }
 
-DX12GALCPUReadableTexture::~DX12GALCPUReadableTexture()
+void DX12GALCPUReadableTexture::Release()
 {
 	_TexResource->Release();
+
+	delete this;
 }
 
 const Vector2i32& DX12GALCPUReadableTexture::GetResourceWidthHeight() const

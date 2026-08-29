@@ -734,7 +734,7 @@ IApakFileReader* CreateApakFileAccessor(SS::SHasherW SystemPath, SS::SHasherW DB
 	ApakFileReader* NewApak = DBG_NEW ApakFileReader(SystemPath, DBNameSpace);
 	if (NewApak->IsValid() == false)
 	{
-		delete NewApak;
+		NewApak->Release();
 		return nullptr;
 	}
 

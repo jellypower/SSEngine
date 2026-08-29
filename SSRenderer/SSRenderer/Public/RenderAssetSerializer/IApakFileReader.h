@@ -4,7 +4,7 @@
 
 struct ApakDataChunkOffsetDesc;
 
-class IApakFileReader : public INoncopyable
+class IApakFileReader : public ISSUnknown
 {
 public:
 	virtual SS::SHasherW GetApakAssetName(int32 Idx) const = 0;

@@ -8,6 +8,11 @@
 #include "SSRenderer/Private/RenderBase/SSRenderer.h"
 #include "SSRenderer/Public/RenderCommon/SSRenderUtilFuncs.h"
 
+void RICubeMap::Release()
+{
+	delete this;
+}
+
 float RICubeMap::GetCubeMapSize() const
 {
 	return 50.f;

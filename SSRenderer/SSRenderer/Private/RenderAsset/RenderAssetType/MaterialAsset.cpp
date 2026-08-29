@@ -18,10 +18,12 @@ MaterialAsset::MaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetNam
 	_LastUpdateTime = LastUpdateTime;
 }
 
-MaterialAsset::~MaterialAsset()
+void MaterialAsset::Release()
 {
 	SS_ASSERT(_MtlData != nullptr);
 	delete _MtlData;
+
+	delete this;
 }
 
 EAssetType MaterialAsset::GetAssetType() const
@@ -102,7 +104,7 @@ void MaterialAsset::BindAssetManager(IAssetManager* InAssetManager)
 
 void MaterialAsset::ReleaseGALData()
 {
-	delete _GALMaterialAsset;
+	_GALMaterialAsset->Release();
 	_GALMaterialAsset = nullptr;
 }
 

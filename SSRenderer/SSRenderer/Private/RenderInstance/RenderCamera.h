@@ -4,6 +4,9 @@
 class RenderCamera : public IRenderCamera
 {
 public:
+	void Release() override;
+
+public:
 	IRenderWorld* GetIcludedRenderWorld() const override;
 	XMMATRIX CalcVPMatrix() const override;
 	const Transform& GetCameraTransform() const override;

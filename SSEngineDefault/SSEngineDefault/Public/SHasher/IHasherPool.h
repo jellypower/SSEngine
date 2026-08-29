@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
+#include "SSEngineDefault/Public/ISSUnknown.h"
 #include "SSEngineDefault/Public/SSNativeKeywords.h"
 
 struct HasherPoolNode
@@ -18,7 +18,7 @@ struct HasherPoolNode
 	utf16 _str[0];
 };
 
-class IHasherPool : INoncopyable
+class IHasherPool : ISSUnknown
 {
 public:
 	virtual const HasherPoolNode* FindOrAddHasherValue(const utf16* InLoweredStr, uint32 InStrLen, uint32 InHashedValue) = 0;

@@ -16,6 +16,11 @@ DX12TransientConstantBufferAllocator::DX12TransientConstantBufferAllocator(
 {
 }
 
+void DX12TransientConstantBufferAllocator::Release()
+{
+	delete this;
+}
+
 void* DX12TransientConstantBufferAllocator::AllocPage()
 {
 	DX12GALRenderDevice* DX12RenderDevice = static_cast<DX12GALRenderDevice*>(_RenderDeviceContext->GetOwnerRenderDevice());

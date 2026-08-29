@@ -10,7 +10,7 @@ private:
 
 public:
 	MaterialAsset(SS::SHasherW InDBNameSpace, SS::SHasherW InAssetName, SS::SHasherW InAssetPath, time_t LastUpdateTime);
-	virtual ~MaterialAsset();
+	void Release() override;
 
 public:
 	EAssetType GetAssetType() const override;

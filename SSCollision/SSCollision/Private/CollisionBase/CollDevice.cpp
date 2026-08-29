@@ -29,7 +29,7 @@ CollDevice::CollDevice()
 	_DefaultMaterial = _Physics->createMaterial(0.6f, 0.6f, 0.0f);
 }
 
-CollDevice::~CollDevice()
+void CollDevice::Release()
 {
 	PX_RELEASE(_DefaultMaterial);
 	PX_RELEASE(_Dispatcher);
@@ -41,6 +41,8 @@ CollDevice::~CollDevice()
 		PX_RELEASE(transport);
 	}
 	PX_RELEASE(_Foundation);
+
+	delete this;
 }
 
 ICollisionWorld* CollDevice::CreateCollWorld(SS::SHasherW InWorldName) const

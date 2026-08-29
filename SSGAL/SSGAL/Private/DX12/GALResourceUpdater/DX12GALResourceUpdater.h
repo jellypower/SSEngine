@@ -11,7 +11,7 @@ class DX12GALResourceUpdater : public GALResourceUpdater
 {
 public:
 	DX12GALResourceUpdater(DX12GALRenderDevice* InRenderDevice, DX12GALRenderDeviceContext* InRenderDeviceContext);
-	virtual ~DX12GALResourceUpdater();
+	void Release() override;
 
 	virtual void ResetUpdateBuffer() override;
 

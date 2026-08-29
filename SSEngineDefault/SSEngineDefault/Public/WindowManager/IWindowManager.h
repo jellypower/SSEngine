@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include "SSEngineDefault/Public/INoncopyable.h"
+#include "SSEngineDefault/Public/ISSUnknown.h"
 #include "SSEngineDefault/Public/SSVector.h"
 
 class IWindow;
 
-class IWindowManager : public INoncopyable
+class IWindowManager : public ISSUnknown
 {
 public:
 	virtual IWindow* GetMainWindow() const = 0;

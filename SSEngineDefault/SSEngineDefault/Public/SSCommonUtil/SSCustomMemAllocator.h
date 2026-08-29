@@ -1,7 +1,7 @@
 #pragma once
 #include "SSEngineDefault/ModuleExportKeyword.h"
 
-#include "SSEngineDefault/Public/INoncopyable.h"
+#include "SSEngineDefault/Public/ISSUnknown.h"
 #include "SSEngineDefault/Public/SSContainer/PooledLinkedList.h"
 #include "SSEngineDefault/Public/SSContainer/PooledList.h"
 #include "SSEngineDefault/Public/SHasher/SHasherW.h"
@@ -25,7 +25,7 @@ struct PageSet
 };
 
 
-class SSENGINEDEFAULT_MODULE SSCustomMemChunkAllocator : public INoncopyable
+class SSENGINEDEFAULT_MODULE SSCustomMemChunkAllocator : public ISSUnknown
 {
 private:
 	SS::PooledList<PageSet> _DefaultPages;
@@ -41,6 +41,7 @@ private:
 
 public:
 	explicit SSCustomMemChunkAllocator(int32 InEachPageSize, int32 MinAllocSize, int32 AlignSize, const utf16* AllocatorName);
+	virtual void Release() override;
 
 public:
 	bool IsAnyChunkInUse() const;

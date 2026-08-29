@@ -10,8 +10,8 @@ class DX12GALDefaultRenderTarget : public DX12GALRenderTargetBase
 {
 public:
 	DX12GALDefaultRenderTarget(DX12GALRenderDevice* InRenderDevice, const GALRenderTargetDesc& Desc, const utf16* ResourceName = nullptr);
-	virtual ~DX12GALDefaultRenderTarget();
-
+	void Release() override;
+	
 public:
 	virtual Vector2i32 GetResourceSize() const override;
 	virtual int32 GetResourceRowPitch() const override;
@@ -28,7 +28,6 @@ public:
 protected:
 	ID3D12Resource* _RenderTargetResource = nullptr;
 
-private:
 	GALRenderTargetDesc _InitializedDesc;
 
 	ID3D12DescriptorHeap* _RenderTargetDescHeap = nullptr;

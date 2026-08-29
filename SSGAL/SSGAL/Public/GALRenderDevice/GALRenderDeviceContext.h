@@ -41,7 +41,7 @@ enum class ERenderDeviceTaskPhase
 	Count
 };
 
-class GALRenderDeviceContext : public INoncopyable
+class GALRenderDeviceContext : public ISSUnknown
 {
 protected:
 	GALRenderDevice* _OwnerRenderDevice = nullptr;

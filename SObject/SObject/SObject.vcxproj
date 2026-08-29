@@ -191,6 +191,7 @@ copy "$(OutDir)PDB\$(TargetName)_$(Configuration)_$(Platform).pdb" "$(SolutionDi
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Private\ModuleEntryImpl\SObjectFactory.cpp" />
     <ClCompile Include="Private\ModuleEntryImpl\SObjectModuleEntry.cpp" />
+    <ClCompile Include="Private\SObjectBase.cpp" />
     <ClCompile Include="Private\SObjectGlobalHashMap.cpp" />
     <ClCompile Include="Private\SObjHashCode.cpp" />
   </ItemGroup>

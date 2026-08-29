@@ -21,6 +21,7 @@ private:
 
 public:
 	AnimWorkeeSimplePlayer(const SSimpleAnimatorTestComponent* AnimComp);
+	void Release() override;
 
 public:
 	virtual const PoseSlot& GetResultPose() const override;

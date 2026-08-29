@@ -13,6 +13,11 @@ ModelCombinationAsset::ModelCombinationAsset(SS::SHasherW InDBNameSpace, SS::SHa
 	_LastUpdateTime = LastUpdateTime;
 }
 
+void ModelCombinationAsset::Release()
+{
+	delete this;
+}
+
 EAssetType ModelCombinationAsset::GetAssetType() const
 {
 	return ThisAssetType;

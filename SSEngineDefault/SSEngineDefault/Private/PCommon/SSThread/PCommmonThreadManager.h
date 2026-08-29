@@ -4,5 +4,5 @@
 class PCommmonThreadManager : public IThreadManager
 {
 public:
-	
+	virtual void Release() override;
 };

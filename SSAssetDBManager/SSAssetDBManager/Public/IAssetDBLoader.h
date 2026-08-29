@@ -5,7 +5,7 @@ class ICommonRenderAssetSet;
 class IAssetManagerMutable;
 
 
-class IAssetDBLoader : public INoncopyable
+class IAssetDBLoader : public ISSUnknown
 {
 public:
 	virtual bool StartLoadDB(SS::SHasherW inFilePath) = 0;

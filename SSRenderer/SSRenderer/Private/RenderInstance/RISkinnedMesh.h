@@ -8,6 +8,7 @@ class RISkinnedMesh : public IRISkinnedMesh
 {
 public:
 	RISkinnedMesh();
+	void Release() override;
 
 public:
 	virtual SObjHashCode GetGameObjectID() const override;

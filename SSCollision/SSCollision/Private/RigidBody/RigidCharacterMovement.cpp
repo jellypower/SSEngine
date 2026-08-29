@@ -30,6 +30,11 @@ RigidCharacterMovement::RigidCharacterMovement(const RIGID_CHARACTERMOVEMENT_DES
 	_PxActor = InActor;
 }
 
+void RigidCharacterMovement::Release()
+{
+	delete this;
+}
+
 ERigidBodyType RigidCharacterMovement::GetRigidBodyType() const
 {
 	return ERigidBodyType::CharacterMovement;

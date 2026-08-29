@@ -13,10 +13,6 @@ PSOPool::PSOPool()
 {
 }
 
-PSOPool::~PSOPool()
-{
-}
-
 const PSOWrapper* PSOPool::FindOrAddPSO(const PipelineDesc& PipelineDesc)
 {
 	PSOWrapper* const* Result = _PSOMap.Find(PipelineDesc);
@@ -39,7 +35,7 @@ void PSOPool::ReleaseAllPSO()
 {
 	for (const SS::pair<PipelineDesc, PSOWrapper*>& PSOPairItem : _PSOMap)
 	{
-		delete PSOPairItem.second;
+		PSOPairItem.second->Release();
 	}
 
 	_PSOMap.Clear();

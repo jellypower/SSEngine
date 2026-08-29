@@ -3,9 +3,11 @@
 #include "Win32Window.h"
 #include "WindowUtil_Internal.h"
 
-Win32WindowManager::~Win32WindowManager()
+void Win32WindowManager::Release()
 {
 	delete _MainWindow;
+
+	delete this;
 }
 
 IWindow* Win32WindowManager::GetMainWindow() const

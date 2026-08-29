@@ -50,7 +50,7 @@ private:
 
 public:
 	DX12GALRenderDeviceContext(DX12GALRenderDevice* InRenderDevice);
-	virtual ~DX12GALRenderDeviceContext();
+	void Release() override;
 
 public:
 	virtual bool IsValid() const override;

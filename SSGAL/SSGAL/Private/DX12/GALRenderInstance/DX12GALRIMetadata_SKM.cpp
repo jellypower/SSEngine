@@ -123,12 +123,17 @@ DX12GALRIMetadata_SKM::DX12GALRIMetadata_SKM(GALRenderDevice* InRenderDevice, co
 
 }
 
-DX12GALRIMetadata_SKM::~DX12GALRIMetadata_SKM()
+void DX12GALRIMetadata_SKM::Release()
 {
+	SSCustomMemChunkAllocator* ConstantBufferAllocator = _OwnerRenderDevice->GetConstantBufferResourceAllocator();
+	ConstantBufferAllocator->ReleaseChunk(_ModelCBChunk);
+
 	_JointSBResource->Release();
 
 	SSCustomMemChunkAllocator* DescriptorTableAllocator = _OwnerRenderDevice->GetDescriptorTableAllocator();
 	DescriptorTableAllocator->ReleaseChunk(_JointSRVDescTableChunk);
+
+	delete this;
 }
 
 ERenderInstanceType DX12GALRIMetadata_SKM::GetMetadataRenderInstanceType()

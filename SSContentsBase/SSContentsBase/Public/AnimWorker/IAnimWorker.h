@@ -3,7 +3,7 @@
 
 class SAnimatorBaseComponent;
 
-class IAnimWorker : public INoncopyable
+class IAnimWorker : public ISSUnknown
 {
 	// TODO: 나중에 SWorld_Impl 에 들어가도록 클래스 분리 가능할듯
 

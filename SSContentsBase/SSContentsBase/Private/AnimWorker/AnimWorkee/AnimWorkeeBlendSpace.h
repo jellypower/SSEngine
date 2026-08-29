@@ -33,6 +33,7 @@ private:
 
 public:
 	AnimWorkeeBlendSpace(const SBlendSpaceAnimTestComponent* AnimComp);
+	void Release() override;
 
 public:
 

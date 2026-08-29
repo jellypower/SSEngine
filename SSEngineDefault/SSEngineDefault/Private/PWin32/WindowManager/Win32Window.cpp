@@ -17,6 +17,11 @@ Win32Window::Win32Window(HWND InHwnd, RECT InitWinRect)
 	_WindowLT.Y = InitWinRect.top;
 }
 
+void Win32Window::Release()
+{
+	delete this;
+}
+
 void Win32Window::ResizeWindowXXX(uint32 width, uint32 height)
 {
 	SS_ASSERT(false); // TODO: Impl

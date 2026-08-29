@@ -9,7 +9,7 @@ class DX12GALSimpleLineMeshAssetWrapper : public GALMeshAssetWrapperBase
 {
 public:
 	DX12GALSimpleLineMeshAssetWrapper(IMeshAsset* ownerMeshAsset, DX12GALRenderDeviceContext* ResourceUpdateExecutor);
-	virtual ~DX12GALSimpleLineMeshAssetWrapper();
+	void Release() override;
 
 public:
 	DX12GALRenderDevice* _OwnerRenderDevice = nullptr;

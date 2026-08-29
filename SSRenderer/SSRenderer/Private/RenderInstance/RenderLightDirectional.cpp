@@ -19,6 +19,11 @@ RenderLightDirectional::RenderLightDirectional(const RenderLightDirectionalDesc&
 	_LightIntensity = { 1,1,1,1 };
 }
 
+void RenderLightDirectional::Release()
+{
+	delete this;
+}
+
 SObjHashCode RenderLightDirectional::GetGameObjectID() const
 {
 	return _GameObjectHashCode;

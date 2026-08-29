@@ -16,6 +16,11 @@
 #include "SSRenderer/Public/RenderAsset/RenderAssetType/MeshData/MeshRawDataSimpleLine.h"
 
 
+void CommonRenderAssetSet::Release()
+{
+	delete this;
+}
+
 void CommonRenderAssetSet::InitializeCommonAssets()
 {
 	static const SS::SHasherW NAME_EMPTY_PBR_MTL = CRAN::EMPTY_PBR_MTL;

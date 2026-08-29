@@ -5,7 +5,7 @@ class RootSignaturePool;
 
 
 
-class RootSignatureWrapper : public INoncopyable
+class RootSignatureWrapper : public ISSUnknown
 {
 protected:
 	ERootSignatureType _rootSignatureType = ERootSignatureType::NONE;
@@ -13,7 +13,6 @@ protected:
 
 public:
 	RootSignatureWrapper(ERootSignatureType rootSignatureType, RootSignaturePool* InOwnerRootSignaturePool);
-	virtual ~RootSignatureWrapper();
 
 	virtual bool IsValid() const = 0;
 	ERootSignatureType GetRootSignatureType() const { return _rootSignatureType; }
