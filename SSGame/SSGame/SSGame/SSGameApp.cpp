@@ -143,7 +143,7 @@ void SSGameApp::CleanupEngine()
 	_DefaultWorld = nullptr;
 
 	_AssetDBLoader->ClearDB();
-	delete _AssetDBLoader;
+	_AssetDBLoader->Release();
 	_AssetDBLoader = nullptr;
 
 	_Renderer->GetCommonRenderAssetSet()->ReleaseCachedAssets();
@@ -155,10 +155,10 @@ void SSGameApp::CleanupEngine()
 	// _Renderer->CleanUp() 은 GALRenderDeviceContext::FinalizeDeviceContext 를 호출함
 	// GPU작업이 전부 끝난 이후에야 리소스들을 지울 수 있음
 	_Renderer->CleanUp();
-	delete _Renderer;
+	_Renderer->Release();
 	_Renderer = nullptr;
 
-	delete _CollDevice;
+	_CollDevice->Release();
 	_CollDevice = nullptr;
 }
 

@@ -13,7 +13,7 @@ class SWorld;
 
 extern SSGameApp* g_GameApp;
 
-class SSGameApp : INoncopyable
+class SSGameApp : public ISSNoncopyable
 {
 public:
 	SSGameApp(IRenderer* EngineRenderer, ICollDevice* EngineCollDevice);
